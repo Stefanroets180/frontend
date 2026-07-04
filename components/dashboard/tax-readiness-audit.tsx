@@ -679,7 +679,7 @@ function ReadingCard({
                   <Pencil className="h-4 w-4" />
                 </Button>
               )}
-              {!isLocked && !isOpening && (
+              {!isLocked && (
                 <Button
                   variant="secondary"
                   size="icon"
