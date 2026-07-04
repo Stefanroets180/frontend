@@ -150,8 +150,10 @@ export function TyrePurchaseForm({
   }, [mode, existingImages]);
 
   useEffect(() => {
-    setEnableRotation(Boolean(initialData?.enableRotationTracking));
-  }, [initialData?.enableRotationTracking]);
+    const rotationEnabled = Boolean(initialData?.enableRotationTracking);
+    setEnableRotation(rotationEnabled);
+    setValue("enableRotationTracking", rotationEnabled);
+  }, [initialData?.enableRotationTracking, setValue]);
 
   const {
     register,
