@@ -136,6 +136,23 @@ export function TyrePurchaseForm({
   } | null>(null);
   const [enableRotation, setEnableRotation] = useState(false);
 
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<TyrePurchaseInput>({
+    resolver: zodResolver(tyrePurchaseSchema),
+    defaultValues: initialData || {
+      vehicleId: vehicles[0]?.id || "",
+      date: new Date(),
+      quantity: 4,
+      odometerReading: vehicles[0]?.currentOdometer || 0,
+      enableRotationTracking: false,
+    },
+  });
+
   // Set preview from existing images when in edit mode
   useEffect(() => {
     console.log("TyrePurchaseForm - useEffect triggered:", {
@@ -154,23 +171,6 @@ export function TyrePurchaseForm({
     setEnableRotation(rotationEnabled);
     setValue("enableRotationTracking", rotationEnabled);
   }, [initialData?.enableRotationTracking, setValue]);
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<TyrePurchaseInput>({
-    resolver: zodResolver(tyrePurchaseSchema),
-    defaultValues: initialData || {
-      vehicleId: vehicles[0]?.id || "",
-      date: new Date(),
-      quantity: 4,
-      odometerReading: vehicles[0]?.currentOdometer || 0,
-      enableRotationTracking: false,
-    },
-  });
 
   const selectedVehicleId = watch("vehicleId");
   const priceZar = watch("priceZar");
