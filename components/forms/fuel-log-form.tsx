@@ -64,7 +64,12 @@ interface FuelLogFormProps extends ReceiptSupportProps {
 }
 
 // Helper function to get available fuel types based on vehicle fuel type
-function getAvailableFuelTypes(vehicleFuelType: FuelType): FuelType[] {
+function getAvailableFuelTypes(vehicleFuelType: FuelType | undefined): FuelType[] {
+  // If no fuel type provided, return all fuel types
+  if (!vehicleFuelType) {
+    return Object.values(FuelType)
+  }
+
   // Determine fuel category based on vehicle's fuel type
   const fuelTypeStr = vehicleFuelType.toString()
 

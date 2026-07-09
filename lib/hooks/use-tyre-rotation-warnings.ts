@@ -5,6 +5,8 @@ import { api } from '@/lib/api/client'
 import { DrivetrainType, type TyreRotationWarning, type TyreRotationStatus } from '@/lib/types/database'
 
 function mapWarning(row: Record<string, unknown>): TyreRotationWarning {
+  const rotationStatus = String(row.rotationStatus ?? 'OK')
+  
   return {
     trackingId: String(row.trackingId),
     organizationId: '',
@@ -23,7 +25,7 @@ function mapWarning(row: Record<string, unknown>): TyreRotationWarning {
     latestFuelOdometer: row.latestFuelOdometer != null ? Number(row.latestFuelOdometer) : undefined,
     currentVehicleOdometer: Number(row.latestFuelOdometer ?? row.installationOdometer ?? 0),
     kmOverdue: Number(row.kmOverdue ?? 0),
-    rotationStatus: (row.rotationStatus as TyreRotationStatus) ?? 'OK',
+    rotationStatus: rotationStatus as TyreRotationStatus,
     isActive: true,
     isDismissed: false,
   }
