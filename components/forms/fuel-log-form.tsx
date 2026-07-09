@@ -64,15 +64,22 @@ interface FuelLogFormProps extends ReceiptSupportProps {
 }
 
 // Helper function to get available fuel types based on vehicle fuel type
-function getAvailableFuelTypes(vehicleFuelType: FuelType): FuelType[] {
-  // Determine fuel category based on vehicle's fuel type
-  const fuelTypeStr = vehicleFuelType.toString()
+function getAvailableFuelTypes(vehicleFuelType: FuelType | string | undefined): FuelType[] {
+  // If no fuel type provided, return all fuel types
+  if (!vehicleFuelType) {
+    return Object.values(FuelType)
+  }
 
-  if (fuelTypeStr.startsWith('PETROL')) {
+  // Convert to string for comparison (handles both enum and string from API)
+  const fuelTypeStr = String(vehicleFuelType).toUpperCase()
+
+  // Check if it's a petrol type
+  if (fuelTypeStr === 'PETROL_UNLEADED_93' || fuelTypeStr === 'PETROL_UNLEADED_95' || fuelTypeStr === 'PETROL') {
     return [FuelType.PETROL_UNLEADED_93, FuelType.PETROL_UNLEADED_95]
   }
 
-  if (fuelTypeStr.startsWith('DIESEL')) {
+  // Check if it's a diesel type
+  if (fuelTypeStr === 'DIESEL_10PPM' || fuelTypeStr === 'DIESEL_50PPM' || fuelTypeStr === 'DIESEL_500PPM' || fuelTypeStr === 'DIESEL') {
     return [FuelType.DIESEL_10PPM, FuelType.DIESEL_50PPM, FuelType.DIESEL_500PPM]
   }
 

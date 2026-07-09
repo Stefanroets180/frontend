@@ -229,7 +229,7 @@ export default function VehiclesPage() {
                       {vehicle.registrationNumber}
                     </p>
                     <p className="text-sm text-muted-foreground capitalize">
-                      {vehicle.fuelType.toLowerCase().replace("_", " ")}
+                      {vehicle.fuelType ? vehicle.fuelType.toLowerCase().replace("_", " ") : "N/A"}
                     </p>
                   </div>
 

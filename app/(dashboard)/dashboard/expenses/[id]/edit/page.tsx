@@ -1159,8 +1159,8 @@ export default function EditExpensePage({
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="sticky top-14 z-30 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
-        <div className="flex items-center gap-3 p-4">
+      <div className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+        <div className="flex items-center gap-3 p-4 max-w-md">
           <Button variant="ghost" size="icon" asChild>
             <button onClick={() => router.back()}>
               <ArrowLeft className="h-5 w-5" />

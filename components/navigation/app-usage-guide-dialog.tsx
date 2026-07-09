@@ -365,6 +365,16 @@ function getQuickStartCards(
       accent: "vehicle",
     },
     {
+      title: `Edit vehicle details in ${nav.vehicles}`,
+      subtitle: "Add optional fields",
+      description:
+        "After adding your vehicle, you can edit it anytime to add optional details like VIN, insurance policy, license expiry, or tracker serial.",
+      tip: "Click the pencil icon next to your vehicle to add missing details. These optional fields help with tracking but are not required to use the app.",
+      icon: Car,
+      href: "/dashboard/vehicles",
+      accent: "vehicle",
+    },
+    {
       title: `Save your costs in ${nav.expenses}`,
       subtitle: "Save costs early",
       description:
@@ -393,6 +403,16 @@ function getQuickStartCards(
       description:
         "Confirm which vehicle is assigned to you before you start recording anything.",
       tip: "Make sure you are using the correct assigned vehicle before adding trips, odometer readings or fuel.",
+      icon: Car,
+      href: "/dashboard/vehicles",
+      accent: "vehicle",
+    },
+    {
+      title: `Edit vehicle details in ${nav.vehicles}`,
+      subtitle: "Add optional fields",
+      description:
+        "After adding your vehicle, you can edit it anytime to add optional details like VIN, insurance policy, license expiry, or tracker serial.",
+      tip: "Click the pencil icon next to your vehicle to add missing details. These optional fields help with tracking but are not required to use the app.",
       icon: Car,
       href: "/dashboard/vehicles",
       accent: "vehicle",
@@ -437,6 +457,16 @@ function getQuickStartCards(
         "Create each business vehicle so trips and expenses can be linked to the right one.",
       tip: "Use the exact registration number and keep drivers assigned to the correct vehicle for cleaner reporting.",
       icon: Building2,
+      href: "/dashboard/vehicles",
+      accent: "vehicle",
+    },
+    {
+      title: `Edit vehicle details in ${nav.vehicles}`,
+      subtitle: "Add optional fields",
+      description:
+        "After adding your vehicle, you can edit it anytime to add optional details like VIN, insurance policy, license expiry, or tracker serial.",
+      tip: "Click the pencil icon next to your vehicle to add missing details. These optional fields help with tracking but are not required to use the app.",
+      icon: Car,
       href: "/dashboard/vehicles",
       accent: "vehicle",
     },

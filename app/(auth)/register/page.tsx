@@ -116,6 +116,11 @@ export default function RegisterPage() {
               ? "Choose your account type"
               : "Enter your details to get started"}
           </CardDescription>
+          {step === 2 && accountType === "individual" && (
+            <p className="text-xs text-muted-foreground mt-2">
+              After adding your vehicle, you can edit it anytime at <span className="font-mono">/dashboard/vehicles</span> to add optional details like VIN, insurance policy, or license expiry.
+            </p>
+          )}
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

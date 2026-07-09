@@ -419,16 +419,16 @@ export function DashboardHeader({
   };
 
   // Total notifications
-  const totalExpiredAlerts = expiryCounts.expiredCount;
+  const totalExpiredAlerts = expiryCounts.expiredCount + tyreCriticalCount;
   const totalWarningAlerts =
     expiryCounts.criticalCount +
     expiryCounts.warningCount +
     expiryCounts.upcomingCount +
-    tyreWarningCount;
+    (tyreWarningCount - tyreCriticalCount);
   const totalNotifications = totalExpiredAlerts + totalWarningAlerts;
 
   // Check for critical items
-  const hasExpiryExpired = expiryCounts.expiredCount > 0;
+  const hasExpiryExpired = expiryCounts.expiredCount > 0 || tyreCriticalCount > 0;
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
@@ -563,7 +563,7 @@ export function DashboardHeader({
                 <TabsContent value="expired" className="m-0">
                   <div className="max-h-[400px] overflow-y-auto p-2">
                     {expiryAlerts.filter((a) => a.expiryStatus === "EXPIRED")
-                      .length === 0 ? (
+                      .length === 0 && tyreWarnings.filter((w) => w.rotationStatus === "CRITICAL").length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-8 text-center">
                         <div className="p-3 rounded-full bg-muted mb-3">
                           <Check className="h-6 w-6 text-muted-foreground" />
@@ -576,6 +576,25 @@ export function DashboardHeader({
                       </div>
                     ) : (
                       <div className="space-y-2">
+                        {/* Critical tyre rotations */}
+                        {tyreWarnings.filter((w) => w.rotationStatus === "CRITICAL").length > 0 && (
+                          <div className="mb-3">
+                            <p className="text-xs font-medium text-red-600 dark:text-red-400 mb-2 px-1">
+                              Overdue Tyre Rotations ({tyreWarnings.filter((w) => w.rotationStatus === "CRITICAL").length})
+                            </p>
+                            {tyreWarnings
+                              .filter((w) => w.rotationStatus === "CRITICAL")
+                              .map((warning) => (
+                                <TyreRotationNotification
+                                  key={warning.trackingId}
+                                  warning={warning}
+                                  onRecordRotation={handleRecordRotation}
+                                  onDismiss={handleDismissTyreWarning}
+                                />
+                              ))}
+                          </div>
+                        )}
+                        {/* Expired expiry alerts */}
                         {expiryAlerts
                           .filter(
                             (a) =>
@@ -598,7 +617,7 @@ export function DashboardHeader({
                 <TabsContent value="warning" className="m-0">
                   <div className="max-h-[400px] overflow-y-auto p-2">
                     {expiryAlerts.filter((a) => a.expiryStatus !== "EXPIRED")
-                      .length === 0 && tyreWarnings.length === 0 ? (
+                      .length === 0 && tyreWarnings.filter((w) => w.rotationStatus !== "CRITICAL").length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-8 text-center">
                         <div className="p-3 rounded-full bg-muted mb-3">
                           <Check className="h-6 w-6 text-muted-foreground" />
@@ -679,13 +698,15 @@ export function DashboardHeader({
                               ))}
                           </div>
                         )}
-                        {/* Tyre rotation warnings */}
-                        {tyreWarnings.length > 0 && (
+                        {/* Tyre rotation warnings (excluding CRITICAL) */}
+                        {tyreWarnings.filter((w) => w.rotationStatus !== "CRITICAL").length > 0 && (
                           <div className="mb-3">
                             <p className="text-xs font-medium text-yellow-600 dark:text-yellow-400 mb-2 px-1">
-                              Tyre Rotations ({tyreWarnings.length})
+                              Tyre Rotations ({tyreWarnings.filter((w) => w.rotationStatus !== "CRITICAL").length})
                             </p>
-                            {tyreWarnings.map((warning) => (
+                            {tyreWarnings
+                              .filter((w) => w.rotationStatus !== "CRITICAL")
+                              .map((warning) => (
                               <TyreRotationNotification
                                 key={warning.trackingId}
                                 warning={warning}

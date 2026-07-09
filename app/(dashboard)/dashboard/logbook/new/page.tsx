@@ -68,6 +68,7 @@ function NewTripContent() {
   const [recurringData, setRecurringData] = useState<{
     isRecurring: boolean;
     days: string[];
+    startDate?: string;
     endDate?: string;
   }>({ isRecurring: false, days: [] });
 
@@ -103,13 +104,25 @@ function NewTripContent() {
     }
   }, [lastOdometer, currentOdometer]);
 
-  const handleRecurringChange = (isRecurring: boolean, days: string[], endDate?: string) => {
-    setRecurringData({ isRecurring, days, endDate });
+  const handleRecurringChange = (isRecurring: boolean, days: string[], startDate?: string, endDate?: string) => {
+    setRecurringData({ isRecurring, days, startDate, endDate });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.vehicleId || !userId) return;
+
+    // Validate recurring trip data
+    if (recurringData.isRecurring) {
+      if (recurringData.days.length === 0) {
+        alert("Please select at least one day for the recurring trip.");
+        return;
+      }
+      if (!recurringData.startDate && !formData.tripDate) {
+        alert("Please provide a recurrence start date.");
+        return;
+      }
+    }
 
     setIsSubmitting(true);
     try {
@@ -144,7 +157,7 @@ function NewTripContent() {
           reasonForTrip: formData.reasonForTrip,
           isRecurring: true,
           recurrenceDays: recurringData.days.join(","),
-          recurrenceStartDate: formData.tripDate,
+          recurrenceStartDate: recurringData.startDate || formData.tripDate,
           recurrenceEndDate: recurringData.endDate,
           defaultTollCostsZar: Number(formData.tollCostsZar) || 0,
           defaultParkingCostsZar: Number(formData.parkingCostsZar) || 0,

@@ -1478,12 +1478,14 @@ export default function DashboardPage() {
                         </div>
 
                         {/* Compliance badge */}
-                        <Badge
-                          variant="outline"
-                          className={`shrink-0 self-start text-xs sm:self-auto ${badgeClasses}`}
-                        >
-                          {complianceStatus}
-                        </Badge>
+                        <Link href="/dashboard/settings">
+                          <Badge
+                            variant="outline"
+                            className={`shrink-0 self-start text-xs sm:self-auto cursor-pointer hover:opacity-80 transition-opacity ${badgeClasses}`}
+                          >
+                            {complianceStatus}
+                          </Badge>
+                        </Link>
                       </CardContent>
                     </Card>
                   </button>

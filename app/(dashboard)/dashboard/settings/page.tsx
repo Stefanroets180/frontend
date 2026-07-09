@@ -82,10 +82,8 @@ function SettingsContent() {
   const isFleet = user?.organizationMode === "FLEET";
   const isAdminOrManager = user?.role === "ADMIN" || user?.role === "MANAGER";
   const isDriver = user?.role === "DRIVER";
-  const shouldHideTaxFeatures = isFleet && isDriver;
   const requestedTab = searchParams.get("tab");
-  const defaultTab =
-    !shouldHideTaxFeatures && requestedTab === "tax-readiness"
+  const defaultTab = requestedTab === "tax-readiness"
       ? "tax-readiness"
       : "general";
   const taxYear = getSATaxYear();
@@ -226,8 +224,7 @@ function SettingsContent() {
         </div>
       </div>
 
-      {!shouldHideTaxFeatures && (
-        <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 sm:px-4 sm:py-3 w-full max-w-full overflow-hidden">
+      <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 sm:px-4 sm:py-3 w-full max-w-full overflow-hidden">
           <p className="text-xs sm:text-sm font-medium">
             Important for SARS tax completion
           </p>
@@ -250,7 +247,6 @@ function SettingsContent() {
             odometer reading and image to complete your SARS tax records.
           </p>
         </div>
-      )}
 
       <DashboardCollapsiblePanel
         panelId="settings-general"
@@ -482,14 +478,13 @@ function SettingsContent() {
         </Card>
 
         {/* Notifications — persisted locally */}
-        {!shouldHideTaxFeatures && (
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Bell className="h-5 w-5" />
-                Notifications
-              </CardTitle>
-            </CardHeader>
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Bell className="h-5 w-5" />
+              Notifications
+            </CardTitle>
+          </CardHeader>
             <CardContent className="space-y-4">
               {prefsLoaded && (
                 <>
@@ -529,7 +524,6 @@ function SettingsContent() {
               )}
             </CardContent>
           </Card>
-        )}
 
         {/* Regional — persisted locally */}
         <Card>
@@ -676,19 +670,17 @@ function SettingsContent() {
         </div>
       </DashboardCollapsiblePanel>
 
-      {!shouldHideTaxFeatures && (
-        <DashboardCollapsiblePanel
-          panelId="settings-tax-readiness"
-          title="Tax Readiness"
-          description="Review and confirm your opening and closing odometer records for SARS."
-          tone="warning"
-          openLabel="Hide readiness"
-          closedLabel="Show readiness"
-          summaryItems={taxReadinessSummaryItems}
-        >
-          <TaxReadinessAudit />
-        </DashboardCollapsiblePanel>
-      )}
+      <DashboardCollapsiblePanel
+        panelId="settings-tax-readiness"
+        title="Tax Readiness"
+        description="Review and confirm your opening and closing odometer records for SARS."
+        tone="warning"
+        openLabel="Hide readiness"
+        closedLabel="Show readiness"
+        summaryItems={taxReadinessSummaryItems}
+      >
+        <TaxReadinessAudit />
+      </DashboardCollapsiblePanel>
     </div>
   );
 }

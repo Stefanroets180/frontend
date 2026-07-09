@@ -31,6 +31,12 @@ export function AddVehicleForm() {
     year: new Date().getFullYear().toString(),
     fuelCategory: "",
     color: "",
+    vin: "",
+    tankCapacityLiters: "",
+    licenseExpiry: "",
+    insurancePolicyNumber: "",
+    trackerSerial: "",
+    notes: "",
   })
 
   const set = (field: string, value: string) =>
@@ -56,6 +62,12 @@ export function AddVehicleForm() {
           year: parseInt(form.year),
           fuelType: fuelType,
           color: form.color || null,
+          vin: form.vin || null,
+          tankCapacityLiters: form.tankCapacityLiters ? parseFloat(form.tankCapacityLiters) : null,
+          licenseExpiry: form.licenseExpiry || null,
+          insurancePolicyNumber: form.insurancePolicyNumber || null,
+          trackerSerial: form.trackerSerial || null,
+          notes: form.notes || null,
         }),
       })
 
@@ -95,7 +107,7 @@ export function AddVehicleForm() {
           <CardTitle className="text-xl">Add Your Vehicle</CardTitle>
         </div>
         <CardDescription>
-          You need at least one vehicle to use Vehicle Expense Tracker.
+          You need at least one vehicle to use Vehicle Expense Tracker. You can add optional details later by editing the vehicle at <span className="font-mono text-xs">/dashboard/vehicles</span>.
         </CardDescription>
       </CardHeader>
 
@@ -203,8 +215,8 @@ export function AddVehicleForm() {
               </SelectTrigger>
               <SelectContent>
                 {VEHICLE_FUEL_CATEGORIES.map(ft => (
-                  <SelectItem 
-                    key={ft.value} 
+                  <SelectItem
+                    key={ft.value}
                     value={ft.value}
                     disabled={ft.disabled}
                     className={ft.disabled ? 'opacity-50 cursor-not-allowed' : ''}
@@ -214,6 +226,88 @@ export function AddVehicleForm() {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Optional Additional Fields */}
+          <div className="space-y-4 pt-2 border-t border-border/50">
+            <p className="text-xs font-medium text-muted-foreground">Additional Details (Optional)</p>
+
+            {/* VIN */}
+            <div className="space-y-2">
+              <Label htmlFor="vin">VIN <span className="text-muted-foreground">(optional)</span></Label>
+              <Input
+                id="vin"
+                placeholder="Vehicle Identification Number"
+                value={form.vin}
+                onChange={e => set("vin", e.target.value)}
+                className="h-12"
+              />
+            </div>
+
+            {/* Tank Capacity */}
+            <div className="space-y-2">
+              <Label htmlFor="tankCapacityLiters">Tank Capacity (Liters) <span className="text-muted-foreground">(optional)</span></Label>
+              <Input
+                id="tankCapacityLiters"
+                type="number"
+                step="0.1"
+                placeholder="e.g., 80"
+                value={form.tankCapacityLiters}
+                onChange={e => set("tankCapacityLiters", e.target.value)}
+                className="h-12"
+              />
+            </div>
+
+            {/* License Expiry */}
+            <div className="space-y-2">
+              <Label htmlFor="licenseExpiry">License Expiry Date <span className="text-muted-foreground">(optional)</span></Label>
+              <Input
+                id="licenseExpiry"
+                type="date"
+                value={form.licenseExpiry}
+                onChange={e => set("licenseExpiry", e.target.value)}
+                className="h-12"
+              />
+              <p className="text-xs text-muted-foreground">
+                Enter the expiry date of your vehicle's license disc. This helps you track when your license needs renewal.
+              </p>
+            </div>
+
+            {/* Insurance Policy Number */}
+            <div className="space-y-2">
+              <Label htmlFor="insurancePolicyNumber">Insurance Policy Number <span className="text-muted-foreground">(optional)</span></Label>
+              <Input
+                id="insurancePolicyNumber"
+                placeholder="Insurance policy reference"
+                value={form.insurancePolicyNumber}
+                onChange={e => set("insurancePolicyNumber", e.target.value)}
+                className="h-12"
+              />
+            </div>
+
+            {/* Tracker Serial */}
+            <div className="space-y-2">
+              <Label htmlFor="trackerSerial">Tracker Serial <span className="text-muted-foreground">(optional)</span></Label>
+              <Input
+                id="trackerSerial"
+                placeholder="GPS tracker serial number"
+                value={form.trackerSerial}
+                onChange={e => set("trackerSerial", e.target.value)}
+                className="h-12"
+              />
+            </div>
+
+            {/* Notes */}
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notes <span className="text-muted-foreground">(optional)</span></Label>
+              <Input
+                id="notes"
+                placeholder="Additional notes about the vehicle"
+                value={form.notes}
+                onChange={e => set("notes", e.target.value)}
+                className="h-12"
+              />
+            </div>
           </div>
 
           <Button

@@ -99,6 +99,9 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
   const [verifications, setVerifications] = useState<
     OdometerVerificationRecord[]
   >([]);
+  const [vehicles, setVehicles] = useState<
+    Array<{ id: string; registrationNumber: string }>
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const { isOpeningWindow, isClosingWindow } = getTaxYearReadingWindow();
@@ -108,9 +111,20 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
   const availableYears = Array.from({ length: 5 }, (_, i) => currentYear - i);
 
   useEffect(() => {
-    const fetchVerifications = async () => {
+    const fetchData = async () => {
       setIsLoading(true);
       try {
+        // Fetch all vehicles
+        const { data: vehiclesData } = await api.get("/vehicles");
+        const vehicleList = Array.isArray(vehiclesData) ? vehiclesData : [];
+        setVehicles(
+          vehicleList.map((v: any) => ({
+            id: String(v.id),
+            registrationNumber: String(v.registrationNumber ?? ""),
+          })),
+        );
+
+        // Fetch verifications
         const { data } = await api.get(
           `/compliance/odometer?taxYear=${selectedYear}`,
         );
@@ -146,30 +160,23 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
 
         setVerifications(mapped);
       } catch (error) {
-        console.error("Failed to fetch verifications:", error);
+        console.error("Failed to fetch data:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchVerifications();
+    fetchData();
   }, [selectedYear]);
 
-  // Group verifications by vehicle
-  const vehicleVerifications = verifications.reduce(
+  // Group verifications by vehicle and include all vehicles
+  const vehicleVerifications = vehicles.reduce(
     (acc, v) => {
-      if (!acc[v.vehicleId]) {
-        acc[v.vehicleId] = {
-          vehicleReg: v.vehicleReg,
-          opening: undefined,
-          closing: undefined,
-        };
-      }
-      if (v.readingType === OdometerReadingType.OPENING) {
-        acc[v.vehicleId].opening = v;
-      } else {
-        acc[v.vehicleId].closing = v;
-      }
+      acc[v.id] = {
+        vehicleReg: v.registrationNumber,
+        opening: undefined,
+        closing: undefined,
+      };
       return acc;
     },
     {} as Record<
@@ -181,6 +188,22 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
       }
     >,
   );
+
+  // Merge verifications into vehicle map
+  verifications.forEach((v) => {
+    if (!vehicleVerifications[v.vehicleId]) {
+      vehicleVerifications[v.vehicleId] = {
+        vehicleReg: v.vehicleReg,
+        opening: undefined,
+        closing: undefined,
+      };
+    }
+    if (v.readingType === OdometerReadingType.OPENING) {
+      vehicleVerifications[v.vehicleId].opening = v;
+    } else {
+      vehicleVerifications[v.vehicleId].closing = v;
+    }
+  });
 
   const displayVehicles = Object.entries(vehicleVerifications);
 

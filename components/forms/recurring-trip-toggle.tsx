@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 interface RecurringTripToggleProps {
-  onRecurringChange: (isRecurring: boolean, days: string[], endDate?: string) => void;
+  onRecurringChange: (isRecurring: boolean, days: string[], startDate?: string, endDate?: string) => void;
 }
 
 const DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
@@ -12,6 +12,7 @@ export default function RecurringTripToggle({ onRecurringChange }: RecurringTrip
   const [isRecurring, setIsRecurring] = useState(false);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState('');
 
   const toggleDay = (day: string) => {
     const newDays = selectedDays.includes(day)
@@ -19,17 +20,22 @@ export default function RecurringTripToggle({ onRecurringChange }: RecurringTrip
       : [...selectedDays, day];
     
     setSelectedDays(newDays);
-    onRecurringChange(isRecurring, newDays, endDate || undefined);
+    onRecurringChange(isRecurring, newDays, startDate || undefined, endDate || undefined);
   };
 
   const handleRecurringToggle = (checked: boolean) => {
     setIsRecurring(checked);
-    onRecurringChange(checked, selectedDays, endDate || undefined);
+    onRecurringChange(checked, selectedDays, startDate || undefined, endDate || undefined);
+  };
+
+  const handleStartDateChange = (value: string) => {
+    setStartDate(value);
+    onRecurringChange(isRecurring, selectedDays, value || undefined, endDate || undefined);
   };
 
   const handleEndDateChange = (value: string) => {
     setEndDate(value);
-    onRecurringChange(isRecurring, selectedDays, value || undefined);
+    onRecurringChange(isRecurring, selectedDays, startDate || undefined, value || undefined);
   };
 
   return (
@@ -68,6 +74,22 @@ export default function RecurringTripToggle({ onRecurringChange }: RecurringTrip
                 </button>
               ))}
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1 text-foreground">
+              Recurrence Start Date *
+            </label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => handleStartDateChange(e.target.value)}
+              className="w-full p-2 border rounded bg-background text-foreground border-input"
+              required
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              First occurrence of the recurring trip
+            </p>
           </div>
 
           <div>

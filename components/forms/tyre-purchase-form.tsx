@@ -170,7 +170,12 @@ export function TyrePurchaseForm({
     const rotationEnabled = Boolean(initialData?.enableRotationTracking);
     setEnableRotation(rotationEnabled);
     setValue("enableRotationTracking", rotationEnabled);
-  }, [initialData?.enableRotationTracking, setValue]);
+    
+    // Also set drivetrain type if it exists in initialData
+    if (initialData?.drivetrainType) {
+      setValue("drivetrainType", initialData.drivetrainType);
+    }
+  }, [initialData?.enableRotationTracking, initialData?.drivetrainType, setValue]);
 
   const selectedVehicleId = watch("vehicleId");
   const priceZar = watch("priceZar");
