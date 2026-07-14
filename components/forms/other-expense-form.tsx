@@ -48,6 +48,8 @@ const otherExpenseSchema = z.object({
   recurrenceFrequency: z
     .enum(["WEEKLY", "MONTHLY", "QUARTERLY", "ANNUAL", "ONCE_OFF"])
     .optional(),
+  recurrenceDaysOfWeek: z.array(z.string()).optional(),
+  recurrenceDaysOfMonth: z.array(z.number()).optional(),
   periodStartDate: z.date().optional(),
   periodEndDate: z.date().optional(),
   notes: z.string().optional(),
@@ -92,6 +94,8 @@ export function OtherExpenseForm({
     originalSize: number;
     compressedSize: number;
   } | null>(null);
+  const [selectedDaysOfWeek, setSelectedDaysOfWeek] = useState<string[]>([]);
+  const [selectedDaysOfMonth, setSelectedDaysOfMonth] = useState<number[]>([]);
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
@@ -119,10 +123,12 @@ export function OtherExpenseForm({
     formState: { errors },
   } = useForm<OtherExpenseInput>({
     resolver: zodResolver(otherExpenseSchema),
-    defaultValues: initialData || {
-      date: new Date(),
-      isRecurring: false,
-      recurrenceFrequency: "ONCE_OFF",
+    defaultValues: {
+      vehicleId: initialData?.vehicleId || "",
+      date: initialData?.date || new Date(),
+      isRecurring: initialData?.isRecurring ?? false,
+      recurrenceFrequency: initialData?.recurrenceFrequency || "ONCE_OFF",
+      ...initialData,
     },
   });
 
@@ -178,7 +184,13 @@ export function OtherExpenseForm({
     }
     setIsSubmitting(true);
     try {
-      await onSubmit(data, mode === "create" ? receiptImage : null);
+      // Include selected days in the submission data
+      const dataWithDays = {
+        ...data,
+        recurrenceDaysOfWeek: selectedDaysOfWeek,
+        recurrenceDaysOfMonth: selectedDaysOfMonth,
+      };
+      await onSubmit(dataWithDays, mode === "create" ? receiptImage : null);
     } finally {
       setIsSubmitting(false);
     }
@@ -199,7 +211,7 @@ export function OtherExpenseForm({
             <div className="space-y-2">
               <Label htmlFor="vehicleId">Vehicle</Label>
               <Select
-                value={watchVehicleId || undefined}
+                value={watchVehicleId}
                 onValueChange={(val) => setValue("vehicleId", val)}
                 name="vehicleId"
               >
@@ -225,7 +237,7 @@ export function OtherExpenseForm({
             </div>
           ) : (
             <div className="space-y-2">
-              <Label>Vehicle</Label>
+              <p className="text-sm font-medium">Vehicle</p>
               <div className="h-12 px-3 flex items-center rounded-md border border-input bg-muted text-sm">
                 {(() => {
                   const vehicle = initialData?.vehicleId
@@ -370,6 +382,68 @@ export function OtherExpenseForm({
             </div>
           )}
 
+          {/* Days of Week (if recurring) */}
+          {watchIsRecurring && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Repeat on Days of Week</p>
+              <div className="flex flex-wrap gap-2">
+                {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(day => (
+                  <button
+                    key={day}
+                    type="button"
+                    onClick={() => {
+                      const newDays = selectedDaysOfWeek.includes(day)
+                        ? selectedDaysOfWeek.filter(d => d !== day)
+                        : [...selectedDaysOfWeek, day];
+                      setSelectedDaysOfWeek(newDays);
+                    }}
+                    className={`px-3 py-1.5 rounded text-sm transition-colors ${
+                      selectedDaysOfWeek.includes(day)
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    }`}
+                  >
+                    {day}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Select days of the week for recurring expense (optional)
+              </p>
+            </div>
+          )}
+
+          {/* Days of Month (if recurring) */}
+          {watchIsRecurring && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Repeat on Days of Month</p>
+              <div className="flex flex-wrap gap-2">
+                {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                  <button
+                    key={day}
+                    type="button"
+                    onClick={() => {
+                      const newDays = selectedDaysOfMonth.includes(day)
+                        ? selectedDaysOfMonth.filter(d => d !== day)
+                        : [...selectedDaysOfMonth, day];
+                      setSelectedDaysOfMonth(newDays);
+                    }}
+                    className={`w-8 h-8 rounded text-sm transition-colors ${
+                      selectedDaysOfMonth.includes(day)
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    }`}
+                  >
+                    {day}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Select specific days of the month for recurring expense (optional)
+              </p>
+            </div>
+          )}
+
           {/* Period Dates (if recurring) */}
           {watchIsRecurring && (
             <div className="grid grid-cols-2 gap-4">
@@ -458,6 +532,7 @@ export function OtherExpenseForm({
                   onChange={handleImageCapture}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   id="receipt-image"
+                  name="receiptImage"
                 />
                 <Button
                   type="button"

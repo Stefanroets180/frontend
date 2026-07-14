@@ -93,9 +93,6 @@ export function persistAuthSession(auth: NormalizedAuthResponse): void {
     const orgCookie = `auth_org_mode=${auth.user.organizationMode};path=/;max-age=${maxAge};SameSite=Lax`
     document.cookie = roleCookie
     document.cookie = orgCookie
-    console.log('[Auth] Cookies set:', { roleCookie, orgCookie, allCookies: document.cookie })
-  } else {
-    console.warn('[Auth] document not defined - cookies not set')
   }
 }
 

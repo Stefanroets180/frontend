@@ -149,6 +149,10 @@ export const api = {
         body: JSON.stringify(body),
       });
       if (!res.ok) await handleAuthError(res, url);
+      // Handle 204 No Content responses
+      if (res.status === 204) {
+        return { data: null };
+      }
       return { data: await safeJsonParse(res) };
     } catch (error) {
       console.error(`[API] POST ${url} failed:`, error);
@@ -316,6 +320,7 @@ export const createRecurringTrip = async (data: {
   reasonForTrip?: string;
   isRecurring: boolean;
   recurrenceDays?: string;
+  recurrenceDaysOfMonth?: string;
   recurrenceStartDate?: string;
   recurrenceEndDate?: string;
   defaultTollCostsZar: number;

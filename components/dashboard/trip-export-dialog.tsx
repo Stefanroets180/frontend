@@ -150,12 +150,13 @@ export function TripExportDialog({
 
         <div className="space-y-4 py-2">
           <div className="space-y-2">
-            <Label>Format</Label>
+            <Label htmlFor="trip-export-format">Format</Label>
             <Select
               value={format}
               onValueChange={(v) => setFormat(v as TripExportFormat)}
+              name="format"
             >
-              <SelectTrigger>
+              <SelectTrigger id="trip-export-format">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -168,9 +169,9 @@ export function TripExportDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>Tax year (starts March)</Label>
-            <Select value={taxYear} onValueChange={setTaxYear}>
-              <SelectTrigger>
+            <Label htmlFor="trip-export-tax-year">Tax year (starts March)</Label>
+            <Select value={taxYear} onValueChange={setTaxYear} name="taxYear">
+              <SelectTrigger id="trip-export-tax-year">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

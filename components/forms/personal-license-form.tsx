@@ -581,6 +581,7 @@ function DriversLicenseFormContent({
               <Select
                 value={form.watch('licenseCode')}
                 onValueChange={(v) => form.setValue('licenseCode', v)}
+                name="licenseCode"
               >
                 <SelectTrigger id="licenseCode" className="h-12">
                   <SelectValue placeholder="Select code" />

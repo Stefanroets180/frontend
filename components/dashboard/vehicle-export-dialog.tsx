@@ -260,12 +260,13 @@ export function VehicleExportDialog({
 
         <div className="space-y-4 py-2">
           <div className="space-y-2">
-            <Label>Format</Label>
+            <Label htmlFor="export-format">Format</Label>
             <Select
               value={format}
               onValueChange={(v) => setFormat(v as ExportFormat)}
+              name="format"
             >
-              <SelectTrigger>
+              <SelectTrigger id="export-format">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -294,9 +295,9 @@ export function VehicleExportDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>Tax year (starts March)</Label>
-            <Select value={taxYear} onValueChange={setTaxYear}>
-              <SelectTrigger>
+            <Label htmlFor="export-tax-year">Tax year (starts March)</Label>
+            <Select value={taxYear} onValueChange={setTaxYear} name="taxYear">
+              <SelectTrigger id="export-tax-year">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -316,6 +317,7 @@ export function VehicleExportDialog({
             <Label htmlFor="export-email">Email to (optional)</Label>
             <Input
               id="export-email"
+              name="exportEmail"
               type="email"
               placeholder="you@example.com"
               value={email}

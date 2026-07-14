@@ -68,9 +68,10 @@ function NewTripContent() {
   const [recurringData, setRecurringData] = useState<{
     isRecurring: boolean;
     days: string[];
+    daysOfMonth: number[];
     startDate?: string;
     endDate?: string;
-  }>({ isRecurring: false, days: [] });
+  }>({ isRecurring: false, days: [], daysOfMonth: [] });
 
   // Load vehicles and user info
   useEffect(() => {
@@ -104,8 +105,8 @@ function NewTripContent() {
     }
   }, [lastOdometer, currentOdometer]);
 
-  const handleRecurringChange = (isRecurring: boolean, days: string[], startDate?: string, endDate?: string) => {
-    setRecurringData({ isRecurring, days, startDate, endDate });
+  const handleRecurringChange = (isRecurring: boolean, days: string[], daysOfMonth: number[], startDate?: string, endDate?: string) => {
+    setRecurringData({ isRecurring, days, daysOfMonth, startDate, endDate });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -157,6 +158,7 @@ function NewTripContent() {
           reasonForTrip: formData.reasonForTrip,
           isRecurring: true,
           recurrenceDays: recurringData.days.join(","),
+          recurrenceDaysOfMonth: recurringData.daysOfMonth.length > 0 ? recurringData.daysOfMonth.join(",") : undefined,
           recurrenceStartDate: recurringData.startDate || formData.tripDate,
           recurrenceEndDate: recurringData.endDate,
           defaultTollCostsZar: Number(formData.tollCostsZar) || 0,
@@ -204,6 +206,9 @@ function NewTripContent() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
+                id="trip-purpose-business"
+                name="tripPurpose"
+                value="BUSINESS"
                 onClick={() => setTripPurpose("BUSINESS")}
                 className={cn(
                   "flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all",
@@ -222,6 +227,9 @@ function NewTripContent() {
               </button>
               <button
                 type="button"
+                id="trip-purpose-private"
+                name="tripPurpose"
+                value="PRIVATE"
                 onClick={() => setTripPurpose("PRIVATE")}
                 className={cn(
                   "flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all",
@@ -250,6 +258,7 @@ function NewTripContent() {
           <Select
             value={formData.vehicleId}
             onValueChange={(value) => setFormData({ ...formData, vehicleId: value })}
+            name="vehicleId"
           >
             <SelectTrigger id="vehicle" className="h-14 text-base">
               <SelectValue placeholder="Select vehicle" />
@@ -290,6 +299,7 @@ function NewTripContent() {
             </Label>
             <Input
               id="startLocation"
+              name="startLocation"
               type="text"
               placeholder="e.g., Office - Sandton"
               value={formData.startLocation}
@@ -305,6 +315,7 @@ function NewTripContent() {
             </Label>
             <Input
               id="endLocation"
+              name="endLocation"
               type="text"
               placeholder="e.g., Client Site - Pretoria"
               value={formData.endLocation}
@@ -323,6 +334,7 @@ function NewTripContent() {
           </Label>
           <Input
             id="tripDate"
+            name="tripDate"
             type="date"
             value={formData.tripDate}
             onChange={(e) => setFormData({ ...formData, tripDate: e.target.value })}
@@ -339,6 +351,7 @@ function NewTripContent() {
             </Label>
             <Input
               id="startTime"
+              name="startTime"
               type="time"
               value={formData.startTime}
               onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
@@ -351,6 +364,7 @@ function NewTripContent() {
             </Label>
             <Input
               id="endTime"
+              name="endTime"
               type="time"
               value={formData.endTime}
               onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
@@ -383,6 +397,7 @@ function NewTripContent() {
                 </Label>
                 <Input
                   id="customerClientName"
+                  name="customerClientName"
                   type="text"
                   placeholder="e.g., ABC Construction"
                   value={formData.customerClientName}
@@ -396,6 +411,7 @@ function NewTripContent() {
                 </Label>
                 <Input
                   id="reasonForTrip"
+                  name="reasonForTrip"
                   type="text"
                   placeholder="e.g., Site inspection, client meeting"
                   value={formData.reasonForTrip}
@@ -419,6 +435,7 @@ function NewTripContent() {
               </Label>
               <Input
                 id="tollCostsZar"
+                name="tollCostsZar"
                 type="number"
                 inputMode="decimal"
                 placeholder="0.00"
@@ -433,6 +450,7 @@ function NewTripContent() {
               </Label>
               <Input
                 id="parkingCostsZar"
+                name="parkingCostsZar"
                 type="number"
                 inputMode="decimal"
                 placeholder="0.00"
@@ -451,6 +469,7 @@ function NewTripContent() {
           </Label>
           <Textarea
             id="routeDescription"
+            name="routeDescription"
             placeholder="Brief description of the trip purpose..."
             value={formData.routeDescription}
             onChange={(e) => setFormData({ ...formData, routeDescription: e.target.value })}
@@ -462,6 +481,8 @@ function NewTripContent() {
         <div className="flex gap-3 pt-4">
           <Button
             type="button"
+            id="cancel-trip"
+            name="cancel"
             variant="outline"
             onClick={() => router.back()}
             className="flex-1 h-14 text-base"
@@ -470,6 +491,8 @@ function NewTripContent() {
           </Button>
           <Button
             type="submit"
+            id="submit-trip"
+            name="submit"
             disabled={isSubmitting || !formData.vehicleId}
             className="flex-1 h-14 text-base font-semibold"
           >

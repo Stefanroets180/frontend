@@ -171,6 +171,7 @@ export function CarWashForm({ vehicles, onSubmit, initialData, mode, existingIma
               <Select
                 value={selectedVehicleId}
                 onValueChange={(value) => setValue('vehicleId', value)}
+                name="vehicleId"
               >
                 <SelectTrigger id="vehicleId" className="h-12 touch-target">
                   <SelectValue placeholder="Select vehicle" />
@@ -189,7 +190,7 @@ export function CarWashForm({ vehicles, onSubmit, initialData, mode, existingIma
             </div>
           ) : (
             <div className="space-y-2">
-              <Label>Vehicle</Label>
+              <p className="text-sm font-medium">Vehicle</p>
               <div className="h-12 px-3 flex items-center rounded-md border border-input bg-muted text-sm">
                 {initialData?.vehicleId ? (() => {
                   const vehicle = vehicles.find(v => v.id === initialData.vehicleId);
@@ -235,6 +236,7 @@ export function CarWashForm({ vehicles, onSubmit, initialData, mode, existingIma
             <Select
               value={watch('washType')}
               onValueChange={(value) => setValue('washType', value as CarWashType)}
+              name="washType"
             >
               <SelectTrigger id="washType" className="h-12 touch-target">
                 <SelectValue placeholder="Select wash type" />

@@ -83,7 +83,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen pb-24">
       {/* Header */}
-      <div className="sticky top-14 z-30 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+      <div className="border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
         <div className="flex items-center gap-3 p-4">
           <Button variant="ghost" size="icon" asChild>
             <Link href="/dashboard/settings">
@@ -100,7 +100,7 @@ export default function ProfilePage() {
       {/* Content */}
       <div className="p-4 space-y-6">
         {/* User Details Card */}
-        <Card>
+        <Card className="relative -mt-4 shadow-lg">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2">
               <User className="h-5 w-5 text-primary" />

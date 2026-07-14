@@ -112,6 +112,9 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
+              id="trip-purpose-business"
+              name="tripPurpose"
+              value="BUSINESS"
               onClick={() => setTripPurpose("BUSINESS")}
               className={cn(
                 "flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all",
@@ -130,6 +133,9 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
             </button>
             <button
               type="button"
+              id="trip-purpose-private"
+              name="tripPurpose"
+              value="PRIVATE"
               onClick={() => setTripPurpose("PRIVATE")}
               className={cn(
                 "flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all",
@@ -158,6 +164,7 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
         <Select
           value={formData.vehicleId}
           onValueChange={(value) => setFormData({ ...formData, vehicleId: value })}
+          name="vehicleId"
         >
           <SelectTrigger id="vehicle" className="h-14 text-base">
             <SelectValue placeholder="Select vehicle" />
@@ -184,6 +191,7 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
         </Label>
         <Input
           id="tripDate"
+          name="tripDate"
           type="date"
           value={formData.tripDate}
           onChange={(e) => setFormData({ ...formData, tripDate: e.target.value })}
@@ -208,6 +216,7 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
               </Label>
               <Input
                 id="startOdometer"
+                name="startOdometer"
                 type="number"
                 inputMode="numeric"
                 placeholder="e.g., 45000"
@@ -223,6 +232,7 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
               </Label>
               <Input
                 id="endOdometer"
+                name="endOdometer"
                 type="number"
                 inputMode="numeric"
                 placeholder="e.g., 45150"
@@ -255,6 +265,7 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
           </Label>
           <Input
             id="startLocation"
+            name="startLocation"
             type="text"
             placeholder="e.g., Office - Sandton"
             value={formData.startLocation}
@@ -270,6 +281,7 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
           </Label>
           <Input
             id="endLocation"
+            name="endLocation"
             type="text"
             placeholder="e.g., Client Site - Pretoria"
             value={formData.endLocation}
@@ -296,6 +308,7 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
               </Label>
               <Input
                 id="clientName"
+                name="clientName"
                 type="text"
                 placeholder="e.g., ABC Construction"
                 value={formData.clientName}
@@ -309,6 +322,7 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
               </Label>
               <Input
                 id="projectCode"
+                name="projectCode"
                 type="text"
                 placeholder="e.g., PRJ-2024-001"
                 value={formData.projectCode}
@@ -327,6 +341,7 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
         </Label>
         <Textarea
           id="description"
+          name="description"
           placeholder="Brief description of the trip purpose..."
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -339,6 +354,8 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
         {onCancel && (
           <Button
             type="button"
+            id="cancel-trip"
+            name="cancel"
             variant="outline"
             onClick={onCancel}
             className="flex-1 h-14 text-base"
@@ -348,6 +365,8 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
         )}
         <Button
           type="submit"
+          id="submit-trip"
+          name="submit"
           disabled={isSubmitting || !formData.vehicleId || !formData.startOdometer || !formData.endOdometer}
           className="flex-1 h-14 text-base font-semibold"
         >

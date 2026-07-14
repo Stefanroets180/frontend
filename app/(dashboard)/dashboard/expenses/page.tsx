@@ -183,8 +183,8 @@ export default function ExpensesPage() {
               fuelType: expense.fuelLog?.fuelType,
             }),
           );
-          // Sort by date descending (most recently recorded first)
-          loadedExpenses.sort((a, b) => b.date.getTime() - a.date.getTime());
+          // Sort by createdAt descending (newest added first)
+          loadedExpenses.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
           setExpenses(loadedExpenses);
           console.log("Loaded expenses from backend:", loadedExpenses.length);
         } else {

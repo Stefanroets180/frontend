@@ -534,15 +534,16 @@ function SettingsContent() {
             {prefsLoaded && (
               <>
                 <div className="space-y-2">
-                  <Label>Currency</Label>
+                  <Label htmlFor="currency">Currency</Label>
                   <Select
                     value={preferences.regional.currency}
                     onValueChange={(v) => {
                       setRegional({ currency: v as "ZAR" });
                       toast.success("Currency preference saved");
                     }}
+                    name="currency"
                   >
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger id="currency" className="h-12">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -553,15 +554,16 @@ function SettingsContent() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Distance Unit</Label>
+                  <Label htmlFor="distanceUnit">Distance Unit</Label>
                   <Select
                     value={preferences.regional.distanceUnit}
                     onValueChange={(v) => {
                       setRegional({ distanceUnit: v as "km" });
                       toast.success("Distance unit saved");
                     }}
+                    name="distanceUnit"
                   >
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger id="distanceUnit" className="h-12">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -572,7 +574,7 @@ function SettingsContent() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Fuel Efficiency Display</Label>
+                  <Label htmlFor="fuelEfficiencyDisplay">Fuel Efficiency Display</Label>
                   <Select
                     value={preferences.regional.fuelEfficiencyDisplay}
                     onValueChange={(v) => {
@@ -581,8 +583,9 @@ function SettingsContent() {
                       });
                       toast.success("Display preference saved");
                     }}
+                    name="fuelEfficiencyDisplay"
                   >
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger id="fuelEfficiencyDisplay" className="h-12">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -614,12 +617,13 @@ function SettingsContent() {
             {vehicles.length > 0 ? (
               <div className="space-y-3">
                 <div className="space-y-2">
-                  <Label>Export vehicle data</Label>
+                  <Label htmlFor="exportVehicleId">Export vehicle data</Label>
                   <Select
                     value={exportVehicleId}
                     onValueChange={setExportVehicleId}
+                    name="exportVehicleId"
                   >
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger id="exportVehicleId" className="h-12">
                       <SelectValue placeholder="Select vehicle" />
                     </SelectTrigger>
                     <SelectContent>

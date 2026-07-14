@@ -183,6 +183,7 @@ function TyreRotationNotification({
 
       <div className="flex gap-2 pt-1">
         <Button
+          name="markRotated"
           variant="outline"
           size="sm"
           className="flex-1 h-8 text-xs"
@@ -192,6 +193,7 @@ function TyreRotationNotification({
           Mark Rotated
         </Button>
         <Button
+          name="dismiss"
           variant="ghost"
           size="sm"
           className="h-8 text-xs text-muted-foreground"
@@ -643,9 +645,9 @@ export function DashboardHeader({
                                   a.itemType &&
                                   a.itemId,
                               )
-                              .map((alert) => (
+                              .map((alert, index) => (
                                 <ExpiryAlertNotification
-                                  key={`${alert.itemType}-${alert.itemId}`}
+                                  key={`${alert.itemType}-${alert.itemId}-${index}`}
                                   alert={alert}
                                   onDismiss={handleDismissExpiryAlert}
                                 />
@@ -666,9 +668,9 @@ export function DashboardHeader({
                                   a.itemType &&
                                   a.itemId,
                               )
-                              .map((alert) => (
+                              .map((alert, index) => (
                                 <ExpiryAlertNotification
-                                  key={`${alert.itemType}-${alert.itemId}`}
+                                  key={`${alert.itemType}-${alert.itemId}-${index}`}
                                   alert={alert}
                                   onDismiss={handleDismissExpiryAlert}
                                 />
@@ -689,9 +691,9 @@ export function DashboardHeader({
                                   a.itemType &&
                                   a.itemId,
                               )
-                              .map((alert) => (
+                              .map((alert, index) => (
                                 <ExpiryAlertNotification
-                                  key={`${alert.itemType}-${alert.itemId}`}
+                                  key={`${alert.itemType}-${alert.itemId}-${index}`}
                                   alert={alert}
                                   onDismiss={handleDismissExpiryAlert}
                                 />

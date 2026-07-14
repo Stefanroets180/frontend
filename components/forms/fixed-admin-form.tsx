@@ -445,7 +445,7 @@ function ReceiptImageCapture({
             )}
           </div>
         ) : (
-          <label htmlFor="receiptImage" className={`
+          <label htmlFor="fixed-receiptImage" className={`
             flex flex-col items-center justify-center h-40 border-2 border-dashed rounded-lg cursor-pointer transition-colors
             ${imageError ? 'border-destructive bg-destructive/5' : 'border-chart-4 hover:border-chart-4/80 hover:bg-chart-4/5'}
           `}>
@@ -462,7 +462,7 @@ function ReceiptImageCapture({
               </>
             )}
             <input
-              id="receiptImage"
+              id="fixed-receiptImage"
               name="receiptImage"
               type="file"
               accept="image/*"

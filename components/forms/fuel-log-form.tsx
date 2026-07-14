@@ -202,8 +202,20 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
 
   const captureGps = async () => {
     if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser')
       return
     }
+    
+    // Check if we're on a secure origin (HTTPS or localhost)
+    const isSecureOrigin = window.location.protocol === 'https:' || 
+                          window.location.hostname === 'localhost' ||
+                          window.location.hostname === '127.0.0.1'
+    
+    if (!isSecureOrigin) {
+      alert('GPS capture requires HTTPS or localhost. For local network access, please enter coordinates manually or use localhost.')
+      return
+    }
+    
     setIsCapturingGps(true)
     try {
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
@@ -220,6 +232,17 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
       })
     } catch (error) {
       console.error('GPS capture failed:', error)
+      if (error instanceof GeolocationPositionError) {
+        if (error.code === error.PERMISSION_DENIED) {
+          alert('GPS permission denied. Please enable location access in your browser settings.')
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          alert('Unable to retrieve GPS position. Please try again or enter coordinates manually.')
+        } else if (error.code === error.TIMEOUT) {
+          alert('GPS capture timed out. Please try again or enter coordinates manually.')
+        }
+      } else {
+        alert('GPS capture failed. Please try again or enter coordinates manually.')
+      }
     } finally {
       setIsCapturingGps(false)
     }
@@ -266,6 +289,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
               <Select
                 value={selectedVehicleId}
                 onValueChange={handleVehicleChange}
+                name="vehicleId"
               >
                 <SelectTrigger id="vehicleId" className="h-12 touch-target">
                   <SelectValue placeholder="Select vehicle" />
@@ -284,7 +308,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
             </div>
           ) : (
             <div className="space-y-2">
-              <Label>Vehicle</Label>
+              <p className="text-sm font-medium">Vehicle</p>
               <div className="h-12 px-3 flex items-center rounded-md border border-input bg-muted text-sm">
                 {(() => {
                   const vehicle = initialData?.vehicleId ? vehicles.find(v => v.id === initialData.vehicleId) : null;
@@ -331,6 +355,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
             <Select
               value={watch('fuelType')}
               onValueChange={(value) => setValue('fuelType', value as FuelType)}
+              name="fuelType"
             >
               <SelectTrigger id="fuelType" className="h-12 touch-target">
                 <SelectValue placeholder="Select fuel type" />
@@ -458,7 +483,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
 
           {/* GPS Capture - Optional */}
           <div className="space-y-2">
-            <Label>GPS Coordinates (Optional)</Label>
+            <p className="text-sm font-medium">GPS Coordinates (Optional)</p>
             {gpsPosition ? (
               <div className="rounded-lg border border-border p-3 space-y-2">
                 <div className="flex items-center justify-between">

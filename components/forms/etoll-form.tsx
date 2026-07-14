@@ -104,6 +104,7 @@ export function ETollForm({
   } = useForm<ETollInput>({
     resolver: zodResolver(etollSchema),
     defaultValues: initialData || {
+      vehicleId: "",
       date: new Date(),
       paymentMethod: "ETAG",
     },
@@ -188,7 +189,7 @@ export function ETollForm({
           <div className="space-y-2">
             <Label htmlFor="vehicleId">Vehicle</Label>
             <Select
-              value={watchVehicleId || undefined}
+              value={watchVehicleId}
               onValueChange={(val) => setValue("vehicleId", val)}
               name="vehicleId"
             >
@@ -453,6 +454,7 @@ export function ETollForm({
                   onChange={handleImageCapture}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   id="receipt-image"
+                  name="receiptImage"
                 />
                 <Button
                   type="button"

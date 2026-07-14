@@ -1,7 +1,7 @@
 "use client"
 
-import React, { useState } from "react"
-import { useRouter } from "next/navigation"
+import React, { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -21,7 +21,12 @@ const VEHICLE_FUEL_CATEGORIES = [
 
 export function AddVehicleForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const editVehicleId = searchParams.get('edit')
+  const isEditMode = !!editVehicleId
+
   const [isLoading, setIsLoading] = useState(false)
+  const [isFetching, setIsFetching] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState({
     nickname: "",
@@ -39,6 +44,58 @@ export function AddVehicleForm() {
     notes: "",
   })
 
+  // Fetch vehicle data if in edit mode
+  useEffect(() => {
+    if (editVehicleId) {
+      fetchVehicleData()
+    }
+  }, [editVehicleId])
+
+  const fetchVehicleData = async () => {
+    if (!editVehicleId) return
+
+    try {
+      setIsFetching(true)
+      const response = await apiFetch(`/vehicles/${editVehicleId}`, {
+        method: "GET",
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch vehicle data")
+      }
+
+      const data = await response.json()
+
+      // Map fuel type back to category
+      let fuelCategory = ""
+      if (data.fuelType?.includes("PETROL")) {
+        fuelCategory = "PETROL"
+      } else if (data.fuelType?.includes("DIESEL")) {
+        fuelCategory = "DIESEL"
+      }
+
+      setForm({
+        nickname: data.nickname || "",
+        registrationNumber: data.registrationNumber || "",
+        make: data.make || "",
+        model: data.model || "",
+        year: data.year?.toString() || new Date().getFullYear().toString(),
+        fuelCategory: fuelCategory,
+        color: data.color || "",
+        vin: data.vin || "",
+        tankCapacityLiters: data.tankCapacityLiters?.toString() || "",
+        licenseExpiry: data.licenseExpiry || "",
+        insurancePolicyNumber: data.insurancePolicyNumber || "",
+        trackerSerial: data.trackerSerial || "",
+        notes: data.notes || "",
+      })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load vehicle data")
+    } finally {
+      setIsFetching(false)
+    }
+  }
+
   const set = (field: string, value: string) =>
     setForm(prev => ({ ...prev, [field]: value }))
 
@@ -52,29 +109,41 @@ export function AddVehicleForm() {
       const selectedCategory = VEHICLE_FUEL_CATEGORIES.find(c => c.value === form.fuelCategory)
       const fuelType = selectedCategory?.defaultType || "PETROL_UNLEADED_95"
 
-      const response = await apiFetch("/vehicles", {
-        method: "POST",
-        body: JSON.stringify({
-          nickname: form.nickname || null,
-          registrationNumber: form.registrationNumber,
-          make: form.make,
-          model: form.model,
-          year: parseInt(form.year),
-          fuelType: fuelType,
-          color: form.color || null,
-          vin: form.vin || null,
-          tankCapacityLiters: form.tankCapacityLiters ? parseFloat(form.tankCapacityLiters) : null,
-          licenseExpiry: form.licenseExpiry || null,
-          insurancePolicyNumber: form.insurancePolicyNumber || null,
-          trackerSerial: form.trackerSerial || null,
-          notes: form.notes || null,
-        }),
-      })
+      const requestBody = {
+        nickname: form.nickname || null,
+        registrationNumber: form.registrationNumber,
+        make: form.make,
+        model: form.model,
+        year: parseInt(form.year),
+        fuelType: fuelType,
+        color: form.color || null,
+        vin: form.vin || null,
+        tankCapacityLiters: form.tankCapacityLiters ? parseFloat(form.tankCapacityLiters) : null,
+        licenseExpiry: form.licenseExpiry || null,
+        insurancePolicyNumber: form.insurancePolicyNumber || null,
+        trackerSerial: form.trackerSerial || null,
+        notes: form.notes || null,
+      }
+
+      let response
+      if (isEditMode) {
+        // Update existing vehicle
+        response = await apiFetch(`/vehicles/${editVehicleId}`, {
+          method: "PUT",
+          body: JSON.stringify(requestBody),
+        })
+      } else {
+        // Create new vehicle
+        response = await apiFetch("/vehicles", {
+          method: "POST",
+          body: JSON.stringify(requestBody),
+        })
+      }
 
       // Handle non-OK responses
       if (!response.ok) {
         const errorText = await response.text()
-        let errorMessage = "Failed to add vehicle"
+        let errorMessage = isEditMode ? "Failed to update vehicle" : "Failed to add vehicle"
         try {
           const errorData = JSON.parse(errorText)
           errorMessage = errorData.message || errorMessage
@@ -88,8 +157,13 @@ export function AddVehicleForm() {
       // Parse successful response
       const data = await response.json()
 
-      // Must complete odometer check before accessing dashboard
-      router.push(`/onboarding/odometer-check/${data.id}`)
+      if (isEditMode) {
+        // For edit mode, go back to vehicles dashboard
+        router.push("/dashboard/vehicles")
+      } else {
+        // Must complete odometer check before accessing dashboard
+        router.push(`/onboarding/odometer-check/${data.id}`)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unexpected error occurred")
     } finally {
@@ -104,23 +178,31 @@ export function AddVehicleForm() {
           <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center" suppressHydrationWarning>
             <Car className="h-5 w-5 text-primary" />
           </div>
-          <CardTitle className="text-xl">Add Your Vehicle</CardTitle>
+          <CardTitle className="text-xl">{isEditMode ? "Edit Vehicle" : "Add Your Vehicle"}</CardTitle>
         </div>
         <CardDescription>
-          You need at least one vehicle to use Vehicle Expense Tracker. You can add optional details later by editing the vehicle at <span className="font-mono text-xs">/dashboard/vehicles</span>.
+          {isEditMode
+            ? "Update your vehicle details. After saving, you can resubmit for approval."
+            : "You need at least one vehicle to use Vehicle Expense Tracker. You can add optional details later by editing the vehicle at /dashboard/vehicles."
+          }
         </CardDescription>
       </CardHeader>
 
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <Alert variant="destructive">
-              <span suppressHydrationWarning>
-                <AlertCircle className="h-4 w-4" />
-              </span>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+        {isFetching ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <span suppressHydrationWarning>
+                  <AlertCircle className="h-4 w-4" />
+                </span>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
 
           {/* Nickname */}
           <div className="space-y-2">
@@ -315,9 +397,10 @@ export function AddVehicleForm() {
             className="w-full h-12 text-base font-semibold"
             disabled={isLoading || !form.fuelCategory}
           >
-            {isLoading ? "Adding Vehicle…" : "Add Vehicle & Continue →"}
+            {isLoading ? (isEditMode ? "Updating Vehicle…" : "Adding Vehicle…") : (isEditMode ? "Update Vehicle" : "Add Vehicle & Continue →")}
           </Button>
         </form>
+        )}
       </CardContent>
     </Card>
   )

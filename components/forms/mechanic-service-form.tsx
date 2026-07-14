@@ -192,6 +192,7 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
               <Select
                 value={selectedVehicleId}
                 onValueChange={handleVehicleChange}
+                name="vehicleId"
               >
                 <SelectTrigger id="vehicleId" className="h-12 touch-target">
                   <SelectValue placeholder="Select vehicle" />
@@ -210,7 +211,7 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
             </div>
           ) : (
             <div className="space-y-2">
-              <Label>Vehicle</Label>
+              <p className="text-sm font-medium">Vehicle</p>
               <div className="h-12 px-3 flex items-center rounded-md border border-input bg-muted text-sm">
                 {(() => {
                   const vehicle = initialData?.vehicleId ? vehicles.find(v => v.id === initialData.vehicleId) : null;
@@ -226,6 +227,7 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
             <Select
               value={watch('serviceType')}
               onValueChange={(value) => setValue('serviceType', value as ServiceType)}
+              name="serviceType"
             >
               <SelectTrigger id="serviceType" className="h-12 touch-target">
                 <SelectValue placeholder="Select service type" />

@@ -15,15 +15,17 @@ export default function NewLogbookPage() {
   const [recurringData, setRecurringData] = useState<{
     isRecurring: boolean;
     days: string[];
+    daysOfMonth: number[];
+    startDate?: string;
     endDate?: string;
-  }>({ isRecurring: false, days: [] });
+  }>({ isRecurring: false, days: [], daysOfMonth: [] });
 
   // Odometer state for controlled inputs
   const [startOdometer, setStartOdometer] = useState('');
   const [endOdometer, setEndOdometer] = useState('');
 
-  const handleRecurringChange = (isRecurring: boolean, days: string[], endDate?: string) => {
-    setRecurringData({ isRecurring, days, endDate });
+  const handleRecurringChange = (isRecurring: boolean, days: string[], daysOfMonth: number[], startDate?: string, endDate?: string) => {
+    setRecurringData({ isRecurring, days, daysOfMonth, startDate, endDate });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

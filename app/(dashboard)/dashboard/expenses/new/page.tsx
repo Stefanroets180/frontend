@@ -740,6 +740,8 @@ function NewExpenseContent() {
         amountZar: expenseData.amountZar,
         isRecurring: expenseData.isRecurring,
         recurrenceFrequency: expenseData.recurrenceFrequency,
+        recurrenceDaysOfWeek: expenseData.recurrenceDaysOfWeek,
+        recurrenceDaysOfMonth: expenseData.recurrenceDaysOfMonth,
         periodStartDate: periodStart,
         periodEndDate: periodEnd,
         notes: expenseData.notes,

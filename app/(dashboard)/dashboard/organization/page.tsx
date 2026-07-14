@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { api } from '@/lib/api/client'
-import { ArrowLeft, Building2, Users, User, Mail, Shield, Plus, Crown, UserPlus, Car, Trash2, Edit, MoreVertical } from 'lucide-react'
+import { ArrowLeft, Building2, Users, User, Mail, Shield, Plus, Crown, UserPlus, Car, Trash2, Edit, MoreVertical, Clock, Check, X } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -27,7 +27,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useAuth, useRequireRole } from '@/lib/contexts/auth-context'
-import { OrganizationMode, UserRole } from '@/lib/types/database'
+import { OrganizationMode, UserRole, VehicleStatus } from '@/lib/types/database'
 import { cn } from '@/lib/utils'
 
 interface TeamMember {
@@ -48,6 +48,7 @@ interface Vehicle {
   year: number
   assignedDriverId: string | null
   assignedDriverName: string | null
+  status?: VehicleStatus
 }
 
 export default function OrganizationPage() {
@@ -60,6 +61,7 @@ export default function OrganizationPage() {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
   const [inviteEmail, setInviteEmail] = useState('')
+  const [invitePassword, setInvitePassword] = useState('')
   const [inviteRole, setInviteRole] = useState<UserRole>(UserRole.DRIVER)
   const [isInviting, setIsInviting] = useState(false)
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
@@ -114,6 +116,7 @@ export default function OrganizationPage() {
               year: Number(v.year),
               assignedDriverId: v.assignedDriverId ? String(v.assignedDriverId) : null,
               assignedDriverName: v.assignedDriverName ? String(v.assignedDriverName) : null,
+              status: v.status as VehicleStatus | undefined,
             }))
           )
         }
@@ -122,7 +125,7 @@ export default function OrganizationPage() {
   }, [])
 
   const handleInviteUser = async () => {
-    if (!inviteEmail) return
+    if (!inviteEmail || !invitePassword) return
 
     // Check if email already exists in team members
     const emailExists = teamMembers.some(
@@ -139,7 +142,7 @@ export default function OrganizationPage() {
     try {
       const { data } = await api.post('/organization/users', {
         email: inviteEmail,
-        password: Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2),
+        password: invitePassword,
         firstName: inviteEmail.split('@')[0],
         lastName: 'User',
         role: inviteRole,
@@ -158,6 +161,7 @@ export default function OrganizationPage() {
       ])
 
       setInviteEmail('')
+      setInvitePassword('')
       setInviteDialogOpen(false)
     } catch (error) {
       console.error('Failed to invite user:', error)
@@ -272,12 +276,60 @@ export default function OrganizationPage() {
   
   const handleDeleteVehicle = async (vehicleId: string) => {
     if (!confirm('Are you sure you want to delete this vehicle?')) return
-    
+
     try {
       await api.delete(`/vehicles/${vehicleId}`)
       setVehicles((prev) => prev.filter((v) => v.id !== vehicleId))
     } catch (error) {
       console.error('Failed to delete vehicle:', error)
+    }
+  }
+
+  const handleApproveVehicleCreation = async (vehicleId: string) => {
+    try {
+      await api.post(`/vehicles/${vehicleId}/approve-creation`, {})
+      setVehicles((prev) =>
+        prev.map((v) =>
+          v.id === vehicleId ? { ...v, status: VehicleStatus.ACTIVE } : v
+        )
+      )
+    } catch (error) {
+      console.error('Failed to approve vehicle creation:', error)
+    }
+  }
+
+  const handleRejectVehicleCreation = async (vehicleId: string) => {
+    if (!confirm('Are you sure you want to reject this vehicle creation?')) return
+
+    try {
+      await api.post(`/vehicles/${vehicleId}/reject-creation`, {})
+      setVehicles((prev) => prev.filter((v) => v.id !== vehicleId))
+    } catch (error) {
+      console.error('Failed to reject vehicle creation:', error)
+    }
+  }
+
+  const handleApproveVehicleDeletion = async (vehicleId: string) => {
+    if (!confirm('Are you sure you want to approve this vehicle deletion?')) return
+
+    try {
+      await api.post(`/vehicles/${vehicleId}/approve-deletion`, {})
+      setVehicles((prev) => prev.filter((v) => v.id !== vehicleId))
+    } catch (error) {
+      console.error('Failed to approve vehicle deletion:', error)
+    }
+  }
+
+  const handleRejectVehicleDeletion = async (vehicleId: string) => {
+    try {
+      await api.post(`/vehicles/${vehicleId}/reject-deletion`, {})
+      setVehicles((prev) =>
+        prev.map((v) =>
+          v.id === vehicleId ? { ...v, status: VehicleStatus.ACTIVE } : v
+        )
+      )
+    } catch (error) {
+      console.error('Failed to reject vehicle deletion:', error)
     }
   }
   
@@ -300,6 +352,14 @@ export default function OrganizationPage() {
   const canDeleteVehicle = () => {
     // Only admins can delete vehicles
     return isAdmin
+  }
+
+  const getPendingVehicles = () => {
+    return vehicles.filter(
+      (v) =>
+        v.status === VehicleStatus.PENDING_CREATION ||
+        v.status === VehicleStatus.PENDING_DELETION
+    )
   }
 
   return (
@@ -420,9 +480,9 @@ export default function OrganizationPage() {
                         </div>
                       )}
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
+                        <Label htmlFor="invite-email">Email Address</Label>
                         <Input
-                          id="email"
+                          id="invite-email"
                           type="email"
                           placeholder="colleague@example.co.za"
                           value={inviteEmail}
@@ -431,15 +491,34 @@ export default function OrganizationPage() {
                             setInviteError('')
                           }}
                           className="h-12"
+                          autoComplete="email"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="role">Role</Label>
+                        <Label htmlFor="invite-password">Temporary Password</Label>
+                        <Input
+                          id="invite-password"
+                          type="password"
+                          placeholder="Enter a temporary password"
+                          value={invitePassword}
+                          onChange={(e) => {
+                            setInvitePassword(e.target.value)
+                            setInviteError('')
+                          }}
+                          className="h-12"
+                          autoComplete="new-password"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Share this password with the invited user. They can change it after logging in.
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="invite-role">Role</Label>
                         <Select
                           value={inviteRole}
                           onValueChange={(value) => setInviteRole(value as UserRole)}
                         >
-                          <SelectTrigger className="h-12">
+                          <SelectTrigger id="invite-role" className="h-12">
                             <SelectValue placeholder="Select role" />
                           </SelectTrigger>
                           <SelectContent>
@@ -466,7 +545,7 @@ export default function OrganizationPage() {
                       </div>
                       <Button
                         onClick={handleInviteUser}
-                        disabled={!inviteEmail || isInviting}
+                        disabled={!inviteEmail || !invitePassword || isInviting}
                         className="w-full h-12"
                       >
                         {isInviting ? 'Sending Invitation...' : 'Send Invitation'}
@@ -538,6 +617,102 @@ export default function OrganizationPage() {
                         )}
                       </div>
                     )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Pending Vehicles Approval Card - Only shown for Admins in Fleet mode */}
+        {isFleetMode && isAdmin && getPendingVehicles().length > 0 && (
+          <Card className="border-amber-500/30 bg-amber-500/5">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-amber-700">
+                    <Clock className="h-5 w-5" />
+                    Pending Vehicle Approvals
+                  </CardTitle>
+                  <CardDescription>
+                    Review and approve vehicle changes requested by managers
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {getPendingVehicles().map((vehicle) => (
+                  <div
+                    key={vehicle.id}
+                    className="flex items-center gap-3 p-3 rounded-lg border border-amber-500/30 bg-background"
+                  >
+                    <div className="h-10 w-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                      <Car className="h-5 w-5 text-amber-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">
+                        {vehicle.nickname || `${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+                      </p>
+                      <p className="text-sm text-muted-foreground truncate">
+                        {vehicle.registrationNumber}
+                      </p>
+                    </div>
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        "text-xs",
+                        vehicle.status === VehicleStatus.PENDING_CREATION
+                          ? "border-amber-500/30 bg-amber-500/10 text-amber-600"
+                          : "border-red-500/30 bg-red-500/10 text-red-600"
+                      )}
+                    >
+                      <Clock className="mr-1 h-3 w-3" />
+                      {vehicle.status === VehicleStatus.PENDING_CREATION
+                        ? "Pending Creation"
+                        : "Pending Deletion"}
+                    </Badge>
+                    <div className="flex items-center gap-1">
+                      {vehicle.status === VehicleStatus.PENDING_CREATION ? (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-500/10"
+                            onClick={() => handleApproveVehicleCreation(vehicle.id)}
+                          >
+                            <Check className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-500/10"
+                            onClick={() => handleRejectVehicleCreation(vehicle.id)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-500/10"
+                            onClick={() => handleApproveVehicleDeletion(vehicle.id)}
+                          >
+                            <Check className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-500/10"
+                            onClick={() => handleRejectVehicleDeletion(vehicle.id)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -646,31 +821,33 @@ export default function OrganizationPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="editFirstName">First Name</Label>
+              <Label htmlFor="edit-first-name">First Name</Label>
               <Input
-                id="editFirstName"
+                id="edit-first-name"
                 value={editFirstName}
                 onChange={(e) => setEditFirstName(e.target.value)}
                 className="h-12"
+                autoComplete="given-name"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="editLastName">Last Name</Label>
+              <Label htmlFor="edit-last-name">Last Name</Label>
               <Input
-                id="editLastName"
+                id="edit-last-name"
                 value={editLastName}
                 onChange={(e) => setEditLastName(e.target.value)}
                 className="h-12"
+                autoComplete="family-name"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="editRole">Role</Label>
+              <Label htmlFor="edit-role">Role</Label>
               <Select
                 value={editRole}
                 onValueChange={(value) => setEditRole(value as UserRole)}
                 disabled={isManager && editingUser?.role === UserRole.ADMIN}
               >
-                <SelectTrigger className="h-12">
+                <SelectTrigger id="edit-role" className="h-12">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -722,12 +899,12 @@ export default function OrganizationPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="driver">Driver</Label>
+              <Label htmlFor="assign-driver">Driver</Label>
               <Select
                 value={selectedDriverId}
                 onValueChange={setSelectedDriverId}
               >
-                <SelectTrigger className="h-12">
+                <SelectTrigger id="assign-driver" className="h-12">
                   <SelectValue placeholder="Select a driver" />
                 </SelectTrigger>
                 <SelectContent>

@@ -222,6 +222,7 @@ export default function EditTripPage() {
               value={formData.vehicleId}
               onValueChange={(v) => handleInputChange("vehicleId", v)}
               disabled={trip.isLocked}
+              name="vehicleId"
             >
               <SelectTrigger id="vehicle" className="h-14 text-base">
                 <SelectValue placeholder="Select vehicle" />

@@ -243,6 +243,7 @@ export default function EditVehiclePage() {
                 <Select
                   value={formData.fuelType}
                   onValueChange={(value) => handleInputChange("fuelType", value)}
+                  name="fuelType"
                 >
                   <SelectTrigger id="fuelType">
                     <SelectValue placeholder="Select fuel type" />

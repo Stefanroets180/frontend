@@ -67,12 +67,15 @@ export default function LogbookPage() {
 
   const loadTrips = async () => {
     try {
-      const vehicleParam = selectedVehicle
-        ? `?vehicleId=${selectedVehicle}`
-        : "";
+      // If no vehicle is selected, don't fetch any trips
+      if (!selectedVehicle) {
+        setTrips([]);
+        setSummary(emptySummary);
+        return;
+      }
 
-      // Fetch trips - this is required
-      const tripsRes = await api.get(`/trips${vehicleParam}`);
+      // Fetch trips for the specific vehicle using the correct endpoint
+      const tripsRes = await api.get(`/trips/vehicle/${selectedVehicle}`);
       const tripData = Array.isArray(tripsRes.data) ? tripsRes.data : [];
       setTrips(
         tripData.map((t: Record<string, unknown>) => ({
@@ -117,7 +120,7 @@ export default function LogbookPage() {
       // Fetch summary - this is optional and may not exist in backend yet
       try {
         const summaryRes = await api.getOptional(
-          `/trips/summary${vehicleParam}`,
+          `/trips/summary?vehicleId=${selectedVehicle}`,
         );
         const s = (summaryRes.data ?? {}) as Record<string, number>;
         setSummary({
@@ -177,10 +180,6 @@ export default function LogbookPage() {
       .then(({ data }) => {
         if (Array.isArray(data)) {
           setVehicles(data);
-          // Auto-select the first vehicle if none is selected
-          if (data.length > 0 && !selectedVehicle) {
-            setSelectedVehicle(data[0].id);
-          }
         }
       })
       .catch(console.error);
@@ -399,6 +398,7 @@ export default function LogbookPage() {
             <Select
               value={filterPurpose}
               onValueChange={(v) => setFilterPurpose(v as typeof filterPurpose)}
+              name="filterPurpose"
             >
               <SelectTrigger className="h-10 w-full md:w-[160px]">
                 <Filter className="mr-2 h-4 w-4" />
@@ -410,7 +410,7 @@ export default function LogbookPage() {
                 <SelectItem value="PRIVATE">Private Only</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
+            <Select value={selectedVehicle} onValueChange={setSelectedVehicle} name="selectedVehicle">
               <SelectTrigger className="h-10 w-full md:w-[240px]">
                 <Car className="mr-2 h-4 w-4" />
                 <SelectValue placeholder="Select vehicle" />
@@ -423,7 +423,7 @@ export default function LogbookPage() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+            <Select value={selectedMonth} onValueChange={setSelectedMonth} name="selectedMonth">
               <SelectTrigger className="h-10 w-full flex-1">
                 <Calendar className="mr-2 h-4 w-4" />
                 <SelectValue placeholder="All months" />
@@ -457,7 +457,34 @@ export default function LogbookPage() {
             </span>
           </div>
 
-          {filteredTrips.map((trip) => (
+          {/* Vehicle dropdown for Trip History */}
+          <Select value={selectedVehicle} onValueChange={setSelectedVehicle} name="selectedVehicleHistory">
+            <SelectTrigger className="h-10 w-full">
+              <Car className="mr-2 h-4 w-4" />
+              <SelectValue placeholder="Select vehicle to view trip history" />
+            </SelectTrigger>
+            <SelectContent>
+              {vehicles.map((vehicle) => (
+                <SelectItem key={vehicle.id} value={vehicle.id}>
+                  {vehicleLabel(vehicle)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Show message when no vehicle is selected */}
+          {!selectedVehicle && (
+            <Card className="bg-muted/50">
+              <CardContent className="p-6 text-center">
+                <Car className="h-8 w-8 mx-auto mb-3 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  Select a vehicle above to view trip history
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {selectedVehicle && filteredTrips.map((trip) => (
             <Card
               key={trip.id}
               className={cn(

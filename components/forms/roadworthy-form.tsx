@@ -101,6 +101,7 @@ export function RoadworthyForm({
   } = useForm<RoadworthyInput>({
     resolver: zodResolver(roadworthySchema),
     defaultValues: initialData || {
+      vehicleId: "",
       date: new Date(),
       testDate: new Date(),
       testResult: "PASS",
@@ -178,7 +179,7 @@ export function RoadworthyForm({
           <div className="space-y-2">
             <Label htmlFor="vehicleId">Vehicle</Label>
             <Select
-              value={watchVehicleId || undefined}
+              value={watchVehicleId}
               onValueChange={(val) => setValue("vehicleId", val)}
               name="vehicleId"
             >
@@ -462,7 +463,7 @@ export function RoadworthyForm({
 
           {/* Receipt Image */}
           <div className="space-y-2">
-            <Label htmlFor="receipt-image">Receipt Image</Label>
+            <Label htmlFor="receipt-image-input">Receipt Image</Label>
 
             <div className="flex items-center gap-4">
               <div className="relative">
@@ -472,7 +473,8 @@ export function RoadworthyForm({
                   capture="environment"
                   onChange={handleImageCapture}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  id="receipt-image"
+                  id="receipt-image-input"
+                  name="receiptImage"
                 />
                 <Button
                   type="button"

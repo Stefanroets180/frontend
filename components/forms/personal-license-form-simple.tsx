@@ -123,6 +123,7 @@ export function PersonalLicenseForm({
       date: new Date(),
       licenseType: "DRIVERS_LICENSE",
       renewalMethod: "DLTC",
+      licenseCode: "",
     },
   });
 
@@ -291,7 +292,7 @@ export function PersonalLicenseForm({
             <div className="space-y-2">
               <Label htmlFor="licenseCode">License Code</Label>
               <Select
-                value={watchLicenseCode || undefined}
+                value={watchLicenseCode}
                 onValueChange={(val) => setValue("licenseCode", val)}
                 name="licenseCode"
               >
@@ -454,7 +455,7 @@ export function PersonalLicenseForm({
           {/* Receipt Image */}
           {mode === "create" && (
             <div className="space-y-2">
-              <Label htmlFor="receipt-image">Receipt Image</Label>
+              <Label htmlFor="receipt-image-input">Receipt Image</Label>
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <input
@@ -463,7 +464,8 @@ export function PersonalLicenseForm({
                     capture="environment"
                     onChange={handleImageCapture}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    id="receipt-image"
+                    id="receipt-image-input"
+                    name="receiptImage"
                   />
                   <Button
                     type="button"

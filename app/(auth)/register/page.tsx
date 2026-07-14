@@ -84,9 +84,9 @@ export default function RegisterPage() {
 
       // Drivers and Managers skip vehicle onboarding and go directly to dashboard
       if (data.user.role === "DRIVER" || data.user.role === "MANAGER") {
-        router.push("/dashboard");
+        router.replace("/dashboard");
       } else {
-        router.push("/onboarding/add-vehicle");
+        router.replace("/onboarding/add-vehicle");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -123,93 +123,95 @@ export default function RegisterPage() {
           )}
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+          {error && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
-            {step === 1 ? (
-              <>
-                {/* Account Type Selection */}
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setAccountType("individual")}
-                    className={cn(
-                      "flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all",
-                      "min-h-35",
-                      accountType === "individual"
-                        ? "border-primary bg-primary/10"
-                        : "border-border bg-card hover:border-primary/50",
-                    )}
-                  >
-                    <span suppressHydrationWarning>
-                      <User
-                        className={cn(
-                          "h-10 w-10 mb-3",
-                          accountType === "individual"
-                            ? "text-primary"
-                            : "text-muted-foreground",
-                        )}
-                      />
-                    </span>
-                    <span className="font-semibold">Individual</span>
-                    <span className="text-xs text-muted-foreground mt-1 text-center">
-                      Freelancer / Doctor
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setAccountType("business")}
-                    className={cn(
-                      "flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all",
-                      "min-h-35",
-                      accountType === "business"
-                        ? "border-primary bg-primary/10"
-                        : "border-border bg-card hover:border-primary/50",
-                    )}
-                  >
-                    <span suppressHydrationWarning>
-                      <Building2
-                        className={cn(
-                          "h-10 w-10 mb-3",
-                          accountType === "business"
-                            ? "text-primary"
-                            : "text-muted-foreground",
-                        )}
-                      />
-                    </span>
-                    <span className="font-semibold">Business</span>
-                    <span className="text-xs text-muted-foreground mt-1 text-center">
-                      Fleet / Company
-                    </span>
-                  </button>
-                </div>
-
-                <p className="text-sm text-muted-foreground text-center">
-                  {accountType === "individual"
-                    ? "Perfect for managing personal vehicle expenses and SARS logbook"
-                    : "Full fleet management with team members and multiple vehicles"}
-                </p>
-
-                <Button
-                  type="submit"
-                  className="w-full h-12 text-base font-semibold"
+          {step === 1 ? (
+            <div className="space-y-4">
+              {/* Account Type Selection */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setAccountType("individual")}
+                  className={cn(
+                    "flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all",
+                    "min-h-35",
+                    accountType === "individual"
+                      ? "border-primary bg-primary/10"
+                      : "border-border bg-card hover:border-primary/50",
+                  )}
                 >
-                  Continue
-                </Button>
-              </>
-            ) : (
-              <>
+                  <span suppressHydrationWarning>
+                    <User
+                      className={cn(
+                        "h-10 w-10 mb-3",
+                        accountType === "individual"
+                          ? "text-primary"
+                          : "text-muted-foreground",
+                      )}
+                    />
+                  </span>
+                  <span className="font-semibold">Individual</span>
+                  <span className="text-xs text-muted-foreground mt-1 text-center">
+                    Freelancer / Doctor
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAccountType("business")}
+                  className={cn(
+                    "flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all",
+                    "min-h-35",
+                    accountType === "business"
+                      ? "border-primary bg-primary/10"
+                      : "border-border bg-card hover:border-primary/50",
+                  )}
+                >
+                  <span suppressHydrationWarning>
+                    <Building2
+                      className={cn(
+                        "h-10 w-10 mb-3",
+                        accountType === "business"
+                          ? "text-primary"
+                          : "text-muted-foreground",
+                      )}
+                    />
+                  </span>
+                  <span className="font-semibold">Business</span>
+                  <span className="text-xs text-muted-foreground mt-1 text-center">
+                    Fleet / Company
+                  </span>
+                </button>
+              </div>
+
+              <p className="text-sm text-muted-foreground text-center">
+                {accountType === "individual"
+                  ? "Perfect for managing personal vehicle expenses and SARS logbook"
+                  : "Full fleet management with team members and multiple vehicles"}
+              </p>
+
+              <Button
+                type="button"
+                onClick={() => setStep(2)}
+                className="w-full h-12 text-base font-semibold"
+              >
+                Continue
+              </Button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
                 {/* User Details */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">First Name</Label>
                     <Input
                       id="firstName"
+                      name="firstName"
+                      autoComplete="given-name"
                       placeholder="John"
                       value={formData.firstName}
                       onChange={(e) =>
@@ -223,6 +225,8 @@ export default function RegisterPage() {
                     <Label htmlFor="lastName">Last Name</Label>
                     <Input
                       id="lastName"
+                      name="lastName"
+                      autoComplete="family-name"
                       placeholder="Smith"
                       value={formData.lastName}
                       onChange={(e) =>
@@ -238,7 +242,9 @@ export default function RegisterPage() {
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
+                    name="email"
                     type="email"
+                    autoComplete="email"
                     placeholder="you@example.co.za"
                     value={formData.email}
                     onChange={(e) =>
@@ -255,6 +261,8 @@ export default function RegisterPage() {
                       <Label htmlFor="organizationName">Business Name</Label>
                       <Input
                         id="organizationName"
+                        name="organizationName"
+                        autoComplete="organization"
                         placeholder="e.g., ABC Transport"
                         value={formData.organizationName}
                         onChange={(e) =>
@@ -271,6 +279,7 @@ export default function RegisterPage() {
                     <div className="space-y-2">
                       <Label htmlFor="organizationType">Business Type</Label>
                       <Select
+                        name="organizationType"
                         value={formData.organizationType}
                         onValueChange={(value) =>
                           setFormData({ ...formData, organizationType: value })
@@ -297,6 +306,7 @@ export default function RegisterPage() {
                     <div className="space-y-2">
                       <Label htmlFor="role">Your Role</Label>
                       <Select
+                        name="role"
                         value={formData.role}
                         onValueChange={(value: "ADMIN" | "MANAGER" | "DRIVER") =>
                           setFormData({ ...formData, role: value })
@@ -331,7 +341,9 @@ export default function RegisterPage() {
                   <div className="relative">
                     <Input
                       id="password"
+                      name="password"
                       type={showPassword ? "text" : "password"}
+                      autoComplete="new-password"
                       placeholder="At least 8 characters"
                       value={formData.password}
                       onChange={(e) =>
@@ -358,7 +370,9 @@ export default function RegisterPage() {
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
                   <Input
                     id="confirmPassword"
+                    name="confirmPassword"
                     type="password"
+                    autoComplete="new-password"
                     placeholder="Confirm your password"
                     value={formData.confirmPassword}
                     onChange={(e) =>
@@ -389,9 +403,8 @@ export default function RegisterPage() {
                     {isLoading ? "Creating..." : "Create Account"}
                   </Button>
                 </div>
-              </>
-            )}
-          </form>
+            </form>
+          )}
 
           <div className="mt-6 text-center text-sm">
             <span className="text-muted-foreground">

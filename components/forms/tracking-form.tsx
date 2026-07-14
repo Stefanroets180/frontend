@@ -113,6 +113,7 @@ export function TrackingForm({
   } = useForm<TrackingInput>({
     resolver: zodResolver(trackingSchema),
     defaultValues: {
+      vehicleId: "",
       date: new Date(),
       subscriptionType: "MONTHLY",
       recoveryIncluded: false,
@@ -196,7 +197,7 @@ export function TrackingForm({
             <div className="space-y-2">
               <Label htmlFor="vehicleId">Vehicle</Label>
               <Select
-                value={watchVehicleId || undefined}
+                value={watchVehicleId}
                 onValueChange={(val) => setValue("vehicleId", val)}
                 name="vehicleId"
               >
@@ -530,7 +531,7 @@ export function TrackingForm({
 
           {/* Receipt Image */}
           <div className="space-y-2">
-            <Label className="flex items-center gap-2">
+            <Label htmlFor="receipt-image" className="flex items-center gap-2">
               Receipt Image
               {mode === "create" && (
                 <span className="text-xs text-destructive">(Required)</span>

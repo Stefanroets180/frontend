@@ -101,6 +101,12 @@ export enum VerificationStatus {
   EXPIRED = 'EXPIRED'
 }
 
+export enum VehicleStatus {
+  ACTIVE = 'ACTIVE',
+  PENDING_CREATION = 'PENDING_CREATION',
+  PENDING_DELETION = 'PENDING_DELETION'
+}
+
 export enum OdometerReadingType {
   OPENING = 'OPENING',
   CLOSING = 'CLOSING'
@@ -292,6 +298,13 @@ export interface Vehicle {
   lockedAt?: Date
   lockedByUserId?: string
   lockedReason?: string
+  // Status field
+  status?: VehicleStatus
+  // Rejection fields
+  rejectionReason?: string
+  rejectedAt?: Date
+  rejectedByUserId?: string
+  rejectedByName?: string
   // Timestamps
   createdAt: Date
   updatedAt: Date

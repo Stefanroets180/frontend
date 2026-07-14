@@ -150,6 +150,8 @@ export function TyrePurchaseForm({
       quantity: 4,
       odometerReading: vehicles[0]?.currentOdometer || 0,
       enableRotationTracking: false,
+      brand: "",
+      drivetrainType: undefined,
     },
   });
 
@@ -265,6 +267,7 @@ export function TyrePurchaseForm({
               <Select
                 value={selectedVehicleId}
                 onValueChange={handleVehicleChange}
+                name="vehicleId"
               >
                 <SelectTrigger id="vehicleId" className="h-12 touch-target">
                   <SelectValue placeholder="Select vehicle" />
@@ -286,7 +289,7 @@ export function TyrePurchaseForm({
             </div>
           ) : (
             <div className="space-y-2">
-              <Label>Vehicle</Label>
+              <p className="text-sm font-medium">Vehicle</p>
               <div className="h-12 px-3 flex items-center rounded-md border border-input bg-muted text-sm">
                 {(() => {
                   const vehicle = initialData?.vehicleId
@@ -341,6 +344,7 @@ export function TyrePurchaseForm({
             <Select
               value={watch("brand")}
               onValueChange={(value) => setValue("brand", value)}
+              name="brand"
             >
               <SelectTrigger id="brand" className="h-12 touch-target">
                 <SelectValue placeholder="Select brand" />
@@ -364,6 +368,7 @@ export function TyrePurchaseForm({
             <Select
               value={quantity?.toString()}
               onValueChange={(value) => setValue("quantity", parseInt(value))}
+              name="quantity"
             >
               <SelectTrigger id="quantity" className="h-12 touch-target">
                 <SelectValue placeholder="Select quantity" />
@@ -527,6 +532,7 @@ export function TyrePurchaseForm({
                 onValueChange={(value) =>
                   setValue("drivetrainType", value as DrivetrainType)
                 }
+                name="drivetrainType"
               >
                 <SelectTrigger
                   id="drivetrainType"
