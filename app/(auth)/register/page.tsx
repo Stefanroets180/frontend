@@ -35,6 +35,7 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState(1);
   const [accountType, setAccountType] = useState<AccountType>("individual");
+  const [showVerificationMessage, setShowVerificationMessage] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -82,12 +83,8 @@ export default function RegisterPage() {
 
       persistAuthSession(data);
 
-      // Drivers and Managers skip vehicle onboarding and go directly to dashboard
-      if (data.user.role === "DRIVER" || data.user.role === "MANAGER") {
-        router.replace("/dashboard");
-      } else {
-        router.replace("/onboarding/add-vehicle");
-      }
+      // Show verification message instead of redirecting
+      setShowVerificationMessage(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -110,27 +107,56 @@ export default function RegisterPage() {
 
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Create Account</CardTitle>
+          <CardTitle className="text-2xl">
+            {showVerificationMessage ? "Check Your Email" : "Create Account"}
+          </CardTitle>
           <CardDescription>
-            {step === 1
+            {showVerificationMessage
+              ? "We've sent you a confirmation email"
+              : step === 1
               ? "Choose your account type"
               : "Enter your details to get started"}
           </CardDescription>
-          {step === 2 && accountType === "individual" && (
+          {step === 2 && accountType === "individual" && !showVerificationMessage && (
             <p className="text-xs text-muted-foreground mt-2">
               After adding your vehicle, you can edit it anytime at <span className="font-mono">/dashboard/vehicles</span> to add optional details like VIN, insurance policy, or license expiry.
             </p>
           )}
         </CardHeader>
         <CardContent>
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+          {showVerificationMessage ? (
+            <div className="space-y-4 text-center">
+              <div className="bg-primary/10 rounded-full p-4 w-16 h-16 mx-auto flex items-center justify-center">
+                <Truck className="h-8 w-8 text-primary" />
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm">
+                  We've sent a confirmation email to <strong>{formData.email}</strong>
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Click the link in the email to verify your account and get started.
+                </p>
+              </div>
+              <Button
+                onClick={() => router.push("/dashboard")}
+                className="w-full h-12 text-base font-semibold"
+              >
+                Go to Dashboard
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                You can also access your dashboard directly after verifying your email.
+              </p>
+            </div>
+          ) : (
+            <>
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
 
-          {step === 1 ? (
+              {step === 1 ? (
             <div className="space-y-4">
               {/* Account Type Selection */}
               <div className="grid grid-cols-2 gap-3">
@@ -405,18 +431,22 @@ export default function RegisterPage() {
                 </div>
             </form>
           )}
+            </>
+          )}
 
-          <div className="mt-6 text-center text-sm">
-            <span className="text-muted-foreground">
-              Already have an account?{" "}
-            </span>
-            <Link
-              href="/login"
-              className="text-primary hover:underline font-medium"
-            >
-              Sign in
-            </Link>
-          </div>
+          {!showVerificationMessage && (
+            <div className="mt-6 text-center text-sm">
+              <span className="text-muted-foreground">
+                Already have an account?{" "}
+              </span>
+              <Link
+                href="/login"
+                className="text-primary hover:underline font-medium"
+              >
+                Sign in
+              </Link>
+            </div>
+          )}
         </CardContent>
       </Card>
 
