@@ -6,6 +6,9 @@
   "functions": {
     "app/**/page.tsx": {
       "maxDuration": 30
+    },
+    "app/(auth)/confirm-email/page.tsx": {
+      "runtime": "nodejs18.x"
     }
   }
 }
