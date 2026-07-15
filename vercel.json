@@ -2,13 +2,5 @@
   "buildCommand": "pnpm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "regions": ["iad1"],
-  "functions": {
-    "app/**/page.tsx": {
-      "maxDuration": 30
-    },
-    "app/(auth)/confirm-email/page.tsx": {
-      "runtime": "nodejs18.x"
-    }
-  }
+  "regions": ["iad1"]
 }
