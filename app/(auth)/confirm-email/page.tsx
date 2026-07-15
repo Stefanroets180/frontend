@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Truck, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 export default function ConfirmEmailPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
