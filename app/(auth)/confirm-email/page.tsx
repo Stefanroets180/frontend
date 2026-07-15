@@ -12,11 +12,12 @@ export const dynamic = 'force-dynamic';
 export default function ConfirmEmailPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
+    const token = searchParams.get("token");
+    
     if (!token) {
       setStatus("error");
       setMessage("Invalid verification link. Please request a new confirmation email.");

@@ -26,6 +26,8 @@ import { cn } from "@/lib/utils";
 import { authService } from "@/components/auth/auth-service";
 import { persistAuthSession } from "@/lib/auth/normalize-auth-response";
 
+export const dynamic = 'force-dynamic';
+
 type AccountType = "individual" | "business";
 
 export default function RegisterPage() {
