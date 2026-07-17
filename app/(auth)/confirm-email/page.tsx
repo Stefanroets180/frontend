@@ -87,14 +87,14 @@ function ConfirmEmailContent() {
               <div className="space-y-2">
                 <p className="text-sm font-medium">{message}</p>
                 <p className="text-sm text-muted-foreground">
-                  Redirecting to Vehicle Expense Management Application...
+                  Redirecting to dashboard...
                 </p>
               </div>
               <Button
                 onClick={() => router.push("/dashboard")}
                 className="w-full"
               >
-                Go to Application Now
+                Go to Dashboard Now
               </Button>
             </div>
           )}

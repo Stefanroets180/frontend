@@ -136,12 +136,18 @@ export default function RegisterPage() {
                   We've sent a confirmation email to <strong>{formData.email}</strong>
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Click the link in the email to verify your account and access the Vehicle Expense Management Application.
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  The confirmation link will expire in 24 hours.
+                  Click the link in the email to verify your account and get started.
                 </p>
               </div>
+              <Button
+                onClick={() => router.push("/dashboard")}
+                className="w-full h-12 text-base font-semibold"
+              >
+                Go to Dashboard
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                You can also access your dashboard directly after verifying your email.
+              </p>
             </div>
           ) : (
             <>
