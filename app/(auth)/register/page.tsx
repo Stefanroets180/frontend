@@ -139,16 +139,10 @@ export default function RegisterPage() {
                 <p className="text-sm text-muted-foreground">
                   Click the link in the email to verify your account and get started.
                 </p>
+                <p className="text-xs text-muted-foreground mt-4">
+                  Please check your inbox and click the confirmation link to access your dashboard.
+                </p>
               </div>
-              <Button
-                onClick={() => router.push("/dashboard")}
-                className="w-full h-12 text-base font-semibold"
-              >
-                Go to Dashboard
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                You can also access your dashboard directly after verifying your email.
-              </p>
             </div>
           ) : (
             <>
