@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Truck, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
+import { persistAuthSession } from "@/lib/auth/normalize-auth-response";
 
 export const dynamic = 'force-dynamic';
 
@@ -34,6 +35,13 @@ function ConfirmEmailContent() {
         );
 
         if (response.ok) {
+          const data = await response.json();
+          
+          // Persist auth session after successful email verification
+          if (data) {
+            persistAuthSession(data);
+          }
+          
           setStatus("success");
           setMessage("Your email has been verified successfully!");
           

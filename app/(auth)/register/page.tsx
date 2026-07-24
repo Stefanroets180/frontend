@@ -83,7 +83,8 @@ export default function RegisterPage() {
         role: accountType === "business" ? formData.role : undefined,
       });
 
-      persistAuthSession(data);
+      // Do NOT persist auth session - user must verify email first
+      // persistAuthSession(data);
 
       // Show verification message instead of redirecting
       setShowVerificationMessage(true);

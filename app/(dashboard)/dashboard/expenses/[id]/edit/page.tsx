@@ -20,6 +20,7 @@ import { OtherExpenseForm } from "@/components/forms/other-expense-form";
 import { EntryImageManager } from "@/components/entries/entry-image-manager";
 import { ExpenseCategory, Vehicle } from "@/lib/types/database";
 import type { EntryImage } from "@/lib/types/database";
+import { processExpenseImage } from "@/lib/utils/image-converter";
 
 const BACKEND_BASE_URL = API_URL.replace(/\/api\/v1$/, "");
 
@@ -67,10 +68,23 @@ export default function EditExpensePage({
       throw new Error("Expense ID is required to upload receipt images");
     }
 
+    // Compress image before upload
+    let compressedFile = file;
+    try {
+      const conversionResult = await processExpenseImage(file);
+      compressedFile = new File([conversionResult.blob], file.name, {
+        type: conversionResult.format,
+      });
+      console.log(`Image compressed: ${(file.size / 1024).toFixed(1)} KB → ${(conversionResult.convertedSize / 1024).toFixed(1)} KB (${conversionResult.compressionRatio.toFixed(1)}x)`);
+    } catch (error) {
+      console.warn("Image compression failed, using original:", error);
+      compressedFile = file;
+    }
+
     const formData = new FormData();
     formData.append("entryType", "EXPENSE");
     formData.append("entryId", id);
-    formData.append("file", file);
+    formData.append("file", compressedFile);
     if (description) {
       formData.append("description", description);
     }
@@ -93,8 +107,21 @@ export default function EditExpensePage({
     const existing = receiptImages.find((img) => img.id === imageId);
     const description = existing?.description;
 
+    // Compress image before reupload
+    let compressedFile = file;
+    try {
+      const conversionResult = await processExpenseImage(file);
+      compressedFile = new File([conversionResult.blob], file.name, {
+        type: conversionResult.format,
+      });
+      console.log(`Image compressed for reupload: ${(file.size / 1024).toFixed(1)} KB → ${(conversionResult.convertedSize / 1024).toFixed(1)} KB (${conversionResult.compressionRatio.toFixed(1)}x)`);
+    } catch (error) {
+      console.warn("Image compression failed for reupload, using original:", error);
+      compressedFile = file;
+    }
+
     await api.delete(`/entry-images/${imageId}`);
-    await handleReceiptUpload(file, description);
+    await handleReceiptUpload(compressedFile, description);
     await refreshReceiptImages();
   };
 
