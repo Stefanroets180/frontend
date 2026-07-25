@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Truck, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
-import { persistAuthSession } from "@/lib/auth/normalize-auth-response";
+import { persistAuthSession, normalizeAuthResponse } from "@/lib/auth/normalize-auth-response";
 
 export const dynamic = 'force-dynamic';
 
@@ -41,10 +41,14 @@ function ConfirmEmailContent() {
           console.log("Has user object:", !!data.user);
           console.log("Has role:", !!data.role);
           
+          // Normalize auth response before persisting
+          const normalizedAuth = normalizeAuthResponse(data);
+          console.log("Normalized auth:", normalizedAuth);
+          
           // Persist auth session after successful email verification
-          if (data) {
+          if (normalizedAuth) {
             try {
-              persistAuthSession(data);
+              persistAuthSession(normalizedAuth);
               console.log("Auth session persisted successfully");
             } catch (sessionError) {
               console.error("Failed to persist auth session:", sessionError);
