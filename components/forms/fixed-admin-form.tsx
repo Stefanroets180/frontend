@@ -203,6 +203,8 @@ export function FixedAdminForm({ vehicles, onSubmit, initialData, isEditMode = f
     const file = e.target.files?.[0]
     if (!file) return
 
+    console.log('handleImageCapture called, file:', file.name)
+
     setImageError(null)
     setCompressionInfo(null)
 
@@ -212,12 +214,13 @@ export function FixedAdminForm({ vehicles, onSubmit, initialData, isEditMode = f
       return
     }
 
-    // Store original file and show crop modal
+    console.log('Setting crop modal to show')
     setOriginalImageFile(file)
     setShowCropModal(true)
   }
 
   const handleCropConfirm = async (croppedFile: File, originalFile: File) => {
+    console.log('handleCropConfirm called')
     setShowCropModal(false)
     setIsCompressing(true)
 
@@ -243,6 +246,7 @@ export function FixedAdminForm({ vehicles, onSubmit, initialData, isEditMode = f
   }
 
   const handleCropCancel = () => {
+    console.log('handleCropCancel called')
     setShowCropModal(false)
     setOriginalImageFile(null)
   }
@@ -388,6 +392,7 @@ export function FixedAdminForm({ vehicles, onSubmit, initialData, isEditMode = f
       </div>
 
       {/* Image Crop Modal */}
+      {console.log('Render check - originalImageFile:', !!originalImageFile, 'showCropModal:', showCropModal)}
       {originalImageFile && (
         <ImageCropModal
           imageFile={originalImageFile}
