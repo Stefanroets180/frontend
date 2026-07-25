@@ -31,33 +31,28 @@ export function ImageCropModal({
   const imgRef = useRef<HTMLImageElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  console.log('ImageCropModal rendered:', { isOpen, imageFile: imageFile?.name, mode })
-
-  // Set default aspect ratio based on mode
-  const defaultAspect = mode === 'receipt' ? undefined : 16 / 9
-  const minCropWidth = mode === 'odometer' ? 300 : 50
-  const minCropHeight = mode === 'odometer' ? 150 : 50
+  // No aspect ratio locking - fully freeform cropping
+  const minCropWidth = 50
+  const minCropHeight = 50
 
   useEffect(() => {
     if (!imageFile) return
 
-    console.log('Loading image file:', imageFile.name)
     const reader = new FileReader()
     reader.onload = () => {
-      console.log('Image loaded, setting imgSrc')
       setImgSrc(reader.result as string)
     }
     reader.readAsDataURL(imageFile)
 
-    // Set initial crop
+    // Set initial crop - larger area for more flexibility
     setCrop({
       unit: '%',
-      width: mode === 'receipt' ? 80 : 90,
-      height: mode === 'receipt' ? 80 : 50,
-      x: mode === 'receipt' ? 10 : 5,
-      y: mode === 'receipt' ? 10 : 25,
+      width: 90,
+      height: 90,
+      x: 5,
+      y: 5,
     })
-  }, [imageFile, mode])
+  }, [imageFile])
 
   useEffect(() => {
     if (!completedCrop || !imgRef.current) return
@@ -235,9 +230,7 @@ export function ImageCropModal({
                   crop={crop}
                   onChange={(c) => setCrop(c)}
                   onComplete={handleCropComplete}
-                  aspect={defaultAspect}
-                  minWidth={minCropWidth}
-                  minHeight={minCropHeight}
+                  keepSelection
                   className="max-w-full max-h-[60vh]"
                 >
                   <img

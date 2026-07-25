@@ -122,7 +122,6 @@ export function SimpleExpenseForm({
     const file = e.target.files?.[0]
     if (!file) return
 
-    console.log('Image captured:', file.name, file.size)
     setImageError(null)
     setCompressionInfo(null)
 
@@ -133,7 +132,6 @@ export function SimpleExpenseForm({
     }
 
     // Store original file and show crop modal
-    console.log('Setting crop modal to true')
     setOriginalImageFile(file)
     setShowCropModal(true)
   }
