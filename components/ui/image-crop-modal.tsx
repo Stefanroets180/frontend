@@ -31,6 +31,8 @@ export function ImageCropModal({
   const imgRef = useRef<HTMLImageElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
+  console.log('ImageCropModal rendered:', { isOpen, imageFile: imageFile?.name, mode })
+
   // Set default aspect ratio based on mode
   const defaultAspect = mode === 'receipt' ? undefined : 16 / 9
   const minCropWidth = mode === 'odometer' ? 300 : 50
@@ -39,8 +41,10 @@ export function ImageCropModal({
   useEffect(() => {
     if (!imageFile) return
 
+    console.log('Loading image file:', imageFile.name)
     const reader = new FileReader()
     reader.onload = () => {
+      console.log('Image loaded, setting imgSrc')
       setImgSrc(reader.result as string)
     }
     reader.readAsDataURL(imageFile)
@@ -199,7 +203,10 @@ export function ImageCropModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onCancel}>
-      <DialogContent className="max-w-4xl w-full h-[90vh] flex flex-col p-0 overflow-hidden">
+      <DialogContent 
+        className="max-w-4xl w-full h-[90vh] flex flex-col p-0 overflow-hidden"
+        showCloseButton={false}
+      >
         <div className="flex-1 flex flex-col bg-black">
           {/* Header */}
           <div className="flex items-center justify-between p-4 bg-gray-900 border-b border-gray-800">
