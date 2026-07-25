@@ -47,6 +47,7 @@ import {
 import { ReceiptSupportProps } from "./form-types";
 import { EntryImageManager } from "@/components/entries/entry-image-manager";
 import { API_URL } from "@/lib/api/client";
+import { ImageCropModal } from "@/components/ui/image-crop-modal";
 const tyrePurchaseSchema = z.object({
   vehicleId: z.string().optional(),
   date: z.date({ required_error: "Select a date" }),
@@ -135,6 +136,8 @@ export function TyrePurchaseForm({
     compressedSize: number;
   } | null>(null);
   const [enableRotation, setEnableRotation] = useState(false);
+  const [showCropModal, setShowCropModal] = useState(false);
+  const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
 
   const {
     register,
@@ -208,16 +211,23 @@ export function TyrePurchaseForm({
       return;
     }
 
+    // Store original file and show crop modal
+    setOriginalImageFile(file);
+    setShowCropModal(true);
+  };
+
+  const handleCropConfirm = async (croppedFile: File, originalFile: File) => {
+    setShowCropModal(false);
     setIsCompressing(true);
 
     try {
       // Process and compress to AVIF
-      const result = await processReceiptImage(file);
+      const result = await processReceiptImage(croppedFile);
 
       // Create a new File from the blob
       const compressedFile = new File(
         [result.blob],
-        file.name.replace(/\.[^.]+$/, ".avif"),
+        croppedFile.name.replace(/\.[^.]+$/, ".avif"),
         { type: result.format },
       );
 
@@ -235,6 +245,11 @@ export function TyrePurchaseForm({
     }
   };
 
+  const handleCropCancel = () => {
+    setShowCropModal(false);
+    setOriginalImageFile(null);
+  };
+
   const handleFormSubmit = async (data: TyrePurchaseInput) => {
     if (mode === "create" && !receiptImage) {
       setImageError("Receipt image is required");
@@ -250,7 +265,8 @@ export function TyrePurchaseForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+    <>
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       {/* Tyre Details */}
       <Card className="border-border/50">
         <CardHeader className="pb-3">
@@ -717,5 +733,17 @@ export function TyrePurchaseForm({
         </Card>
       )}
     </form>
+
+    {/* Image Crop Modal */}
+    {originalImageFile && (
+      <ImageCropModal
+        imageFile={originalImageFile}
+        mode="receipt"
+        onConfirm={handleCropConfirm}
+        onCancel={handleCropCancel}
+        isOpen={showCropModal}
+      />
+    )}
+    </>
   );
 }
