@@ -36,10 +36,16 @@ function ConfirmEmailContent() {
 
         if (response.ok) {
           const data = await response.json();
+          console.log("Verification response:", data);
           
           // Persist auth session after successful email verification
           if (data) {
-            persistAuthSession(data);
+            try {
+              persistAuthSession(data);
+              console.log("Auth session persisted successfully");
+            } catch (sessionError) {
+              console.error("Failed to persist auth session:", sessionError);
+            }
           }
           
           setStatus("success");
@@ -50,10 +56,13 @@ function ConfirmEmailContent() {
             router.push("/dashboard");
           }, 3000);
         } else {
+          const errorText = await response.text();
+          console.error("Verification failed:", response.status, errorText);
           setStatus("error");
           setMessage("Invalid or expired verification link. Please request a new confirmation email.");
         }
       } catch (error) {
+        console.error("Verification error:", error);
         setStatus("error");
         setMessage("An error occurred while verifying your email. Please try again.");
       }
