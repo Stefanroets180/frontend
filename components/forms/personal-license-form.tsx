@@ -31,6 +31,7 @@ import {
 } from '@/lib/utils/image-converter'
 import { ReceiptSupportProps, ExpenseFormMode } from './form-types'
 import { EntryImageManager } from '@/components/entries/entry-image-manager'
+import { ImageCropModal } from '@/components/ui/image-crop-modal'
 
 // Personal License Types
 export type PersonalLicenseType = 'DRIVERS_LICENSE' | 'PERSONAL_ID_CARD' | 'PDP'
@@ -146,6 +147,8 @@ export function PersonalLicenseForm({
     originalSize: number
     compressedSize: number
   } | null>(null)
+  const [showCropModal, setShowCropModal] = useState(false)
+  const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
 
   const handleImageCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -160,13 +163,20 @@ export function PersonalLicenseForm({
       return
     }
 
+    // Store original file and show crop modal
+    setOriginalImageFile(file)
+    setShowCropModal(true)
+  }
+
+  const handleCropConfirm = async (croppedFile: File, originalFile: File) => {
+    setShowCropModal(false)
     setIsCompressing(true)
 
     try {
-      const result = await processReceiptImage(file)
+      const result = await processReceiptImage(croppedFile)
       const compressedFile = new File(
         [result.blob], 
-        file.name.replace(/\.[^.]+$/, '.avif'),
+        croppedFile.name.replace(/\.[^.]+$/, '.avif'),
         { type: result.format }
       )
 
@@ -181,6 +191,11 @@ export function PersonalLicenseForm({
     } finally {
       setIsCompressing(false)
     }
+  }
+
+  const handleCropCancel = () => {
+    setShowCropModal(false)
+    setOriginalImageFile(null)
   }
 
   const clearImage = () => {
@@ -198,7 +213,8 @@ export function PersonalLicenseForm({
   }
 
   return (
-    <div className="space-y-6">
+    <>
+      <div className="space-y-6">
       {/* Info Alert */}
       <Alert>
         <AlertTriangle className="h-4 w-4" />
@@ -309,7 +325,19 @@ export function PersonalLicenseForm({
           />
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+
+      {/* Image Crop Modal */}
+      {originalImageFile && (
+        <ImageCropModal
+          imageFile={originalImageFile}
+          mode="receipt"
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+          isOpen={showCropModal}
+        />
+      )}
+    </>
   )
 }
 
