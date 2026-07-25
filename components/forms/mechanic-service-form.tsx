@@ -36,6 +36,7 @@ import { ReceiptSupportProps } from './form-types'
 import { EntryImageManager } from '@/components/entries/entry-image-manager'
 import { API_URL } from '@/lib/api/client'
 import { useEffect } from 'react'
+import { ImageCropModal } from '@/components/ui/image-crop-modal'
 
 const mechanicServiceSchema = z.object({
   vehicleId: z.string().optional(),
@@ -80,6 +81,8 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
     originalSize: number
     compressedSize: number
   } | null>(null)
+  const [showCropModal, setShowCropModal] = useState(false)
+  const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
@@ -133,16 +136,23 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
       return
     }
 
+    // Store original file and show crop modal
+    setOriginalImageFile(file)
+    setShowCropModal(true)
+  }
+
+  const handleCropConfirm = async (croppedFile: File, originalFile: File) => {
+    setShowCropModal(false)
     setIsCompressing(true)
 
     try {
       // Process and compress to AVIF
-      const result = await processReceiptImage(file)
+      const result = await processReceiptImage(croppedFile)
       
       // Create a new File from the blob
       const compressedFile = new File(
         [result.blob], 
-        file.name.replace(/\.[^.]+$/, '.avif'),
+        croppedFile.name.replace(/\.[^.]+$/, '.avif'),
         { type: result.format }
       )
 
@@ -160,6 +170,11 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
     }
   }
 
+  const handleCropCancel = () => {
+    setShowCropModal(false)
+    setOriginalImageFile(null)
+  }
+
   const handleFormSubmit = async (data: MechanicServiceInput) => {
     if (mode === 'create' && !invoiceImage) {
       setImageError('Invoice image is required')
@@ -175,7 +190,8 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
   }
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+    <>
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       {/* Service Details */}
       <Card className="border-border/50">
         <CardHeader className="pb-3">
@@ -538,5 +554,17 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
         </Card>
       )}
     </form>
+
+    {/* Image Crop Modal */}
+    {originalImageFile && (
+      <ImageCropModal
+        imageFile={originalImageFile}
+        mode="receipt"
+        onConfirm={handleCropConfirm}
+        onCancel={handleCropCancel}
+        isOpen={showCropModal}
+      />
+    )}
+    </>
   )
 }
