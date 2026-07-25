@@ -36,23 +36,16 @@ function ConfirmEmailContent() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Verification response:", data);
-          console.log("Response keys:", Object.keys(data));
-          console.log("Has user object:", !!data.user);
-          console.log("Has role:", !!data.role);
           
           // Normalize auth response before persisting
           const normalizedAuth = normalizeAuthResponse(data);
-          console.log("Normalized auth:", normalizedAuth);
           
           // Persist auth session after successful email verification
           if (normalizedAuth) {
             try {
               persistAuthSession(normalizedAuth);
-              console.log("Auth session persisted successfully");
             } catch (sessionError) {
               console.error("Failed to persist auth session:", sessionError);
-              console.error("Session error details:", sessionError instanceof Error ? sessionError.message : String(sessionError));
             }
           }
           
