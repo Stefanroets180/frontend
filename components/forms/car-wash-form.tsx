@@ -35,6 +35,7 @@ import { ReceiptSupportProps } from './form-types'
 import { EntryImageManager } from '@/components/entries/entry-image-manager'
 import { API_URL } from '@/lib/api/client'
 import { useEffect } from 'react'
+import { ImageCropModal } from '@/components/ui/image-crop-modal'
 
 const carWashSchema = z.object({
   vehicleId: z.string().optional(),
@@ -72,6 +73,8 @@ export function CarWashForm({ vehicles, onSubmit, initialData, mode, existingIma
     originalSize: number
     compressedSize: number
   } | null>(null)
+  const [showCropModal, setShowCropModal] = useState(false)
+  const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
@@ -114,14 +117,21 @@ export function CarWashForm({ vehicles, onSubmit, initialData, mode, existingIma
       return
     }
 
+    // Store original file and show crop modal
+    setOriginalImageFile(file)
+    setShowCropModal(true)
+  }
+
+  const handleCropConfirm = async (croppedFile: File, originalFile: File) => {
+    setShowCropModal(false)
     setIsCompressing(true)
 
     try {
-      const result = await processReceiptImage(file)
+      const result = await processReceiptImage(croppedFile)
       
       const compressedFile = new File(
         [result.blob], 
-        file.name.replace(/\.[^.]+$/, '.avif'),
+        croppedFile.name.replace(/\.[^.]+$/, '.avif'),
         { type: result.format }
       )
 
@@ -139,6 +149,11 @@ export function CarWashForm({ vehicles, onSubmit, initialData, mode, existingIma
     }
   }
 
+  const handleCropCancel = () => {
+    setShowCropModal(false)
+    setOriginalImageFile(null)
+  }
+
   const handleFormSubmit = async (data: CarWashInput) => {
     if (mode === 'create' && !receiptImage) {
       setImageError('Receipt image is required')
@@ -154,7 +169,8 @@ export function CarWashForm({ vehicles, onSubmit, initialData, mode, existingIma
   }
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+    <>
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       {/* Car Wash Details */}
       <Card className="border-border/50">
         <CardHeader className="pb-3">
@@ -415,5 +431,17 @@ export function CarWashForm({ vehicles, onSubmit, initialData, mode, existingIma
         </Card>
       )}
     </form>
+
+    {/* Image Crop Modal */}
+    {originalImageFile && (
+      <ImageCropModal
+        imageFile={originalImageFile}
+        mode="receipt"
+        onConfirm={handleCropConfirm}
+        onCancel={handleCropCancel}
+        isOpen={showCropModal}
+      />
+    )}
+    </>
   )
 }
