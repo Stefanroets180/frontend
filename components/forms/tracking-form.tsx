@@ -35,6 +35,7 @@ import {
 import { ReceiptSupportProps } from "./form-types";
 import { API_URL } from "@/lib/api/client";
 import { useEffect } from "react";
+import { ImageCropModal } from "@/components/ui/image-crop-modal";
 
 const trackingSchema = z.object({
   vehicleId: z.string().optional(),
@@ -89,6 +90,8 @@ export function TrackingForm({
     originalSize: number;
     compressedSize: number;
   } | null>(null);
+  const [showCropModal, setShowCropModal] = useState(false);
+  const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
@@ -141,12 +144,18 @@ export function TrackingForm({
       return;
     }
 
-    setImageError(null);
+    // Store original file and show crop modal
+    setOriginalImageFile(file);
+    setShowCropModal(true);
+  };
+
+  const handleCropConfirm = async (croppedFile: File, originalFile: File) => {
+    setShowCropModal(false);
     setIsCompressing(true);
 
     try {
-      const processed = await processReceiptImage(file);
-      const processedFile = new File([processed.blob], file.name, {
+      const processed = await processReceiptImage(croppedFile);
+      const processedFile = new File([processed.blob], croppedFile.name, {
         type: processed.format,
       });
       setReceiptImage(processedFile);
@@ -160,6 +169,11 @@ export function TrackingForm({
     } finally {
       setIsCompressing(false);
     }
+  };
+
+  const handleCropCancel = () => {
+    setShowCropModal(false);
+    setOriginalImageFile(null);
   };
 
   const clearImage = () => {
@@ -183,15 +197,16 @@ export function TrackingForm({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MapPin className="h-5 w-5 text-violet-500" />
-          Vehicle Tracking Subscription
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-violet-500" />
+            Vehicle Tracking Subscription
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           {/* Vehicle */}
           {mode === "create" ? (
             <div className="space-y-2">
@@ -602,5 +617,17 @@ export function TrackingForm({
         </form>
       </CardContent>
     </Card>
+
+    {/* Image Crop Modal */}
+    {originalImageFile && (
+      <ImageCropModal
+        imageFile={originalImageFile}
+        mode="receipt"
+        onConfirm={handleCropConfirm}
+        onCancel={handleCropCancel}
+        isOpen={showCropModal}
+      />
+    )}
+    </>
   );
 }
