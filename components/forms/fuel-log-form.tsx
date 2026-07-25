@@ -27,6 +27,7 @@ import { api } from '@/lib/api/client'
 import { ReceiptSupportProps } from './form-types'
 import { EntryImageManager } from '@/components/entries/entry-image-manager'
 import { API_URL } from '@/lib/api/client'
+import { ImageCropModal } from '@/components/ui/image-crop-modal'
 
 const fuelLogSchema = z.object({
   vehicleId: z.string().optional(),
@@ -94,6 +95,8 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
   const [lastOdometerReadings, setLastOdometerReadings] = useState<Record<string, number>>({})
   const [gpsPosition, setGpsPosition] = useState<GpsPosition | null>(null)
   const [isCapturingGps, setIsCapturingGps] = useState(false)
+  const [showCropModal, setShowCropModal] = useState(false)
+  const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
@@ -195,9 +198,21 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
   const handleImageCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      setReceiptImage(file)
-      setPreviewUrl(URL.createObjectURL(file))
+      // Store original file and show crop modal
+      setOriginalImageFile(file)
+      setShowCropModal(true)
     }
+  }
+
+  const handleCropConfirm = (croppedFile: File, originalFile: File) => {
+    setShowCropModal(false)
+    setReceiptImage(croppedFile)
+    setPreviewUrl(URL.createObjectURL(croppedFile))
+  }
+
+  const handleCropCancel = () => {
+    setShowCropModal(false)
+    setOriginalImageFile(null)
   }
 
   const captureGps = async () => {
@@ -605,6 +620,17 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
             )}
           </CardContent>
         </Card>
+      )}
+
+      {/* Image Crop Modal */}
+      {originalImageFile && (
+        <ImageCropModal
+          imageFile={originalImageFile}
+          mode="receipt"
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+          isOpen={showCropModal}
+        />
       )}
     </form>
   )
