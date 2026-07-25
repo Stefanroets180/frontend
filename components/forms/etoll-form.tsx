@@ -32,6 +32,7 @@ import {
   formatFileSize,
 } from "@/lib/utils/image-converter";
 import { ReceiptSupportProps } from "./form-types";
+import { ImageCropModal } from "@/components/ui/image-crop-modal";
 
 const etollSchema = z.object({
   vehicleId: z.string().min(1, "Select a vehicle"),
@@ -86,6 +87,8 @@ export function ETollForm({
     originalSize: number;
     compressedSize: number;
   } | null>(null);
+  const [showCropModal, setShowCropModal] = useState(false);
+  const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
@@ -129,12 +132,18 @@ export function ETollForm({
       return;
     }
 
-    setImageError(null);
+    // Store original file and show crop modal
+    setOriginalImageFile(file);
+    setShowCropModal(true);
+  };
+
+  const handleCropConfirm = async (croppedFile: File, originalFile: File) => {
+    setShowCropModal(false);
     setIsCompressing(true);
 
     try {
-      const processed = await processReceiptImage(file);
-      const processedFile = new File([processed.blob], file.name, {
+      const processed = await processReceiptImage(croppedFile);
+      const processedFile = new File([processed.blob], croppedFile.name, {
         type: processed.format,
       });
       setReceiptImage(processedFile);
@@ -148,6 +157,11 @@ export function ETollForm({
     } finally {
       setIsCompressing(false);
     }
+  };
+
+  const handleCropCancel = () => {
+    setShowCropModal(false);
+    setOriginalImageFile(null);
   };
 
   const clearImage = () => {
@@ -176,15 +190,16 @@ export function ETollForm({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <CreditCard className="h-5 w-5 text-amber-500" />
-          E-Toll Payment
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CreditCard className="h-5 w-5 text-amber-500" />
+            E-Toll Payment
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           {/* Vehicle */}
           <div className="space-y-2">
             <Label htmlFor="vehicleId">Vehicle</Label>
@@ -510,5 +525,17 @@ export function ETollForm({
         </form>
       </CardContent>
     </Card>
+
+    {/* Image Crop Modal */}
+    {originalImageFile && (
+      <ImageCropModal
+        imageFile={originalImageFile}
+        mode="receipt"
+        onConfirm={handleCropConfirm}
+        onCancel={handleCropCancel}
+        isOpen={showCropModal}
+      />
+    )}
+    </>
   );
 }
