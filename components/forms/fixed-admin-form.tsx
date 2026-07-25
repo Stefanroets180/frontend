@@ -40,6 +40,7 @@ import {
   validateImageFile, 
   formatFileSize 
 } from '@/lib/utils/image-converter'
+import { ImageCropModal } from '@/components/ui/image-crop-modal'
 
 // ============================================================================
 // SCHEMAS FOR EACH EXPENSE TYPE
@@ -195,48 +196,55 @@ export function FixedAdminForm({ vehicles, onSubmit, initialData, isEditMode = f
     originalSize: number
     compressedSize: number
   } | null>(null)
+  const [showCropModal, setShowCropModal] = useState(false)
+  const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
 
   const handleImageCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    console.log('Image capture started:', file.name, file.type, file.size)
     setImageError(null)
     setCompressionInfo(null)
 
     const validation = validateImageFile(file)
-    console.log('Validation result:', validation)
     if (!validation.valid) {
       setImageError(validation.error || 'Invalid file')
       return
     }
 
+    // Store original file and show crop modal
+    setOriginalImageFile(file)
+    setShowCropModal(true)
+  }
+
+  const handleCropConfirm = async (croppedFile: File, originalFile: File) => {
+    setShowCropModal(false)
     setIsCompressing(true)
 
     try {
-      console.log('Starting image compression...')
-      const result = await processReceiptImage(file)
-      console.log('Compression result:', result)
+      const result = await processReceiptImage(croppedFile)
       const compressedFile = new File(
         [result.blob], 
-        file.name.replace(/\.[^.]+$/, '.avif'),
+        croppedFile.name.replace(/\.[^.]+$/, '.avif'),
         { type: result.format }
       )
 
-      console.log('Setting receipt image state...')
       setReceiptImage(compressedFile)
       setPreviewUrl(URL.createObjectURL(result.blob))
       setCompressionInfo({
         originalSize: result.originalSize,
         compressedSize: result.convertedSize,
       })
-      console.log('Receipt image state set successfully')
     } catch (error) {
-      console.error('Image compression error:', error)
       setImageError(`Failed to process image: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`)
     } finally {
       setIsCompressing(false)
     }
+  }
+
+  const handleCropCancel = () => {
+    setShowCropModal(false)
+    setOriginalImageFile(null)
   }
 
   const clearImage = () => {
@@ -246,7 +254,8 @@ export function FixedAdminForm({ vehicles, onSubmit, initialData, isEditMode = f
   }
 
   return (
-    <div className="space-y-6">
+    <>
+      <div className="space-y-6">
       {/* Expense Type Tabs */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as FixedExpenseType)}>
         <TabsList className="grid grid-cols-3 lg:grid-cols-6 h-auto gap-1 bg-muted/50 p-1">
@@ -376,7 +385,19 @@ export function FixedAdminForm({ vehicles, onSubmit, initialData, isEditMode = f
           />
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+
+      {/* Image Crop Modal */}
+      {originalImageFile && (
+        <ImageCropModal
+          imageFile={originalImageFile}
+          mode="receipt"
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+          isOpen={showCropModal}
+        />
+      )}
+    </>
   )
 }
 

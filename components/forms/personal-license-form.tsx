@@ -154,8 +154,6 @@ export function PersonalLicenseForm({
     const file = e.target.files?.[0]
     if (!file) return
 
-    console.log('handleImageCapture called, file:', file.name)
-
     setImageError(null)
     setCompressionInfo(null)
 
@@ -165,13 +163,12 @@ export function PersonalLicenseForm({
       return
     }
 
-    console.log('Setting crop modal to show')
+    // Store original file and show crop modal
     setOriginalImageFile(file)
     setShowCropModal(true)
   }
 
   const handleCropConfirm = async (croppedFile: File, originalFile: File) => {
-    console.log('handleCropConfirm called')
     setShowCropModal(false)
     setIsCompressing(true)
 
@@ -197,7 +194,6 @@ export function PersonalLicenseForm({
   }
 
   const handleCropCancel = () => {
-    console.log('handleCropCancel called')
     setShowCropModal(false)
     setOriginalImageFile(null)
   }
@@ -332,7 +328,6 @@ export function PersonalLicenseForm({
       </div>
 
       {/* Image Crop Modal */}
-      {console.log('Render check - originalImageFile:', !!originalImageFile, 'showCropModal:', showCropModal)}
       {originalImageFile && (
         <ImageCropModal
           imageFile={originalImageFile}
