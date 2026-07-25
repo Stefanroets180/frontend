@@ -27,6 +27,7 @@ import {
   validateImageFile,
   formatFileSize
 } from '@/lib/utils/image-converter'
+import { ImageCropModal } from '@/components/ui/image-crop-modal'
 
 const simpleExpenseSchema = z.object({
   vehicleId: z.string().min(1, 'Select a vehicle'),
@@ -93,6 +94,8 @@ export function SimpleExpenseForm({
     originalSize: number
     compressedSize: number
   } | null>(null)
+  const [showCropModal, setShowCropModal] = useState(false)
+  const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
 
   const {
     register,
@@ -128,13 +131,20 @@ export function SimpleExpenseForm({
       return
     }
 
+    // Store original file and show crop modal
+    setOriginalImageFile(file)
+    setShowCropModal(true)
+  }
+
+  const handleCropConfirm = async (croppedFile: File, originalFile: File) => {
+    setShowCropModal(false)
     setIsCompressing(true)
 
     try {
-      const result = await processReceiptImage(file)
+      const result = await processReceiptImage(croppedFile)
       const compressedFile = new File(
         [result.blob],
-        file.name.replace(/\.[^.]+$/, '.avif'),
+        croppedFile.name.replace(/\.[^.]+$/, '.avif'),
         { type: result.format }
       )
 
@@ -150,6 +160,11 @@ export function SimpleExpenseForm({
     } finally {
       setIsCompressing(false)
     }
+  }
+
+  const handleCropCancel = () => {
+    setShowCropModal(false)
+    setOriginalImageFile(null)
   }
 
   const clearImage = () => {
@@ -363,6 +378,17 @@ export function SimpleExpenseForm({
       >
         {isSubmitting ? 'Saving...' : `Save ${categoryLabel}`}
       </Button>
+
+      {/* Image Crop Modal */}
+      {originalImageFile && (
+        <ImageCropModal
+          imageFile={originalImageFile}
+          mode="receipt"
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+          isOpen={showCropModal}
+        />
+      )}
     </form>
   )
 }

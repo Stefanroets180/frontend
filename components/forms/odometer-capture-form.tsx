@@ -22,6 +22,7 @@ import {
 import { cn } from '@/lib/utils'
 import { OdometerReadingType, getTaxYearReadingWindow } from '@/lib/types/database'
 import { API_URL } from '@/lib/api/client'
+import { ImageCropModal } from '@/components/ui/image-crop-modal'
 
 interface OdometerCaptureFormProps {
   vehicleId: string
@@ -67,6 +68,8 @@ export function OdometerCaptureForm({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [gpsError, setGpsError] = useState<string | null>(null)
+  const [showCropModal, setShowCropModal] = useState(false)
+  const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
 
   const { currentTaxYear } = getTaxYearReadingWindow()
 
@@ -165,12 +168,19 @@ export function OdometerCaptureForm({
     const file = e.target.files?.[0]
     if (!file) return
 
+    // Store original file and show crop modal
+    setOriginalImageFile(file)
+    setShowCropModal(true)
+  }, [])
+
+  const handleCropConfirm = async (croppedFile: File, originalFile: File) => {
+    setShowCropModal(false)
     setIsCapturing(true)
     setError(null)
 
     try {
       // Compress image
-      const compressed = await compressImage(file)
+      const compressed = await compressImage(croppedFile)
       setImageData(compressed)
       setStep('confirm')
     } catch (err) {
@@ -179,7 +189,12 @@ export function OdometerCaptureForm({
     } finally {
       setIsCapturing(false)
     }
-  }, [compressImage])
+  }
+
+  const handleCropCancel = () => {
+    setShowCropModal(false)
+    setOriginalImageFile(null)
+  }
 
   // Handle retake
   const handleRetake = useCallback(() => {
@@ -474,6 +489,17 @@ export function OdometerCaptureForm({
       {/* Hidden canvas for image processing */}
       <canvas ref={canvasRef} className="hidden" />
       <video ref={videoRef} className="hidden" />
+
+      {/* Image Crop Modal */}
+      {originalImageFile && (
+        <ImageCropModal
+          imageFile={originalImageFile}
+          mode="odometer"
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+          isOpen={showCropModal}
+        />
+      )}
     </div>
   )
 }
