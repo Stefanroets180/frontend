@@ -37,6 +37,9 @@ function ConfirmEmailContent() {
         if (response.ok) {
           const data = await response.json();
           console.log("Verification response:", data);
+          console.log("Response keys:", Object.keys(data));
+          console.log("Has user object:", !!data.user);
+          console.log("Has role:", !!data.role);
           
           // Persist auth session after successful email verification
           if (data) {
@@ -45,6 +48,7 @@ function ConfirmEmailContent() {
               console.log("Auth session persisted successfully");
             } catch (sessionError) {
               console.error("Failed to persist auth session:", sessionError);
+              console.error("Session error details:", sessionError.message);
             }
           }
           
