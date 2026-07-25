@@ -52,7 +52,7 @@ function ConfirmEmailContent() {
               console.log("Auth session persisted successfully");
             } catch (sessionError) {
               console.error("Failed to persist auth session:", sessionError);
-              console.error("Session error details:", sessionError.message);
+              console.error("Session error details:", sessionError instanceof Error ? sessionError.message : String(sessionError));
             }
           }
           
