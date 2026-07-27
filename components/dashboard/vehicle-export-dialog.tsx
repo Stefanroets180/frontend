@@ -186,6 +186,7 @@ export function VehicleExportDialog({
       toast.message("Use Download, then share the file from your device");
       return;
     }
+    setLoading("share");
     try {
       // Map frontend format to backend format
       const backendFormat = format === "xls" ? "EXCEL" : format.toUpperCase();
@@ -243,7 +244,17 @@ export function VehicleExportDialog({
           toast.success("Export downloaded (share not supported in this context)");
           setOpen(false);
         } else {
-          throw shareError;
+          // For other share errors, still download the file
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = file.name;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+          toast.error("Share failed, file downloaded instead");
+          setOpen(false);
         }
       }
     } catch (e) {
@@ -252,6 +263,8 @@ export function VehicleExportDialog({
       if (error.name !== "AbortError") {
         toast.error(`Share failed: ${error.message || "Share not available — try Download instead"}`);
       }
+    } finally {
+      setLoading(null);
     }
   };
 
