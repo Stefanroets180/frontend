@@ -10,6 +10,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { AlertCircle, Camera, CheckCircle2, Shield } from "lucide-react"
 import { apiFormFetch } from "@/lib/api/client"
+import { ImageCropModal } from "@/components/ui/image-crop-modal"
+import { processReceiptImage, validateImageFile } from "@/lib/utils/image-converter"
 
 export default function OdometerCheckPage() {
   const router = useRouter()
@@ -21,15 +23,49 @@ export default function OdometerCheckPage() {
   const [odometerValue, setOdometerValue] = useState("")
   const [photo, setPhoto] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [showCropModal, setShowCropModal] = useState(false)
+  const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    setPhoto(file)
-    const reader = new FileReader()
-    reader.onloadend = () => setPhotoPreview(reader.result as string)
-    reader.readAsDataURL(file)
+
+    const validation = validateImageFile(file)
+    if (!validation.valid) {
+      setError(validation.error || "Invalid image file")
+      return
+    }
+
+    // Store original file and show crop modal
+    setOriginalImageFile(file)
+    setShowCropModal(true)
+  }
+
+  const handleCropConfirm = async (croppedFile: File, originalFile: File) => {
+    setShowCropModal(false)
+    setError(null)
+
+    try {
+      const result = await processReceiptImage(croppedFile)
+      const compressedFile = new File(
+        [result.blob],
+        croppedFile.name.replace(/\.[^.]+$/, '.avif'),
+        { type: result.format }
+      )
+
+      setPhoto(compressedFile)
+      const reader = new FileReader()
+      reader.onloadend = () => setPhotoPreview(reader.result as string)
+      reader.readAsDataURL(result.blob)
+    } catch (err) {
+      setError(`Failed to process image: ${err instanceof Error ? err.message : 'Unknown error'}`)
+    }
+  }
+
+  const handleCropCancel = () => {
+    setShowCropModal(false)
+    setOriginalImageFile(null)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -213,6 +249,17 @@ export default function OdometerCheckPage() {
         Your photo is stored securely. SARS logbook compliance requires this
         photo to verify your opening odometer at the start of each tax year.
       </p>
+
+      {/* Image Crop Modal */}
+      {originalImageFile && (
+        <ImageCropModal
+          imageFile={originalImageFile}
+          mode="odometer"
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+          isOpen={showCropModal}
+        />
+      )}
     </div>
   )
 }
