@@ -186,7 +186,6 @@ export function VehicleExportDialog({
       toast.message("Use Download, then share the file from your device");
       return;
     }
-    setLoading("share");
     try {
       // Map frontend format to backend format
       const backendFormat = format === "xls" ? "EXCEL" : format.toUpperCase();
@@ -218,20 +217,41 @@ export function VehicleExportDialog({
         `vehicle-export-${vehicleLabel.replace(/\s+/g, "-")}.${ext}`,
         { type: blob.type },
       );
-      await navigator.share({
-        title: `Vehicle Export — ${vehicleLabel}`,
-        text: `Tax year ${taxYear}/${Number(taxYear) + 1} vehicle data export`,
-        files: [file],
-      });
-      setOpen(false);
+
+      // Try to share immediately
+      try {
+        await navigator.share({
+          title: `Vehicle Export — ${vehicleLabel}`,
+          text: `Tax year ${taxYear}/${Number(taxYear) + 1} vehicle data export`,
+          files: [file],
+        });
+        setOpen(false);
+        toast.success("Export shared successfully");
+      } catch (shareError) {
+        const error = shareError as Error;
+        console.error("Share error:", error);
+        // If share fails due to gesture requirement, download instead
+        if (error.name === "NotAllowedError" || error.message.includes("user gesture")) {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = file.name;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+          toast.success("Export downloaded (share not supported in this context)");
+          setOpen(false);
+        } else {
+          throw shareError;
+        }
+      }
     } catch (e) {
       const error = e as Error;
       console.error("Share error:", error);
       if (error.name !== "AbortError") {
         toast.error(`Share failed: ${error.message || "Share not available — try Download instead"}`);
       }
-    } finally {
-      setLoading(null);
     }
   };
 
