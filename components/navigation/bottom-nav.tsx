@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -45,6 +46,22 @@ export function BottomNav() {
   const { dateRange } = getSarsTaxYear()
   const role = user?.role ?? UserRole.DRIVER
   const navItems = getNavItems(role)
+  const [isLandscape, setIsLandscape] = useState(false)
+
+  useEffect(() => {
+    const checkOrientation = () => {
+      setIsLandscape(window.innerWidth > window.innerHeight)
+    }
+
+    checkOrientation()
+    window.addEventListener('resize', checkOrientation)
+    window.addEventListener('orientationchange', checkOrientation)
+
+    return () => {
+      window.removeEventListener('resize', checkOrientation)
+      window.removeEventListener('orientationchange', checkOrientation)
+    }
+  }, [])
 
   return (
     <>
@@ -73,13 +90,15 @@ export function BottomNav() {
           })}
         </div>
       </nav>
-      {/* SARS Tax Year indicator for mobile */}
-      <div className="fixed bottom-16 left-0 right-0 z-40 md:hidden px-4">
-        <div className="bg-primary/5 rounded-lg px-3 py-2 border border-primary/10">
-          <p className="text-xs font-medium text-primary">SARS Tax Year</p>
-          <p className="text-xs text-muted-foreground">{dateRange}</p>
+      {/* SARS Tax Year indicator for mobile landscape mode only */}
+      {isLandscape && (
+        <div className="fixed bottom-16 left-0 right-0 z-40 px-4 md:hidden">
+          <div className="bg-primary/5 rounded-lg px-3 py-2 border border-primary/10">
+            <p className="text-xs font-medium text-primary">SARS Tax Year</p>
+            <p className="text-xs text-muted-foreground">{dateRange}</p>
+          </div>
         </div>
-      </div>
+      )}
     </>
   )
 }
