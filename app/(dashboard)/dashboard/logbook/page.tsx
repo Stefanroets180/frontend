@@ -280,7 +280,7 @@ export default function LogbookPage() {
             <div>
               <h1 className="text-2xl font-bold">SARS Logbook</h1>
               <p className="text-sm text-muted-foreground">
-                Tax Year 2024/2025
+                Tax Year 2026/2027
               </p>
             </div>
             <TripExportDialog

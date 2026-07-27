@@ -147,7 +147,7 @@ export function SidebarNav() {
         <div className="rounded-xl bg-primary/5 p-3">
           <p className="text-xs font-medium text-primary">SARS Tax Year</p>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Mar 2024 - Feb 2025
+            Mar 2026 - Feb 2027
           </p>
           <div className="mt-2 h-1.5 rounded-full bg-muted overflow-hidden">
             <div
