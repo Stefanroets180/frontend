@@ -225,8 +225,10 @@ export function VehicleExportDialog({
       });
       setOpen(false);
     } catch (e) {
-      if ((e as Error).name !== "AbortError") {
-        toast.error("Share not available — try Download instead");
+      const error = e as Error;
+      console.error("Share error:", error);
+      if (error.name !== "AbortError") {
+        toast.error(`Share failed: ${error.message || "Share not available — try Download instead"}`);
       }
     } finally {
       setLoading(null);
