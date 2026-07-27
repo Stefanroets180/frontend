@@ -86,7 +86,7 @@ export function SidebarNav() {
       </div>
 
       {/* Navigation items */}
-      <div className="flex flex-col gap-1 p-3 flex-1">
+      <div className="flex flex-col gap-1 p-3 flex-1 overflow-y-auto">
         <p className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
           Menu
         </p>
