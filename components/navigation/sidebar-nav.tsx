@@ -13,7 +13,7 @@ import {
   ShieldCheck,
   User,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, getSarsTaxYear } from "@/lib/utils";
 import { useAuth } from "@/lib/contexts/auth-context";
 import { UserRole } from "@/lib/types/database";
 
@@ -65,6 +65,7 @@ function roleBadge(role: UserRole) {
 export function SidebarNav() {
   const pathname = usePathname();
   const { user } = useAuth();
+  const { dateRange } = getSarsTaxYear();
   const role = user?.role ?? UserRole.DRIVER;
   const navItems = getNavItems(role);
   const badge = roleBadge(role);
@@ -147,7 +148,7 @@ export function SidebarNav() {
         <div className="rounded-xl bg-primary/5 p-3">
           <p className="text-xs font-medium text-primary">SARS Tax Year</p>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Mar 2026 - Feb 2027
+            {dateRange}
           </p>
           <div className="mt-2 h-1.5 rounded-full bg-muted overflow-hidden">
             <div

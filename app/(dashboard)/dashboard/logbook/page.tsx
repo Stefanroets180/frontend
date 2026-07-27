@@ -27,7 +27,7 @@ import {
   Lock,
 } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, getSarsTaxYear } from "@/lib/utils";
 import { EntryActions } from "@/components/entries";
 import { VehicleExportDialog } from "@/components/dashboard/vehicle-export-dialog";
 import { TripExportDialog } from "@/components/dashboard/trip-export-dialog";
@@ -56,6 +56,7 @@ const emptySummary = {
 
 export default function LogbookPage() {
   const router = useRouter();
+  const { taxYear } = getSarsTaxYear();
   const [selectedMonth, setSelectedMonth] = useState("all");
   const [selectedVehicle, setSelectedVehicle] = useState<string>("");
   const [filterPurpose, setFilterPurpose] = useState<
@@ -280,7 +281,7 @@ export default function LogbookPage() {
             <div>
               <h1 className="text-2xl font-bold">SARS Logbook</h1>
               <p className="text-sm text-muted-foreground">
-                Tax Year 2026/2027
+                Tax Year {taxYear}
               </p>
             </div>
             <TripExportDialog
