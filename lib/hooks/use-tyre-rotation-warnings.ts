@@ -55,7 +55,7 @@ export function useTyreRotationWarnings(): UseTyreRotationWarningsResult {
       const rows = Array.isArray(data) ? data : []
       const mapped = rows
         .map((r: Record<string, unknown>) => mapWarning(r))
-        .filter((w) => ['UPCOMING', 'WARNING', 'CRITICAL'].includes(w.rotationStatus))
+        .filter((w) => ['WARNING', 'CRITICAL'].includes(w.rotationStatus))
       setWarnings(mapped)
     } catch (e) {
       setWarnings([])
