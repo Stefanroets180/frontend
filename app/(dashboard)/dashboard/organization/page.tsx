@@ -140,12 +140,14 @@ export default function OrganizationPage() {
     setIsInviting(true)
     setInviteError('')
     try {
+      const inviterName = user ? `${user.firstName} ${user.lastName}` : 'Administrator'
       const { data } = await api.post('/organization/users', {
         email: inviteEmail,
         password: invitePassword,
         firstName: inviteEmail.split('@')[0],
         lastName: 'User',
         role: inviteRole,
+        inviterName: inviterName,
       })
 
       setTeamMembers((prev) => [
