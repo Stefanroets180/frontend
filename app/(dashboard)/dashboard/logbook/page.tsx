@@ -441,7 +441,10 @@ export default function LogbookPage() {
 
         {/* Add Trip Button */}
         <div className="pt-2">
-          <Link href="/dashboard/logbook/new" className="block w-full">
+          <Link 
+            href={selectedVehicle ? `/dashboard/logbook/new?vehicleId=${selectedVehicle}` : "/dashboard/logbook/new"} 
+            className="block w-full"
+          >
             <Button size="lg" className="w-full gap-2">
               <Plus className="h-5 w-5" />
               Add New Trip

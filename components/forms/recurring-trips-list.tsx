@@ -49,16 +49,16 @@ export default function RecurringTripsList({ vehicleId }: RecurringTripsListProp
       <h3 className="font-semibold mb-4">Recurring Work Trips</h3>
       <div className="space-y-2">
         {trips.map(trip => (
-          <div key={trip.id} className="bg-gray-50 p-3 rounded flex justify-between">
+          <div key={trip.id} className="bg-muted p-3 rounded flex justify-between dark:bg-muted/50">
             <div>
               <p className="font-medium">{trip.startLocation} → {trip.endLocation}</p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 Days: {trip.recurrenceDays} | Purpose: {trip.purpose}
               </p>
             </div>
             <button 
               onClick={() => handleDelete(trip.id)}
-              className="text-red-600 text-sm"
+              className="text-red-600 text-sm dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
             >
               Delete
             </button>
