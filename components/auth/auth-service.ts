@@ -19,7 +19,9 @@ export interface RegisterRequest {
   role?: 'ADMIN' | 'MANAGER' | 'DRIVER'
 }
 
-export type AuthResponse = NormalizedAuthResponse
+export interface AuthResponse extends NormalizedAuthResponse {
+  verificationToken?: string
+}
 
 export const authService = {
   login: async (credentials: LoginRequest): Promise<AuthResponse> => {

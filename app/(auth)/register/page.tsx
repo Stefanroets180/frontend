@@ -48,6 +48,20 @@ export default function RegisterPage() {
     organizationType: "SOLE_PROPRIETOR",
     role: "ADMIN" as "ADMIN" | "MANAGER" | "DRIVER",
   });
+  const [verificationToken, setVerificationToken] = useState<string | null>(null);
+  const [isYahooEmail, setIsYahooEmail] = useState(false);
+
+  const isYahooAddress = (email: string) => {
+    return email.toLowerCase().endsWith('@yahoo.com') || 
+           email.toLowerCase().endsWith('@yahoo.co.uk') ||
+           email.toLowerCase().endsWith('@yahoo.co.za');
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const email = e.target.value;
+    setFormData({ ...formData, email });
+    setIsYahooEmail(isYahooAddress(email));
+  };
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -82,6 +96,11 @@ export default function RegisterPage() {
         organizationMode: accountType === "business" ? "FLEET" : "SOLO",
         role: accountType === "business" ? formData.role : undefined,
       });
+
+      // Store verification token for on-screen display
+      if (data.verificationToken) {
+        setVerificationToken(data.verificationToken);
+      }
 
       // Do NOT persist auth session - user must verify email first
       // persistAuthSession(data);
@@ -139,6 +158,24 @@ export default function RegisterPage() {
                 <p className="text-sm text-muted-foreground">
                   Click the link in the email to verify your account and get started.
                 </p>
+                {isYahooEmail && verificationToken && (
+                  <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p className="text-sm font-medium text-yellow-800 mb-2">
+                      Yahoo Mail Backup Verification
+                    </p>
+                    <p className="text-xs text-yellow-700 mb-3">
+                      Since you're using Yahoo Mail, the email may be blocked. Click the button below to verify your account directly:
+                    </p>
+                    <a
+                      href={`https://vehicle-expense-and-sa-fleet-manage.vercel.app/confirm-email?token=${verificationToken}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-lg text-sm"
+                    >
+                      Verify Account Now
+                    </a>
+                  </div>
+                )}
                 <p className="text-xs text-muted-foreground mt-4">
                   Please check your inbox and click the confirmation link to access your dashboard.
                 </p>
@@ -270,12 +307,18 @@ export default function RegisterPage() {
                     autoComplete="email"
                     placeholder="you@example.co.za"
                     value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
+                    onChange={handleEmailChange}
                     className="h-12"
                     required
                   />
+                  {isYahooEmail && (
+                    <Alert variant="destructive" className="mt-2">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        <strong>Yahoo Mail Warning:</strong> We strongly advise against using Yahoo Mail for security reasons. Yahoo's strict email policies may block confirmation emails. If you proceed with Yahoo Mail, you will go directly to the dashboard, but it will be much harder for the developer team to reach you. We take no accountability for lost Yahoo accounts. Consider using Gmail, Atomicmail, or Tutamail instead.
+                      </AlertDescription>
+                    </Alert>
+                  )}
                 </div>
 
                 {accountType === "business" && (
