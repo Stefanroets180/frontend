@@ -36,6 +36,7 @@ import { ReceiptSupportProps } from "./form-types";
 import { EntryImageManager } from "@/components/entries/entry-image-manager";
 import { API_URL } from "@/lib/api/client";
 import { ImageCropModal } from "@/components/ui/image-crop-modal";
+import RecurringExpensesList from "./recurring-expenses-list";
 
 const otherExpenseSchema = z.object({
   vehicleId: z.string().optional(),
@@ -192,10 +193,6 @@ export function OtherExpenseForm({
   };
 
   const handleFormSubmit = async (data: OtherExpenseInput) => {
-    if (mode === "create" && !receiptImage) {
-      setImageError("Please capture a receipt image");
-      return;
-    }
     setIsSubmitting(true);
     try {
       // Include selected days in the submission data
@@ -536,7 +533,7 @@ export function OtherExpenseForm({
 
           {/* Receipt Image */}
           <div className="space-y-2">
-            <Label htmlFor="receipt-image">Receipt Image</Label>
+            <Label htmlFor="receipt-image">Receipt Image (Optional)</Label>
 
             <div className="flex items-center gap-4">
               <div className="relative">
@@ -631,11 +628,16 @@ export function OtherExpenseForm({
           <Button
             type="submit"
             className="w-full"
-            disabled={isSubmitting || (mode === "create" && !receiptImage)}
+            disabled={isSubmitting}
           >
             {isSubmitting ? "Saving..." : "Save Other Expense"}
           </Button>
         </form>
+
+        {/* Existing Recurring Expenses List */}
+        {mode === "create" && watchVehicleId && (
+          <RecurringExpensesList vehicleId={watchVehicleId} />
+        )}
       </CardContent>
     </Card>
 

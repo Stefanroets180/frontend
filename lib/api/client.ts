@@ -335,6 +335,51 @@ export const deleteRecurringTrip = async (id: string) => {
 };
 
 // ============================================================================
+// RECURRING EXPENSES API
+// ============================================================================
+
+/** Get all recurring expenses for the current user */
+export const getRecurringExpenses = async () => {
+  return api.get('/recurring-expenses');
+};
+
+/** Get recurring expenses filtered by vehicle ID */
+export const getRecurringExpensesByVehicle = async (vehicleId: string) => {
+  return api.get(`/recurring-expenses/vehicle/${vehicleId}`);
+};
+
+/** Get active recurring expenses filtered by vehicle ID */
+export const getActiveRecurringExpensesByVehicle = async (vehicleId: string) => {
+  return api.get(`/recurring-expenses/vehicle/${vehicleId}/active`);
+};
+
+/** Create a new recurring expense template */
+export const createRecurringExpense = async (data: {
+  vehicleId?: string;
+  userId: string;
+  category: string;
+  description: string;
+  amountZar: number;
+  vatAmountZar?: number;
+  supplierName?: string;
+  invoiceNumber?: string;
+  isTaxDeductible?: boolean;
+  odometerReading?: number;
+  isRecurring: boolean;
+  recurrenceDays?: string;
+  recurrenceDaysOfMonth?: string;
+  recurrenceStartDate?: string;
+  recurrenceEndDate?: string;
+}) => {
+  return api.post('/recurring-expenses', data);
+};
+
+/** Delete a recurring expense by ID */
+export const deleteRecurringExpense = async (id: string) => {
+  return api.delete(`/recurring-expenses/${id}`);
+};
+
+// ============================================================================
 // EXPENSE CATEGORIES API
 // ============================================================================
 

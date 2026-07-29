@@ -27,8 +27,9 @@ import { LicenseRenewalForm } from '@/components/forms/license-renewal-form'
 import { RoadworthyForm } from '@/components/forms/roadworthy-form'
 import { PersonalLicenseForm } from '@/components/forms/personal-license-form-simple'
 import { OtherExpenseForm } from '@/components/forms/other-expense-form'
+import RecurringExpensesList from '@/components/forms/recurring-expenses-list'
 import { ExpenseCategory, Vehicle } from '@/lib/types/database'
-import { api, apiPostMultipart } from '@/lib/api/client'
+import { api, apiPostMultipart, createRecurringExpense } from '@/lib/api/client'
 import { useExpiryAlerts } from '@/lib/hooks/use-expiry-alerts'
 
 const categoryMap: Record<string, ExpenseCategory> = {
@@ -727,6 +728,33 @@ function NewExpenseContent() {
       const vehicle = vehicles.find(v => v.id === expenseData.vehicleId)
       const vehicleReg = vehicle?.registrationNumber || 'Unknown'
 
+      // If recurring, create the recurring expense template instead of a single expense
+      if (expenseData.isRecurring) {
+        const recurringData = {
+          vehicleId: expenseData.vehicleId as string,
+          userId: localStorage.getItem('user_id') || '',
+          category: expenseData.categoryLabel as string || 'OTHER_FIXED',
+          description: expenseData.expenseDescription as string,
+          amountZar: (expenseData.amountZar as number) || 0,
+          supplierName: expenseData.providerName as string,
+          invoiceNumber: expenseData.referenceNumber as string,
+          isRecurring: true,
+          recurrenceDays: Array.isArray(expenseData.recurrenceDaysOfWeek)
+            ? (expenseData.recurrenceDaysOfWeek as string[]).join(',')
+            : undefined,
+          recurrenceDaysOfMonth: Array.isArray(expenseData.recurrenceDaysOfMonth)
+            ? (expenseData.recurrenceDaysOfMonth as number[]).join(',')
+            : undefined,
+          recurrenceStartDate: periodStart,
+          recurrenceEndDate: periodEnd,
+        }
+
+        await createRecurringExpense(recurringData)
+        router.push('/dashboard/expenses')
+        return
+      }
+
+      // Otherwise, create a single expense
       const dataToSend: Record<string, unknown> = {
         vehicleId: expenseData.vehicleId,
         date: expenseDate,
