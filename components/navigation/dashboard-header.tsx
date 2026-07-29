@@ -45,6 +45,7 @@ import { cn } from "@/lib/utils";
 import { AppUsageGuideDialog } from "@/components/navigation/app-usage-guide-dialog";
 import { useTyreRotationWarnings } from "@/lib/hooks/use-tyre-rotation-warnings";
 import { useExpiryAlerts } from "@/lib/hooks/use-expiry-alerts";
+import { useMissingReceipts } from "@/lib/hooks/use-missing-receipts";
 import {
   TyreRotationWarning,
   getTyreRotationStatusColor,
@@ -344,7 +345,7 @@ export function DashboardHeader({
   const { logout } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"expired" | "warning">("expired");
+  const [activeTab, setActiveTab] = useState<"expired" | "warning" | "receipts">("expired");
 
   // Real user data — read from localStorage (set during login / register)
   const [profile, setProfile] = useState<StoredProfile>({});
@@ -364,6 +365,13 @@ export function DashboardHeader({
     counts: expiryCounts,
     dismissAlert: dismissExpiryAlert,
   } = useExpiryAlerts();
+
+  // Missing receipts
+  const {
+    expenses: missingReceipts,
+    isLoading: missingReceiptsLoading,
+    refreshReceipts,
+  } = useMissingReceipts();
 
   useEffect(() => {
     try {
@@ -427,7 +435,8 @@ export function DashboardHeader({
     expiryCounts.warningCount +
     expiryCounts.upcomingCount +
     (tyreWarningCount - tyreCriticalCount);
-  const totalNotifications = totalExpiredAlerts + totalWarningAlerts;
+  const totalMissingReceipts = missingReceipts.length;
+  const totalNotifications = totalExpiredAlerts + totalWarningAlerts + totalMissingReceipts;
 
   // Check for critical items
   const hasExpiryExpired = expiryCounts.expiredCount > 0 || tyreCriticalCount > 0;
@@ -525,7 +534,7 @@ export function DashboardHeader({
 
               <Tabs
                 value={activeTab}
-                onValueChange={(v) => setActiveTab(v as "expired" | "warning")}
+                onValueChange={(v) => setActiveTab(v as "expired" | "warning" | "receipts")}
                 className="w-full"
               >
                 <TabsList className="w-full rounded-none border-b h-10 bg-transparent p-0">
@@ -556,6 +565,20 @@ export function DashboardHeader({
                       {totalWarningAlerts > 0 && (
                         <Badge className="h-5 px-1.5 text-[10px] bg-orange-500 text-white border-2 border-orange-500">
                           {totalWarningAlerts}
+                        </Badge>
+                      )}
+                    </div>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="receipts"
+                    className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent h-10"
+                  >
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      <span>Receipts</span>
+                      {totalMissingReceipts > 0 && (
+                        <Badge className="h-5 px-1.5 text-[10px] bg-blue-500 text-white border-2 border-blue-500">
+                          {totalMissingReceipts}
                         </Badge>
                       )}
                     </div>
@@ -721,7 +744,75 @@ export function DashboardHeader({
                       </div>
                     )}
                   </div>
-                  {expiryAlerts.filter((a) => a.expiryStatus !== "EXPIRED")
+                </TabsContent>
+
+                <TabsContent value="receipts" className="m-0">
+                  <div className="max-h-[400px] overflow-y-auto p-2">
+                    {missingReceiptsLoading ? (
+                      <div className="flex flex-col items-center justify-center py-8 text-center">
+                        <div className="p-3 rounded-full bg-muted mb-3">
+                          <FileText className="h-6 w-6 text-muted-foreground animate-pulse" />
+                        </div>
+                        <p className="text-sm font-medium">Loading...</p>
+                      </div>
+                    ) : missingReceipts.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-8 text-center">
+                        <div className="p-3 rounded-full bg-muted mb-3">
+                          <Check className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                        <p className="text-sm font-medium">All receipts captured!</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          All fuel and other expenses have receipt images.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-2 px-1">
+                          Expenses Missing Receipts ({missingReceipts.length})
+                        </p>
+                        {missingReceipts.map((expense) => (
+                          <div
+                            key={expense.id}
+                            className="flex flex-col gap-2 p-3 rounded-lg border border-border bg-card"
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex items-center gap-2">
+                                <div className="p-1.5 rounded-full bg-blue-500/20">
+                                  <FileText className="h-4 w-4 text-blue-600" />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium">{expense.description}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {expense.category} - R{expense.amount.toFixed(2)}
+                                  </p>
+                                </div>
+                              </div>
+                              <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-600 border-blue-500/20">
+                                {new Date(expense.expenseDate).toLocaleDateString()}
+                              </Badge>
+                            </div>
+                            {expense.vehicleRegistration && (
+                              <div className="text-xs text-muted-foreground">
+                                {expense.vehicleRegistration}
+                              </div>
+                            )}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-full h-8 text-xs"
+                              onClick={() => window.location.href = `/dashboard/expenses/${expense.id}/edit`}
+                            >
+                              <ExternalLink className="h-3 w-3 mr-1" />
+                              Add Receipt Image
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                {expiryAlerts.filter((a) => a.expiryStatus !== "EXPIRED")
                     .length > 0 && (
                     <div className="border-t border-border px-4 py-2">
                       <p className="text-xs text-muted-foreground text-center">

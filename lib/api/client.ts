@@ -387,3 +387,8 @@ export const deleteRecurringExpense = async (id: string) => {
 export const getExpenseCategories = async () => {
   return api.get('/expenses/categories');
 };
+
+/** Get expenses without receipt images (Fuel and Other expenses only) */
+export const getExpensesWithoutReceipts = async () => {
+  return api.get('/expenses/missing-receipts');
+};
