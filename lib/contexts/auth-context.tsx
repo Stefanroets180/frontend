@@ -21,6 +21,7 @@ import { UserRole, OrganizationMode } from "@/lib/types/database";
 type AuthUser = NormalizedAuthUser & {
   role: UserRole;
   organizationMode: OrganizationMode;
+  passwordChanged?: boolean;
 };
 
 function mapMeToAuthUser(
@@ -38,6 +39,7 @@ function mapMeToAuthUser(
     organizationMode: (me.organizationMode ??
       profile?.organizationMode ??
       OrganizationMode.SOLO) as OrganizationMode,
+    passwordChanged: me.passwordChanged !== undefined ? Boolean(me.passwordChanged) : true,
   };
 }
 

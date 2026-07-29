@@ -1,15 +1,28 @@
-import { AuthProvider } from '@/lib/contexts/auth-context'
+'use client'
+
+import { AuthProvider, useAuth } from '@/lib/contexts/auth-context'
 import { BottomNav } from '@/components/navigation/bottom-nav'
 import { DashboardHeader } from '@/components/navigation/dashboard-header'
 import { SidebarNav } from '@/components/navigation/sidebar-nav'
+import { PasswordChangeWarningDialog } from '@/components/auth/password-change-warning-dialog'
+import { useEffect, useState } from 'react'
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+function DashboardContent({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth()
+  const [showPasswordWarning, setShowPasswordWarning] = useState(false)
+
+  useEffect(() => {
+    // Show password change warning for invited users who haven't changed their password
+    if (user && !user.passwordChanged) {
+      // Only show if user was invited (not self-registered)
+      // We can determine this by checking if they have a lastLogin but passwordChanged is false
+      // This indicates they logged in with a temporary password
+      setShowPasswordWarning(true)
+    }
+  }, [user])
+
   return (
-    <AuthProvider>
+    <>
       <div className="flex min-h-screen flex-col bg-background">
         <DashboardHeader />
         <div className="flex flex-1">
@@ -20,6 +33,22 @@ export default function DashboardLayout({
         </div>
         <BottomNav />
       </div>
+      <PasswordChangeWarningDialog 
+        isOpen={showPasswordWarning} 
+        onClose={() => setShowPasswordWarning(false)} 
+      />
+    </>
+  )
+}
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <AuthProvider>
+      <DashboardContent>{children}</DashboardContent>
     </AuthProvider>
   )
 }
