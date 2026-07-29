@@ -24,9 +24,10 @@ export default function RecurringTripsList({ vehicleId }: RecurringTripsListProp
     try {
       const response = await getRecurringTripsByVehicle(vehicleId);
       setTrips(response.data || []);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to fetch recurring trips:', err);
-      setError('Failed to load recurring trips');
+      console.error('Error details:', err?.response?.data || err?.message);
+      setError(`Failed to load recurring trips: ${err?.response?.data?.message || err?.message || 'Unknown error'}`);
       setTrips([]);
     } finally {
       setLoading(false);
