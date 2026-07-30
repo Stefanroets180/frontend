@@ -323,6 +323,8 @@ export const createRecurringTrip = async (data: {
   recurrenceDaysOfMonth?: string;
   recurrenceStartDate?: string;
   recurrenceEndDate?: string;
+  startTime?: string;
+  endTime?: string;
   defaultTollCostsZar: number;
   defaultParkingCostsZar: number;
 }) => {
