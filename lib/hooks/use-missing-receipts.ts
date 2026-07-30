@@ -21,6 +21,7 @@ export interface UseMissingReceiptsResult {
 }
 
 export function useMissingReceipts(): UseMissingReceiptsResult {
+  console.log('useMissingReceipts hook called')
   const [expenses, setExpenses] = useState<ExpenseWithoutReceipt[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
