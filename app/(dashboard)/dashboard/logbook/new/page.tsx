@@ -71,6 +71,8 @@ function NewTripContent() {
     daysOfMonth: number[];
     startDate?: string;
     endDate?: string;
+    startTime?: string;
+    endTime?: string;
   }>({ isRecurring: false, days: [], daysOfMonth: [] });
 
   // Load vehicles and user info
@@ -105,8 +107,8 @@ function NewTripContent() {
     }
   }, [lastOdometer, currentOdometer]);
 
-  const handleRecurringChange = (isRecurring: boolean, days: string[], daysOfMonth: number[], startDate?: string, endDate?: string) => {
-    setRecurringData({ isRecurring, days, daysOfMonth, startDate, endDate });
+  const handleRecurringChange = (isRecurring: boolean, days: string[], daysOfMonth: number[], startDate?: string, endDate?: string, startTime?: string, endTime?: string) => {
+    setRecurringData({ isRecurring, days, daysOfMonth, startDate, endDate, startTime, endTime });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -161,6 +163,8 @@ function NewTripContent() {
           recurrenceDaysOfMonth: recurringData.daysOfMonth.length > 0 ? recurringData.daysOfMonth.join(",") : undefined,
           recurrenceStartDate: recurringData.startDate || formData.tripDate,
           recurrenceEndDate: recurringData.endDate,
+          startTime: recurringData.startTime,
+          endTime: recurringData.endTime,
           defaultTollCostsZar: Number(formData.tollCostsZar) || 0,
           defaultParkingCostsZar: Number(formData.parkingCostsZar) || 0,
         });

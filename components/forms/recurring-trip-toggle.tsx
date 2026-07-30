@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 interface RecurringTripToggleProps {
-  onRecurringChange: (isRecurring: boolean, days: string[], daysOfMonth: number[], startDate?: string, endDate?: string) => void;
+  onRecurringChange: (isRecurring: boolean, days: string[], daysOfMonth: number[], startDate?: string, endDate?: string, startTime?: string, endTime?: string) => void;
 }
 
 const DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
@@ -14,6 +14,8 @@ export default function RecurringTripToggle({ onRecurringChange }: RecurringTrip
   const [selectedDaysOfMonth, setSelectedDaysOfMonth] = useState<number[]>([]);
   const [endDate, setEndDate] = useState('');
   const [startDate, setStartDate] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
 
   const toggleDay = (day: string) => {
     const newDays = selectedDays.includes(day)
@@ -21,7 +23,7 @@ export default function RecurringTripToggle({ onRecurringChange }: RecurringTrip
       : [...selectedDays, day];
     
     setSelectedDays(newDays);
-    onRecurringChange(isRecurring, newDays, selectedDaysOfMonth, startDate || undefined, endDate || undefined);
+    onRecurringChange(isRecurring, newDays, selectedDaysOfMonth, startDate || undefined, endDate || undefined, startTime || undefined, endTime || undefined);
   };
 
   const toggleDayOfMonth = (day: number) => {
@@ -30,22 +32,22 @@ export default function RecurringTripToggle({ onRecurringChange }: RecurringTrip
       : [...selectedDaysOfMonth, day];
     
     setSelectedDaysOfMonth(newDays);
-    onRecurringChange(isRecurring, selectedDays, newDays, startDate || undefined, endDate || undefined);
+    onRecurringChange(isRecurring, selectedDays, newDays, startDate || undefined, endDate || undefined, startTime || undefined, endTime || undefined);
   };
 
   const handleRecurringToggle = (checked: boolean) => {
     setIsRecurring(checked);
-    onRecurringChange(checked, selectedDays, selectedDaysOfMonth, startDate || undefined, endDate || undefined);
+    onRecurringChange(checked, selectedDays, selectedDaysOfMonth, startDate || undefined, endDate || undefined, startTime || undefined, endTime || undefined);
   };
 
   const handleStartDateChange = (value: string) => {
     setStartDate(value);
-    onRecurringChange(isRecurring, selectedDays, selectedDaysOfMonth, value || undefined, endDate || undefined);
+    onRecurringChange(isRecurring, selectedDays, selectedDaysOfMonth, value || undefined, endDate || undefined, startTime || undefined, endTime || undefined);
   };
 
   const handleEndDateChange = (value: string) => {
     setEndDate(value);
-    onRecurringChange(isRecurring, selectedDays, selectedDaysOfMonth, startDate || undefined, value || undefined);
+    onRecurringChange(isRecurring, selectedDays, selectedDaysOfMonth, startDate || undefined, value || undefined, startTime || undefined, endTime || undefined);
   };
 
   return (
@@ -145,6 +147,50 @@ export default function RecurringTripToggle({ onRecurringChange }: RecurringTrip
             <p className="text-xs text-muted-foreground mt-1">
               Leave blank for ongoing recurrence
             </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="startTime" className="block text-sm font-medium mb-1 text-foreground">
+                Start Time *
+              </label>
+              <input
+                id="startTime"
+                name="startTime"
+                type="time"
+                value={startTime}
+                onChange={(e) => {
+                  setStartTime(e.target.value);
+                  onRecurringChange(isRecurring, selectedDays, selectedDaysOfMonth, startDate || undefined, endDate || undefined, e.target.value || undefined, endTime || undefined);
+                }}
+                className="w-full p-2 border rounded bg-background text-foreground border-input"
+                required
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                For proper odometer calculation
+              </p>
+            </div>
+
+            <div>
+              <label htmlFor="endTime" className="block text-sm font-medium mb-1 text-foreground">
+                End Time *
+              </label>
+              <input
+                id="endTime"
+                name="endTime"
+                type="time"
+                value={endTime}
+                onChange={(e) => {
+                  setEndTime(e.target.value);
+                  onRecurringChange(isRecurring, selectedDays, selectedDaysOfMonth, startDate || undefined, endDate || undefined, startTime || undefined, e.target.value || undefined);
+                }}
+                className="w-full p-2 border rounded bg-background text-foreground border-input"
+                required
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                For proper odometer calculation
+              </p>
+            </div>
           </div>
         </div>
       )}
