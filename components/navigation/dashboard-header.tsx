@@ -809,25 +809,23 @@ export function DashboardHeader({
                         ))}
                       </div>
                     )}
+                    {expiryAlerts.filter((a) => a.expiryStatus !== "EXPIRED")
+                        .length > 0 && (
+                        <div className="border-t border-border px-4 py-2">
+                          <p className="text-xs text-muted-foreground text-center">
+                            Renew online at{" "}
+                            <a
+                              href="https://online.natis.gov.za/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary hover:underline"
+                            >
+                              NaTIS
+                            </a>
+                          </p>
+                        </div>
+                      )}
                   </div>
-                </TabsContent>
-
-                {expiryAlerts.filter((a) => a.expiryStatus !== "EXPIRED")
-                    .length > 0 && (
-                    <div className="border-t border-border px-4 py-2">
-                      <p className="text-xs text-muted-foreground text-center">
-                        Renew online at{" "}
-                        <a
-                          href="https://online.natis.gov.za/"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary hover:underline"
-                        >
-                          NaTIS
-                        </a>
-                      </p>
-                    </div>
-                  )}
                 </TabsContent>
               </Tabs>
             </PopoverContent>
