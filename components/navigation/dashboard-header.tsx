@@ -783,7 +783,7 @@ export function DashboardHeader({
                                 <div>
                                   <p className="text-sm font-medium">{expense.description}</p>
                                   <p className="text-xs text-muted-foreground">
-                                    {expense.category} - R{expense.amount.toFixed(2)}
+                                    {expense.category} - R{expense.amount?.toFixed(2) ?? '0.00'}
                                   </p>
                                 </div>
                               </div>
