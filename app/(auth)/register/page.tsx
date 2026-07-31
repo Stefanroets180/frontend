@@ -159,11 +159,11 @@ export default function RegisterPage() {
                   Click the link in the email to verify your account and get started.
                 </p>
                 {isYahooEmail && verificationToken && (
-                  <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <p className="text-sm font-medium text-yellow-800 mb-2">
+                  <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg dark:bg-yellow-500/10 dark:border-yellow-500/30">
+                    <p className="text-sm font-medium text-yellow-800 dark:text-yellow-300 mb-2">
                       Yahoo Mail Backup Verification
                     </p>
-                    <p className="text-xs text-yellow-700 mb-3">
+                    <p className="text-xs text-yellow-700 dark:text-yellow-400 mb-3">
                       Since you're using Yahoo Mail, the email may be blocked. Click the button below to verify your account directly:
                     </p>
                     <a
