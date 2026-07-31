@@ -37,6 +37,11 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import type { EntryImage } from "@/lib/types/database";
 import { API_URL } from "@/lib/api/client";
+import {
+  processReceiptImage,
+  validateImageFile,
+} from "@/lib/utils/image-converter";
+import { ImageCropModal } from "@/components/ui/image-crop-modal";
 
 const BACKEND_BASE_URL = API_URL.replace(/\/api\/v1$/, "");
 
@@ -78,6 +83,8 @@ export function EntryImageManager({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [reuploadImageId, setReuploadImageId] = useState<string | null>(null);
+  const [showCropModal, setShowCropModal] = useState(false);
+  const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const reuploadInputRef = useRef<HTMLInputElement>(null);
 
@@ -86,8 +93,13 @@ export function EntryImageManager({
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setSelectedFile(file);
-      setShowUploadDialog(true);
+      const validation = validateImageFile(file);
+      if (!validation.valid) {
+        alert(validation.error || "Invalid image file");
+        return;
+      }
+      setOriginalImageFile(file);
+      setShowCropModal(true);
     }
   };
 
@@ -96,6 +108,29 @@ export function EntryImageManager({
     if (file && reuploadImageId) {
       handleReupload(reuploadImageId, file);
     }
+  };
+
+  const handleCropConfirm = async (croppedFile: File, originalFile: File) => {
+    setShowCropModal(false);
+    setIsProcessing(true);
+
+    try {
+      const processed = await processReceiptImage(croppedFile);
+      const processedFile = new File([processed.blob], croppedFile.name, {
+        type: processed.format,
+      });
+      setSelectedFile(processedFile);
+      setShowUploadDialog(true);
+    } catch (err) {
+      alert("Failed to process image. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleCropCancel = () => {
+    setShowCropModal(false);
+    setOriginalImageFile(null);
   };
 
   const handleUpload = async () => {
@@ -169,6 +204,7 @@ export function EntryImageManager({
         id="entryImageUpload"
         type="file"
         accept={acceptedTypes}
+        capture="environment"
         onChange={handleFileSelect}
         className="hidden"
       />
@@ -570,6 +606,17 @@ export function EntryImageManager({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Image Crop Modal */}
+      {originalImageFile && (
+        <ImageCropModal
+          imageFile={originalImageFile}
+          mode="receipt"
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+          isOpen={showCropModal}
+        />
+      )}
     </div>
   );
 }
