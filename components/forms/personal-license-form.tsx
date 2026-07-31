@@ -735,14 +735,16 @@ function DriversLicenseFormContent({
         </CardContent>
       </Card>
 
-      <ReceiptImageCapture
-        previewUrl={previewUrl}
-        imageError={imageError}
-        isCompressing={isCompressing}
-        compressionInfo={compressionInfo}
-        onImageCapture={onImageCapture}
-        onClearImage={onClearImage}
-      />
+      {mode === 'create' && (
+        <ReceiptImageCapture
+          previewUrl={previewUrl}
+          imageError={imageError}
+          isCompressing={isCompressing}
+          compressionInfo={compressionInfo}
+          onImageCapture={onImageCapture}
+          onClearImage={onClearImage}
+        />
+      )}
 
       <Button type="submit" className="w-full h-12" disabled={isSubmitting}>
         {isSubmitting ? 'Saving...' : mode === 'edit' ? 'Update License' : 'Save License'}
@@ -947,14 +949,16 @@ function IdCardFormContent({
         </CardContent>
       </Card>
 
-      <ReceiptImageCapture
-        previewUrl={previewUrl}
-        imageError={imageError}
-        isCompressing={isCompressing}
-        compressionInfo={compressionInfo}
-        onImageCapture={onImageCapture}
-        onClearImage={onClearImage}
-      />
+      {mode === 'create' && (
+        <ReceiptImageCapture
+          previewUrl={previewUrl}
+          imageError={imageError}
+          isCompressing={isCompressing}
+          compressionInfo={compressionInfo}
+          onImageCapture={onImageCapture}
+          onClearImage={onClearImage}
+        />
+      )}
 
       <Button type="submit" className="w-full h-12" disabled={isSubmitting}>
         {isSubmitting ? 'Saving...' : mode === 'edit' ? 'Update ID Card' : 'Save ID Card'}
@@ -1154,14 +1158,16 @@ function PdpFormContent({
         </CardContent>
       </Card>
 
-      <ReceiptImageCapture
-        previewUrl={previewUrl}
-        imageError={imageError}
-        isCompressing={isCompressing}
-        compressionInfo={compressionInfo}
-        onImageCapture={onImageCapture}
-        onClearImage={onClearImage}
-      />
+      {mode === 'create' && (
+        <ReceiptImageCapture
+          previewUrl={previewUrl}
+          imageError={imageError}
+          isCompressing={isCompressing}
+          compressionInfo={compressionInfo}
+          onImageCapture={onImageCapture}
+          onClearImage={onClearImage}
+        />
+      )}
 
       <Button type="submit" className="w-full h-12" disabled={isSubmitting}>
         {isSubmitting ? 'Saving...' : mode === 'edit' ? 'Update PDP' : 'Save PDP'}

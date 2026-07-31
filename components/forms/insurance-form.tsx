@@ -443,62 +443,64 @@ export function InsuranceForm({
             />
           </div>
 
-          {/* Receipt Image */}
-          <div className="space-y-2">
-            <Label htmlFor="receipt-image-input">Receipt Image</Label>
+          {/* Receipt Image - Only for create mode */}
+          {mode === 'create' && (
+            <div className="space-y-2">
+              <Label htmlFor="receipt-image-input">Receipt Image</Label>
 
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <input
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  onChange={handleImageCapture}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  id="receipt-image-input"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={isCompressing}
-                  className={imageError ? "border-red-500" : ""}
-                >
-                  <Camera className="mr-2 h-4 w-4" />
-                  {isCompressing
-                    ? "Processing..."
-                    : receiptImage
-                      ? "Change Photo"
-                      : "Capture Receipt"}
-                </Button>
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleImageCapture}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    id="receipt-image-input"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isCompressing}
+                    className={imageError ? "border-red-500" : ""}
+                  >
+                    <Camera className="mr-2 h-4 w-4" />
+                    {isCompressing
+                      ? "Processing..."
+                      : receiptImage
+                        ? "Change Photo"
+                        : "Capture Receipt"}
+                  </Button>
+                </div>
+                {receiptImage && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearImage}
+                  >
+                    Remove
+                  </Button>
+                )}
               </div>
-              {receiptImage && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearImage}
-                >
-                  Remove
-                </Button>
+              {imageError && <p className="text-sm text-red-500">{imageError}</p>}
+              {compressionInfo && (
+                <p className="text-xs text-green-600">
+                  Image compressed: {formatFileSize(compressionInfo.originalSize)}{" "}
+                  → {formatFileSize(compressionInfo.compressedSize)}
+                </p>
+              )}
+              {previewUrl && (
+                <div className="mt-2">
+                  <img
+                    src={previewUrl}
+                    alt="Receipt preview"
+                    className="max-h-48 rounded-lg border object-contain"
+                  />
+                </div>
               )}
             </div>
-            {imageError && <p className="text-sm text-red-500">{imageError}</p>}
-            {compressionInfo && (
-              <p className="text-xs text-green-600">
-                Image compressed: {formatFileSize(compressionInfo.originalSize)}{" "}
-                → {formatFileSize(compressionInfo.compressedSize)}
-              </p>
-            )}
-            {previewUrl && (
-              <div className="mt-2">
-                <img
-                  src={previewUrl}
-                  alt="Receipt preview"
-                  className="max-h-48 rounded-lg border object-contain"
-                />
-              </div>
-            )}
-          </div>
+          )}
 
           {/* Submit */}
           <Button

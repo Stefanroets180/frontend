@@ -535,52 +535,54 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
         </CardContent>
       </Card>
 
-      {/* Receipt Image Card */}
-      <Card className="border-border/50">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Camera className="h-5 w-5 text-muted-foreground" />
-            Receipt Image (Optional)
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {previewUrl ? (
-            <div className="relative">
-              <img
-                src={previewUrl}
-                alt="Receipt preview"
-                className="w-full max-h-48 object-contain rounded-lg bg-muted"
-              />
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                className="absolute top-2 right-2"
-                onClick={() => {
-                  setReceiptImage(null)
-                  setPreviewUrl(null)
-                }}
-              >
-                Remove
-              </Button>
-            </div>
-          ) : (
-            <label htmlFor="receiptImage" className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-muted-foreground transition-colors">
-              <Camera className="h-8 w-8 text-muted-foreground mb-2" />
-              <span className="text-sm text-muted-foreground">Tap to capture or upload</span>
-              <input
-                id="receiptImage"
-                name="receiptImage"
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={handleImageCapture}
-                className="hidden"
-              />
-            </label>
-          )}
-        </CardContent>
-      </Card>
+      {/* Receipt Image Card - Only for create mode */}
+      {mode === 'create' && (
+        <Card className="border-border/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Camera className="h-5 w-5 text-muted-foreground" />
+              Receipt Image (Optional)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {previewUrl ? (
+              <div className="relative">
+                <img
+                  src={previewUrl}
+                  alt="Receipt preview"
+                  className="w-full max-h-48 object-contain rounded-lg bg-muted"
+                />
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="absolute top-2 right-2"
+                  onClick={() => {
+                    setReceiptImage(null)
+                    setPreviewUrl(null)
+                  }}
+                >
+                  Remove
+                </Button>
+              </div>
+            ) : (
+              <label htmlFor="receiptImage" className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-muted-foreground transition-colors">
+                <Camera className="h-8 w-8 text-muted-foreground mb-2" />
+                <span className="text-sm text-muted-foreground">Tap to capture or upload</span>
+                <input
+                  id="receiptImage"
+                  name="receiptImage"
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleImageCapture}
+                  className="hidden"
+                />
+              </label>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Submit Button */}
       <Button
