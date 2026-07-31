@@ -681,8 +681,9 @@ function ReadingCard({
             )}
 
             {/* Action buttons overlay */}
-            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+            <div className="absolute inset-0 bg-black/60 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 z-10">
               <Button
+                type="button"
                 variant="secondary"
                 size="icon"
                 className="h-8 w-8"
@@ -693,6 +694,7 @@ function ReadingCard({
               </Button>
               {!isLocked && (
                 <Button
+                  type="button"
                   variant="secondary"
                   size="icon"
                   className="h-8 w-8"
@@ -704,6 +706,7 @@ function ReadingCard({
               )}
               {!isLocked && (
                 <Button
+                  type="button"
                   variant="secondary"
                   size="icon"
                   className="h-8 w-8 text-destructive hover:text-destructive"
@@ -714,6 +717,7 @@ function ReadingCard({
                 </Button>
               )}
               <Button
+                type="button"
                 variant="secondary"
                 size="icon"
                 className="h-8 w-8"
