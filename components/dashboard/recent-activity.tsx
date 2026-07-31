@@ -80,6 +80,7 @@ const categoryIcons: Record<ExpenseCategory, LucideIcon> = {
   [ExpenseCategory.PERSONAL_LICENSE]: FileText,
   [ExpenseCategory.ROADWORTHY]: Wrench,
   [ExpenseCategory.OTHER_FIXED]: Sparkles,
+  [ExpenseCategory.PARKING]: FileText,
 };
 
 const categoryColors: Record<
@@ -145,6 +146,11 @@ const categoryColors: Record<
     bg: "bg-gray-500/10",
     text: "text-gray-600",
     border: "border-gray-500/20",
+  },
+  [ExpenseCategory.PARKING]: {
+    bg: "bg-orange-500/10",
+    text: "text-orange-600",
+    border: "border-orange-500/20",
   },
 };
 
