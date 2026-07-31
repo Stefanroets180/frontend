@@ -64,6 +64,8 @@ interface AppUsageGuideDialogProps {
 interface GuideStep {
   title: string;
   description: string;
+  link?: string;
+  linkLabel?: string;
 }
 
 interface GuideSection {
@@ -174,11 +176,22 @@ function StepList({ steps }: { steps: GuideStep[] }) {
           <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
             {index + 1}
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1 flex-1">
             <p className="text-sm font-medium leading-5">{step.title}</p>
             <p className="text-sm leading-6 text-muted-foreground">
               {step.description}
             </p>
+            {step.link && step.linkLabel && (
+              <DialogClose asChild>
+                <Link
+                  href={step.link}
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline mt-1"
+                >
+                  {step.linkLabel}
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </DialogClose>
+            )}
           </div>
         </li>
       ))}
@@ -646,7 +659,9 @@ function getGuideSections(
       {
         title: "Password change for invited team members",
         description:
-          "When you invite someone to join your team, they will be asked to change their password the first time they sign in. This is a security requirement to protect your business data.",
+          "When you invite someone to join your team, they will be asked to change their password the first time they sign in. This is a security requirement to protect your business data. Users can change their password in their profile settings.",
+        link: "/dashboard/profile",
+        linkLabel: "Go to Profile",
       },
       {
         title: `Add the business vehicles in ${nav.vehicles}`,
