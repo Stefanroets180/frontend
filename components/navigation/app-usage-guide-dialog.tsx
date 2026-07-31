@@ -653,15 +653,15 @@ function getGuideSections(
     icon: Building2,
     steps: [
       {
-        title: `Start in ${nav.organization}`,
-        description: `This is the main setup area for ${orgLabel}. Add your team members here and make sure each person has the correct role. Admins and managers usually handle this part.`,
+        title: "IMPORTANT: Change your password now",
+        description:
+          "If you were invited to join this team, you must change your password immediately. This is a critical security requirement to protect your business data. Do this before anything else.",
+        link: "/dashboard/profile",
+        linkLabel: "Change Password Now",
       },
       {
-        title: "Password change for invited team members",
-        description:
-          "When you invite someone to join your team, they will be asked to change their password the first time they sign in. This is a security requirement to protect your business data. Users can change their password in their profile settings.",
-        link: "/dashboard/profile",
-        linkLabel: "Go to Profile",
+        title: `Start in ${nav.organization}`,
+        description: `This is the main setup area for ${orgLabel}. Add your team members here and make sure each person has the correct role. Admins and managers usually handle this part.`,
       },
       {
         title: `Add the business vehicles in ${nav.vehicles}`,
@@ -700,6 +700,13 @@ function getGuideSections(
     title: "How to use the app as a fleet driver",
     icon: Users,
     steps: [
+      {
+        title: "IMPORTANT: Change your password now",
+        description:
+          "If you were invited to join this team, you must change your password immediately. This is a critical security requirement to protect your business data. Do this before anything else.",
+        link: "/dashboard/profile",
+        linkLabel: "Change Password Now",
+      },
       {
         title: `Check ${nav.vehicles} to see the vehicle you must work with`,
         description:
