@@ -32,6 +32,7 @@ import {
   formatFileSize,
 } from "@/lib/utils/image-converter";
 import { ReceiptSupportProps } from "./form-types";
+import { EntryImageManager } from "@/components/entries/entry-image-manager";
 import { ImageCropModal } from "@/components/ui/image-crop-modal";
 
 const etollSchema = z.object({
@@ -77,6 +78,11 @@ export function ETollForm({
   initialData,
   mode = "create",
   existingImages = [],
+  entryId,
+  onImageUpload,
+  onImageDelete,
+  onImageReupload,
+  onImageLock,
 }: ETollFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [receiptImage, setReceiptImage] = useState<File | null>(null);

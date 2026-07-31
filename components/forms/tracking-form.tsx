@@ -33,6 +33,7 @@ import {
   formatFileSize,
 } from "@/lib/utils/image-converter";
 import { ReceiptSupportProps } from "./form-types";
+import { EntryImageManager } from "@/components/entries/entry-image-manager";
 import { API_URL } from "@/lib/api/client";
 import { useEffect } from "react";
 import { ImageCropModal } from "@/components/ui/image-crop-modal";
@@ -80,6 +81,11 @@ export function TrackingForm({
   initialData,
   mode,
   existingImages = [],
+  entryId,
+  onImageUpload,
+  onImageDelete,
+  onImageReupload,
+  onImageLock,
 }: TrackingFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [receiptImage, setReceiptImage] = useState<File | null>(null);

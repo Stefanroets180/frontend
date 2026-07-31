@@ -32,6 +32,7 @@ import {
   formatFileSize,
 } from "@/lib/utils/image-converter";
 import { ReceiptSupportProps } from "./form-types";
+import { EntryImageManager } from "@/components/entries/entry-image-manager";
 import { ImageCropModal } from "@/components/ui/image-crop-modal";
 
 const roadworthySchema = z.object({
@@ -74,6 +75,11 @@ export function RoadworthyForm({
   initialData,
   mode = "create",
   existingImages = [],
+  entryId,
+  onImageUpload,
+  onImageDelete,
+  onImageReupload,
+  onImageLock,
 }: RoadworthyFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [receiptImage, setReceiptImage] = useState<File | null>(null);
