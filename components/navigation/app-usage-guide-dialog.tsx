@@ -644,6 +644,11 @@ function getGuideSections(
         description: `This is the main setup area for ${orgLabel}. Add your team members here and make sure each person has the correct role. Admins and managers usually handle this part.`,
       },
       {
+        title: "Password change for invited team members",
+        description:
+          "When you invite someone to join your team, they will be asked to change their password the first time they sign in. This is a security requirement to protect your business data.",
+      },
+      {
         title: `Add the business vehicles in ${nav.vehicles}`,
         description:
           "Create a record for each vehicle you want the business to track. Add them carefully so the right trips and expenses are linked to the right vehicle.",
