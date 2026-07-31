@@ -1201,28 +1201,7 @@ export default function EditExpensePage({
 
       {/* Content */}
       <div className="p-4 pb-24">
-        <div className="space-y-8">
-          {renderForm()}
-          {id && (
-            <section className="mt-8">
-              <h2 className="text-lg font-semibold mb-2">Receipt Images</h2>
-              <p className="text-sm text-muted-foreground mb-4">
-                Attach or manage receipt images for this expense.
-              </p>
-
-              <EntryImageManager
-                entryId={id}
-                entryType="EXPENSE"
-                images={receiptImages}
-                onUpload={handleReceiptUpload}
-                onDelete={handleReceiptDelete}
-                onReupload={handleReceiptReupload}
-                onLock={handleReceiptLock}
-                maxImages={5}
-              />
-            </section>
-          )}
-        </div>
+        {renderForm()}
       </div>
     </div>
   );
