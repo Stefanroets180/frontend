@@ -593,43 +593,28 @@ export function OtherExpenseForm({
 
           {/* Receipt Images Manager for Edit Mode */}
           {mode === "edit" && entryId && (
-            <Card className="border-border/50">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Camera className="h-5 w-5 text-chart-4" />
-                  Receipt Images
-                </CardTitle>
-                <div className="text-xs text-muted-foreground space-y-1">
-                  <p>Manage receipt images for this expense:</p>
-                  <ul className="list-disc list-inside space-y-1 ml-1">
-                    <li><span className="font-medium">Add Image:</span> Click "Add Image" to attach a new receipt</li>
-                    <li><span className="font-medium">Replace:</span> Hover over an image and click the refresh icon to replace it</li>
-                    <li><span className="font-medium">Delete:</span> Hover over an image and click the trash icon to remove it</li>
-                    <li><span className="font-medium">Confirm:</span> Click the lock icon to confirm an image (prevents deletion)</li>
-                  </ul>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {onImageUpload &&
-                onImageDelete &&
-                onImageReupload &&
-                onImageLock ? (
-                  <EntryImageManager
-                    entryId={entryId}
-                    entryType="EXPENSE"
-                    images={existingImages}
-                    onUpload={onImageUpload}
-                    onDelete={onImageDelete}
-                    onReupload={onImageReupload}
-                    onLock={onImageLock}
-                  />
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    Image management not available
-                  </p>
-                )}
-              </CardContent>
-            </Card>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Camera className="h-5 w-5 text-chart-4" />
+                <h3 className="text-base font-semibold">Receipt Images</h3>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Attach or manage receipt images for this expense.
+              </p>
+              {onImageUpload && onImageDelete && onImageReupload && onImageLock ? (
+                <EntryImageManager
+                  entryId={entryId}
+                  entryType="EXPENSE"
+                  images={existingImages}
+                  onUpload={onImageUpload}
+                  onDelete={onImageDelete}
+                  onReupload={onImageReupload}
+                  onLock={onImageLock}
+                />
+              ) : (
+                <p className="text-sm text-muted-foreground">Image management not available</p>
+              )}
+            </div>
           )}
 
           {/* Submit */}

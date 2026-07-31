@@ -476,6 +476,32 @@ export function RoadworthyForm({
             />
           </div>
 
+          {/* Receipt Images Manager for Edit Mode */}
+          {mode === 'edit' && entryId && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Camera className="h-5 w-5 text-chart-1" />
+                <h3 className="text-base font-semibold">Receipt Images</h3>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Attach or manage receipt images for this expense.
+              </p>
+              {onImageUpload && onImageDelete && onImageReupload && onImageLock ? (
+                <EntryImageManager
+                  entryId={entryId}
+                  entryType="EXPENSE"
+                  images={existingImages}
+                  onUpload={onImageUpload}
+                  onDelete={onImageDelete}
+                  onReupload={onImageReupload}
+                  onLock={onImageLock}
+                />
+              ) : (
+                <p className="text-sm text-muted-foreground">Image management not available</p>
+              )}
+            </div>
+          )}
+
           {/* Receipt Image - Only for create mode */}
           {mode === 'create' && (
             <div className="space-y-2">

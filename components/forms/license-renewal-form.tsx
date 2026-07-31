@@ -35,6 +35,7 @@ import {
   formatFileSize,
 } from "@/lib/utils/image-converter";
 import { ReceiptSupportProps } from "./form-types";
+import { EntryImageManager } from "@/components/entries/entry-image-manager";
 import { ImageCropModal } from "@/components/ui/image-crop-modal";
 
 const licenseSchema = z.object({
@@ -80,6 +81,11 @@ export function LicenseRenewalForm({
   initialData,
   mode = "create",
   existingImages = [],
+  entryId,
+  onImageUpload,
+  onImageDelete,
+  onImageReupload,
+  onImageLock,
 }: LicenseRenewalFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [receiptImage, setReceiptImage] = useState<File | null>(null);
@@ -469,10 +475,9 @@ export function LicenseRenewalForm({
           </div>
 
           {/* Receipt Image - Only for create mode */}
-          {mode === 'create' && (
+          {mode === "create" && (
             <div className="space-y-2">
               <Label htmlFor="receipt-image-input">Receipt Image</Label>
-
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <input
@@ -482,6 +487,7 @@ export function LicenseRenewalForm({
                     onChange={handleImageCapture}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     id="receipt-image-input"
+                    name="receiptImage"
                   />
                   <Button
                     type="button"
@@ -535,6 +541,32 @@ export function LicenseRenewalForm({
           >
             {isSubmitting ? "Saving..." : "Save License Renewal"}
           </Button>
+
+          {/* Receipt Images Manager for Edit Mode */}
+          {mode === 'edit' && entryId && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Camera className="h-5 w-5 text-chart-1" />
+                <h3 className="text-base font-semibold">Receipt Images</h3>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Attach or manage receipt images for this expense.
+              </p>
+              {onImageUpload && onImageDelete && onImageReupload && onImageLock ? (
+                <EntryImageManager
+                  entryId={entryId}
+                  entryType="EXPENSE"
+                  images={existingImages}
+                  onUpload={onImageUpload}
+                  onDelete={onImageDelete}
+                  onReupload={onImageReupload}
+                  onLock={onImageLock}
+                />
+              ) : (
+                <p className="text-sm text-muted-foreground">Image management not available</p>
+              )}
+            </div>
+          )}
         </form>
       </CardContent>
     </Card>

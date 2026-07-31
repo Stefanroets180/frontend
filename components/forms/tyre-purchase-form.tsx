@@ -700,37 +700,28 @@ export function TyrePurchaseForm({
 
       {/* Receipt Images Manager for Edit Mode */}
       {mode === "edit" && entryId && (
-        <Card className="border-border/50">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Camera className="h-5 w-5 text-chart-5" />
-              Receipt Images
-            </CardTitle>
-            <p className="text-xs text-muted-foreground">
-              Attach or manage receipt images for this expense.
-            </p>
-          </CardHeader>
-          <CardContent>
-            {onImageUpload &&
-            onImageDelete &&
-            onImageReupload &&
-            onImageLock ? (
-              <EntryImageManager
-                entryId={entryId}
-                entryType="EXPENSE"
-                images={existingImages}
-                onUpload={onImageUpload}
-                onDelete={onImageDelete}
-                onReupload={onImageReupload}
-                onLock={onImageLock}
-              />
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                Image management not available
-              </p>
-            )}
-          </CardContent>
-        </Card>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Camera className="h-5 w-5 text-chart-5" />
+            <h3 className="text-base font-semibold">Receipt Images</h3>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Attach or manage receipt images for this expense.
+          </p>
+          {onImageUpload && onImageDelete && onImageReupload && onImageLock ? (
+            <EntryImageManager
+              entryId={entryId}
+              entryType="EXPENSE"
+              images={existingImages}
+              onUpload={onImageUpload}
+              onDelete={onImageDelete}
+              onReupload={onImageReupload}
+              onLock={onImageLock}
+            />
+          ) : (
+            <p className="text-sm text-muted-foreground">Image management not available</p>
+          )}
+        </div>
       )}
     </form>
 
