@@ -1032,6 +1032,33 @@ export function AppUsageGuideDialog({
                 </p>
               </SectionCard>
 
+              {isFleet && (
+                <div className="rounded-xl border-2 border-amber-200 bg-amber-50 p-4 dark:border-amber-900/40 dark:bg-amber-950/20">
+                  <div className="flex items-start gap-3">
+                    <div className="rounded-lg bg-amber-100 p-2 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                      <Shield className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1 space-y-2">
+                      <h4 className="text-base font-semibold text-amber-900 dark:text-amber-100">
+                        Change Your Password
+                      </h4>
+                      <p className="text-sm leading-6 text-amber-800 dark:text-amber-300">
+                        If you were invited to join this team with a temporary password, you must change it immediately. This is a critical security requirement to protect your business data.
+                      </p>
+                      <DialogClose asChild>
+                        <Link
+                          href="/dashboard/profile"
+                          className="inline-flex items-center gap-1.5 rounded-md bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-700 dark:bg-amber-700 dark:hover:bg-amber-600"
+                        >
+                          Change Password Now
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </Link>
+                      </DialogClose>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <QuickStartCards
                 title={quickStart.title}
                 cards={quickStart.cards}
