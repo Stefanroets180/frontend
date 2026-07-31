@@ -259,6 +259,7 @@ export function EntryImageManager({
                 {!image.isLocked && (
                   <>
                     <Button
+                      type="button"
                       variant="secondary"
                       size="icon"
                       className="h-8 w-8"
@@ -269,6 +270,7 @@ export function EntryImageManager({
                       <RefreshCw className="h-4 w-4" />
                     </Button>
                     <Button
+                      type="button"
                       variant="secondary"
                       size="icon"
                       className="h-8 w-8 text-destructive"
@@ -281,6 +283,7 @@ export function EntryImageManager({
                   </>
                 )}
                 <Button
+                  type="button"
                   variant="secondary"
                   size="icon"
                   className="h-8 w-8"
@@ -293,6 +296,7 @@ export function EntryImageManager({
                   <Lock className="h-4 w-4" />
                 </Button>
                 <Button
+                  type="button"
                   variant="secondary"
                   size="icon"
                   className="h-8 w-8"
