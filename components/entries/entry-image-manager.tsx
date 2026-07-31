@@ -105,8 +105,14 @@ export function EntryImageManager({
 
   const handleReuploadSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && reuploadImageId) {
-      handleReupload(reuploadImageId, file);
+    if (file) {
+      const validation = validateImageFile(file);
+      if (!validation.valid) {
+        alert(validation.error || "Invalid image file");
+        return;
+      }
+      setOriginalImageFile(file);
+      setShowCropModal(true);
     }
   };
 
@@ -119,8 +125,15 @@ export function EntryImageManager({
       const processedFile = new File([processed.blob], croppedFile.name, {
         type: processed.format,
       });
-      setSelectedFile(processedFile);
-      setShowUploadDialog(true);
+
+      if (reuploadImageId) {
+        // This is a reupload operation
+        await handleReupload(reuploadImageId, processedFile);
+      } else {
+        // This is a new upload operation
+        setSelectedFile(processedFile);
+        setShowUploadDialog(true);
+      }
     } catch (err) {
       alert("Failed to process image. Please try again.");
     } finally {
@@ -131,6 +144,7 @@ export function EntryImageManager({
   const handleCropCancel = () => {
     setShowCropModal(false);
     setOriginalImageFile(null);
+    setReuploadImageId(null);
   };
 
   const handleUpload = async () => {
@@ -255,7 +269,7 @@ export function EntryImageManager({
               </div>
 
               {/* Actions overlay */}
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 z-10">
                 {!image.isLocked && (
                   <>
                     <Button
