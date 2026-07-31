@@ -38,7 +38,8 @@ export enum ExpenseCategory {
   LICENSE_RENEWAL = 'LICENSE_RENEWAL',
   PERSONAL_LICENSE = 'PERSONAL_LICENSE',  // New: Personal driver's license & ID card
   ROADWORTHY = 'ROADWORTHY',
-  OTHER_FIXED = 'OTHER_FIXED'
+  OTHER_FIXED = 'OTHER_FIXED',
+  PARKING = 'PARKING'
 }
 
 export enum MaintenanceItemType {
@@ -136,7 +137,8 @@ export const EXPENSE_CATEGORY_LABELS: Record<ExpenseCategory, string> = {
   [ExpenseCategory.LICENSE_RENEWAL]: 'License Renewal',
   [ExpenseCategory.PERSONAL_LICENSE]: 'Personal License',
   [ExpenseCategory.ROADWORTHY]: 'Roadworthy Test',
-  [ExpenseCategory.OTHER_FIXED]: 'Other'
+  [ExpenseCategory.OTHER_FIXED]: 'Other',
+  [ExpenseCategory.PARKING]: 'Parking'
 }
 
 export const MAINTENANCE_ITEM_LABELS: Record<MaintenanceItemType, string> = {
