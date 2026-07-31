@@ -35,6 +35,7 @@ import {
 import { ReceiptSupportProps } from "./form-types";
 import { EntryImageManager } from "@/components/entries/entry-image-manager";
 import { API_URL } from "@/lib/api/client";
+import { ImageCropModal } from "@/components/ui/image-crop-modal";
 import RecurringExpensesList from "./recurring-expenses-list";
 
 const otherExpenseSchema = z.object({
@@ -97,6 +98,8 @@ export function OtherExpenseForm({
   } | null>(null);
   const [selectedDaysOfWeek, setSelectedDaysOfWeek] = useState<string[]>([]);
   const [selectedDaysOfMonth, setSelectedDaysOfMonth] = useState<number[]>([]);
+  const [showCropModal, setShowCropModal] = useState(false);
+  const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
@@ -150,11 +153,18 @@ export function OtherExpenseForm({
       return;
     }
 
-    // Directly process the image without crop modal for camera capture
+    // Store original file and show crop modal
+    setOriginalImageFile(file);
+    setShowCropModal(true);
+  };
+
+  const handleCropConfirm = async (croppedFile: File, originalFile: File) => {
+    setShowCropModal(false);
     setIsCompressing(true);
+
     try {
-      const processed = await processReceiptImage(file);
-      const processedFile = new File([processed.blob], file.name, {
+      const processed = await processReceiptImage(croppedFile);
+      const processedFile = new File([processed.blob], croppedFile.name, {
         type: processed.format,
       });
       setReceiptImage(processedFile);
@@ -168,6 +178,11 @@ export function OtherExpenseForm({
     } finally {
       setIsCompressing(false);
     }
+  };
+
+  const handleCropCancel = () => {
+    setShowCropModal(false);
+    setOriginalImageFile(null);
   };
 
   const clearImage = () => {
@@ -631,6 +646,17 @@ export function OtherExpenseForm({
         )}
       </CardContent>
     </Card>
+
+    {/* Image Crop Modal */}
+    {originalImageFile && (
+      <ImageCropModal
+        imageFile={originalImageFile}
+        mode="receipt"
+        onConfirm={handleCropConfirm}
+        onCancel={handleCropCancel}
+        isOpen={showCropModal}
+      />
+    )}
     </>
   );
 }

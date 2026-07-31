@@ -170,9 +170,11 @@ export function ImageCropModal({
               imageFile.name.replace(/\.[^.]+$/, '_cropped.jpg'),
               { type: 'image/jpeg' }
             )
+            console.log('Crop modal - Confirming with cropped file:', croppedFile)
             onConfirm(croppedFile, imageFile)
           } else {
             console.warn('Canvas toBlob failed, using original file')
+            console.log('Crop modal - Confirming with original file:', imageFile)
             onConfirm(imageFile, imageFile)
           }
           setIsProcessing(false)
@@ -183,6 +185,7 @@ export function ImageCropModal({
     } catch (error) {
       console.error('Crop processing error:', error)
       // Fallback to original file
+      console.log('Crop modal - Error, using original file:', imageFile)
       onConfirm(imageFile, imageFile)
       setIsProcessing(false)
     }
