@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { Loader2, RotateCw } from 'lucide-react'
 
 interface ImageCropModalProps {
@@ -205,6 +205,9 @@ export function ImageCropModal({
         className="max-w-4xl w-full h-[90vh] flex flex-col p-0 overflow-hidden"
         showCloseButton={false}
       >
+        <DialogTitle className="sr-only">
+          {mode === 'receipt' ? 'Crop Receipt Image' : 'Crop Odometer Image'}
+        </DialogTitle>
         <div className="flex-1 flex flex-col bg-black">
           {/* Header */}
           <div className="flex items-center justify-between p-4 bg-gray-900 border-b border-gray-800">
