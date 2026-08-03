@@ -456,7 +456,7 @@ export default function EditExpensePage({
           case ExpenseCategory.PARKING:
             setInitialData({
               ...baseData,
-              vehicleId: data.vehicle?.id || "",
+              vehicleId: data.vehicle?.id || (data.category === ExpenseCategory.PARKING ? undefined : ""),
               date: data.expenseDate ? new Date(data.expenseDate) : new Date(),
               expenseDescription:
                 data.otherFixedExpense?.expenseDescription ||
