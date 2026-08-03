@@ -45,6 +45,7 @@ const categoryMap: Record<string, ExpenseCategory> = {
   personal: ExpenseCategory.PERSONAL_LICENSE,
   roadworthy: ExpenseCategory.ROADWORTHY,
   other: ExpenseCategory.OTHER_FIXED,
+  parking: ExpenseCategory.PARKING,
 }
 
 function NewExpenseContent() {
@@ -779,7 +780,9 @@ function NewExpenseContent() {
       formData.append('data', JSON.stringify(dataToSend))
       if (receiptImage) formData.append('receipt', receiptImage)
 
-      const response = await apiPostMultipart('/expenses/other-fixed', formData)
+      // Use parking endpoint if categoryLabel is "Parking", otherwise use other-fixed
+      const endpoint = expenseData.categoryLabel === 'Parking' ? '/expenses/parking' : '/expenses/other-fixed'
+      const response = await apiPostMultipart(endpoint, formData)
 
       if (!response.ok) {
         const errorText = await response.text()
@@ -949,6 +952,7 @@ function NewExpenseContent() {
           />
         )
       case ExpenseCategory.OTHER_FIXED:
+      case ExpenseCategory.PARKING:
         return (
           <OtherExpenseForm
             vehicles={vehicles}
