@@ -493,7 +493,13 @@ export default function EditExpensePage({
   }, [id, router, refreshReceiptImages]);
 
   const renderForm = () => {
-    if (!expense || !initialData) return null;
+    if (!expense || !initialData) {
+      console.log("renderForm - missing data:", { expense, initialData });
+      return null;
+    }
+
+    console.log("renderForm - expense.category:", expense.category);
+    console.log("renderForm - initialData:", initialData);
 
     switch (expense.category) {
       case ExpenseCategory.FUEL_LOG:
