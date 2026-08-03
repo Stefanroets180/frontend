@@ -39,7 +39,7 @@ export enum ExpenseCategory {
   PERSONAL_LICENSE = 'PERSONAL_LICENSE',  // New: Personal driver's license & ID card
   ROADWORTHY = 'ROADWORTHY',
   OTHER_FIXED = 'OTHER_FIXED',
-  PARKING = 'PARKING'
+  PARKING = 'Parking'  // Backend serializes as "Parking" with @JsonProperty
 }
 
 export enum MaintenanceItemType {
