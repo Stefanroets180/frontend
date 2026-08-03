@@ -257,6 +257,8 @@ export function OtherExpenseForm({
                     : null;
                   return vehicle
                     ? `${vehicle.registrationNumber} - ${vehicle.make} ${vehicle.model}`
+                    : initialData?.vehicleId === undefined
+                    ? "No vehicle assigned"
                     : "Unknown";
                 })()}
               </div>
