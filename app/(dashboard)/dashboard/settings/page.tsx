@@ -264,7 +264,7 @@ function SettingsContent() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center gap-3 sm:gap-4 w-full min-w-0">
                 <div className="relative h-12 w-12 sm:h-16 sm:w-16 shrink-0">
-                  <div className="h-full w-full rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
+                  <div className="h-full w-full rounded-xl bg-primary/20 flex items-center justify-center overflow-hidden">
                     {user?.profilePhotoUrl ? (
                       <img
                         src={user.profilePhotoUrl}
