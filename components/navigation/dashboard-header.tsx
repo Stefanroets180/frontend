@@ -66,6 +66,7 @@ interface StoredProfile {
   role?: string;
   organizationMode?: "SOLO" | "FLEET";
   organizationName?: string;
+  profilePhotoUrl?: string;
 }
 
 interface DashboardHeaderProps {
@@ -834,9 +835,17 @@ export function DashboardHeader({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="gap-2 touch-target">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20 text-primary text-sm font-semibold">
-                  {initials ?? <User className="h-4 w-4" />}
-                </div>
+                {profile.profilePhotoUrl ? (
+                  <img
+                    src={profile.profilePhotoUrl}
+                    alt={displayName || "Profile"}
+                    className="h-8 w-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20 text-primary text-sm font-semibold">
+                    {initials ?? <User className="h-4 w-4" />}
+                  </div>
+                )}
                 <span className="hidden max-w-[100px] truncate text-sm sm:inline-block">
                   {profile.firstName ?? "Account"}
                 </span>
