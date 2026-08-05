@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { api } from '@/lib/api/client'
-import { ArrowLeft, Building2, Users, User, Mail, Shield, Plus, Crown, UserPlus, Car, Trash2, Edit, MoreVertical, Clock, Check, X, Info, Lock } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { api, apiForm } from '@/lib/api/client'
+import { ArrowLeft, Building2, Users, User, Mail, Shield, Plus, Crown, UserPlus, Car, Trash2, Edit, MoreVertical, Clock, Check, X, Info, Lock, Camera } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { ImageCropModal } from '@/components/ui/image-crop-modal'
 import { useAuth, useRequireRole } from '@/lib/contexts/auth-context'
 import { OrganizationMode, UserRole, VehicleStatus } from '@/lib/types/database'
 import { cn } from '@/lib/utils'
@@ -82,6 +83,13 @@ export default function OrganizationPage() {
   const [selectedDriverId, setSelectedDriverId] = useState('')
   const [isAssigning, setIsAssigning] = useState(false)
 
+  // Organization logo state
+  const [organization, setOrganization] = useState<{ id: string; name: string; logoUrl?: string } | null>(null)
+  const [selectedLogoFile, setSelectedLogoFile] = useState<File | null>(null)
+  const [showLogoCropModal, setShowLogoCropModal] = useState(false)
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false)
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
+
   useEffect(() => {
     api
       .get('/organization/users')
@@ -121,6 +129,19 @@ export default function OrganizationPage() {
             }))
           )
         }
+      })
+      .catch(console.error)
+  }, [])
+
+  useEffect(() => {
+    api
+      .get('/organization')
+      .then(({ data }) => {
+        setOrganization({
+          id: String(data.id),
+          name: String(data.name),
+          logoUrl: data.logoUrl ? String(data.logoUrl) : undefined,
+        })
       })
       .catch(console.error)
   }, [])
@@ -365,6 +386,47 @@ export default function OrganizationPage() {
     )
   }
 
+  const handleLogoFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file && file.type.startsWith('image/')) {
+      setSelectedLogoFile(file)
+      setShowLogoCropModal(true)
+    }
+  }
+
+  const handleLogoCropConfirm = async (croppedFile: File) => {
+    setIsUploadingLogo(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', croppedFile)
+      
+      const { data } = await apiForm.post('/organization/logo', formData)
+      
+      setOrganization({
+        id: String(data.id),
+        name: String(data.name),
+        logoUrl: data.logoUrl ? String(data.logoUrl) : undefined,
+      })
+      
+      setShowLogoCropModal(false)
+      setSelectedLogoFile(null)
+    } catch (error) {
+      console.error('Failed to upload logo:', error)
+    } finally {
+      setIsUploadingLogo(false)
+    }
+  }
+
+  const handleRemoveLogo = async () => {
+    try {
+      await api.delete('/organization/logo')
+      
+      setOrganization(prev => prev ? { ...prev, logoUrl: undefined } : null)
+    } catch (error) {
+      console.error('Failed to remove logo:', error)
+    }
+  }
+
   return (
     <div className="container mx-auto space-y-6 p-4">
       {/* Header */}
@@ -395,8 +457,30 @@ export default function OrganizationPage() {
           <CardContent className="space-y-4">
             {/* Org Name and Icon */}
             <div className="flex items-center gap-4">
-              <div className="h-16 w-16 rounded-xl bg-primary/20 flex items-center justify-center">
-                <Building2 className="h-8 w-8 text-primary" />
+              <div className="relative h-16 w-16 shrink-0">
+                <div className="h-full w-full rounded-xl bg-primary/20 flex items-center justify-center overflow-hidden">
+                  {organization?.logoUrl ? (
+                    <img
+                      src={organization.logoUrl}
+                      alt="Organization Logo"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <Building2 className="h-8 w-8 text-primary" />
+                  )}
+                </div>
+                <div className="absolute -bottom-1 -right-1">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="icon"
+                    className="h-6 w-6 rounded-full"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploadingLogo}
+                  >
+                    <Camera className="h-3 w-3" />
+                  </Button>
+                </div>
               </div>
               <div className="flex-1">
                 <h2 className="font-semibold text-lg">
@@ -408,6 +492,25 @@ export default function OrganizationPage() {
                   </Badge>
                 </div>
               </div>
+              {organization?.logoUrl && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleRemoveLogo}
+                  className="text-destructive hover:text-destructive"
+                >
+                  Remove Logo
+                </Button>
+              )}
+              
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                capture={false}
+                onChange={handleLogoFileSelect}
+                className="hidden"
+              />
             </div>
 
             <Separator />
@@ -831,6 +934,20 @@ export default function OrganizationPage() {
           </Card>
         )}
       </div>
+      
+      {/* Logo Crop Modal */}
+      {selectedLogoFile && (
+        <ImageCropModal
+          imageFile={selectedLogoFile}
+          mode="logo"
+          onConfirm={handleLogoCropConfirm}
+          onCancel={() => {
+            setShowLogoCropModal(false)
+            setSelectedLogoFile(null)
+          }}
+          isOpen={showLogoCropModal}
+        />
+      )}
       
       {/* Edit User Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
