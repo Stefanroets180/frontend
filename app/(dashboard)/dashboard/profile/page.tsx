@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/lib/contexts/auth-context'
-import { api } from '@/lib/api/client'
+import { api, apiForm } from '@/lib/api/client'
 import { cn } from '@/lib/utils'
 import { ImageCropModal } from '@/components/ui/image-crop-modal'
 
