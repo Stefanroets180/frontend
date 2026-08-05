@@ -9,7 +9,7 @@ import { Loader2, RotateCw } from 'lucide-react'
 
 interface ImageCropModalProps {
   imageFile: File
-  mode: 'receipt' | 'odometer'
+  mode: 'receipt' | 'odometer' | 'logo' | 'profile'
   onConfirm: (croppedFile: File, originalFile: File) => void
   onCancel: () => void
   isOpen: boolean
@@ -206,13 +206,13 @@ export function ImageCropModal({
         showCloseButton={false}
       >
         <DialogTitle className="sr-only">
-          {mode === 'receipt' ? 'Crop Receipt Image' : 'Crop Odometer Image'}
+          {mode === 'receipt' ? 'Crop Receipt Image' : mode === 'odometer' ? 'Crop Odometer Image' : mode === 'logo' ? 'Crop Logo Image' : 'Crop Profile Image'}
         </DialogTitle>
         <div className="flex-1 flex flex-col bg-black">
           {/* Header */}
           <div className="flex items-center justify-between p-4 bg-gray-900 border-b border-gray-800">
             <h2 className="text-white text-lg font-semibold">
-              {mode === 'receipt' ? 'Crop RECEIPT' : 'Crop ODOMETER'}
+              {mode === 'receipt' ? 'Crop RECEIPT' : mode === 'odometer' ? 'Crop ODOMETER' : mode === 'logo' ? 'Crop LOGO' : 'Crop PROFILE'}
             </h2>
             <div className="flex gap-2">
               <Button
