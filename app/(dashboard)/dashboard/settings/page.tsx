@@ -263,8 +263,20 @@ function SettingsContent() {
           <Card className="cursor-pointer transition-colors hover:border-primary/50 w-full max-w-full overflow-hidden">
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center gap-3 sm:gap-4 w-full min-w-0">
-                <div className="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-primary/20 text-lg sm:text-xl font-bold text-primary shrink-0">
-                  {user?.firstName?.[0] ?? <User className="h-6 w-6 sm:h-8 sm:w-8" />}
+                <div className="relative h-12 w-12 sm:h-16 sm:w-16 shrink-0">
+                  <div className="h-full w-full rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
+                    {user?.profilePhotoUrl ? (
+                      <img
+                        src={user.profilePhotoUrl}
+                        alt="Profile"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-lg sm:text-xl font-bold text-primary">
+                        {user?.firstName?.[0] ?? <User className="h-6 w-6 sm:h-8 sm:w-8" />}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="min-w-0 flex-1 overflow-hidden">
                   <h2 className="truncate text-base sm:text-lg font-semibold">
