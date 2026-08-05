@@ -89,11 +89,7 @@ export default function ProfilePage() {
       const formData = new FormData()
       formData.append('file', croppedFile)
       
-      await api.post('/users/profile-photo', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
+      await apiForm.post('/users/profile-photo', formData)
       
       await refreshUser()
       setShowCropModal(false)
