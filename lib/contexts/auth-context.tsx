@@ -22,6 +22,7 @@ type AuthUser = NormalizedAuthUser & {
   role: UserRole;
   organizationMode: OrganizationMode;
   passwordChanged?: boolean;
+  profilePhotoUrl?: string;
 };
 
 function mapMeToAuthUser(
@@ -40,6 +41,7 @@ function mapMeToAuthUser(
       profile?.organizationMode ??
       OrganizationMode.SOLO) as OrganizationMode,
     passwordChanged: me.passwordChanged !== undefined ? Boolean(me.passwordChanged) : true,
+    profilePhotoUrl: me.profilePhotoUrl ? String(me.profilePhotoUrl) : undefined,
   };
 }
 
