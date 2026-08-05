@@ -64,6 +64,7 @@ import {
 } from "@/lib/types/database";
 import type { EntryImage } from "@/lib/types/database";
 import { api, API_URL, apiForm } from "@/lib/api/client";
+import { ImageCropModal } from "@/components/ui/image-crop-modal";
 
 interface OdometerVerificationRecord {
   id: string;
@@ -483,6 +484,7 @@ function ReadingCard({
   const [lockReason, setLockReason] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [showCropModal, setShowCropModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [editOdometerValue, setEditOdometerValue] = useState<string>("");
   const [editCapturedAtLocal, setEditCapturedAtLocal] = useState<string>("");
@@ -622,6 +624,19 @@ function ReadingCard({
     }
   };
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      setSelectedFile(file);
+      setShowCropModal(true);
+    }
+  };
+
+  const handleCropConfirm = (croppedFile: File) => {
+    setSelectedFile(croppedFile);
+    setShowCropModal(false);
+  };
+
   return (
     <div className="p-4">
       {/* Hidden file input */}
@@ -629,7 +644,7 @@ function ReadingCard({
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+        onChange={handleFileSelect}
         className="hidden"
       />
 
@@ -1075,6 +1090,20 @@ function ReadingCard({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Photo Crop Modal */}
+      {selectedFile && (
+        <ImageCropModal
+          imageFile={selectedFile}
+          mode="odometer"
+          onConfirm={handleCropConfirm}
+          onCancel={() => {
+            setShowCropModal(false);
+            setSelectedFile(null);
+          }}
+          isOpen={showCropModal}
+        />
+      )}
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { ArrowLeft, User, Mail, Shield, Lock, Eye, EyeOff, CheckCircle2, AlertCircle } from 'lucide-react'
+import { ArrowLeft, User, Mail, Shield, Lock, Eye, EyeOff, CheckCircle2, AlertCircle, Camera, X } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -15,6 +15,7 @@ import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/lib/contexts/auth-context'
 import { api } from '@/lib/api/client'
 import { cn } from '@/lib/utils'
+import { ImageCropModal } from '@/components/ui/image-crop-modal'
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
@@ -32,13 +33,18 @@ const changePasswordSchema = z.object({
 type ChangePasswordInput = z.infer<typeof changePasswordSchema>
 
 export default function ProfilePage() {
-  const { user } = useAuth()
+  const { user, refreshUser } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  
+  // Photo upload state
+  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null)
+  const [showCropModal, setShowCropModal] = useState(false)
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
 
   const {
     register,
@@ -66,6 +72,48 @@ export default function ProfilePage() {
       setSubmitError(error instanceof Error ? error.message : 'An error occurred')
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file && file.type.startsWith('image/')) {
+      setSelectedPhoto(file)
+      setShowCropModal(true)
+    }
+  }
+
+  const handleCropConfirm = async (croppedFile: File) => {
+    setIsUploadingPhoto(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', croppedFile)
+      
+      await api.post('/users/profile-photo', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      
+      await refreshUser()
+      setShowCropModal(false)
+      setSelectedPhoto(null)
+    } catch (error) {
+      console.error('Failed to upload photo:', error)
+    } finally {
+      setIsUploadingPhoto(false)
+    }
+  }
+
+  const handleRemovePhoto = async () => {
+    setIsUploadingPhoto(true)
+    try {
+      await api.delete('/users/profile-photo')
+      await refreshUser()
+    } catch (error) {
+      console.error('Failed to remove photo:', error)
+    } finally {
+      setIsUploadingPhoto(false)
     }
   }
 
@@ -113,8 +161,31 @@ export default function ProfilePage() {
           <CardContent className="space-y-4">
             {/* Avatar and Name */}
             <div className="flex items-center gap-4">
-              <div className="h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center">
-                <User className="h-8 w-8 text-primary" />
+              <div className="relative group">
+                <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
+                  {user?.profilePhotoUrl ? (
+                    <img 
+                      src={user.profilePhotoUrl} 
+                      alt="Profile" 
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <User className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
+                  )}
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                  <label htmlFor="photo-upload" className="cursor-pointer">
+                    <Camera className="h-5 w-5 text-white" />
+                  </label>
+                  <input
+                    id="photo-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handlePhotoSelect}
+                    disabled={isUploadingPhoto}
+                  />
+                </div>
               </div>
               <div className="flex-1">
                 <h2 className="font-semibold text-lg">
@@ -126,6 +197,17 @@ export default function ProfilePage() {
                   </Badge>
                 </div>
               </div>
+              {user?.profilePhotoUrl && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleRemovePhoto}
+                  disabled={isUploadingPhoto}
+                  className="h-8 w-8"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
             </div>
 
             <Separator />
@@ -299,6 +381,20 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Photo Crop Modal */}
+      {selectedPhoto && (
+        <ImageCropModal
+          imageFile={selectedPhoto}
+          mode="receipt"
+          onConfirm={handleCropConfirm}
+          onCancel={() => {
+            setShowCropModal(false)
+            setSelectedPhoto(null)
+          }}
+          isOpen={showCropModal}
+        />
+      )}
     </div>
   )
 }
