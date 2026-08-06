@@ -76,11 +76,14 @@ export function VehicleLogo({
       clearTimeout(debounceRef.current);
     }
 
-    // Debounce the fetch to avoid rapid API calls while typing
     if (make) {
+      // Debounce the fetch
       debounceRef.current = setTimeout(() => {
         fetchLogo();
-      }, 300); // Reduced to 300ms for better responsiveness
+      }, 400);
+    } else {
+      // Clear logo when make is empty
+      setLogoUrl(null);
     }
 
     // Cleanup

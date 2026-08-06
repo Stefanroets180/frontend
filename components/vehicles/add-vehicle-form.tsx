@@ -245,7 +245,7 @@ export function AddVehicleForm() {
                 />
                 {form.make && (
                   <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                    <VehicleLogo make={form.make} size="sm" enableApiFallback={true} />
+                    <VehicleLogo make={form.make} size="sm" />
                   </div>
                 )}
               </div>

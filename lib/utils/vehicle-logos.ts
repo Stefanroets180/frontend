@@ -167,9 +167,11 @@ function getCachedLogos(): Record<string, CachedLogo> {
 
 /**
  * Caches a logo URL in localStorage
+ * Only caches if URL is not null
  */
 function cacheLogo(make: string, url: string): void {
   if (typeof window === 'undefined') return;
+  if (!url) return; // Don't cache null/undefined URLs
   
   try {
     const cached = getCachedLogos();
@@ -255,6 +257,7 @@ async function searchLogoViaAPI(make: string): Promise<string | null> {
       return false;
     });
     
+    // If we found a match, use it
     if (bestMatch) {
       console.log('Found logo for', make, ':', bestMatch.name);
       // Cache the result
@@ -262,7 +265,14 @@ async function searchLogoViaAPI(make: string): Promise<string | null> {
       return bestMatch.svg_url;
     }
     
-    console.log('No matching logo found for:', make, 'Available:', data.data.map(l => l.name));
+    // If no exact match but we have results, use the first one as fallback
+    if (data.data.length > 0) {
+      console.log('Using first available logo for', make, ':', data.data[0].name);
+      cacheLogo(make, data.data[0].svg_url);
+      return data.data[0].svg_url;
+    }
+    
+    console.log('No logos found for:', make);
     return null;
   } catch (error) {
     console.error('Error fetching logo from WorldVectorLogo API:', error);
