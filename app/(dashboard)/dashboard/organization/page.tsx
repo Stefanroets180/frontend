@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { api, apiForm } from '@/lib/api/client'
 import { ArrowLeft, Building2, Users, User, Mail, Shield, Plus, Crown, UserPlus, Car, Trash2, Edit, MoreVertical, Clock, Check, X, Info, Lock, Camera } from 'lucide-react'
+import { VehicleLogo } from '@/components/vehicles/vehicle-logo'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -773,7 +774,7 @@ export default function OrganizationPage() {
                     className="flex items-center gap-3 p-3 rounded-lg border border-amber-500/30 bg-background"
                   >
                     <div className="h-10 w-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                      <Car className="h-5 w-5 text-amber-600" />
+                      <VehicleLogo make={vehicle.make} size="md" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">
@@ -869,7 +870,7 @@ export default function OrganizationPage() {
                     className="flex items-center gap-3 p-3 rounded-lg border"
                   >
                     <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
-                      <Car className="h-5 w-5 text-muted-foreground" />
+                      <VehicleLogo make={vehicle.make} size="md" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">

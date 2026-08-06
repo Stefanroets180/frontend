@@ -56,6 +56,7 @@ import {
   Upload,
   RefreshCw,
 } from "lucide-react";
+import { VehicleLogo } from "@/components/vehicles/vehicle-logo";
 import { cn } from "@/lib/utils";
 import {
   OdometerReadingType,
@@ -70,6 +71,7 @@ interface OdometerVerificationRecord {
   id: string;
   vehicleId: string;
   vehicleReg: string;
+  vehicleMake: string;
   taxYear: number;
   readingType: OdometerReadingType;
   odometerValue: number;
@@ -101,7 +103,7 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
     OdometerVerificationRecord[]
   >([]);
   const [vehicles, setVehicles] = useState<
-    Array<{ id: string; registrationNumber: string }>
+    Array<{ id: string; registrationNumber: string; make: string }>
   >([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -122,6 +124,7 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
           vehicleList.map((v: any) => ({
             id: String(v.id),
             registrationNumber: String(v.registrationNumber ?? ""),
+            make: String(v.make ?? ""),
           })),
         );
 
@@ -146,6 +149,7 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
             id,
             vehicleId: String(v.vehicleId),
             vehicleReg: String(v.vehicleReg ?? ""),
+            vehicleMake: String(v.vehicleMake ?? ""),
             taxYear: Number(v.taxYear),
             readingType: v.readingType as OdometerReadingType,
             odometerValue: Number(v.odometerValue),
@@ -175,6 +179,7 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
     (acc, v) => {
       acc[v.id] = {
         vehicleReg: v.registrationNumber,
+        vehicleMake: v.make,
         opening: undefined,
         closing: undefined,
       };
@@ -184,6 +189,7 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
       string,
       {
         vehicleReg: string;
+        vehicleMake: string;
         opening?: OdometerVerificationRecord;
         closing?: OdometerVerificationRecord;
       }
@@ -195,6 +201,7 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
     if (!vehicleVerifications[v.vehicleId]) {
       vehicleVerifications[v.vehicleId] = {
         vehicleReg: v.vehicleReg,
+        vehicleMake: v.vehicleMake || 'Unknown',
         opening: undefined,
         closing: undefined,
       };
@@ -361,6 +368,7 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
                 key={vehicleId}
                 vehicleId={vehicleId as string}
                 vehicleReg={data.vehicleReg}
+                vehicleMake={data.vehicleMake}
                 opening={data.opening}
                 closing={data.closing}
                 taxYear={selectedYear}
@@ -398,6 +406,7 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
 interface VehicleVerificationCardProps {
   vehicleId: string;
   vehicleReg: string;
+  vehicleMake: string;
   opening?: OdometerVerificationRecord;
   closing?: OdometerVerificationRecord;
   taxYear: number;
@@ -409,6 +418,7 @@ interface VehicleVerificationCardProps {
 function VehicleVerificationCard({
   vehicleId,
   vehicleReg,
+  vehicleMake,
   opening,
   closing,
   taxYear,
@@ -421,7 +431,7 @@ function VehicleVerificationCard({
       {/* Vehicle Header */}
       <div className="bg-muted/50 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Car className="h-4 w-4 text-muted-foreground" />
+          <VehicleLogo make={vehicleMake} size="sm" />
           <span className="font-medium">{vehicleReg}</span>
         </div>
         <Badge variant={opening && closing ? "default" : "secondary"}>

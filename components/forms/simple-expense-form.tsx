@@ -28,6 +28,7 @@ import {
   formatFileSize
 } from '@/lib/utils/image-converter'
 import { ImageCropModal } from '@/components/ui/image-crop-modal'
+import { VehicleLogo } from '@/components/vehicles/vehicle-logo'
 
 const simpleExpenseSchema = z.object({
   vehicleId: z.string().min(1, 'Select a vehicle'),
@@ -209,7 +210,10 @@ export function SimpleExpenseForm({
                 <SelectContent>
                   {vehicles.map((v) => (
                     <SelectItem key={v.id} value={v.id}>
-                      {v.registrationNumber} - {v.make} {v.model}
+                      <div className="flex items-center gap-2">
+                        <VehicleLogo make={v.make} size="sm" />
+                        <span>{v.registrationNumber} - {v.make} {v.model}</span>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>

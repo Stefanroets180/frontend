@@ -37,6 +37,7 @@ import { EntryImageManager } from "@/components/entries/entry-image-manager";
 import { API_URL } from "@/lib/api/client";
 import { ImageCropModal } from "@/components/ui/image-crop-modal";
 import RecurringExpensesList from "./recurring-expenses-list";
+import { VehicleLogo } from "@/components/vehicles/vehicle-logo";
 
 const otherExpenseSchema = z.object({
   vehicleId: z.string().optional(),
@@ -236,7 +237,10 @@ export function OtherExpenseForm({
                 <SelectContent>
                   {vehicles.map((v) => (
                     <SelectItem key={v.id} value={v.id}>
-                      {v.registrationNumber} - {v.make} {v.model}
+                      <div className="flex items-center gap-2">
+                        <VehicleLogo make={v.make} size="sm" />
+                        <span>{v.registrationNumber} - {v.make} {v.model}</span>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>

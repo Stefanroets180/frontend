@@ -44,6 +44,7 @@ import {
   RotateCcw,
   Lock,
 } from "lucide-react";
+import { VehicleLogo } from "@/components/vehicles/vehicle-logo";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/contexts/auth-context";
 import { useUserPreferences } from "@/lib/hooks/use-user-preferences";
@@ -641,8 +642,13 @@ function SettingsContent() {
                     <SelectContent>
                       {vehicles.map((v) => (
                         <SelectItem key={v.id} value={v.id}>
-                          {v.nickname ??
-                            `${v.make} ${v.model} — ${v.registrationNumber}`}
+                          <div className="flex items-center gap-2">
+                            <VehicleLogo make={v.make} size="sm" />
+                            <span>
+                              {v.nickname ??
+                                `${v.make} ${v.model} — ${v.registrationNumber}`}
+                            </span>
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>

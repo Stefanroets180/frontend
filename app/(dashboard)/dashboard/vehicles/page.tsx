@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Plus, Car, AlertCircle, Lock, Image as ImageIcon, Clock, Trash2, Check, X, MessageSquare, Eye } from "lucide-react";
+import { VehicleLogo } from "@/components/vehicles/vehicle-logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -375,6 +376,7 @@ export default function VehiclesPage() {
 
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-lg">
+                    <VehicleLogo make={vehicle.make} size="lg" />
                     {vehicle.nickname || `${vehicle.make} ${vehicle.model}`}
                   </CardTitle>
                 </CardHeader>
@@ -531,6 +533,7 @@ export default function VehiclesPage() {
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2 text-lg">
+                      <VehicleLogo make={vehicle.make} size="lg" />
                       {vehicle.nickname || `${vehicle.make} ${vehicle.model}`}
                     </CardTitle>
                     <Badge variant="destructive">

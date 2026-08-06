@@ -25,6 +25,7 @@ import {
   Sparkles,
   type LucideIcon,
 } from "lucide-react";
+import { VehicleLogo } from "@/components/vehicles/vehicle-logo";
 import { StatsCard } from "@/components/dashboard/stats-card";
 import { ExpenseCategoryCard } from "@/components/dashboard/expense-category-card";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
@@ -1141,6 +1142,7 @@ export default function DashboardPage() {
                 return (
                   <SelectItem key={v.id} value={v.id}>
                     <span className="flex items-center gap-2">
+                      <VehicleLogo make={v.make} size="sm" />
                       {vehicleLabel(v)}
                       {complianceStatus === "Fully confirmed" ? (
                         <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />

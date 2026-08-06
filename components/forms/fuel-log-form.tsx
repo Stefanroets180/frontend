@@ -28,6 +28,7 @@ import { ReceiptSupportProps } from './form-types'
 import { EntryImageManager } from '@/components/entries/entry-image-manager'
 import { API_URL } from '@/lib/api/client'
 import { ImageCropModal } from '@/components/ui/image-crop-modal'
+import { VehicleLogo } from '@/components/vehicles/vehicle-logo'
 
 const fuelLogSchema = z.object({
   vehicleId: z.string().optional(),
@@ -312,7 +313,10 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
                 <SelectContent>
                   {vehicles.map((vehicle) => (
                     <SelectItem key={vehicle.id} value={vehicle.id}>
-                      {vehicle.registrationNumber} - {vehicle.make} {vehicle.model}
+                      <div className="flex items-center gap-2">
+                        <VehicleLogo make={vehicle.make} size="sm" />
+                        <span>{vehicle.registrationNumber} - {vehicle.make} {vehicle.model}</span>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>

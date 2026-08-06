@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Car, AlertCircle } from "lucide-react"
 import { apiFetch } from "@/lib/api/client"
+import { VehicleLogo } from "./vehicle-logo"
 
 // Simplified fuel type categories for vehicle creation
 // Maps to specific fuel types in the backend
@@ -233,14 +234,21 @@ export function AddVehicleForm() {
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label htmlFor="make">Make <span className="text-destructive">*</span></Label>
-              <Input
-                id="make"
-                placeholder="Toyota"
-                value={form.make}
-                onChange={e => set("make", e.target.value)}
-                className="h-12"
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="make"
+                  placeholder="Toyota"
+                  value={form.make}
+                  onChange={e => set("make", e.target.value)}
+                  className="h-12 pr-10"
+                  required
+                />
+                {form.make && (
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                    <VehicleLogo make={form.make} size="sm" />
+                  </div>
+                )}
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="model">Model <span className="text-destructive">*</span></Label>
