@@ -44,6 +44,7 @@ export function VehicleLogo({
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const debounceRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const cachedLogoRef = useRef<string | null>(null);
 
   useEffect(() => {
     async function fetchLogo() {
@@ -51,6 +52,7 @@ export function VehicleLogo({
       const localLogo = getManufacturerLogo(make);
       if (localLogo) {
         setLogoUrl(localLogo);
+        cachedLogoRef.current = localLogo;
         return;
       }
 
@@ -59,9 +61,13 @@ export function VehicleLogo({
         setIsLoading(true);
         try {
           const apiLogo = await getManufacturerLogoWithFallback(make);
-          // Only update if we got a result - keep existing logo if API returns null
+          // Update logo if we got a result, otherwise keep cached one
           if (apiLogo) {
             setLogoUrl(apiLogo);
+            cachedLogoRef.current = apiLogo;
+          } else if (cachedLogoRef.current) {
+            // Keep the cached logo if API returns null
+            setLogoUrl(cachedLogoRef.current);
           }
         } catch (error) {
           console.error('Error fetching logo from API:', error);
@@ -82,8 +88,9 @@ export function VehicleLogo({
         fetchLogo();
       }, 400);
     } else {
-      // Clear logo when make is empty
+      // Clear logo and cache when make is empty
       setLogoUrl(null);
+      cachedLogoRef.current = null;
     }
 
     // Cleanup
