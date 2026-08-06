@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Car } from 'lucide-react';
 import { getManufacturerLogo, getManufacturerLogoWithFallback } from '@/lib/utils/vehicle-logos';
 import { cn } from '@/lib/utils';
@@ -43,6 +43,7 @@ export function VehicleLogo({
 }: VehicleLogoProps) {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const debounceRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     async function fetchLogo() {
@@ -58,7 +59,10 @@ export function VehicleLogo({
         setIsLoading(true);
         try {
           const apiLogo = await getManufacturerLogoWithFallback(make);
-          setLogoUrl(apiLogo);
+          // Only update if we got a result, otherwise keep previous logo
+          if (apiLogo) {
+            setLogoUrl(apiLogo);
+          }
         } catch (error) {
           console.error('Error fetching logo from API:', error);
         } finally {
@@ -67,16 +71,34 @@ export function VehicleLogo({
       }
     }
 
-    if (make) {
-      fetchLogo();
+    // Clear previous debounce timer
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
     }
+
+    // Debounce the fetch to avoid rapid API calls while typing
+    if (make) {
+      debounceRef.current = setTimeout(() => {
+        fetchLogo();
+      }, 500); // 500ms delay
+    }
+
+    // Cleanup
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
   }, [make, enableApiFallback]);
 
   if (isLoading) {
-    // Show loading placeholder
-    return (
-      <div className={cn(sizeClasses[size], 'animate-pulse bg-muted rounded', className)} />
-    );
+    // Show loading placeholder only if we don't have a logo yet
+    if (!logoUrl) {
+      return (
+        <div className={cn(sizeClasses[size], 'animate-pulse bg-muted rounded', className)} />
+      );
+    }
+    // If we have a logo, keep showing it while loading
   }
 
   if (logoUrl) {
