@@ -197,6 +197,15 @@ async function searchLogoViaAPI(make: string): Promise<string | null> {
     return cached[normalized].url;
   }
   
+  // Check for partial matches in cache (e.g., "Fia" when searching for "Fiat")
+  const cacheKeys = Object.keys(cached);
+  for (const key of cacheKeys) {
+    if (key.includes(normalized) || normalized.includes(key)) {
+      console.log('Using cached partial match:', key, 'for', make);
+      return cached[key].url;
+    }
+  }
+  
   try {
     // Build API request
     const url = new URL(`${WORLD_VECTOR_LOGO_API}/logos/search`);
