@@ -376,7 +376,7 @@ export default function VehiclesPage() {
 
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-lg">
-                    <VehicleLogo make={vehicle.make} size="lg" />
+                    <VehicleLogo make={vehicle.make} size="lg" enableApiFallback={true} />
                     {vehicle.nickname || `${vehicle.make} ${vehicle.model}`}
                   </CardTitle>
                 </CardHeader>
@@ -533,7 +533,7 @@ export default function VehiclesPage() {
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2 text-lg">
-                      <VehicleLogo make={vehicle.make} size="lg" />
+                      <VehicleLogo make={vehicle.make} size="lg" enableApiFallback={true} />
                       {vehicle.nickname || `${vehicle.make} ${vehicle.model}`}
                     </CardTitle>
                     <Badge variant="destructive">

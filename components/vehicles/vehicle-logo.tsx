@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Car } from 'lucide-react';
-import { getManufacturerLogo } from '@/lib/utils/vehicle-logos';
+import { getManufacturerLogo, getManufacturerLogoWithFallback } from '@/lib/utils/vehicle-logos';
 import { cn } from '@/lib/utils';
 
 export type LogoSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -10,6 +10,7 @@ interface VehicleLogoProps {
   size?: LogoSize;
   className?: string;
   fallback?: React.ReactNode;
+  enableApiFallback?: boolean;
 }
 
 const sizeClasses: Record<LogoSize, string> = {
@@ -25,19 +26,58 @@ const sizeClasses: Record<LogoSize, string> = {
  * 
  * Displays the manufacturer logo for a vehicle make.
  * Falls back to a generic Car icon if no logo is available.
+ * Can optionally fetch logos from WorldVectorLogo API if not available locally.
  * 
  * @param make - Vehicle make (e.g., "Toyota", "toyota", "TOYOTA")
  * @param size - Logo size (xs, sm, md, lg, xl)
  * @param className - Additional CSS classes
  * @param fallback - Custom fallback component (defaults to Car icon)
+ * @param enableApiFallback - Enable API fallback for missing logos (default: false)
  */
 export function VehicleLogo({ 
   make, 
   size = 'md', 
   className,
-  fallback 
+  fallback,
+  enableApiFallback = false
 }: VehicleLogoProps) {
-  const logoUrl = getManufacturerLogo(make);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    async function fetchLogo() {
+      // First check local logos
+      const localLogo = getManufacturerLogo(make);
+      if (localLogo) {
+        setLogoUrl(localLogo);
+        return;
+      }
+
+      // If API fallback is enabled, try to fetch from API
+      if (enableApiFallback) {
+        setIsLoading(true);
+        try {
+          const apiLogo = await getManufacturerLogoWithFallback(make);
+          setLogoUrl(apiLogo);
+        } catch (error) {
+          console.error('Error fetching logo from API:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    if (make) {
+      fetchLogo();
+    }
+  }, [make, enableApiFallback]);
+
+  if (isLoading) {
+    // Show loading placeholder
+    return (
+      <div className={cn(sizeClasses[size], 'animate-pulse bg-muted rounded', className)} />
+    );
+  }
 
   if (logoUrl) {
     return (

@@ -1142,7 +1142,7 @@ export default function DashboardPage() {
                 return (
                   <SelectItem key={v.id} value={v.id}>
                     <span className="flex items-center gap-2">
-                      <VehicleLogo make={v.make} size="sm" />
+                      <VehicleLogo make={v.make} size="sm" enableApiFallback={true} />
                       {vehicleLabel(v)}
                       {complianceStatus === "Fully confirmed" ? (
                         <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />

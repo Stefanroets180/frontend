@@ -314,7 +314,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
                   {vehicles.map((vehicle) => (
                     <SelectItem key={vehicle.id} value={vehicle.id}>
                       <div className="flex items-center gap-2">
-                        <VehicleLogo make={vehicle.make} size="sm" />
+                        <VehicleLogo make={vehicle.make} size="sm" enableApiFallback={true} />
                         <span>{vehicle.registrationNumber} - {vehicle.make} {vehicle.model}</span>
                       </div>
                     </SelectItem>
