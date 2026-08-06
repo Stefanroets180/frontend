@@ -199,7 +199,7 @@ async function searchLogoViaAPI(make: string): Promise<string | null> {
     // Build API request
     const url = new URL(`${WORLD_VECTOR_LOGO_API}/logos/search`);
     url.searchParams.append('q', make);
-    url.searchParams.append('per_page', '5');
+    url.searchParams.append('per_page', '10');
     
     // Add API key if available
     if (WORLD_VECTOR_LOGO_API_KEY) {
@@ -214,32 +214,55 @@ async function searchLogoViaAPI(make: string): Promise<string | null> {
     });
     
     if (!response.ok) {
+      console.error('API response not OK:', response.status);
       return null;
     }
     
     const data: WorldVectorLogoResponse = await response.json();
     
-    // Find the best matching logo
+    if (!data.data || data.data.length === 0) {
+      console.log('No logos found for:', make);
+      return null;
+    }
+    
+    // Find the best matching logo with improved matching
     const bestMatch = data.data.find((logo) => {
       const logoName = logo.name.toLowerCase();
       const logoSlug = logo.slug.toLowerCase();
       const normalizedMake = normalized.toLowerCase();
+      const makeLower = make.toLowerCase();
       
-      // Check for exact match or close match
-      return (
-        logoName === normalizedMake ||
-        logoName.includes(normalizedMake) ||
-        logoSlug === normalizedMake ||
-        logoSlug.includes(normalizedMake)
-      );
+      // Exact match on normalized make
+      if (logoName === normalizedMake || logoSlug === normalizedMake) {
+        return true;
+      }
+      
+      // Exact match on original make (case-insensitive)
+      if (logoName === makeLower) {
+        return true;
+      }
+      
+      // Check if logo name contains the normalized make
+      if (logoName.includes(normalizedMake) && logoName.length < normalizedMake.length + 10) {
+        return true;
+      }
+      
+      // Check if normalized make contains logo name (for partial matches)
+      if (normalizedMake.includes(logoName) && logoName.length > 2) {
+        return true;
+      }
+      
+      return false;
     });
     
     if (bestMatch) {
+      console.log('Found logo for', make, ':', bestMatch.name);
       // Cache the result
       cacheLogo(make, bestMatch.svg_url);
       return bestMatch.svg_url;
     }
     
+    console.log('No matching logo found for:', make, 'Available:', data.data.map(l => l.name));
     return null;
   } catch (error) {
     console.error('Error fetching logo from WorldVectorLogo API:', error);

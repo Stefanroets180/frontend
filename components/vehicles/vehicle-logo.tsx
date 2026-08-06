@@ -59,7 +59,7 @@ export function VehicleLogo({
         setIsLoading(true);
         try {
           const apiLogo = await getManufacturerLogoWithFallback(make);
-          // Only update if we got a result, otherwise keep previous logo
+          // Only update if we got a result - keep existing logo if API returns null
           if (apiLogo) {
             setLogoUrl(apiLogo);
           }
@@ -80,7 +80,7 @@ export function VehicleLogo({
     if (make) {
       debounceRef.current = setTimeout(() => {
         fetchLogo();
-      }, 500); // 500ms delay
+      }, 300); // Reduced to 300ms for better responsiveness
     }
 
     // Cleanup
@@ -91,14 +91,11 @@ export function VehicleLogo({
     };
   }, [make, enableApiFallback]);
 
-  if (isLoading) {
+  if (isLoading && !logoUrl) {
     // Show loading placeholder only if we don't have a logo yet
-    if (!logoUrl) {
-      return (
-        <div className={cn(sizeClasses[size], 'animate-pulse bg-muted rounded', className)} />
-      );
-    }
-    // If we have a logo, keep showing it while loading
+    return (
+      <div className={cn(sizeClasses[size], 'animate-pulse bg-muted rounded', className)} />
+    );
   }
 
   if (logoUrl) {
