@@ -46,6 +46,7 @@ import { cn } from "@/lib/utils";
 import { useUserPreferences } from "@/lib/hooks/use-user-preferences";
 import { EntryActions } from "@/components/entries";
 import { DashboardCollapsiblePanel } from "@/components/dashboard/dashboard-collapsible-panel";
+import { VehicleLogo } from "@/components/vehicles/vehicle-logo";
 
 const categoryIcons: Record<ExpenseCategory, LucideIcon> = {
   [ExpenseCategory.FUEL_LOG]: Fuel,
@@ -479,7 +480,10 @@ export default function ExpensesPage() {
               <SelectItem value="ALL" className="truncate">All Vehicles</SelectItem>
               {vehicles.map((vehicle) => (
                 <SelectItem key={vehicle.id} value={vehicle.id} className="truncate max-w-full">
-                  {vehicleLabel(vehicle)}
+                  <div className="flex items-center gap-2">
+                    <VehicleLogo make={vehicle.make} size="xs" enableApiFallback={true} />
+                    <span className="truncate">{vehicleLabel(vehicle)}</span>
+                  </div>
                 </SelectItem>
               ))}
             </SelectContent>

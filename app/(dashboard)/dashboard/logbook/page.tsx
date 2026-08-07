@@ -32,6 +32,7 @@ import { EntryActions } from "@/components/entries";
 import { VehicleExportDialog } from "@/components/dashboard/vehicle-export-dialog";
 import { TripExportDialog } from "@/components/dashboard/trip-export-dialog";
 import { DashboardCollapsiblePanel } from "@/components/dashboard/dashboard-collapsible-panel";
+import { VehicleLogo } from "@/components/vehicles/vehicle-logo";
 
 // Helper to format vehicle label same as dashboard
 function vehicleLabel(v: Vehicle): string {
@@ -419,7 +420,10 @@ export default function LogbookPage() {
               <SelectContent>
                 {vehicles.map((vehicle) => (
                   <SelectItem key={vehicle.id} value={vehicle.id}>
-                    {vehicleLabel(vehicle)}
+                    <div className="flex items-center gap-2">
+                      <VehicleLogo make={vehicle.make} size="xs" enableApiFallback={true} />
+                      <span className="truncate">{vehicleLabel(vehicle)}</span>
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -470,7 +474,10 @@ export default function LogbookPage() {
             <SelectContent>
               {vehicles.map((vehicle) => (
                 <SelectItem key={vehicle.id} value={vehicle.id}>
-                  {vehicleLabel(vehicle)}
+                  <div className="flex items-center gap-2">
+                    <VehicleLogo make={vehicle.make} size="xs" enableApiFallback={true} />
+                    <span className="truncate">{vehicleLabel(vehicle)}</span>
+                  </div>
                 </SelectItem>
               ))}
             </SelectContent>
