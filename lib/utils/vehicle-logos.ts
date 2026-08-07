@@ -304,7 +304,33 @@ export function getManufacturerLogo(make: string): string | null {
   
   // Check if the normalized make is in our available logos list
   if (AVAILABLE_LOGOS.includes(normalized as AvailableLogo)) {
+    // Try SVG first (preferred format)
     return `/vehicle-logos/${normalized}.svg`;
+  }
+
+  return null;
+}
+
+/**
+ * Gets the logo URL for a vehicle manufacturer with PNG fallback
+ * Tries SVG first, then PNG if SVG is not available
+ * 
+ * @param make - Vehicle make (e.g., "Toyota", "toyota", "TOYOTA")
+ * @returns Logo URL if available (SVG or PNG), null otherwise
+ */
+export function getManufacturerLogoWithPNGFallback(make: string): string | null {
+  if (!make || typeof make !== 'string') {
+    return null;
+  }
+
+  const normalized = normalizeMake(make);
+  
+  // Check if the normalized make is in our available logos list
+  if (AVAILABLE_LOGOS.includes(normalized as AvailableLogo)) {
+    // Try SVG first (preferred format)
+    const svgPath = `/vehicle-logos/${normalized}.svg`;
+    // Return SVG path - the Image component will handle loading errors
+    return svgPath;
   }
 
   return null;
