@@ -43,7 +43,6 @@ export function VehicleLogo({
 }: VehicleLogoProps) {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [usePng, setUsePng] = useState(false);
   const debounceRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const lastLogoRef = useRef<string | null>(null);
 
@@ -53,7 +52,6 @@ export function VehicleLogo({
       const localLogo = getManufacturerLogo(make);
       if (localLogo) {
         setLogoUrl(localLogo);
-        setUsePng(false);
         lastLogoRef.current = localLogo;
         return;
       }
@@ -66,7 +64,6 @@ export function VehicleLogo({
           // Only update if we got a result
           if (apiLogo) {
             setLogoUrl(apiLogo);
-            setUsePng(false);
             lastLogoRef.current = apiLogo;
           } else if (lastLogoRef.current) {
             // Restore the last successful logo if API returns null
@@ -93,7 +90,6 @@ export function VehicleLogo({
     } else {
       // Clear logo only when make is empty
       setLogoUrl(null);
-      setUsePng(false);
       lastLogoRef.current = null;
     }
 
@@ -115,17 +111,12 @@ export function VehicleLogo({
   if (logoUrl) {
     return (
       <img
-        src={usePng ? logoUrl.replace('.svg', '.png') : logoUrl}
+        src={logoUrl}
         alt={`${make} logo`}
         className={cn(sizeClasses[size], className)}
         onError={(e) => {
-          // If SVG fails and we haven't tried PNG yet, try PNG
-          if (!usePng && logoUrl.endsWith('.svg')) {
-            setUsePng(true);
-          } else {
-            // If PNG also fails or we already tried PNG, hide image
-            e.currentTarget.style.display = 'none';
-          }
+          // Fallback to Car icon if image fails to load
+          e.currentTarget.style.display = 'none';
         }}
       />
     );
