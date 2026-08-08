@@ -100,48 +100,37 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
   const [gpsPosition, setGpsPosition] = useState<GpsPosition | null>(null)
   const [gpsManuallyCleared, setGpsManuallyCleared] = useState(false)
 
-  // Debug: Track gpsPosition changes
-  useEffect(() => {
-    console.log('GPS position state changed:', gpsPosition)
-  }, [gpsPosition])
-
   const [isCapturingGps, setIsCapturingGps] = useState(false)
   const [showCropModal, setShowCropModal] = useState(false)
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
 
   // Reset GPS position when entryId changes (new expense being edited/created)
   useEffect(() => {
-    console.log('GPS reset due to entryId change:', entryId)
     setGpsPosition(null)
   }, [entryId])
 
   // Reset GPS position when mode changes to create
   useEffect(() => {
     if (mode === 'create') {
-      console.log('GPS reset due to mode change to create')
       setGpsPosition(null)
     }
   }, [mode])
 
   // Force GPS reset on component mount
   useEffect(() => {
-    console.log('GPS reset on component mount')
     setGpsPosition(null)
   }, [])
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
-    console.log('FuelLogForm - useEffect triggered:', { mode, existingImagesLength: existingImages.length });
     if (mode === 'edit' && existingImages.length > 0) {
       const firstImage = existingImages[0]
-      console.log('FuelLogForm - Setting previewUrl from:', firstImage);
       setPreviewUrl(firstImage.imageUrl)
     }
   }, [mode, existingImages])
 
   // Load GPS position from initialData in edit mode
   useEffect(() => {
-    console.log('Load GPS from initialData:', { mode, initialData, hasLat: !!initialData?.latitude, hasLng: !!initialData?.longitude, gpsManuallyCleared })
     if (mode === 'edit' && initialData && !gpsManuallyCleared) {
       // Check if initialData has GPS coordinates (they might be stored as separate fields or in fuelLog)
       const lat = initialData.latitude || (initialData as any)?.fuelLog?.gpsLatitude
@@ -149,25 +138,23 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
       const accuracy = initialData.accuracy || (initialData as any)?.fuelLog?.gpsAccuracyMeters
       
       if (lat && lng) {
-        console.log('Setting GPS from initialData')
         setGpsPosition({
           latitude: lat as number,
           longitude: lng as number,
           accuracy: accuracy as number || 0
         })
       } else {
-        console.log('No GPS in initialData, setting to null')
         setGpsPosition(null)
       }
     }
-  }, [mode, initialData, entryId, gpsManuallyCleared]) // Add gpsManuallyCleared to dependency array
+  }, [mode, initialData, entryId, gpsManuallyCleared])
 
   const {
     register,
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isValid, isDirty },
+    formState: { errors },
   } = useForm<FuelLogInput>({
     resolver: zodResolver(fuelLogSchema),
     defaultValues: initialData || {
@@ -178,11 +165,6 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
       odometerReading: vehicles[0]?.currentOdometer || 0,
     },
   })
-
-  // Debug: Log form state
-  useEffect(() => {
-    console.log('Form state:', { isValid, isDirty, errors, mode })
-  }, [isValid, isDirty, errors, mode])
 
   const selectedVehicleId = watch('vehicleId')
   const liters = watch('liters')
@@ -323,28 +305,22 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
   }
 
   const clearGps = (e?: React.MouseEvent) => {
-    console.log('clearGps called', { event: e, currentGpsPosition: gpsPosition })
     if (e) {
       e.preventDefault()
       e.stopPropagation()
     }
-    console.log('About to call setGpsPosition(null)')
     setGpsPosition(null)
     setGpsManuallyCleared(true) // Mark that user manually cleared GPS
-    console.log('setGpsPosition(null) called')
   }
 
   const handleFormSubmit = async (data: FuelLogInput) => {
-    console.log('handleFormSubmit called', { data, gpsPosition, mode })
     setIsSubmitting(true)
     try {
-      console.log('About to call onSubmit')
       await onSubmit(
         data,
         mode === 'create' ? receiptImage || undefined : undefined,
         gpsPosition || undefined
       )
-      console.log('onSubmit completed successfully')
       
       // Save fuel log odometer to trigger tyre rotation check
       // This will update any active tyre rotation tracking for this vehicle
