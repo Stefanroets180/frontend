@@ -140,15 +140,19 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
 
   // Load GPS position from initialData in edit mode
   useEffect(() => {
-    console.log('Load GPS from initialData:', { mode, initialData, hasLat: !!initialData?.latitude, hasLng: !!initialData?.longitude })
+    console.log('Load GPS from initialData:', { mode, initialData, hasLat: !!initialData?.latitude, hasLng: !!initialData?.longitude, hasFuelLogLat: !!initialData?.fuelLog?.gpsLatitude, hasFuelLogLng: !!initialData?.fuelLog?.gpsLongitude })
     if (mode === 'edit' && initialData) {
-      // Check if initialData has GPS coordinates (they might be stored as separate fields)
-      if (initialData.latitude && initialData.longitude) {
+      // Check if initialData has GPS coordinates (they might be stored as separate fields or in fuelLog)
+      const lat = initialData.latitude || initialData.fuelLog?.gpsLatitude
+      const lng = initialData.longitude || initialData.fuelLog?.gpsLongitude
+      const accuracy = initialData.accuracy || initialData.fuelLog?.gpsAccuracyMeters
+      
+      if (lat && lng) {
         console.log('Setting GPS from initialData')
         setGpsPosition({
-          latitude: initialData.latitude as number,
-          longitude: initialData.longitude as number,
-          accuracy: initialData.accuracy || 0
+          latitude: lat as number,
+          longitude: lng as number,
+          accuracy: accuracy as number || 0
         })
       } else {
         console.log('No GPS in initialData, setting to null')
