@@ -98,6 +98,11 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [lastOdometerReadings, setLastOdometerReadings] = useState<Record<string, number>>({})
   const [gpsPosition, setGpsPosition] = useState<GpsPosition | null>(null)
+
+  // Debug: Track gpsPosition changes
+  useEffect(() => {
+    console.log('GPS position state changed:', gpsPosition)
+  }, [gpsPosition])
   const [isCapturingGps, setIsCapturingGps] = useState(false)
   const [showCropModal, setShowCropModal] = useState(false)
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
@@ -312,8 +317,13 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
       e.preventDefault()
       e.stopPropagation()
     }
+    console.log('About to call setGpsPosition(null)')
     setGpsPosition(null)
-    console.log('clearGps - setGpsPosition(null) called')
+    console.log('setGpsPosition(null) called')
+    // Force a re-render by updating a counter
+    setTimeout(() => {
+      console.log('After setGpsPosition - gpsPosition is now:', gpsPosition)
+    }, 0)
   }
 
   const handleFormSubmit = async (data: FuelLogInput) => {
