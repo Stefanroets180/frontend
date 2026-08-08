@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { Car } from 'lucide-react';
-import { getManufacturerLogo, getManufacturerLogoWithFallback } from '@/lib/utils/vehicle-logos';
+import { getManufacturerLogo } from '@/lib/utils/vehicle-logos';
 import { cn } from '@/lib/utils';
 
 export type LogoSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -10,7 +10,6 @@ interface VehicleLogoProps {
   size?: LogoSize;
   className?: string;
   fallback?: React.ReactNode;
-  enableApiFallback?: boolean;
 }
 
 const sizeClasses: Record<LogoSize, string> = {
@@ -25,88 +24,20 @@ const sizeClasses: Record<LogoSize, string> = {
  * VehicleLogo Component
  * 
  * Displays the manufacturer logo for a vehicle make.
- * Falls back to a generic Car icon if no logo is available.
- * Can optionally fetch logos from WorldVectorLogo API if not available locally.
+ * Falls back to a generic Car icon if no logo is available locally.
  * 
  * @param make - Vehicle make (e.g., "Toyota", "toyota", "TOYOTA")
  * @param size - Logo size (xs, sm, md, lg, xl)
  * @param className - Additional CSS classes
  * @param fallback - Custom fallback component (defaults to Car icon)
- * @param enableApiFallback - Enable API fallback for missing logos (default: false)
  */
 export function VehicleLogo({ 
   make, 
   size = 'md', 
   className,
-  fallback,
-  enableApiFallback = false
+  fallback
 }: VehicleLogoProps) {
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const debounceRef = useRef<NodeJS.Timeout | undefined>(undefined);
-  const lastLogoRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    async function fetchLogo() {
-      // First check local logos
-      const localLogo = getManufacturerLogo(make);
-      if (localLogo) {
-        setLogoUrl(localLogo);
-        lastLogoRef.current = localLogo;
-        return;
-      }
-
-      // If API fallback is enabled, try to fetch from API
-      if (enableApiFallback) {
-        setIsLoading(true);
-        try {
-          const apiLogo = await getManufacturerLogoWithFallback(make);
-          // Only update if we got a result
-          if (apiLogo) {
-            setLogoUrl(apiLogo);
-            lastLogoRef.current = apiLogo;
-          } else if (lastLogoRef.current) {
-            // Restore the last successful logo if API returns null
-            setLogoUrl(lastLogoRef.current);
-          }
-        } catch (error) {
-          console.error('Error fetching logo from API:', error);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    // Clear previous debounce timer
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    if (make) {
-      // Debounce the fetch
-      debounceRef.current = setTimeout(() => {
-        fetchLogo();
-      }, 400);
-    } else {
-      // Clear logo only when make is empty
-      setLogoUrl(null);
-      lastLogoRef.current = null;
-    }
-
-    // Cleanup
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
-  }, [make, enableApiFallback]);
-
-  if (isLoading && !logoUrl) {
-    // Show loading placeholder only if we don't have a logo yet
-    return (
-      <div className={cn(sizeClasses[size], 'animate-pulse bg-muted rounded', className)} />
-    );
-  }
+  const logoUrl = getManufacturerLogo(make);
 
   if (logoUrl) {
     return (
