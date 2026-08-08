@@ -125,6 +125,9 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
       } else {
         setGpsPosition(null)
       }
+    } else if (mode === 'create') {
+      // Clear GPS when switching to create mode
+      setGpsPosition(null)
     }
   }, [mode, initialData])
 
@@ -563,10 +566,6 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
                   <MapPin className="h-3 w-3" />
                   View on Google Maps
                 </a>
-              </div>
-            ) : mode === 'edit' ? (
-              <div className="rounded-lg border border-dashed border-border p-3 text-center text-sm text-muted-foreground">
-                No GPS coordinates recorded
               </div>
             ) : (
               <Button
