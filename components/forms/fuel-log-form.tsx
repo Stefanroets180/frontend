@@ -154,7 +154,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isValid, isDirty },
+    formState: { errors },
   } = useForm<FuelLogInput>({
     resolver: zodResolver(fuelLogSchema),
     defaultValues: initialData || {
@@ -165,11 +165,6 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
       odometerReading: vehicles[0]?.currentOdometer || 0,
     },
   })
-
-  // Debug: Log form state
-  useEffect(() => {
-    console.log('Form state:', { isValid, isDirty, errors, mode })
-  }, [isValid, isDirty, errors, mode])
 
   const selectedVehicleId = watch('vehicleId')
   const liters = watch('liters')
@@ -319,16 +314,13 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
   }
 
   const handleFormSubmit = async (data: FuelLogInput) => {
-    console.log('handleFormSubmit called', { data, gpsPosition, mode })
     setIsSubmitting(true)
     try {
-      console.log('About to call onSubmit')
       await onSubmit(
         data,
         mode === 'create' ? receiptImage || undefined : undefined,
         gpsPosition || undefined
       )
-      console.log('onSubmit completed successfully')
       
       // Save fuel log odometer to trigger tyre rotation check
       // This will update any active tyre rotation tracking for this vehicle
