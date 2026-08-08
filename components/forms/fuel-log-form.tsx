@@ -527,7 +527,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
           <div className="space-y-2">
             <p className="text-sm font-medium">GPS Coordinates (Optional)</p>
             {gpsPosition ? (
-              <div className="rounded-lg border border-border p-3 space-y-2 relative z-10">
+              <div className="rounded-lg border border-border p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-green-600 font-medium">✓ Location Captured</span>
                   <button
@@ -537,7 +537,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
                       e.stopPropagation()
                       clearGps(e)
                     }}
-                    className="h-8 px-3 text-sm border border-input bg-background hover:bg-destructive hover:text-destructive-foreground rounded-md transition-colors relative z-20"
+                    className="h-8 px-3 text-sm border border-input bg-background hover:bg-destructive hover:text-destructive-foreground rounded-md transition-colors"
                   >
                     Clear
                   </button>
@@ -564,13 +564,17 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
                   View on Google Maps
                 </a>
               </div>
+            ) : mode === 'edit' ? (
+              <div className="rounded-lg border border-dashed border-border p-3 text-center text-sm text-muted-foreground">
+                No GPS coordinates recorded
+              </div>
             ) : (
               <Button
                 type="button"
                 variant="outline"
                 onClick={captureGps}
                 disabled={isCapturingGps}
-                className="w-full h-12 touch-target relative z-0"
+                className="w-full h-12 touch-target"
               >
                 <MapPin className="h-4 w-4 mr-2" />
                 {isCapturingGps ? 'Capturing GPS...' : 'Capture GPS Location'}
