@@ -102,6 +102,18 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
   const [showCropModal, setShowCropModal] = useState(false)
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
 
+  // Reset GPS position when entryId changes (new expense being edited/created)
+  useEffect(() => {
+    setGpsPosition(null)
+  }, [entryId])
+
+  // Reset GPS position when mode changes to create
+  useEffect(() => {
+    if (mode === 'create') {
+      setGpsPosition(null)
+    }
+  }, [mode])
+
   // Set preview from existing images when in edit mode
   useEffect(() => {
     console.log('FuelLogForm - useEffect triggered:', { mode, existingImagesLength: existingImages.length });
@@ -125,9 +137,6 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
       } else {
         setGpsPosition(null)
       }
-    } else if (mode === 'create') {
-      // Clear GPS when switching to create mode
-      setGpsPosition(null)
     }
   }, [mode, initialData])
 
@@ -538,6 +547,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
+                      e.nativeEvent.stopImmediatePropagation()
                       clearGps(e)
                     }}
                     className="h-8 px-3 text-sm border border-input bg-background hover:bg-destructive hover:text-destructive-foreground rounded-md transition-colors"
