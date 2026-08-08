@@ -104,15 +104,23 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
 
   // Reset GPS position when entryId changes (new expense being edited/created)
   useEffect(() => {
+    console.log('GPS reset due to entryId change:', entryId)
     setGpsPosition(null)
   }, [entryId])
 
   // Reset GPS position when mode changes to create
   useEffect(() => {
     if (mode === 'create') {
+      console.log('GPS reset due to mode change to create')
       setGpsPosition(null)
     }
   }, [mode])
+
+  // Force GPS reset on component mount
+  useEffect(() => {
+    console.log('GPS reset on component mount')
+    setGpsPosition(null)
+  }, [])
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
@@ -126,15 +134,18 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
 
   // Load GPS position from initialData in edit mode
   useEffect(() => {
+    console.log('Load GPS from initialData:', { mode, initialData, hasLat: !!initialData?.latitude, hasLng: !!initialData?.longitude })
     if (mode === 'edit' && initialData) {
       // Check if initialData has GPS coordinates (they might be stored as separate fields)
       if (initialData.latitude && initialData.longitude) {
+        console.log('Setting GPS from initialData')
         setGpsPosition({
           latitude: initialData.latitude as number,
           longitude: initialData.longitude as number,
           accuracy: initialData.accuracy || 0
         })
       } else {
+        console.log('No GPS in initialData, setting to null')
         setGpsPosition(null)
       }
     }

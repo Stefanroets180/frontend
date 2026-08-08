@@ -536,6 +536,8 @@ export default function EditExpensePage({
                   : "Fuel Purchase",
                 vehicleReg,
                 supplierName: expenseData.stationName as string | undefined,
+                // Ensure fuelType is always included
+                fuelType: expenseData.fuelType,
               };
 
               if (gpsPosition) {
