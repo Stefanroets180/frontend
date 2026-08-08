@@ -115,6 +115,8 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
   // Load GPS position from initialData in edit mode
   useEffect(() => {
     if (mode === 'edit' && initialData) {
+      console.log('Edit mode - initialData:', initialData)
+      console.log('GPS values:', { lat: initialData.latitude, lng: initialData.longitude, acc: initialData.accuracy })
       // Check if initialData has GPS coordinates (they might be stored as separate fields)
       if (initialData.latitude && initialData.longitude) {
         setGpsPosition({
@@ -122,6 +124,10 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
           longitude: initialData.longitude as number,
           accuracy: initialData.accuracy || 0
         })
+        console.log('GPS position set from initialData')
+      } else {
+        console.log('No GPS data in initialData, clearing GPS position')
+        setGpsPosition(null)
       }
     }
   }, [mode, initialData])
@@ -282,11 +288,13 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
   }
 
   const clearGps = (e?: React.MouseEvent) => {
+    console.log('clearGps called')
     if (e) {
       e.preventDefault()
       e.stopPropagation()
     }
     setGpsPosition(null)
+    console.log('GPS position cleared')
   }
 
   const handleFormSubmit = async (data: FuelLogInput) => {
