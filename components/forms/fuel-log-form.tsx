@@ -281,7 +281,11 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
     }
   }
 
-  const clearGps = () => {
+  const clearGps = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
     setGpsPosition(null)
   }
 
@@ -524,15 +528,17 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
               <div className="rounded-lg border border-border p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-green-600 font-medium">✓ Location Captured</span>
-                  <Button
+                  <button
                     type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={clearGps}
-                    className="h-8 text-muted-foreground"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      clearGps(e)
+                    }}
+                    className="h-8 px-3 text-sm border border-input bg-background hover:bg-destructive hover:text-destructive-foreground rounded-md transition-colors"
                   >
                     Clear
-                  </Button>
+                  </button>
                 </div>
                 <div className="text-xs text-muted-foreground space-y-1">
                   <div className="flex items-center justify-between">
