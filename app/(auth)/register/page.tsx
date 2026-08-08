@@ -158,6 +158,12 @@ export default function RegisterPage() {
                 <p className="text-sm text-muted-foreground">
                   Click the link in the email to verify your account and get started.
                 </p>
+                <Alert className="mt-4 bg-orange-500/10 border-orange-500/30 dark:bg-orange-500/10 dark:border-orange-500/30">
+                  <AlertCircle className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                  <AlertDescription className="text-orange-800 dark:text-orange-300">
+                    <strong>Check your spam folder!</strong> The confirmation email may have been filtered there.
+                  </AlertDescription>
+                </Alert>
                 {isYahooEmail && verificationToken && (
                   <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg dark:bg-yellow-500/10 dark:border-yellow-500/30">
                     <p className="text-sm font-medium text-yellow-800 dark:text-yellow-300 mb-2">
@@ -177,7 +183,7 @@ export default function RegisterPage() {
                   </div>
                 )}
                 <p className="text-xs text-muted-foreground mt-4">
-                  Please check your inbox and click the confirmation link to access your dashboard.
+                  Please check your inbox and spam folder, then click the confirmation link to access your dashboard.
                 </p>
               </div>
             </div>

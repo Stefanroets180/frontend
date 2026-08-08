@@ -11,6 +11,7 @@ export interface SpringAuthPayload {
   organizationName: string
   organizationMode: string
   verificationToken?: string
+  emailSent?: boolean
 }
 
 export interface NormalizedAuthUser {
@@ -29,6 +30,7 @@ export interface NormalizedAuthResponse {
   refreshToken?: string
   user: NormalizedAuthUser
   verificationToken?: string
+  emailSent?: boolean
 }
 
 function isFlatSpringAuth(data: Record<string, unknown>): data is Record<string, unknown> & SpringAuthPayload {
@@ -48,6 +50,7 @@ export function normalizeAuthResponse(raw: unknown): NormalizedAuthResponse {
       accessToken: String(data.accessToken),
       refreshToken: data.refreshToken ? String(data.refreshToken) : undefined,
       verificationToken: data.verificationToken ? String(data.verificationToken) : undefined,
+      emailSent: data.emailSent !== undefined ? Boolean(data.emailSent) : undefined,
       user: {
         id: String(u.id ?? u.userId),
         email: String(u.email),
@@ -69,6 +72,7 @@ export function normalizeAuthResponse(raw: unknown): NormalizedAuthResponse {
     accessToken: data.accessToken,
     refreshToken: data.refreshToken,
     verificationToken: data.verificationToken ? String(data.verificationToken) : undefined,
+    emailSent: data.emailSent !== undefined ? Boolean(data.emailSent) : undefined,
     user: {
       id: String(data.userId),
       email: data.email,
