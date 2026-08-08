@@ -506,7 +506,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
             {gpsPosition ? (
               <div className="rounded-lg border border-border p-3 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-green-600 font-medium">GPS Captured</span>
+                  <span className="text-sm text-green-600 font-medium">✓ Location Captured</span>
                   <Button
                     type="button"
                     variant="ghost"
@@ -518,10 +518,26 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
                   </Button>
                 </div>
                 <div className="text-xs text-muted-foreground space-y-1">
-                  <p>Lat: {gpsPosition.latitude.toFixed(6)}</p>
-                  <p>Lng: {gpsPosition.longitude.toFixed(6)}</p>
-                  <p>Accuracy: ±{Math.round(gpsPosition.accuracy)}m</p>
+                  <div className="flex items-center justify-between">
+                    <span>Accuracy:</span>
+                    <span className={gpsPosition.accuracy < 50 ? 'text-green-600' : gpsPosition.accuracy < 200 ? 'text-amber-600' : 'text-red-600'}>
+                      {gpsPosition.accuracy < 50 ? 'Excellent' : gpsPosition.accuracy < 200 ? 'Good' : gpsPosition.accuracy < 500 ? 'Fair' : 'Low'} (±{Math.round(gpsPosition.accuracy)}m)
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Coordinates:</span>
+                    <span className="font-mono">{gpsPosition.latitude.toFixed(6)}, {gpsPosition.longitude.toFixed(6)}</span>
+                  </div>
                 </div>
+                <a
+                  href={`https://www.google.com/maps?q=${gpsPosition.latitude},${gpsPosition.longitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-600 hover:underline flex items-center gap-1"
+                >
+                  <MapPin className="h-3 w-3" />
+                  View on Google Maps
+                </a>
               </div>
             ) : (
               <Button
