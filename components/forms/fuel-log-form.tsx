@@ -115,8 +115,6 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
   // Load GPS position from initialData in edit mode
   useEffect(() => {
     if (mode === 'edit' && initialData) {
-      console.log('Edit mode - initialData:', initialData)
-      console.log('GPS values:', { lat: initialData.latitude, lng: initialData.longitude, acc: initialData.accuracy })
       // Check if initialData has GPS coordinates (they might be stored as separate fields)
       if (initialData.latitude && initialData.longitude) {
         setGpsPosition({
@@ -124,9 +122,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
           longitude: initialData.longitude as number,
           accuracy: initialData.accuracy || 0
         })
-        console.log('GPS position set from initialData')
       } else {
-        console.log('No GPS data in initialData, clearing GPS position')
         setGpsPosition(null)
       }
     }
@@ -288,13 +284,11 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
   }
 
   const clearGps = (e?: React.MouseEvent) => {
-    console.log('clearGps called')
     if (e) {
       e.preventDefault()
       e.stopPropagation()
     }
     setGpsPosition(null)
-    console.log('GPS position cleared')
   }
 
   const handleFormSubmit = async (data: FuelLogInput) => {
@@ -533,7 +527,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
           <div className="space-y-2">
             <p className="text-sm font-medium">GPS Coordinates (Optional)</p>
             {gpsPosition ? (
-              <div className="rounded-lg border border-border p-3 space-y-2">
+              <div className="rounded-lg border border-border p-3 space-y-2 relative z-10">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-green-600 font-medium">✓ Location Captured</span>
                   <button
@@ -543,7 +537,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
                       e.stopPropagation()
                       clearGps(e)
                     }}
-                    className="h-8 px-3 text-sm border border-input bg-background hover:bg-destructive hover:text-destructive-foreground rounded-md transition-colors"
+                    className="h-8 px-3 text-sm border border-input bg-background hover:bg-destructive hover:text-destructive-foreground rounded-md transition-colors relative z-20"
                   >
                     Clear
                   </button>
@@ -576,7 +570,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
                 variant="outline"
                 onClick={captureGps}
                 disabled={isCapturingGps}
-                className="w-full h-12 touch-target"
+                className="w-full h-12 touch-target relative z-0"
               >
                 <MapPin className="h-4 w-4 mr-2" />
                 {isCapturingGps ? 'Capturing GPS...' : 'Capture GPS Location'}
