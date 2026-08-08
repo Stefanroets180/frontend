@@ -154,7 +154,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
     handleSubmit,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, isValid, isDirty },
   } = useForm<FuelLogInput>({
     resolver: zodResolver(fuelLogSchema),
     defaultValues: initialData || {
@@ -165,6 +165,11 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
       odometerReading: vehicles[0]?.currentOdometer || 0,
     },
   })
+
+  // Debug: Log form state
+  useEffect(() => {
+    console.log('Form state:', { isValid, isDirty, errors, mode })
+  }, [isValid, isDirty, errors, mode])
 
   const selectedVehicleId = watch('vehicleId')
   const liters = watch('liters')
