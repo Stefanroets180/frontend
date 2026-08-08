@@ -202,6 +202,9 @@ export default function EditExpensePage({
                   : true,
               stationName: data.fuelLog?.stationName || data.supplierName || "",
               stationLocation: data.fuelLog?.stationLocation || "",
+              latitude: data.gpsLatitude || null,
+              longitude: data.gpsLongitude || null,
+              accuracy: data.gpsAccuracyMeters || 0,
             });
             break;
 
@@ -542,6 +545,11 @@ export default function EditExpensePage({
                 (dataToSend as any).gpsAccuracyMeters = (
                   gpsPosition as any
                 ).accuracy;
+              } else {
+                // Explicitly clear GPS if position is null (user clicked Clear)
+                (dataToSend as any).gpsLatitude = null;
+                (dataToSend as any).gpsLongitude = null;
+                (dataToSend as any).gpsAccuracyMeters = null;
               }
 
               const formData = new FormData();

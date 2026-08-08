@@ -109,6 +109,20 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
     }
   }, [mode, existingImages])
 
+  // Load GPS position from initialData in edit mode
+  useEffect(() => {
+    if (mode === 'edit' && initialData) {
+      // Check if initialData has GPS coordinates (they might be stored as separate fields)
+      if (initialData.latitude && initialData.longitude) {
+        setGpsPosition({
+          latitude: initialData.latitude as number,
+          longitude: initialData.longitude as number,
+          accuracy: initialData.accuracy || 0
+        })
+      }
+    }
+  }, [mode, initialData])
+
   const {
     register,
     handleSubmit,
