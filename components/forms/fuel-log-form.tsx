@@ -159,7 +159,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
         setGpsPosition(null)
       }
     }
-  }, [mode, initialData])
+  }, [mode, initialData, entryId]) // Add entryId to dependency array
 
   const {
     register,
