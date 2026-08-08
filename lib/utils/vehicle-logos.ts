@@ -3,38 +3,7 @@
  * 
  * Provides case-insensitive matching for vehicle manufacturer logos.
  * Logos are stored in /public/vehicle-logos/ with lowercase filenames.
- * Falls back to WorldVectorLogo API if local logo is not available.
  */
-
-// WorldVectorLogo API configuration
-const WORLD_VECTOR_LOGO_API = 'https://worldvectorlogo.com/api/v1';
-const WORLD_VECTOR_LOGO_API_KEY = process.env.NEXT_PUBLIC_WORLD_VECTOR_LOGO_API_KEY || '';
-
-/**
- * LocalStorage cache key for API-fetched logos
- */
-const CACHE_KEY = 'vehicle-logos-cache';
-const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-
-/**
- * Cached logo entry
- */
-interface CachedLogo {
-  url: string;
-  timestamp: number;
-}
-
-/**
- * WorldVectorLogo API response
- */
-interface WorldVectorLogoResponse {
-  data: Array<{
-    slug: string;
-    name: string;
-    svg_url: string;
-    tags: string[];
-  }>;
-}
 
 /**
  * List of available manufacturer logos
@@ -136,160 +105,6 @@ function normalizeMake(make: string): string {
 }
 
 /**
- * Gets cached logos from localStorage
- */
-function getCachedLogos(): Record<string, CachedLogo> {
-  if (typeof window === 'undefined') return {};
-  
-  try {
-    const cached = localStorage.getItem(CACHE_KEY);
-    if (!cached) return {};
-    
-    const parsed = JSON.parse(cached);
-    // Remove expired entries
-    const now = Date.now();
-    const cleaned: Record<string, CachedLogo> = {};
-    
-    for (const [key, value] of Object.entries(parsed)) {
-      const entry = value as CachedLogo;
-      if (now - entry.timestamp < CACHE_DURATION) {
-        cleaned[key] = entry;
-      }
-    }
-    
-    // Update cache with cleaned entries
-    localStorage.setItem(CACHE_KEY, JSON.stringify(cleaned));
-    return cleaned;
-  } catch {
-    return {};
-  }
-}
-
-/**
- * Caches a logo URL in localStorage
- * Only caches if URL is not null
- */
-function cacheLogo(make: string, url: string): void {
-  if (typeof window === 'undefined') return;
-  if (!url) return; // Don't cache null/undefined URLs
-  
-  try {
-    const cached = getCachedLogos();
-    cached[normalizeMake(make)] = {
-      url,
-      timestamp: Date.now(),
-    };
-    localStorage.setItem(CACHE_KEY, JSON.stringify(cached));
-  } catch {
-    // Ignore cache errors
-  }
-}
-
-/**
- * Searches for a logo via WorldVectorLogo API
- */
-async function searchLogoViaAPI(make: string): Promise<string | null> {
-  const normalized = normalizeMake(make);
-  
-  // Check cache first
-  const cached = getCachedLogos();
-  if (cached[normalized]) {
-    return cached[normalized].url;
-  }
-  
-  // Check for partial matches in cache (e.g., "Fia" when searching for "Fiat")
-  const cacheKeys = Object.keys(cached);
-  for (const key of cacheKeys) {
-    if (key.includes(normalized) || normalized.includes(key)) {
-      console.log('Using cached partial match:', key, 'for', make);
-      return cached[key].url;
-    }
-  }
-  
-  try {
-    // Build API request
-    const url = new URL(`${WORLD_VECTOR_LOGO_API}/logos/search`);
-    url.searchParams.append('q', make);
-    url.searchParams.append('per_page', '10');
-    
-    // Add API key if available
-    if (WORLD_VECTOR_LOGO_API_KEY) {
-      url.searchParams.append('api_key', WORLD_VECTOR_LOGO_API_KEY);
-    }
-    
-    const response = await fetch(url.toString(), {
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    });
-    
-    if (!response.ok) {
-      console.error('API response not OK:', response.status);
-      return null;
-    }
-    
-    const data: WorldVectorLogoResponse = await response.json();
-    
-    if (!data.data || data.data.length === 0) {
-      console.log('No logos found for:', make);
-      return null;
-    }
-    
-    // Find the best matching logo with improved matching
-    const bestMatch = data.data.find((logo) => {
-      const logoName = logo.name.toLowerCase();
-      const logoSlug = logo.slug.toLowerCase();
-      const normalizedMake = normalized.toLowerCase();
-      const makeLower = make.toLowerCase();
-      
-      // Exact match on normalized make
-      if (logoName === normalizedMake || logoSlug === normalizedMake) {
-        return true;
-      }
-      
-      // Exact match on original make (case-insensitive)
-      if (logoName === makeLower) {
-        return true;
-      }
-      
-      // Check if logo name contains the normalized make
-      if (logoName.includes(normalizedMake) && logoName.length < normalizedMake.length + 10) {
-        return true;
-      }
-      
-      // Check if normalized make contains logo name (for partial matches)
-      if (normalizedMake.includes(logoName) && logoName.length > 2) {
-        return true;
-      }
-      
-      return false;
-    });
-    
-    // If we found a match, use it
-    if (bestMatch) {
-      console.log('Found logo for', make, ':', bestMatch.name);
-      // Cache the result
-      cacheLogo(make, bestMatch.svg_url);
-      return bestMatch.svg_url;
-    }
-    
-    // If no exact match but we have results, use the first one as fallback
-    if (data.data.length > 0) {
-      console.log('Using first available logo for', make, ':', data.data[0].name);
-      cacheLogo(make, data.data[0].svg_url);
-      return data.data[0].svg_url;
-    }
-    
-    console.log('No logos found for:', make);
-    return null;
-  } catch (error) {
-    console.error('Error fetching logo from WorldVectorLogo API:', error);
-    return null;
-  }
-}
-
-/**
  * Gets the logo URL for a vehicle manufacturer
  * 
  * @param make - Vehicle make (e.g., "Toyota", "toyota", "TOYOTA")
@@ -304,59 +119,10 @@ export function getManufacturerLogo(make: string): string | null {
   
   // Check if the normalized make is in our available logos list
   if (AVAILABLE_LOGOS.includes(normalized as AvailableLogo)) {
-    // Try SVG first (preferred format)
     return `/vehicle-logos/${normalized}.svg`;
   }
 
   return null;
-}
-
-/**
- * Gets the logo URL for a vehicle manufacturer with PNG fallback
- * Tries SVG first, then PNG if SVG is not available
- * 
- * @param make - Vehicle make (e.g., "Toyota", "toyota", "TOYOTA")
- * @returns Logo URL if available (SVG or PNG), null otherwise
- */
-export function getManufacturerLogoWithPNGFallback(make: string): string | null {
-  if (!make || typeof make !== 'string') {
-    return null;
-  }
-
-  const normalized = normalizeMake(make);
-  
-  // Check if the normalized make is in our available logos list
-  if (AVAILABLE_LOGOS.includes(normalized as AvailableLogo)) {
-    // Try SVG first (preferred format)
-    const svgPath = `/vehicle-logos/${normalized}.svg`;
-    // Return SVG path - the Image component will handle loading errors
-    return svgPath;
-  }
-
-  return null;
-}
-
-/**
- * Gets the logo URL for a vehicle manufacturer with API fallback
- * This is an async version that will try the API if local logo is not available
- * 
- * @param make - Vehicle make (e.g., "Toyota", "toyota", "TOYOTA")
- * @returns Logo URL if available (local or API), null otherwise
- */
-export async function getManufacturerLogoWithFallback(make: string): Promise<string | null> {
-  if (!make || typeof make !== 'string') {
-    return null;
-  }
-
-  const normalized = normalizeMake(make);
-  
-  // First check local logos
-  if (AVAILABLE_LOGOS.includes(normalized as AvailableLogo)) {
-    return `/vehicle-logos/${normalized}.svg`;
-  }
-
-  // Try API fallback
-  return await searchLogoViaAPI(make);
 }
 
 /**
