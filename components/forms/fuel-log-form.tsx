@@ -98,6 +98,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [lastOdometerReadings, setLastOdometerReadings] = useState<Record<string, number>>({})
   const [gpsPosition, setGpsPosition] = useState<GpsPosition | null>(null)
+  const [gpsManuallyCleared, setGpsManuallyCleared] = useState(false)
 
   // Debug: Track gpsPosition changes
   useEffect(() => {
@@ -140,8 +141,8 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
 
   // Load GPS position from initialData in edit mode
   useEffect(() => {
-    console.log('Load GPS from initialData:', { mode, initialData, hasLat: !!initialData?.latitude, hasLng: !!initialData?.longitude })
-    if (mode === 'edit' && initialData) {
+    console.log('Load GPS from initialData:', { mode, initialData, hasLat: !!initialData?.latitude, hasLng: !!initialData?.longitude, gpsManuallyCleared })
+    if (mode === 'edit' && initialData && !gpsManuallyCleared) {
       // Check if initialData has GPS coordinates (they might be stored as separate fields or in fuelLog)
       const lat = initialData.latitude || (initialData as any)?.fuelLog?.gpsLatitude
       const lng = initialData.longitude || (initialData as any)?.fuelLog?.gpsLongitude
@@ -159,7 +160,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
         setGpsPosition(null)
       }
     }
-  }, [mode, initialData, entryId]) // Add entryId to dependency array
+  }, [mode, initialData, entryId, gpsManuallyCleared]) // Add gpsManuallyCleared to dependency array
 
   const {
     register,
@@ -324,6 +325,7 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
     }
     console.log('About to call setGpsPosition(null)')
     setGpsPosition(null)
+    setGpsManuallyCleared(true) // Mark that user manually cleared GPS
     console.log('setGpsPosition(null) called')
   }
 
