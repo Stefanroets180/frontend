@@ -325,10 +325,6 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
     console.log('About to call setGpsPosition(null)')
     setGpsPosition(null)
     console.log('setGpsPosition(null) called')
-    // Force a re-render by updating a counter
-    setTimeout(() => {
-      console.log('After setGpsPosition - gpsPosition is now:', gpsPosition)
-    }, 0)
   }
 
   const handleFormSubmit = async (data: FuelLogInput) => {
