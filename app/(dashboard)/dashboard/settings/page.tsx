@@ -643,7 +643,7 @@ function SettingsContent() {
                       {vehicles.map((v) => (
                         <SelectItem key={v.id} value={v.id}>
                           <div className="flex items-center gap-2">
-                            <VehicleLogo make={v.make} size="sm" enableApiFallback={true} />
+                            <VehicleLogo make={v.make} size="sm"  />
                             <span>
                               {v.nickname ??
                                 `${v.make} ${v.model} — ${v.registrationNumber}`}

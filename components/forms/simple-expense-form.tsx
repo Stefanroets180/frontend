@@ -211,7 +211,7 @@ export function SimpleExpenseForm({
                   {vehicles.map((v) => (
                     <SelectItem key={v.id} value={v.id}>
                       <div className="flex items-center gap-2">
-                        <VehicleLogo make={v.make} size="sm" enableApiFallback={true} />
+                        <VehicleLogo make={v.make} size="sm"  />
                         <span>{v.registrationNumber} - {v.make} {v.model}</span>
                       </div>
                     </SelectItem>

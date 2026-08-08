@@ -774,7 +774,7 @@ export default function OrganizationPage() {
                     className="flex items-center gap-3 p-3 rounded-lg border border-amber-500/30 bg-background"
                   >
                     <div className="h-10 w-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                      <VehicleLogo make={vehicle.make} size="md" enableApiFallback={true} />
+                      <VehicleLogo make={vehicle.make} size="md"  />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">
@@ -870,7 +870,7 @@ export default function OrganizationPage() {
                     className="flex items-center gap-3 p-3 rounded-lg border"
                   >
                     <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
-                      <VehicleLogo make={vehicle.make} size="md" enableApiFallback={true} />
+                      <VehicleLogo make={vehicle.make} size="md"  />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">

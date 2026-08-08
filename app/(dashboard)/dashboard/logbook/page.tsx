@@ -421,7 +421,7 @@ export default function LogbookPage() {
                 {vehicles.map((vehicle) => (
                   <SelectItem key={vehicle.id} value={vehicle.id}>
                     <div className="flex items-center gap-2">
-                      <VehicleLogo make={vehicle.make} size="xs" enableApiFallback={true} />
+                      <VehicleLogo make={vehicle.make} size="xs" />
                       <span className="truncate">{vehicleLabel(vehicle)}</span>
                     </div>
                   </SelectItem>
@@ -475,7 +475,7 @@ export default function LogbookPage() {
               {vehicles.map((vehicle) => (
                 <SelectItem key={vehicle.id} value={vehicle.id}>
                   <div className="flex items-center gap-2">
-                    <VehicleLogo make={vehicle.make} size="xs" enableApiFallback={true} />
+                    <VehicleLogo make={vehicle.make} size="xs"  />
                     <span className="truncate">{vehicleLabel(vehicle)}</span>
                   </div>
                 </SelectItem>
