@@ -202,9 +202,10 @@ export default function EditExpensePage({
                   : true,
               stationName: data.fuelLog?.stationName || data.supplierName || "",
               stationLocation: data.fuelLog?.stationLocation || "",
-              latitude: data.gpsLatitude || null,
-              longitude: data.gpsLongitude || null,
-              accuracy: data.gpsAccuracyMeters || 0,
+              latitude: data.fuelLog?.gpsLatitude || null,
+              longitude: data.fuelLog?.gpsLongitude || null,
+              accuracy: data.fuelLog?.gpsAccuracyMeters || null,
+              fuelLog: data.fuelLog, // Pass the full fuelLog object for GPS data access
             });
             break;
 
