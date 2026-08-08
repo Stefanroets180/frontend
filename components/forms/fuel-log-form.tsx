@@ -42,7 +42,7 @@ const fuelLogSchema = z.object({
   stationLocation: z.string().optional(),
   latitude: z.number().nullable().optional(),
   longitude: z.number().nullable().optional(),
-  accuracy: z.number().optional(),
+  accuracy: z.number().nullable().optional(),
 })
 
 type FuelLogInput = z.infer<typeof fuelLogSchema>
