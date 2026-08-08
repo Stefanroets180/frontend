@@ -98,59 +98,46 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [lastOdometerReadings, setLastOdometerReadings] = useState<Record<string, number>>({})
   const [gpsPosition, setGpsPosition] = useState<GpsPosition | null>(null)
-
-  // Debug: Track gpsPosition changes
-  useEffect(() => {
-    console.log('GPS position state changed:', gpsPosition)
-  }, [gpsPosition])
   const [isCapturingGps, setIsCapturingGps] = useState(false)
   const [showCropModal, setShowCropModal] = useState(false)
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
 
   // Reset GPS position when entryId changes (new expense being edited/created)
   useEffect(() => {
-    console.log('GPS reset due to entryId change:', entryId)
     setGpsPosition(null)
   }, [entryId])
 
   // Reset GPS position when mode changes to create
   useEffect(() => {
     if (mode === 'create') {
-      console.log('GPS reset due to mode change to create')
       setGpsPosition(null)
     }
   }, [mode])
 
   // Force GPS reset on component mount
   useEffect(() => {
-    console.log('GPS reset on component mount')
     setGpsPosition(null)
   }, [])
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
-    console.log('FuelLogForm - useEffect triggered:', { mode, existingImagesLength: existingImages.length });
     if (mode === 'edit' && existingImages.length > 0) {
       const firstImage = existingImages[0]
-      console.log('FuelLogForm - Setting previewUrl from:', firstImage);
       setPreviewUrl(firstImage.imageUrl)
     }
   }, [mode, existingImages])
 
   // Load GPS position from initialData in edit mode
   useEffect(() => {
-    console.log('Load GPS from initialData:', { mode, initialData, hasLat: !!initialData?.latitude, hasLng: !!initialData?.longitude })
     if (mode === 'edit' && initialData) {
       // Check if initialData has GPS coordinates (they might be stored as separate fields)
       if (initialData.latitude && initialData.longitude) {
-        console.log('Setting GPS from initialData')
         setGpsPosition({
           latitude: initialData.latitude as number,
           longitude: initialData.longitude as number,
           accuracy: initialData.accuracy || 0
         })
       } else {
-        console.log('No GPS in initialData, setting to null')
         setGpsPosition(null)
       }
     }
@@ -312,18 +299,11 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
   }
 
   const clearGps = (e?: React.MouseEvent) => {
-    console.log('clearGps called', { event: e, currentGpsPosition: gpsPosition })
     if (e) {
       e.preventDefault()
       e.stopPropagation()
     }
-    console.log('About to call setGpsPosition(null)')
     setGpsPosition(null)
-    console.log('setGpsPosition(null) called')
-    // Force a re-render by updating a counter
-    setTimeout(() => {
-      console.log('After setGpsPosition - gpsPosition is now:', gpsPosition)
-    }, 0)
   }
 
   const handleFormSubmit = async (data: FuelLogInput) => {
