@@ -502,6 +502,7 @@ export default function EditExpensePage({
       case ExpenseCategory.FUEL_LOG:
         return (
           <FuelLogForm
+            key={`fuel-log-edit-${id}`}
             vehicles={vehicles}
             initialData={initialData}
             mode="edit"

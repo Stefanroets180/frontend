@@ -867,6 +867,7 @@ function NewExpenseContent() {
       case ExpenseCategory.FUEL_LOG:
         return (
           <FuelLogForm 
+            key="fuel-log-create"
             vehicles={vehicles} 
             onSubmit={handleFuelLogSubmit}
             mode="create"

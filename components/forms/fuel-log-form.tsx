@@ -296,11 +296,13 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
   }
 
   const clearGps = (e?: React.MouseEvent) => {
+    console.log('clearGps called', { event: e, currentGpsPosition: gpsPosition })
     if (e) {
       e.preventDefault()
       e.stopPropagation()
     }
     setGpsPosition(null)
+    console.log('clearGps - setGpsPosition(null) called')
   }
 
   const handleFormSubmit = async (data: FuelLogInput) => {
