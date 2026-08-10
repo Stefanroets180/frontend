@@ -54,7 +54,9 @@ export default function RegisterPage() {
   const isYahooAddress = (email: string) => {
     return email.toLowerCase().endsWith('@yahoo.com') || 
            email.toLowerCase().endsWith('@yahoo.co.uk') ||
-           email.toLowerCase().endsWith('@yahoo.co.za');
+           email.toLowerCase().endsWith('@yahoo.co.za') ||
+           email.toLowerCase().endsWith('@aol.com') ||
+           email.toLowerCase().endsWith('@aol.co.uk');
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,10 +169,10 @@ export default function RegisterPage() {
                 {isYahooEmail && verificationToken && (
                   <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg dark:bg-yellow-500/10 dark:border-yellow-500/30">
                     <p className="text-sm font-medium text-yellow-800 dark:text-yellow-300 mb-2">
-                      Yahoo Mail Backup Verification
+                      Yahoo/AOL Mail Backup Verification
                     </p>
                     <p className="text-xs text-yellow-700 dark:text-yellow-400 mb-3">
-                      Since you're using Yahoo Mail, the email may be blocked. Click the button below to verify your account directly:
+                      Since you're using Yahoo or AOL Mail, the email may be blocked or links may be disabled. Click the button below to verify your account directly:
                     </p>
                     <a
                       href={`https://vehicle-expense-and-sa-fleet-manage.vercel.app/confirm-email?token=${verificationToken}`}
@@ -321,7 +323,7 @@ export default function RegisterPage() {
                     <Alert variant="destructive" className="mt-2">
                       <AlertCircle className="h-4 w-4" />
                       <AlertDescription>
-                        <strong>Yahoo Mail Warning:</strong> We strongly advise against using Yahoo Mail for security reasons. Yahoo's strict email policies may block confirmation emails. If you proceed with Yahoo Mail, you will go directly to the dashboard, but it will be much harder for the developer team to reach you. We take no accountability for lost Yahoo accounts. Consider using Gmail, Atomicmail, or Tutamail instead.
+                        <strong>Yahoo/AOL Mail Warning:</strong> We strongly advise against using Yahoo or AOL Mail for security reasons. Their strict email policies may block confirmation emails or disable links. If you proceed, you may need to use the backup verification link that will appear after registration. Consider using Gmail, Atomicmail, or Tutamail instead.
                       </AlertDescription>
                     </Alert>
                   )}
