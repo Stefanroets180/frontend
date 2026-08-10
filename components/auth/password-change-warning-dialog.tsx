@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import {
@@ -19,23 +18,9 @@ interface PasswordChangeWarningDialogProps {
 }
 
 export function PasswordChangeWarningDialog({ isOpen, onClose }: PasswordChangeWarningDialogProps) {
-  const [hasDismissed, setHasDismissed] = useState(false)
-
-  useEffect(() => {
-    // Check if user has already dismissed this warning
-    const dismissed = localStorage.getItem('passwordChangeWarningDismissed')
-    if (dismissed) {
-      setHasDismissed(true)
-    }
-  }, [])
-
   const handleDismiss = () => {
-    localStorage.setItem('passwordChangeWarningDismissed', 'true')
-    setHasDismissed(true)
     onClose()
   }
-
-  if (hasDismissed) return null
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
