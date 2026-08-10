@@ -12,11 +12,9 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
   const [showPasswordWarning, setShowPasswordWarning] = useState(false)
 
   useEffect(() => {
-    // Show password change warning for invited users who haven't changed their password
-    if (user && !user.passwordChanged) {
-      // Only show if user was invited (not self-registered)
-      // We can determine this by checking if they have a lastLogin but passwordChanged is false
-      // This indicates they logged in with a temporary password
+    // Show password change warning only for fleet mode users with temporary passwords
+    if (user && user.organizationMode === 'FLEET' && !user.passwordChanged) {
+      // Only show if user was invited by admin with temporary password
       setShowPasswordWarning(true)
     }
   }, [user])
