@@ -48,21 +48,8 @@ export default function RegisterPage() {
     organizationType: "SOLE_PROPRIETOR",
     role: "ADMIN" as "ADMIN" | "MANAGER" | "DRIVER",
   });
-  const [verificationToken, setVerificationToken] = useState<string | null>(null);
-  const [isYahooEmail, setIsYahooEmail] = useState(false);
-
-  const isYahooAddress = (email: string) => {
-    return email.toLowerCase().endsWith('@yahoo.com') || 
-           email.toLowerCase().endsWith('@yahoo.co.uk') ||
-           email.toLowerCase().endsWith('@yahoo.co.za') ||
-           email.toLowerCase().endsWith('@aol.com') ||
-           email.toLowerCase().endsWith('@aol.co.uk');
-  };
-
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const email = e.target.value;
-    setFormData({ ...formData, email });
-    setIsYahooEmail(isYahooAddress(email));
+    setFormData({ ...formData, email: e.target.value });
   };
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
@@ -98,11 +85,6 @@ export default function RegisterPage() {
         organizationMode: accountType === "business" ? "FLEET" : "SOLO",
         role: accountType === "business" ? formData.role : undefined,
       });
-
-      // Store verification token for on-screen display
-      if (data.verificationToken) {
-        setVerificationToken(data.verificationToken);
-      }
 
       // Do NOT persist auth session - user must verify email first
       // persistAuthSession(data);
@@ -163,27 +145,9 @@ export default function RegisterPage() {
                 <Alert className="mt-4 bg-orange-500/10 border-orange-500/30 dark:bg-orange-500/10 dark:border-orange-500/30">
                   <AlertCircle className="h-4 w-4 text-orange-600 dark:text-orange-400" />
                   <AlertDescription className="text-orange-800 dark:text-orange-300">
-                    <strong>Check your spam folder!</strong> The confirmation email may have been filtered there.
+                    <strong>Check your spam folder!</strong> If the confirmation button in the email doesn't work, please mark the email as "not spam" and try again. If it still doesn't work, copy and paste the verification URL from the email directly into your browser.
                   </AlertDescription>
                 </Alert>
-                {isYahooEmail && verificationToken && (
-                  <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg dark:bg-yellow-500/10 dark:border-yellow-500/30">
-                    <p className="text-sm font-medium text-yellow-800 dark:text-yellow-300 mb-2">
-                      Yahoo/AOL Mail Backup Verification
-                    </p>
-                    <p className="text-xs text-yellow-700 dark:text-yellow-400 mb-3">
-                      Since you're using Yahoo or AOL Mail, the email may be blocked or links may be disabled. Click the button below to verify your account directly:
-                    </p>
-                    <a
-                      href={`https://vehicle-expense-and-sa-fleet-manage.vercel.app/confirm-email?token=${verificationToken}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-lg text-sm"
-                    >
-                      Verify Account Now
-                    </a>
-                  </div>
-                )}
                 <p className="text-xs text-muted-foreground mt-4">
                   Please check your inbox and spam folder, then click the confirmation link to access your dashboard.
                 </p>
@@ -319,14 +283,6 @@ export default function RegisterPage() {
                     className="h-12"
                     required
                   />
-                  {isYahooEmail && (
-                    <Alert variant="destructive" className="mt-2">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>
-                        <strong>Yahoo/AOL Mail Warning:</strong> We strongly advise against using Yahoo or AOL Mail for security reasons. Their strict email policies may block confirmation emails or disable links. If you proceed, you may need to use the backup verification link that will appear after registration. Consider using Gmail, Atomicmail, or Tutamail instead.
-                      </AlertDescription>
-                    </Alert>
-                  )}
                 </div>
 
                 {accountType === "business" && (
