@@ -93,15 +93,38 @@ const AVAILABLE_LOGOS = [
 type AvailableLogo = typeof AVAILABLE_LOGOS[number];
 
 /**
+ * Common manufacturer abbreviations to full names mapping
+ */
+const ABBREVIATION_MAP: Record<string, string> = {
+  'vw': 'volkswagen',
+  'v.w.': 'volkswagen',
+  'v.w': 'volkswagen',
+  'merc': 'mercedes-benz',
+  'benz': 'mercedes-benz',
+  'chevy': 'chevrolet',
+  'lr': 'land-rover',
+  'l.r.': 'land-rover',
+  'l.r': 'land-rover',
+};
+
+/**
  * Normalizes a vehicle make string to match logo filename format
  * Converts to lowercase, removes spaces and special characters
+ * Also handles common abbreviations
  */
 function normalizeMake(make: string): string {
-  return make
+  const normalized = make
     .toLowerCase()
     .trim()
     .replace(/\s+/g, '-')
     .replace(/[^\w-]/g, '');
+  
+  // Check if it's a known abbreviation
+  if (ABBREVIATION_MAP[normalized]) {
+    return ABBREVIATION_MAP[normalized];
+  }
+  
+  return normalized;
 }
 
 /**
