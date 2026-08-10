@@ -105,6 +105,9 @@ const ABBREVIATION_MAP: Record<string, string> = {
   'lr': 'land-rover',
   'l.r.': 'land-rover',
   'l.r': 'land-rover',
+  'landrover': 'land-rover',
+  'citroen': 'citroen',
+  'citroën': 'citroen',
 };
 
 /**
