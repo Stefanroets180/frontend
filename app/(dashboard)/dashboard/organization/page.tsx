@@ -188,9 +188,10 @@ export default function OrganizationPage() {
       setInviteEmail('')
       setInvitePassword('')
       setInviteDialogOpen(false)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to invite user:', error)
-      setInviteError('Failed to invite user. Please try again.')
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to invite user. Please try again.'
+      setInviteError(errorMessage)
     } finally {
       setIsInviting(false)
     }
