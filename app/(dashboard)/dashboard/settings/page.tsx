@@ -83,6 +83,7 @@ function SettingsContent() {
   const isFleet = user?.organizationMode === "FLEET";
   const isAdminOrManager = user?.role === "ADMIN" || user?.role === "MANAGER";
   const isDriver = user?.role === "DRIVER";
+  const isRentalCustomer = user?.role === "RENTAL_CUSTOMER";
   const requestedTab = searchParams.get("tab");
   const defaultTab = requestedTab === "tax-readiness"
       ? "tax-readiness"
@@ -692,17 +693,19 @@ function SettingsContent() {
         </div>
       </DashboardCollapsiblePanel>
 
-      <DashboardCollapsiblePanel
-        panelId="settings-tax-readiness"
-        title="Tax Readiness"
-        description="Review and confirm your opening and closing odometer records for SARS."
-        tone="warning"
-        openLabel="Hide readiness"
-        closedLabel="Show readiness"
-        summaryItems={taxReadinessSummaryItems}
-      >
-        <TaxReadinessAudit />
-      </DashboardCollapsiblePanel>
+      {!isRentalCustomer && (
+        <DashboardCollapsiblePanel
+          panelId="settings-tax-readiness"
+          title="Tax Readiness"
+          description="Review and confirm your opening and closing odometer records for SARS."
+          tone="warning"
+          openLabel="Hide readiness"
+          closedLabel="Show readiness"
+          summaryItems={taxReadinessSummaryItems}
+        >
+          <TaxReadinessAudit />
+        </DashboardCollapsiblePanel>
+      )}
     </div>
   );
 }
