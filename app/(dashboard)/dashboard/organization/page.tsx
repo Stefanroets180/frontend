@@ -431,17 +431,15 @@ export default function OrganizationPage() {
   return (
     <div className="container mx-auto space-y-6 p-4">
       {/* Header */}
-      <div className="border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
-        <div className="flex items-center gap-3 p-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/dashboard/settings">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <div>
-            <h1 className="font-semibold">Organization</h1>
-            <p className="text-xs text-muted-foreground">Manage your organization settings</p>
-          </div>
+      <div className="flex flex-col gap-3 rounded-xl border border-border/50 bg-muted/30 px-4 py-3 sm:flex-row sm:items-center">
+        <Button variant="ghost" size="icon" asChild>
+          <Link href="/dashboard/settings">
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
+        </Button>
+        <div>
+          <h1 className="font-semibold">Organization</h1>
+          <p className="text-xs text-muted-foreground">Manage your organization settings</p>
         </div>
       </div>
 
