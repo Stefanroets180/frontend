@@ -431,8 +431,8 @@ export default function OrganizationPage() {
   return (
     <div className="container mx-auto space-y-6 p-4">
       {/* Header */}
-      <div className="sticky top-14 z-30 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
-        <div className="flex items-center gap-3 py-4">
+      <div className="border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+        <div className="flex items-center gap-3 p-4">
           <Button variant="ghost" size="icon" asChild>
             <Link href="/dashboard/settings">
               <ArrowLeft className="h-5 w-5" />
@@ -449,7 +449,7 @@ export default function OrganizationPage() {
       <div className="space-y-6">
         {/* Organization Details Card */}
         <Card className="rounded-xl">
-          <CardHeader className="pb-3">
+          <CardHeader className="rounded-t-xl pb-3">
             <CardTitle className="flex items-center gap-2">
               <Building2 className="h-5 w-5 text-primary" />
               Organization Details
