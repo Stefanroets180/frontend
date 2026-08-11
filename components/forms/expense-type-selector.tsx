@@ -18,8 +18,9 @@ import {
   type LucideIcon
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { ExpenseCategory, EXPENSE_CATEGORY_LABELS } from '@/lib/types/database'
+import { ExpenseCategory, EXPENSE_CATEGORY_LABELS, UserRole } from '@/lib/types/database'
 import { getExpenseCategories } from '@/lib/api/client'
+import { useAuth } from '@/lib/contexts/auth-context'
 
 interface ExpenseTypeOption {
   category: ExpenseCategory
@@ -90,6 +91,7 @@ export function ExpenseTypeSelector({
   selectedCategory, 
   onSelect 
 }: ExpenseTypeSelectorProps) {
+  const { user } = useAuth()
   const [expenseTypes, setExpenseTypes] = useState<ExpenseTypeOption[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -100,7 +102,7 @@ export function ExpenseTypeSelector({
         const categories = (response as any).data || response
         
         if (Array.isArray(categories)) {
-          const types: ExpenseTypeOption[] = categories.map((cat: string) => {
+          let types: ExpenseTypeOption[] = categories.map((cat: string) => {
             const category = cat as ExpenseCategory
             const icon = categoryIcons[category] || MoreHorizontal
             const colors = categoryColors[category] || { bgColor: 'bg-muted', iconColor: 'text-muted-foreground' }
@@ -114,12 +116,18 @@ export function ExpenseTypeSelector({
               iconColor: colors.iconColor,
             }
           })
+          
+          // RENTAL_CUSTOMER can only see FUEL_LOG
+          if (user?.role === UserRole.RENTAL_CUSTOMER) {
+            types = types.filter(type => type.category === ExpenseCategory.FUEL_LOG)
+          }
+          
           setExpenseTypes(types)
         }
       } catch (error) {
         console.error('Failed to fetch expense categories:', error)
         // Fallback to all categories if API fails
-        const types: ExpenseTypeOption[] = Object.values(ExpenseCategory).map((category) => {
+        let types: ExpenseTypeOption[] = Object.values(ExpenseCategory).map((category) => {
           const icon = categoryIcons[category] || MoreHorizontal
           const colors = categoryColors[category] || { bgColor: 'bg-muted', iconColor: 'text-muted-foreground' }
           
@@ -132,6 +140,12 @@ export function ExpenseTypeSelector({
             iconColor: colors.iconColor,
           }
         })
+        
+        // RENTAL_CUSTOMER can only see FUEL_LOG
+        if (user?.role === UserRole.RENTAL_CUSTOMER) {
+          types = types.filter(type => type.category === ExpenseCategory.FUEL_LOG)
+        }
+        
         setExpenseTypes(types)
       } finally {
         setLoading(false)
@@ -139,7 +153,7 @@ export function ExpenseTypeSelector({
     }
 
     fetchCategories()
-  }, [])
+  }, [user?.role])
 
   if (loading) {
     return (
