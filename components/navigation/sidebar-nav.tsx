@@ -12,6 +12,7 @@ import {
   Building2,
   ShieldCheck,
   User,
+  Crown,
 } from "lucide-react";
 import { cn, getSarsTaxYear } from "@/lib/utils";
 import { useAuth } from "@/lib/contexts/auth-context";
@@ -51,6 +52,8 @@ function getNavItems(role: UserRole): NavItem[] {
 
 function roleBadge(role: UserRole) {
   switch (role) {
+    case UserRole.SUPER_ADMIN:
+      return { label: "Owner", color: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400", icon: Crown };
     case UserRole.ADMIN:
       return { label: "Admin", color: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400", icon: ShieldCheck };
     case UserRole.MANAGER:
