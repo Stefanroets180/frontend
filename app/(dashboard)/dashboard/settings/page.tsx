@@ -226,29 +226,31 @@ function SettingsContent() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 sm:px-4 sm:py-3 w-full max-w-full overflow-hidden">
-          <p className="text-xs sm:text-sm font-medium">
-            Important for SARS tax completion
-          </p>
-          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
-            Go to{" "}
-            <Link href="/dashboard/settings?tab=tax-readiness" className="font-medium text-foreground hover:underline">
-              Tax Readiness
-            </Link>{" "}
-            and make sure your{" "}
-            <span className="font-medium text-foreground">
-              OPENING Reading
-            </span>{" "}
-            has both the correct odometer image and the actual odometer
-            reading. Once you are sure it is correct, lock it so it moves
-            from pending to a confirmed opening record. Then, at the end
-            of the tax year, add the{" "}
-            <span className="font-medium text-foreground">
-              CLOSING Reading
-            </span>{" "}
-            odometer reading and image to complete your SARS tax records.
-          </p>
-        </div>
+      {!isRentalCustomer && (
+        <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 sm:px-4 sm:py-3 w-full max-w-full overflow-hidden">
+            <p className="text-xs sm:text-sm font-medium">
+              Important for SARS tax completion
+            </p>
+            <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
+              Go to{" "}
+              <Link href="/dashboard/settings?tab=tax-readiness" className="font-medium text-foreground hover:underline">
+                Tax Readiness
+              </Link>{" "}
+              and make sure your{" "}
+              <span className="font-medium text-foreground">
+                OPENING Reading
+              </span>{" "}
+              has both the correct odometer image and the actual odometer
+              reading. Once you are sure it is correct, lock it so it moves
+              from pending to a confirmed opening record. Then, at the end
+              of the tax year, add the{" "}
+              <span className="font-medium text-foreground">
+                CLOSING Reading
+              </span>{" "}
+              odometer reading and image to complete your SARS tax records.
+            </p>
+          </div>
+        )}
 
       <DashboardCollapsiblePanel
         panelId="settings-general"
@@ -613,69 +615,71 @@ function SettingsContent() {
           </CardContent>
         </Card>
 
-        {/* Tax & export */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <FileText className="h-5 w-5" />
-              Tax & Compliance
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <SettingsRow
-              icon={<FileText className="h-4 w-4" />}
-              label="Current Tax Year"
-              value={`${taxYear} / ${taxYear + 1}`}
-            />
+        {/* Tax & export - hide for RENTAL_CUSTOMER */}
+        {!isRentalCustomer && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <FileText className="h-5 w-5" />
+                Tax & Compliance
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <SettingsRow
+                icon={<FileText className="h-4 w-4" />}
+                label="Current Tax Year"
+                value={`${taxYear} / ${taxYear + 1}`}
+              />
 
-            {vehicles.length > 0 ? (
-              <div className="space-y-3">
-                <div className="space-y-2">
-                  <Label htmlFor="exportVehicleId">Export vehicle data</Label>
-                  <Select
-                    value={exportVehicleId}
-                    onValueChange={setExportVehicleId}
-                    name="exportVehicleId"
-                  >
-                    <SelectTrigger id="exportVehicleId" className="h-12">
-                      <SelectValue placeholder="Select vehicle" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {vehicles.map((v) => (
-                        <SelectItem key={v.id} value={v.id}>
-                          <div className="flex items-center gap-2">
-                            <VehicleLogo make={v.make} size="sm"  />
-                            <span>
-                              {v.nickname ??
-                                `${v.make} ${v.model} — ${v.registrationNumber}`}
-                            </span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              {vehicles.length > 0 ? (
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="exportVehicleId">Export vehicle data</Label>
+                    <Select
+                      value={exportVehicleId}
+                      onValueChange={setExportVehicleId}
+                      name="exportVehicleId"
+                    >
+                      <SelectTrigger id="exportVehicleId" className="h-12">
+                        <SelectValue placeholder="Select vehicle" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {vehicles.map((v) => (
+                          <SelectItem key={v.id} value={v.id}>
+                            <div className="flex items-center gap-2">
+                              <VehicleLogo make={v.make} size="sm"  />
+                              <span>
+                                {v.nickname ??
+                                  `${v.make} ${v.model} — ${v.registrationNumber}`}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {exportVehicleId && (
+                    <VehicleExportDialog
+                      vehicleId={exportVehicleId}
+                      vehicleLabel={exportVehicleLabel()}
+                      triggerLabel="Export all data"
+                      triggerClassName="w-full gap-2"
+                    />
+                  )}
                 </div>
-                {exportVehicleId && (
-                  <VehicleExportDialog
-                    vehicleId={exportVehicleId}
-                    vehicleLabel={exportVehicleLabel()}
-                    triggerLabel="Export all data"
-                    triggerClassName="w-full gap-2"
-                  />
-                )}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                Add a vehicle on the dashboard to export SARS logbook
-                and expenses.
-              </p>
-            )}
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Add a vehicle on the dashboard to export SARS logbook
+                  and expenses.
+                </p>
+              )}
 
-            <Button asChild variant="outline" className="w-full">
-              <Link href="/dashboard/logbook">View SARS Logbook</Link>
-            </Button>
-          </CardContent>
-        </Card>
+              <Button asChild variant="outline" className="w-full">
+                <Link href="/dashboard/logbook">View SARS Logbook</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         <Button
           variant="destructive"
