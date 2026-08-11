@@ -309,14 +309,16 @@ export default function VehiclesPage() {
             <CardContent className="flex flex-col items-center justify-center py-12">
               <Car className="h-16 w-16 text-muted-foreground" />
               <p className="mt-4 text-lg font-medium text-muted-foreground">
-                {isDriver ? "No vehicles assigned to you" : "No vehicles yet"}
+                {isRentalCustomer ? "Vehicle not assigned" : (isDriver ? "No vehicles assigned to you" : "No vehicles yet")}
               </p>
               <p className="text-sm text-muted-foreground">
-                {isDriver
-                  ? "Contact your manager to assign a vehicle to you"
-                  : "Add your first vehicle to start tracking expenses"}
+                {isRentalCustomer
+                  ? "Vehicle has not been assigned; confirm with the representative that helped you that your vehicle gets assigned to you."
+                  : (isDriver
+                    ? "Contact your manager to assign a vehicle to you"
+                    : "Add your first vehicle to start tracking expenses")}
               </p>
-              {!isDriver && (
+              {!isDriver && !isRentalCustomer && (
                 <Button asChild className="mt-6">
                   <Link href="/onboarding/add-vehicle">Add Vehicle</Link>
                 </Button>
