@@ -56,6 +56,7 @@ import {
   getExpiryStatusColor,
   getExpiryStatusLabel,
   formatDaysUntilExpiry,
+  UserRole,
 } from "@/lib/types/database";
 
 // ── Stored profile shape (written to localStorage at login / register) ────────
@@ -383,6 +384,7 @@ export function DashboardHeader({
   } = useMissingReceipts();
 
   const isFleet = profile.organizationMode === "FLEET";
+  const isRentalCustomer = profile.role === UserRole.RENTAL_CUSTOMER;
   const displayName = profile.firstName
     ? `${profile.firstName} ${profile.lastName ?? ""}`.trim()
     : null;
@@ -481,30 +483,31 @@ export function DashboardHeader({
             userEmail={profile.email}
           />
 
-          {/* Notification Bell with Expiry Alerts and Tyre Rotation Warnings */}
-          <Popover open={notificationsOpen} onOpenChange={setNotificationsOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative touch-target"
-                aria-label="Notifications"
-              >
-                <Bell className="h-5 w-5" />
-                {totalNotifications > 0 && (
-                  <span
-                    className={cn(
-                      "absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white",
-                      hasExpiryExpired
-                        ? "bg-destructive animate-pulse"
-                        : "bg-warning",
-                    )}
-                  >
-                    {totalNotifications > 9 ? "9+" : totalNotifications}
-                  </span>
-                )}
-              </Button>
-            </PopoverTrigger>
+          {/* Notification Bell with Expiry Alerts and Tyre Rotation Warnings - hide for RENTAL_CUSTOMER */}
+          {!isRentalCustomer && (
+            <Popover open={notificationsOpen} onOpenChange={setNotificationsOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative touch-target"
+                  aria-label="Notifications"
+                >
+                  <Bell className="h-5 w-5" />
+                  {totalNotifications > 0 && (
+                    <span
+                      className={cn(
+                        "absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white",
+                        hasExpiryExpired
+                          ? "bg-destructive animate-pulse"
+                          : "bg-warning",
+                      )}
+                    >
+                      {totalNotifications > 9 ? "9+" : totalNotifications}
+                    </span>
+                  )}
+                </Button>
+              </PopoverTrigger>
             <PopoverContent
               align="end"
               className="w-96 p-0 bg-card"
@@ -830,6 +833,7 @@ export function DashboardHeader({
               </Tabs>
             </PopoverContent>
           </Popover>
+          )}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

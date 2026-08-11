@@ -1401,7 +1401,7 @@ export default function DashboardPage() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2 self-start">
-              {!isDriver && (
+              {!isDriver && !isRentalCustomer && (
                 <Button
                   asChild
                   variant="outline"
