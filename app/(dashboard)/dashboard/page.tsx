@@ -1268,22 +1268,24 @@ export default function DashboardPage() {
                 }
               />
 
-              <DashboardShortcutCard
-                title="Export trip records only"
-                subtitle="Trip log export"
-                description="Use this when you only need the logbook trip history for the selected tax year without the rest of the dashboard export."
-                tip="This export is only for trip records. It does not include expenses, fuel logs or the complete vehicle export."
-                icon={ClipboardList}
-                accent="logbook"
-                cta={
-                  <TripExportDialog
-                    vehicleId={selectedVehicle.id}
-                    vehicleLabel={vehicleShortLabel(selectedVehicle)}
-                    triggerLabel="Export trip logs"
-                    triggerClassName="w-full gap-2"
-                  />
-                }
-              />
+              {!isRentalCustomer && (
+                <DashboardShortcutCard
+                  title="Export trip records only"
+                  subtitle="Trip log export"
+                  description="Use this when you only need the logbook trip history for the selected tax year without the rest of the dashboard export."
+                  tip="This export is only for trip records. It does not include expenses, fuel logs or the complete vehicle export."
+                  icon={ClipboardList}
+                  accent="logbook"
+                  cta={
+                    <TripExportDialog
+                      vehicleId={selectedVehicle.id}
+                      vehicleLabel={vehicleShortLabel(selectedVehicle)}
+                      triggerLabel="Export trip logs"
+                      triggerClassName="w-full gap-2"
+                    />
+                  }
+                />
+              )}
             </div>
           )}
         </div>
@@ -1612,7 +1614,7 @@ export default function DashboardPage() {
       )}
 
       {/* ── SARS Tax Year Progress ─────────────────────────────────────────── */}
-      {dashboardPanelPreferencesReady && (
+      {!isRentalCustomer && dashboardPanelPreferencesReady && (
         <Card className={DASHBOARD_PANEL_CONTAINER_STYLES[logbookToggleTone]}>
           <CardHeader className="flex flex-col gap-3 pb-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
