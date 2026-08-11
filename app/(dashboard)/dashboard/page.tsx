@@ -590,8 +590,8 @@ export default function DashboardPage() {
         if (!list) return;
 
         // ── Compliance gate ────────────────────────────────────────────────
-        // Drivers should not be redirected to add vehicle - they need to be assigned by admin/manager
-        if (list.length === 0 && !isDriver) {
+        // Drivers and RENTAL_CUSTOMER should not be redirected to add vehicle - they need to be assigned by admin/manager
+        if (list.length === 0 && !isDriver && !isRentalCustomer) {
           router.replace("/onboarding/add-vehicle");
           return;
         }
@@ -1437,7 +1437,20 @@ export default function DashboardPage() {
 
           {isVehiclesOpen && (
             <div id="dashboard-vehicles-panel" className="space-y-2">
-              {vehicles.map((v) => {
+              {vehicles.length === 0 && isRentalCustomer ? (
+                <Card>
+                  <CardContent className="flex flex-col items-center justify-center py-12">
+                    <Car className="h-16 w-16 text-muted-foreground" />
+                    <p className="mt-4 text-lg font-medium text-muted-foreground">
+                      Vehicle not assigned
+                    </p>
+                    <p className="text-sm text-muted-foreground text-center max-w-sm">
+                      Vehicle has not been assigned; confirm with the representative that helped you that your vehicle gets assigned to you.
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                vehicles.map((v) => {
                 const isSelected = v.id === selectedVehicle?.id;
                 const locks = vehicleOdometerLocks[v.id];
                 const openingLocked = locks?.openingLocked ?? false;
@@ -1517,6 +1530,7 @@ export default function DashboardPage() {
                   </button>
                 );
               })}
+              )}
             </div>
           )}
         </div>
