@@ -448,7 +448,7 @@ export default function OrganizationPage() {
       {/* Content */}
       <div className="space-y-6">
         {/* Organization Details Card */}
-        <Card>
+        <Card className="rounded-xl">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2">
               <Building2 className="h-5 w-5 text-primary" />
@@ -458,7 +458,12 @@ export default function OrganizationPage() {
           <CardContent className="space-y-4">
             {/* Org Name and Icon */}
             <div className="flex items-center gap-4">
-              <div className="relative h-16 w-16 shrink-0">
+              <button
+                type="button"
+                className="relative h-16 w-16 shrink-0 cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploadingLogo}
+              >
                 <div className="h-full w-full rounded-xl bg-primary/20 flex items-center justify-center overflow-hidden">
                   {organization?.logoUrl ? (
                     <img
@@ -471,18 +476,11 @@ export default function OrganizationPage() {
                   )}
                 </div>
                 <div className="absolute -bottom-1 -right-1">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="icon"
-                    className="h-6 w-6 rounded-full"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isUploadingLogo}
-                  >
+                  <div className="h-6 w-6 rounded-full bg-secondary flex items-center justify-center">
                     <Camera className="h-3 w-3" />
-                  </Button>
+                  </div>
                 </div>
-              </div>
+              </button>
               <div className="flex-1">
                 <h2 className="font-semibold text-lg">
                   {user?.organizationName || 'My Organization'}
