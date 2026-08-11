@@ -1,9 +1,30 @@
-import { AddVehicleForm } from "@/components/vehicles/add-vehicle-form"
-import { Truck } from "lucide-react"
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { AddVehicleForm } from "@/components/vehicles/add-vehicle-form";
+import { Truck } from "lucide-react";
+import { useAuth } from "@/lib/contexts/auth-context";
+import { UserRole } from "@/lib/types/database";
 
 export const dynamic = 'force-dynamic'
 
 export default function AddVehiclePage() {
+  const router = useRouter();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    // Prevent RENTAL_CUSTOMER from accessing add vehicle page
+    if (user?.role === UserRole.RENTAL_CUSTOMER) {
+      router.replace("/dashboard");
+    }
+  }, [user, router]);
+
+  // Show loading or redirect while checking role
+  if (user?.role === UserRole.RENTAL_CUSTOMER) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 pb-24">
       <div className="flex items-center gap-3 mb-8">
