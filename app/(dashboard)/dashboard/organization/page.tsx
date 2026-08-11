@@ -663,6 +663,12 @@ export default function OrganizationPage() {
                                 <span>Driver - Assigned vehicles only</span>
                               </div>
                             </SelectItem>
+                            <SelectItem value={UserRole.RENTAL_CUSTOMER}>
+                              <div className="flex items-center gap-2">
+                                <Car className="h-4 w-4" />
+                                <span>Customer - Fuel purchase only</span>
+                              </div>
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1026,6 +1032,12 @@ export default function OrganizationPage() {
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4" />
                       <span>Driver - Assigned vehicles only</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value={UserRole.RENTAL_CUSTOMER}>
+                    <div className="flex items-center gap-2">
+                      <Car className="h-4 w-4" />
+                      <span>Customer - Fuel purchase only</span>
                     </div>
                   </SelectItem>
                 </SelectContent>
