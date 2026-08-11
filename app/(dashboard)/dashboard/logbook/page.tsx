@@ -25,6 +25,7 @@ import {
   Car,
   Filter,
   Lock,
+  ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
 import { cn, getSarsTaxYear } from "@/lib/utils";
@@ -274,18 +275,24 @@ export default function LogbookPage() {
   };
 
   return (
-    <div className="container mx-auto min-h-screen bg-background p-4 pb-24">
+    <div className="container mx-auto space-y-6 p-4">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-        <div className="py-4">
-          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">SARS Logbook</h1>
-              <p className="text-sm text-muted-foreground">
-                Tax Year {taxYear}
-              </p>
-            </div>
-            <TripExportDialog
+      <div className="flex items-center gap-2 rounded-xl border border-border/50 bg-muted/30 px-3 py-2 sm:gap-3 sm:px-4 sm:py-3">
+        <Button variant="ghost" size="icon" asChild className="h-8 w-8 sm:h-9 sm:w-9">
+          <Link href="/dashboard">
+            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+          </Link>
+        </Button>
+        <div>
+          <h1 className="text-sm font-semibold sm:text-base">SARS Logbook</h1>
+          <p className="text-[10px] text-muted-foreground sm:text-xs">Tax Year {taxYear}</p>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="space-y-6">
+        <div className="flex justify-end">
+          <TripExportDialog
               vehicleId={selectedVehicle || vehicles[0]?.id || ""}
               vehicleLabel={
                 selectedVehicle
@@ -300,11 +307,8 @@ export default function LogbookPage() {
               disabled={vehicles.length === 0}
               triggerClassName="w-full gap-2 sm:w-auto"
             />
-          </div>
         </div>
-      </div>
 
-      <div className="py-4 space-y-6">
         <DashboardCollapsiblePanel
           panelId="logbook-summary"
           title="Logbook summary and filters"
@@ -317,7 +321,7 @@ export default function LogbookPage() {
         >
           {/* Tax Year Summary Cards */}
           <div className="grid grid-cols-2 gap-3">
-            <Card className="border-primary/20 bg-primary/10">
+            <Card className="rounded-xl shadow-lg border-primary/20 bg-primary/10">
               <CardContent className="p-4">
                 <div className="mb-2 flex items-center gap-2">
                   <Briefcase className="h-4 w-4 text-primary" />
@@ -333,7 +337,7 @@ export default function LogbookPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-amber-500/20 bg-amber-500/10">
+            <Card className="rounded-xl shadow-lg border-amber-500/20 bg-amber-500/10">
               <CardContent className="p-4">
                 <div className="mb-2 flex items-center gap-2">
                   <Palmtree className="h-4 w-4 text-amber-500" />
@@ -352,7 +356,7 @@ export default function LogbookPage() {
           </div>
 
           {/* Business Percentage Card */}
-          <Card>
+          <Card className="rounded-xl shadow-lg">
             <CardContent className="p-4">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
@@ -377,7 +381,7 @@ export default function LogbookPage() {
           </Card>
 
           {/* SARS Compliance Notice */}
-          <Card className="border-dashed bg-muted/50">
+          <Card className="rounded-xl shadow-lg border-dashed bg-muted/50">
             <CardContent className="p-4">
               <div className="flex gap-3">
                 <FileText className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
