@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { ArrowLeft, User, Mail, Shield, Lock, Eye, EyeOff, CheckCircle2, AlertCircle, Camera, X } from 'lucide-react'
+import { ArrowLeft, User, Mail, Shield, Lock, Eye, EyeOff, CheckCircle2, AlertCircle, Camera, X, Edit2, Save } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -40,6 +40,13 @@ export default function ProfilePage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  
+  // Profile edit state
+  const [isEditingProfile, setIsEditingProfile] = useState(false)
+  const [editFirstName, setEditFirstName] = useState('')
+  const [editLastName, setEditLastName] = useState('')
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false)
+  const [profileUpdateSuccess, setProfileUpdateSuccess] = useState(false)
   
   // Photo upload state
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null)
@@ -110,6 +117,36 @@ export default function ProfilePage() {
       console.error('Failed to remove photo:', error)
     } finally {
       setIsUploadingPhoto(false)
+    }
+  }
+
+  const handleStartEditProfile = () => {
+    setEditFirstName(user?.firstName || '')
+    setEditLastName(user?.lastName || '')
+    setIsEditingProfile(true)
+    setProfileUpdateSuccess(false)
+  }
+
+  const handleUpdateProfile = async () => {
+    if (!editFirstName.trim() || !editLastName.trim()) return
+
+    setIsUpdatingProfile(true)
+    setProfileUpdateSuccess(false)
+    try {
+      await api.put('/users/me', {
+        firstName: editFirstName.trim(),
+        lastName: editLastName.trim(),
+      })
+      
+      await refreshUser()
+      setProfileUpdateSuccess(true)
+      setIsEditingProfile(false)
+      
+      setTimeout(() => setProfileUpdateSuccess(false), 3000)
+    } catch (error) {
+      console.error('Failed to update profile:', error)
+    } finally {
+      setIsUpdatingProfile(false)
     }
   }
 
@@ -208,13 +245,66 @@ export default function ProfilePage() {
 
             {/* Details List */}
             <div className="space-y-4">
+              {profileUpdateSuccess && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 text-green-600">
+                  <CheckCircle2 className="h-5 w-5" />
+                  <span className="text-sm font-medium">Profile updated successfully!</span>
+                </div>
+              )}
+              
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
                   <User className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground">Full Name</p>
-                  <p className="font-medium">{user?.firstName} {user?.lastName}</p>
+                  {isEditingProfile ? (
+                    <div className="flex items-center gap-2 mt-1">
+                      <Input
+                        value={editFirstName}
+                        onChange={(e) => setEditFirstName(e.target.value)}
+                        placeholder="First name"
+                        className="h-8 flex-1"
+                        disabled={isUpdatingProfile}
+                      />
+                      <Input
+                        value={editLastName}
+                        onChange={(e) => setEditLastName(e.target.value)}
+                        placeholder="Last name"
+                        className="h-8 flex-1"
+                        disabled={isUpdatingProfile}
+                      />
+                      <Button
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={handleUpdateProfile}
+                        disabled={isUpdatingProfile || !editFirstName.trim() || !editLastName.trim()}
+                      >
+                        <Save className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8"
+                        onClick={() => setIsEditingProfile(false)}
+                        disabled={isUpdatingProfile}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium">{user?.firstName} {user?.lastName}</p>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8"
+                        onClick={handleStartEditProfile}
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
 

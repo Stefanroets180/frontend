@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   Dialog,
@@ -40,6 +40,7 @@ interface TeamMember {
   email: string
   role: UserRole
   isActive: boolean
+  profilePhotoUrl?: string
 }
 
 interface Vehicle {
@@ -104,6 +105,7 @@ export default function OrganizationPage() {
               email: String(m.email),
               role: String(m.role) as UserRole,
               isActive: Boolean(m.isActive),
+              profilePhotoUrl: m.profilePhotoUrl ? String(m.profilePhotoUrl) : undefined,
             }))
           )
         }
@@ -457,29 +459,45 @@ export default function OrganizationPage() {
           <CardContent className="space-y-4">
             {/* Org Name and Icon */}
             <div className="flex items-center gap-4">
-              <button
-                type="button"
-                className="relative h-16 w-16 shrink-0 cursor-pointer"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploadingLogo}
-              >
-                <div className="h-full w-full rounded-xl bg-primary/20 flex items-center justify-center overflow-hidden">
-                  {organization?.logoUrl ? (
-                    <img
-                      src={organization.logoUrl}
-                      alt="Organization Logo"
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <Building2 className="h-8 w-8 text-primary" />
-                  )}
-                </div>
-                <div className="absolute -bottom-1 -right-1">
-                  <div className="h-6 w-6 rounded-full bg-secondary flex items-center justify-center">
-                    <Camera className="h-3 w-3" />
+              {isAdmin ? (
+                <button
+                  type="button"
+                  className="relative h-16 w-16 shrink-0 cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploadingLogo}
+                >
+                  <div className="h-full w-full rounded-xl bg-primary/20 flex items-center justify-center overflow-hidden">
+                    {organization?.logoUrl ? (
+                      <img
+                        src={organization.logoUrl}
+                        alt="Organization Logo"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <Building2 className="h-8 w-8 text-primary" />
+                    )}
+                  </div>
+                  <div className="absolute -bottom-1 -right-1">
+                    <div className="h-6 w-6 rounded-full bg-secondary flex items-center justify-center">
+                      <Camera className="h-3 w-3" />
+                    </div>
+                  </div>
+                </button>
+              ) : (
+                <div className="h-16 w-16 shrink-0">
+                  <div className="h-full w-full rounded-xl bg-primary/20 flex items-center justify-center overflow-hidden">
+                    {organization?.logoUrl ? (
+                      <img
+                        src={organization.logoUrl}
+                        alt="Organization Logo"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <Building2 className="h-8 w-8 text-primary" />
+                    )}
                   </div>
                 </div>
-              </button>
+              )}
               <div className="flex-1">
                 <h2 className="font-semibold text-lg">
                   {user?.organizationName || 'My Organization'}
@@ -689,6 +707,9 @@ export default function OrganizationPage() {
                     )}
                   >
                     <Avatar className="h-10 w-10">
+                      {member.profilePhotoUrl && (
+                        <AvatarImage src={member.profilePhotoUrl} alt={`${member.firstName} ${member.lastName}`} />
+                      )}
                       <AvatarFallback className={cn(
                         'text-sm font-medium',
                         member.role === 'ADMIN' && 'bg-primary/20 text-primary',
