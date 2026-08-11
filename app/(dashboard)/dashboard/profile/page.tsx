@@ -125,7 +125,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen pb-24">
+    <div className="container mx-auto space-y-6 p-4">
       {/* Header */}
       <div className="flex items-center gap-2 rounded-xl border border-border/50 bg-muted/30 px-3 py-2 sm:gap-3 sm:px-4 sm:py-3">
         <Button variant="ghost" size="icon" asChild className="h-8 w-8 sm:h-9 sm:w-9">
@@ -140,9 +140,9 @@ export default function ProfilePage() {
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-6">
+      <div className="space-y-6">
         {/* User Details Card */}
-        <Card className="relative -mt-4 shadow-lg">
+        <Card className="rounded-xl shadow-lg">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2">
               <User className="h-5 w-5 text-primary" />
