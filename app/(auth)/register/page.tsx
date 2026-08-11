@@ -46,7 +46,6 @@ export default function RegisterPage() {
     confirmPassword: "",
     organizationName: "",
     organizationType: "SOLE_PROPRIETOR",
-    role: "ADMIN" as "ADMIN" | "MANAGER" | "DRIVER",
   });
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, email: e.target.value });
@@ -83,7 +82,6 @@ export default function RegisterPage() {
             ? formData.organizationName
             : `${formData.firstName} ${formData.lastName}`,
         organizationMode: accountType === "business" ? "FLEET" : "SOLO",
-        role: accountType === "business" ? formData.role : undefined,
       });
 
       // Do NOT persist auth session - user must verify email first
@@ -331,37 +329,6 @@ export default function RegisterPage() {
                           </SelectItem>
                         </SelectContent>
                       </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="role">Your Role</Label>
-                      <Select
-                        name="role"
-                        value={formData.role}
-                        onValueChange={(value: "ADMIN" | "MANAGER" | "DRIVER") =>
-                          setFormData({ ...formData, role: value })
-                        }
-                      >
-                        <SelectTrigger id="role" className="h-12">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="ADMIN">
-                            Admin - Full access to all features
-                          </SelectItem>
-                          <SelectItem value="MANAGER">
-                            Manager - Manage fleet and drivers
-                          </SelectItem>
-                          <SelectItem value="DRIVER">
-                            Driver - Log trips and expenses only
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <p className="text-xs text-muted-foreground">
-                        {formData.role === "DRIVER" 
-                          ? "Drivers will be assigned to vehicles by an admin or manager"
-                          : "Admins and managers can create and manage vehicles"}
-                      </p>
                     </div>
                   </>
                 )}
