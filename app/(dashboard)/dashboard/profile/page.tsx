@@ -127,15 +127,15 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen pb-24">
       {/* Header */}
-      <div className="flex items-center gap-3 rounded-xl border border-border/50 bg-muted/30 px-3 py-2 sm:px-4 sm:py-3">
-        <Button variant="ghost" size="icon" asChild>
+      <div className="flex items-center gap-2 rounded-xl border border-border/50 bg-muted/30 px-3 py-2 sm:gap-3 sm:px-4 sm:py-3">
+        <Button variant="ghost" size="icon" asChild className="h-8 w-8 sm:h-9 sm:w-9">
           <Link href="/dashboard/settings">
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
           </Link>
         </Button>
         <div>
-          <h1 className="font-semibold">Profile</h1>
-          <p className="text-xs text-muted-foreground">Manage your account details</p>
+          <h1 className="text-sm font-semibold sm:text-base">Profile</h1>
+          <p className="text-[10px] text-muted-foreground sm:text-xs">Manage your account details</p>
         </div>
       </div>
 
