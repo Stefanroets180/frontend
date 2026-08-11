@@ -343,13 +343,21 @@ export function DashboardHeader({
   showModeToggle = true,
 }: DashboardHeaderProps) {
   // logout() is the one thing still valid from AuthContext (it clears localStorage)
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"expired" | "warning" | "receipts">("expired");
 
-  // Real user data — read from localStorage (set during login / register)
-  const [profile, setProfile] = useState<StoredProfile>({});
+  // Real user data — use auth context user as source of truth
+  const profile: StoredProfile = user ? {
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    role: user.role,
+    organizationMode: user.organizationMode,
+    organizationName: user.organizationName,
+    profilePhotoUrl: user.profilePhotoUrl,
+  } : {};
 
   // Tyre rotation warnings
   const {
@@ -373,15 +381,6 @@ export function DashboardHeader({
     isLoading: missingReceiptsLoading,
     refreshReceipts,
   } = useMissingReceipts();
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("user_profile");
-      if (raw) setProfile(JSON.parse(raw));
-    } catch {
-      // ignore
-    }
-  }, []);
 
   const isFleet = profile.organizationMode === "FLEET";
   const displayName = profile.firstName

@@ -139,7 +139,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await api.get('/auth/me');
       const me = (response.data.user ?? response.data) as Record<string, unknown>;
-      setUser(mapMeToAuthUser(me, readStoredProfile()));
+      const authUser = mapMeToAuthUser(me, readStoredProfile());
+      setUser(authUser);
+      localStorage.setItem("user_profile", JSON.stringify(authUser));
     } catch (error) {
       console.error("Refresh user failed:", error);
       // The api client already handles 401/403 token clearing
