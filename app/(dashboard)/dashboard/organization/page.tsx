@@ -431,7 +431,7 @@ export default function OrganizationPage() {
   return (
     <div className="container mx-auto space-y-6 p-4">
       {/* Header */}
-      <div className="flex items-center gap-3 rounded-xl border border-border/50 bg-muted/30 px-4 py-3">
+      <div className="flex items-center gap-3 rounded-xl border border-border/50 bg-muted/30 px-3 py-2 sm:px-4 sm:py-3">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/dashboard/settings">
             <ArrowLeft className="h-5 w-5" />
