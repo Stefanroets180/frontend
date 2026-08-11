@@ -107,9 +107,13 @@ function SettingsContent() {
     },
     {
       label:
-        vehicles.length > 0
-          ? `${vehicles.length} vehicle${vehicles.length === 1 ? "" : "s"} ready for export`
-          : "No vehicles to export",
+        isRentalCustomer
+          ? (vehicles.length > 0
+              ? `${vehicles.length} vehicle${vehicles.length === 1 ? "" : "s"} assigned`
+              : "Vehicle not assigned")
+          : (vehicles.length > 0
+              ? `${vehicles.length} vehicle${vehicles.length === 1 ? "" : "s"} ready for export`
+              : "No vehicles to export"),
       tone: vehicles.length > 0 ? ("success" as const) : ("neutral" as const),
     },
   ];
