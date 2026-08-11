@@ -24,6 +24,7 @@ export default function VehiclesPage() {
   const { user } = useAuth();
   const currentUserRole = user?.role ?? UserRole.DRIVER;
   const isDriver = currentUserRole === UserRole.DRIVER;
+  const isRentalCustomer = currentUserRole === UserRole.RENTAL_CUSTOMER;
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [rejectedVehicles, setRejectedVehicles] = useState<Vehicle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -57,8 +58,8 @@ export default function VehiclesPage() {
           (responseData as any).content || (responseData as any).vehicles || [];
       }
 
-      // Filter vehicles for drivers - only show assigned vehicles
-      if (isDriver) {
+      // Filter vehicles for drivers and rental customers - only show assigned vehicles
+      if (isDriver || isRentalCustomer) {
         vehiclesArray = vehiclesArray.filter(
           (v) => v.assignedDriverId === user?.id
         );
@@ -284,7 +285,7 @@ export default function VehiclesPage() {
     <div className="container mx-auto space-y-6 p-4 pb-24 md:pb-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">My Vehicles</h1>
-        {!isDriver && (
+        {!isDriver && !isRentalCustomer && (
           <Button asChild className="w-full sm:w-auto">
             <Link href="/onboarding/add-vehicle">
               <Plus className="mr-2 h-4 w-4" />

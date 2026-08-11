@@ -411,6 +411,7 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const role = user?.role ?? UserRole.DRIVER;
   const isDriver = role === UserRole.DRIVER;
+  const isRentalCustomer = role === UserRole.RENTAL_CUSTOMER;
   const showTaxReadinessShortcut =
     user?.organizationMode !== "FLEET" || !isDriver;
   const { preferences } = useUserPreferences();
@@ -1073,17 +1074,34 @@ export default function DashboardPage() {
   // ── Dashboard ──────────────────────────────────────────────────────────────
   return (
     <div className="container mx-auto space-y-6 p-4 page-enter">
-      {/* SARS Compliance Banner — scoped to selected vehicle */}
-      {selectedVehicle && (
+      {/* SARS Compliance Banner — scoped to selected vehicle - hide for RENTAL_CUSTOMER */}
+      {selectedVehicle && !isRentalCustomer && (
         <TaxAlertBanner
           vehicleId={selectedVehicle.id}
           vehicleReg={selectedVehicle.registrationNumber}
         />
       )}
 
-      {/* Fuel Consumption Degradation Alert */}
-      {selectedVehicle && (
+      {/* Fuel Consumption Degradation Alert - hide for RENTAL_CUSTOMER */}
+      {selectedVehicle && !isRentalCustomer && (
         <FuelConsumptionAlertBanner vehicleId={selectedVehicle.id} />
+      )}
+
+      {/* Fuel Tank Reminder for RENTAL_CUSTOMER */}
+      {selectedVehicle && isRentalCustomer && (
+        <Card className="border-orange-500/30 bg-orange-500/5">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <Fuel className="h-5 w-5 text-orange-600 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-orange-900">Fuel Tank Reminder</h3>
+                <p className="text-sm text-orange-800 mt-1">
+                  Please fill up the fuel tank before returning the vehicle to avoid additional fees for fuel difference.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* ── Welcome ───────────────────────────────────────────────────────── */}
