@@ -56,11 +56,12 @@ interface Vehicle {
 }
 
 export default function OrganizationPage() {
-  useRequireRole(UserRole.ADMIN, UserRole.MANAGER)
+  useRequireRole(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.MANAGER)
   const { user, isFleetMode, isSoloMode } = useAuth()
   const currentUserRole = user?.role ?? UserRole.DRIVER
   const isManager = currentUserRole === UserRole.MANAGER
   const isAdmin = currentUserRole === UserRole.ADMIN
+  const isSuperAdmin = currentUserRole === UserRole.SUPER_ADMIN
   
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
@@ -459,7 +460,7 @@ export default function OrganizationPage() {
           <CardContent className="space-y-4">
             {/* Org Name and Icon */}
             <div className="flex items-center gap-4">
-              {isAdmin ? (
+              {isAdmin || isSuperAdmin ? (
                 <button
                   type="button"
                   className="relative h-16 w-16 shrink-0 cursor-pointer"
