@@ -1529,8 +1529,8 @@ export default function DashboardPage() {
                     </Card>
                   </button>
                 );
-              })}
-              )}
+              })
+            )}
             </div>
           )}
         </div>
