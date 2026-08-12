@@ -197,7 +197,7 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
           {/* Odometer Photo */}
           {confirmation && (
             <div className="space-y-4">
-              <Label>Odometer Photo (Proof of Reading)</Label>
+              <Label htmlFor="odometer-photo">Odometer Photo (Proof of Reading)</Label>
               <div className="relative">
                 <div className="h-48 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
                   {confirmation.confirmationImageUrl ? (
@@ -213,8 +213,9 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
                     </div>
                   )}
                 </div>
-                <label className="absolute inset-0 cursor-pointer">
+                <label className="absolute inset-0 cursor-pointer" htmlFor="odometer-photo">
                   <input
+                    id="odometer-photo"
                     type="file"
                     accept="image/*"
                     className="hidden"
