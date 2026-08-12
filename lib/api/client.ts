@@ -313,7 +313,7 @@ export const createOdometerConfirmation = async (data: {
 
 /** Get odometer confirmation for a vehicle assignment */
 export const getOdometerConfirmation = async (assignmentId: string) => {
-  return api.get(`/odometer-confirmations/assignment/${assignmentId}`);
+  return api.getOptional(`/odometer-confirmations/assignment/${assignmentId}`);
 };
 
 /** Upload odometer confirmation image */
