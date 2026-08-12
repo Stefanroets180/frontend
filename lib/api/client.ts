@@ -110,6 +110,10 @@ async function safeJsonParse(res: Response) {
   const contentType = res.headers.get('content-type');
   if (!contentType || !contentType.includes('application/json')) {
     const text = await res.text();
+    // Handle empty response (null body)
+    if (!text || text.trim() === '') {
+      return null;
+    }
     console.error('[API] Non-JSON response:', text.substring(0, 200));
     throw new Error(`Expected JSON but got ${contentType}`);
   }
