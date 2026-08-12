@@ -202,7 +202,9 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
                 <div className="h-48 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
                   {confirmation.confirmationImageUrl ? (
                     <img 
-                      src={confirmation.confirmationImageUrl}
+                      src={confirmation.confirmationImageUrl.startsWith('http') 
+                        ? confirmation.confirmationImageUrl 
+                        : `${process.env.NEXT_PUBLIC_API_URL || 'https://fleet-expense-app.duckdns.org'}${confirmation.confirmationImageUrl}`}
                       alt="Odometer reading"
                       className="h-full w-full object-cover rounded-lg"
                     />
