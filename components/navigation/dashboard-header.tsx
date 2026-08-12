@@ -65,7 +65,7 @@ interface StoredProfile {
   lastName?: string;
   email?: string;
   role?: string;
-  organizationMode?: "SOLO" | "FLEET";
+  organizationMode?: "SOLO" | "BUSINESS_FLEET" | "COMPANY";
   organizationName?: string;
   profilePhotoUrl?: string;
 }
@@ -383,7 +383,7 @@ export function DashboardHeader({
     refreshReceipts,
   } = useMissingReceipts();
 
-  const isFleet = profile.organizationMode === "FLEET";
+  const isFleet = profile.organizationMode === "BUSINESS_FLEET" || profile.organizationMode === "COMPANY";
   const isRentalCustomer = profile.role === UserRole.RENTAL_CUSTOMER;
   const displayName = profile.firstName
     ? `${profile.firstName} ${profile.lastName ?? ""}`.trim()
