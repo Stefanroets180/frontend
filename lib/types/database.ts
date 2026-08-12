@@ -17,6 +17,7 @@ export enum UserRole {
 
 export enum OrganizationMode {
   SOLO = 'SOLO',
+  FLEET = 'FLEET', // Deprecated: Use BUSINESS_FLEET or COMPANY instead
   BUSINESS_FLEET = 'BUSINESS_FLEET',
   COMPANY = 'COMPANY'
 }

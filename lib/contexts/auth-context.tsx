@@ -157,7 +157,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading,
     isAuthenticated: !!user,
     isSoloMode: user?.organizationMode === OrganizationMode.SOLO,
-    isFleetMode: user?.organizationMode === OrganizationMode.BUSINESS_FLEET || user?.organizationMode === OrganizationMode.COMPANY,
+    isFleetMode: user?.organizationMode === OrganizationMode.FLEET || user?.organizationMode === OrganizationMode.BUSINESS_FLEET || user?.organizationMode === OrganizationMode.COMPANY,
     isBusinessFleet: user?.organizationMode === OrganizationMode.BUSINESS_FLEET,
     isCompany: user?.organizationMode === OrganizationMode.COMPANY,
     isAdmin: user?.role === UserRole.ADMIN,
