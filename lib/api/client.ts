@@ -59,7 +59,10 @@ const getHeaders = (skipAuth: boolean = false): HeadersInit => {
 
 // 2. Auth Error Handler - Clears token and redirects on 401/403
 async function handleAuthError(res: Response, url: string): Promise<never> {
-  if (res.status === 404 && url.includes('/api/v1/')) {
+  // Suppress 404 warnings for odometer confirmation (expected when none exists yet)
+  if (res.status === 404 && url.includes('/odometer-confirmations')) {
+    // Don't log - this is expected when no confirmation exists
+  } else if (res.status === 404 && url.includes('/api/v1/')) {
     console.warn(
       `[API] 404 for ${url}. Restart Spring Boot (mvn spring-boot:run -Dspring-boot.run.profiles=dev) so new controllers load.`
     );
