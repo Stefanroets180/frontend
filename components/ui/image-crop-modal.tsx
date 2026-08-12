@@ -129,34 +129,18 @@ export function ImageCropModal({
       canvas.width = cropWidth
       canvas.height = cropHeight
 
-      // Handle rotation if needed (for EXIF)
-      if (rotation !== 0) {
-        ctx.translate(canvas.width / 2, canvas.height / 2)
-        ctx.rotate((rotation * Math.PI) / 180)
-        ctx.drawImage(
-          image,
-          completedCrop.x,
-          completedCrop.y,
-          completedCrop.width,
-          completedCrop.height,
-          -cropWidth / 2,
-          -cropHeight / 2,
-          cropWidth,
-          cropHeight
-        )
-      } else {
-        ctx.drawImage(
-          image,
-          completedCrop.x,
-          completedCrop.y,
-          completedCrop.width,
-          completedCrop.height,
-          0,
-          0,
-          cropWidth,
-          cropHeight
-        )
-      }
+      // Simple crop without rotation for now
+      ctx.drawImage(
+        image,
+        completedCrop.x,
+        completedCrop.y,
+        completedCrop.width,
+        completedCrop.height,
+        0,
+        0,
+        cropWidth,
+        cropHeight
+      )
 
       canvas.toBlob(
         (blob) => {
@@ -242,7 +226,6 @@ export function ImageCropModal({
                     style={{
                       maxHeight: '60vh',
                       maxWidth: '100%',
-                      transform: `rotate(${rotation}deg)`,
                     }}
                   />
                 </ReactCrop>
