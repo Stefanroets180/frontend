@@ -47,7 +47,9 @@ function isFlatSpringAuth(data: Record<string, unknown>): data is Record<string,
 function convertProfilePhotoUrl(url: string | undefined): string | undefined {
   if (!url) return undefined
   if (url.startsWith('/api/v1/storage/')) {
-    return `${API_URL}${url}`
+    // Remove /api/v1 prefix since API_URL already includes it
+    const storagePath = url.replace('/api/v1', '')
+    return `${API_URL}${storagePath}`
   }
   return url
 }

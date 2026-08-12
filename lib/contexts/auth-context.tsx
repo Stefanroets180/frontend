@@ -36,8 +36,9 @@ function mapMeToAuthUser(
   let absoluteProfilePhotoUrl = undefined;
   if (profilePhotoUrl) {
     if (profilePhotoUrl.startsWith('/api/v1/storage/')) {
-      // Replace relative path with absolute backend URL
-      absoluteProfilePhotoUrl = `${API_URL}${profilePhotoUrl}`;
+      // Remove /api/v1 prefix since API_URL already includes it
+      const storagePath = profilePhotoUrl.replace('/api/v1', '');
+      absoluteProfilePhotoUrl = `${API_URL}${storagePath}`;
     } else {
       absoluteProfilePhotoUrl = profilePhotoUrl;
     }
