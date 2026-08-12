@@ -58,7 +58,7 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
       const response = await getOdometerConfirmation(assignmentId)
       setConfirmation(response.data)
       if (response.data) {
-        reset({ reading: response.data.reading })
+        reset({ reading: response.data.odometerReading })
       }
     } catch (error: any) {
       // Silently ignore all errors - confirmation may not exist yet
@@ -200,9 +200,9 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
               <Label>Odometer Photo (Proof of Reading)</Label>
               <div className="relative">
                 <div className="h-48 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
-                  {confirmation.imageUrl ? (
+                  {confirmation.confirmationImageUrl ? (
                     <img 
-                      src={confirmation.imageUrl}
+                      src={confirmation.confirmationImageUrl}
                       alt="Odometer reading"
                       className="h-full w-full object-cover rounded-lg"
                     />
@@ -234,13 +234,13 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
             <div className="p-4 bg-muted/30 rounded-lg space-y-2">
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Reading:</span>
-                <span className="font-semibold">{confirmation.reading.toLocaleString()} km</span>
+                <span className="font-semibold">{confirmation.odometerReading?.toLocaleString() || confirmation.reading?.toLocaleString() || 'N/A'} km</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Recorded:</span>
                 <span className="text-sm">{new Date(confirmation.createdAt).toLocaleString()}</span>
               </div>
-              {confirmation.imageUrl && (
+              {confirmation.confirmationImageUrl && (
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Photo:</span>
                   <span className="text-sm text-green-600">Uploaded</span>
@@ -250,7 +250,7 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
           )}
 
           {/* Complete Button */}
-          {confirmation && confirmation.imageUrl && onComplete && (
+          {confirmation && confirmation.confirmationImageUrl && onComplete && (
             <Button
               onClick={onComplete}
               className="w-full h-12"
