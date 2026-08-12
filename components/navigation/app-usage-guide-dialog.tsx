@@ -37,7 +37,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-type OrganizationMode = "SOLO" | "FLEET";
+type OrganizationMode = "SOLO" | "BUSINESS_FLEET" | "COMPANY";
 type UserRole = "ADMIN" | "MANAGER" | "DRIVER" | string;
 
 type ButtonVariant =
@@ -233,7 +233,7 @@ function getBestResultsChecklist(
   organizationMode: OrganizationMode,
   role?: UserRole,
 ): string[] {
-  const isFleet = organizationMode === "FLEET";
+  const isFleet = organizationMode === "BUSINESS_FLEET" || organizationMode === "COMPANY";
   const isDriver = role === "DRIVER";
 
   const baseChecklist = [
@@ -363,7 +363,7 @@ function getQuickStartCards(
   role?: UserRole,
 ): { title: string; cards: QuickStartCardItem[] } {
   const nav = getNavLabels(role);
-  const isFleet = organizationMode === "FLEET";
+  const isFleet = organizationMode === "BUSINESS_FLEET" || organizationMode === "COMPANY";
   const isDriver = role === "DRIVER";
 
   const individualCards: QuickStartCardItem[] = [
@@ -521,7 +521,7 @@ function getTaxAndExportCards(
 ): { title: string; cards: QuickStartCardItem[] } {
   const nav = getNavLabels(role);
   const shouldShowTaxReadiness = !(
-    organizationMode === "FLEET" && role === "DRIVER"
+    (organizationMode === "BUSINESS_FLEET" || organizationMode === "COMPANY") && role === "DRIVER"
   );
 
   const cards: QuickStartCardItem[] = [];
@@ -574,7 +574,7 @@ function getGuideSections(
   organizationName?: string,
 ): GuideSection[] {
   const nav = getNavLabels(role);
-  const isFleet = organizationMode === "FLEET";
+  const isFleet = organizationMode === "BUSINESS_FLEET" || organizationMode === "COMPANY";
   const isDriver = role === "DRIVER";
   const orgLabel = organizationName?.trim() || "your business";
 
@@ -881,7 +881,7 @@ export function AppUsageGuideDialog({
 }: AppUsageGuideDialogProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const isFleet = organizationMode === "FLEET";
+  const isFleet = organizationMode === "BUSINESS_FLEET" || organizationMode === "COMPANY";
   const isDriver = role === "DRIVER";
   const sections = getGuideSections(organizationMode, role, organizationName);
   const quickStart = getQuickStartCards(organizationMode, role);
