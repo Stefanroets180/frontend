@@ -408,12 +408,12 @@ function getDashboardPanelStorageKey({
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isFleetMode } = useAuth();
   const role = user?.role ?? UserRole.DRIVER;
   const isDriver = role === UserRole.DRIVER;
   const isRentalCustomer = role === UserRole.RENTAL_CUSTOMER;
   const showTaxReadinessShortcut =
-    user?.organizationMode !== "FLEET" || !isDriver;
+    !isFleetMode || !isDriver;
   const { preferences } = useUserPreferences();
 
   // User display name — from localStorage (set during login / register)
