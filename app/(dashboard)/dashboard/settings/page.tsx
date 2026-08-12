@@ -61,7 +61,7 @@ interface VehicleOption {
 }
 
 function SettingsContent() {
-  const { user, logout, refreshUser, isLoading: authLoading } = useAuth();
+  const { user, logout, refreshUser, isLoading: authLoading, isFleetMode } = useAuth();
   const searchParams = useSearchParams();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const {
@@ -80,7 +80,7 @@ function SettingsContent() {
   );
 
   const isDark = resolvedTheme === "dark";
-  const isFleet = user?.organizationMode === "FLEET";
+  const isFleet = isFleetMode;
   const isAdminOrManager = user?.role === "ADMIN" || user?.role === "MANAGER";
   const isDriver = user?.role === "DRIVER";
   const isRentalCustomer = user?.role === "RENTAL_CUSTOMER";
