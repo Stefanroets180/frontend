@@ -824,12 +824,16 @@ export default function VehiclesPage() {
               Confirm the odometer reading for {selectedVehicleForFleet?.nickname || selectedVehicleForFleet?.make + ' ' + selectedVehicleForFleet?.model}
             </DialogDescription>
           </DialogHeader>
-          {selectedVehicleForFleet && selectedAssignmentId && (
+          {selectedVehicleForFleet && selectedAssignmentId ? (
             <OdometerConfirmationForm
               assignmentId={selectedAssignmentId}
               vehicleName={selectedVehicleForFleet.nickname || `${selectedVehicleForFleet.make} ${selectedVehicleForFleet.model}`}
               onComplete={() => setOdometerConfirmationOpen(false)}
             />
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              Unable to load odometer confirmation form. Please try again.
+            </div>
           )}
         </DialogContent>
       </Dialog>
