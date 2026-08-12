@@ -120,12 +120,17 @@ export const api = {
   /** GET that returns null data on 404, 204, 400, or 500 (optional endpoints / stale backend). */
   getOptional: async (endpoint: string) => {
     const url = `${API_URL}${endpoint}`;
-    const res = await fetch(url, { method: 'GET', headers: getHeaders() });
-    if (res.status === 404 || res.status === 204 || res.status === 400 || res.status === 500) {
+    try {
+      const res = await fetch(url, { method: 'GET', headers: getHeaders() });
+      if (res.status === 404 || res.status === 204 || res.status === 400 || res.status === 500) {
+        return { data: null };
+      }
+      if (!res.ok) await handleAuthError(res, url);
+      return { data: await safeJsonParse(res) };
+    } catch (error) {
+      // Silently return null for any errors in optional endpoints
       return { data: null };
     }
-    if (!res.ok) await handleAuthError(res, url);
-    return { data: await safeJsonParse(res) };
   },
 
   get: async (endpoint: string) => {
