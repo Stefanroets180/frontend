@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/api/client";
+import { getVehicleAssignments } from "@/lib/api/client";
 import type { Vehicle } from "@/lib/types/database";
 import { EntryActions } from "@/components/entries";
 import { cn } from "@/lib/utils";
@@ -42,6 +43,7 @@ export default function VehiclesPage() {
   const [conditionReportOpen, setConditionReportOpen] = useState(false);
   const [odometerConfirmationOpen, setOdometerConfirmationOpen] = useState(false);
   const [selectedVehicleForFleet, setSelectedVehicleForFleet] = useState<Vehicle | null>(null);
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchVehicles();
@@ -441,9 +443,23 @@ export default function VehiclesPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => {
+                          onClick={async () => {
                             setSelectedVehicleForFleet(vehicle);
-                            setConditionReportOpen(true);
+                            try {
+                              const assignments = await getVehicleAssignments(vehicle.id);
+                              const assignmentData = (assignments as any).data || assignments;
+                              const assignmentArray = Array.isArray(assignmentData) ? assignmentData : (assignmentData as any).content || [];
+                              const activeAssignment = assignmentArray.find((a: any) => a.status === 'ACTIVE');
+                              if (activeAssignment) {
+                                setSelectedAssignmentId(activeAssignment.id);
+                                setConditionReportOpen(true);
+                              } else {
+                                alert('No active assignment found for this vehicle. Please assign this vehicle to a driver first.');
+                              }
+                            } catch (error) {
+                              console.error('Failed to fetch assignments:', error);
+                              alert('Failed to fetch vehicle assignments. Please try again.');
+                            }
                           }}
                         >
                           Condition Report
@@ -451,9 +467,23 @@ export default function VehiclesPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => {
+                          onClick={async () => {
                             setSelectedVehicleForFleet(vehicle);
-                            setOdometerConfirmationOpen(true);
+                            try {
+                              const assignments = await getVehicleAssignments(vehicle.id);
+                              const assignmentData = (assignments as any).data || assignments;
+                              const assignmentArray = Array.isArray(assignmentData) ? assignmentData : (assignmentData as any).content || [];
+                              const activeAssignment = assignmentArray.find((a: any) => a.status === 'ACTIVE');
+                              if (activeAssignment) {
+                                setSelectedAssignmentId(activeAssignment.id);
+                                setOdometerConfirmationOpen(true);
+                              } else {
+                                alert('No active assignment found for this vehicle. Please assign this vehicle to a driver first.');
+                              }
+                            } catch (error) {
+                              console.error('Failed to fetch assignments:', error);
+                              alert('Failed to fetch vehicle assignments. Please try again.');
+                            }
                           }}
                         >
                           Odometer
@@ -761,9 +791,9 @@ export default function VehiclesPage() {
               Document the condition of {selectedVehicleForFleet?.nickname || selectedVehicleForFleet?.make + ' ' + selectedVehicleForFleet?.model}
             </DialogDescription>
           </DialogHeader>
-          {selectedVehicleForFleet && (
+          {selectedVehicleForFleet && selectedAssignmentId && (
             <VehicleConditionReport
-              assignmentId={selectedVehicleForFleet.id}
+              assignmentId={selectedAssignmentId}
               vehicleName={selectedVehicleForFleet.nickname || `${selectedVehicleForFleet.make} ${selectedVehicleForFleet.model}`}
               onComplete={() => setConditionReportOpen(false)}
             />
@@ -780,9 +810,9 @@ export default function VehiclesPage() {
               Confirm the odometer reading for {selectedVehicleForFleet?.nickname || selectedVehicleForFleet?.make + ' ' + selectedVehicleForFleet?.model}
             </DialogDescription>
           </DialogHeader>
-          {selectedVehicleForFleet && (
+          {selectedVehicleForFleet && selectedAssignmentId && (
             <OdometerConfirmationForm
-              assignmentId={selectedVehicleForFleet.id}
+              assignmentId={selectedAssignmentId}
               vehicleName={selectedVehicleForFleet.nickname || `${selectedVehicleForFleet.make} ${selectedVehicleForFleet.model}`}
               onComplete={() => setOdometerConfirmationOpen(false)}
             />
