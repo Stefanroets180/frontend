@@ -418,6 +418,7 @@ export default function ProfilePage() {
                     type={showCurrentPassword ? 'text' : 'password'}
                     placeholder="Enter current password"
                     className="h-12 pr-10"
+                    autoComplete="current-password"
                   />
                   <Button
                     type="button"
@@ -448,6 +449,7 @@ export default function ProfilePage() {
                     type={showNewPassword ? 'text' : 'password'}
                     placeholder="Enter new password"
                     className="h-12 pr-10"
+                    autoComplete="new-password"
                   />
                   <Button
                     type="button"
@@ -481,6 +483,7 @@ export default function ProfilePage() {
                     type={showConfirmPassword ? 'text' : 'password'}
                     placeholder="Confirm new password"
                     className="h-12 pr-10"
+                    autoComplete="new-password"
                   />
                   <Button
                     type="button"

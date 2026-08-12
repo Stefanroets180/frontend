@@ -170,6 +170,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                 id="idNumber"
                 placeholder="Enter your South African ID number"
                 className="h-12"
+                autoComplete="off"
               />
               {errors.idNumber && (
                 <p className="text-sm text-destructive">{errors.idNumber.message}</p>
@@ -185,6 +186,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                   id="homePhone"
                   placeholder="012 345 6789"
                   className="h-12"
+                  autoComplete="tel home"
                 />
               </div>
               <div className="space-y-2">
@@ -194,6 +196,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                   id="workPhone"
                   placeholder="012 345 6789"
                   className="h-12"
+                  autoComplete="tel work"
                 />
               </div>
               <div className="space-y-2">
@@ -203,6 +206,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                   id="mobilePhone"
                   placeholder="082 123 4567"
                   className="h-12"
+                  autoComplete="tel mobile"
                 />
                 {errors.mobilePhone && (
                   <p className="text-sm text-destructive">{errors.mobilePhone.message}</p>
@@ -218,6 +222,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                 id="driversLicenseNumber"
                 placeholder="Enter your driver license number"
                 className="h-12"
+                autoComplete="off"
               />
               {errors.driversLicenseNumber && (
                 <p className="text-sm text-destructive">{errors.driversLicenseNumber.message}</p>
@@ -232,6 +237,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                 id="driversLicenseExpiry"
                 type="date"
                 className="h-12"
+                autoComplete="off"
               />
               {errors.driversLicenseExpiry && (
                 <p className="text-sm text-destructive">{errors.driversLicenseExpiry.message}</p>

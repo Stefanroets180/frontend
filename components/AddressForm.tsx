@@ -128,6 +128,7 @@ export function AddressForm({ existingAddress, onSuccess }: AddressFormProps) {
               id="addressLine1"
               placeholder="123 Main Street"
               className="h-12"
+              autoComplete="street-address"
             />
             {errors.addressLine1 && (
               <p className="text-sm text-destructive">{errors.addressLine1.message}</p>
@@ -142,6 +143,7 @@ export function AddressForm({ existingAddress, onSuccess }: AddressFormProps) {
               id="addressLine2"
               placeholder="Apt 4B"
               className="h-12"
+              autoComplete="address-line2"
             />
           </div>
 
@@ -153,6 +155,7 @@ export function AddressForm({ existingAddress, onSuccess }: AddressFormProps) {
               id="city"
               placeholder="Johannesburg"
               className="h-12"
+              autoComplete="address-level2"
             />
             {errors.city && (
               <p className="text-sm text-destructive">{errors.city.message}</p>
@@ -166,6 +169,7 @@ export function AddressForm({ existingAddress, onSuccess }: AddressFormProps) {
               {...register('province')}
               id="province"
               className="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              autoComplete="address-level1"
             >
               <option value="">Select province</option>
               {SOUTH_AFRICAN_PROVINCES.map((province) => (
@@ -187,6 +191,7 @@ export function AddressForm({ existingAddress, onSuccess }: AddressFormProps) {
               id="postalCode"
               placeholder="2000"
               className="h-12"
+              autoComplete="postal-code"
             />
             {errors.postalCode && (
               <p className="text-sm text-destructive">{errors.postalCode.message}</p>
@@ -201,6 +206,7 @@ export function AddressForm({ existingAddress, onSuccess }: AddressFormProps) {
               id="country"
               placeholder="South Africa"
               className="h-12"
+              autoComplete="country-name"
             />
             {errors.country && (
               <p className="text-sm text-destructive">{errors.country.message}</p>
