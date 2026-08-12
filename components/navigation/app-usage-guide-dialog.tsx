@@ -37,7 +37,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-type OrganizationMode = "SOLO" | "BUSINESS_FLEET" | "COMPANY";
+type OrganizationMode = "SOLO" | "FLEET" | "BUSINESS_FLEET" | "COMPANY";
 type UserRole = "ADMIN" | "MANAGER" | "DRIVER" | string;
 
 type ButtonVariant =

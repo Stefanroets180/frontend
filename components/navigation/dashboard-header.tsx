@@ -65,7 +65,7 @@ interface StoredProfile {
   lastName?: string;
   email?: string;
   role?: string;
-  organizationMode?: "SOLO" | "BUSINESS_FLEET" | "COMPANY";
+  organizationMode?: "SOLO" | "FLEET" | "BUSINESS_FLEET" | "COMPANY";
   organizationName?: string;
   profilePhotoUrl?: string;
 }
