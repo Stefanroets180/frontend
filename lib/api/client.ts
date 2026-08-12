@@ -143,7 +143,10 @@ export const api = {
       if (!res.ok) await handleAuthError(res, url);
       return { data: await safeJsonParse(res) };
     } catch (error) {
-      console.error(`[API] GET ${url} failed:`, error);
+      // Suppress error logging for odometer confirmation endpoints
+      if (!url.includes('/odometer-confirmations')) {
+        console.error(`[API] GET ${url} failed:`, error);
+      }
       throw error;
     }
   },
