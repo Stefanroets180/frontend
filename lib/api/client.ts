@@ -528,20 +528,3 @@ export const addManagerNote = async (reportId: string, data: {
 }) => {
   return api.post(`/vehicle-condition-reports/${reportId}/notes`, data);
 };
-
-// Odometer Confirmation
-export const createOdometerConfirmation = async (data: {
-  assignmentId: string;
-  reading: number;
-  imageUrl?: string;
-}) => {
-  return api.post('/odometer-confirmations', data);
-};
-
-export const getOdometerConfirmation = async (assignmentId: string) => {
-  return api.get(`/odometer-confirmations/assignment/${assignmentId}`);
-};
-
-export const uploadOdometerConfirmationImage = async (confirmationId: string, formData: FormData) => {
-  return apiForm.post(`/odometer-confirmations/${confirmationId}/image`, formData);
-};
