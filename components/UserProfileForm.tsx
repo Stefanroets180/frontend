@@ -246,7 +246,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
 
             {/* Driver License Images */}
             <div className="space-y-4">
-              <Label>Driver License Photos</Label>
+              <p className="text-sm font-medium">Driver License Photos</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Front of License */}
                 <div className="space-y-2">
