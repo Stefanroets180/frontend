@@ -401,7 +401,7 @@ export const getExpensesWithoutReceipts = async () => {
 
 // User Profile
 export const getUserProfile = async () => {
-  return api.get('/user-profile/me');
+  return api.get('/user-profiles/me');
 };
 
 export const createUserProfile = async (data: {
@@ -412,7 +412,7 @@ export const createUserProfile = async (data: {
   driversLicenseNumber?: string;
   driversLicenseExpiry?: string;
 }) => {
-  return api.post('/user-profile', data);
+  return api.post('/user-profiles', data);
 };
 
 export const updateUserProfile = async (data: {
@@ -428,7 +428,7 @@ export const updateUserProfile = async (data: {
 
 // Address
 export const getUserAddress = async () => {
-  return api.get('/address/me');
+  return api.get('/addresses/me');
 };
 
 export const createUserAddress = async (data: {
@@ -439,10 +439,10 @@ export const createUserAddress = async (data: {
   postalCode: string;
   country: string;
 }) => {
-  return api.post('/address', data);
+  return api.post('/addresses', data);
 };
 
-export const updateUserAddress = async (data: {
+export const updateUserAddress = async (addressId: string, data: {
   addressLine1: string;
   addressLine2?: string;
   city: string;
@@ -450,7 +450,7 @@ export const updateUserAddress = async (data: {
   postalCode: string;
   country: string;
 }) => {
-  return api.put('/address/me', data);
+  return api.put(`/addresses/${addressId}`, data);
 };
 
 // Vehicle Assignment
