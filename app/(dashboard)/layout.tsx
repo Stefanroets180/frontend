@@ -8,16 +8,16 @@ import { PasswordChangeWarningDialog } from '@/components/auth/password-change-w
 import { useEffect, useState } from 'react'
 
 function DashboardContent({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth()
+  const { user, isFleetMode } = useAuth()
   const [showPasswordWarning, setShowPasswordWarning] = useState(false)
 
   useEffect(() => {
     // Show password change warning only for fleet mode users with temporary passwords
-    if (user && user.organizationMode === 'FLEET' && !user.passwordChanged) {
+    if (user && isFleetMode && !user.passwordChanged) {
       // Only show if user was invited by admin with temporary password
       setShowPasswordWarning(true)
     }
-  }, [user])
+  }, [user, isFleetMode])
 
   return (
     <>

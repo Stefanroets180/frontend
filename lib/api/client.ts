@@ -394,3 +394,134 @@ export const getExpenseCategories = async () => {
 export const getExpensesWithoutReceipts = async () => {
   return api.get('/expenses/missing-receipts');
 };
+
+// ============================================================================
+// FLEET MANAGEMENT API
+// ============================================================================
+
+// User Profile
+export const getUserProfile = async () => {
+  return api.get('/user-profile/me');
+};
+
+export const createUserProfile = async (data: {
+  idNumber?: string;
+  homePhone?: string;
+  workPhone?: string;
+  mobilePhone?: string;
+  driversLicenseNumber?: string;
+  driversLicenseExpiry?: string;
+}) => {
+  return api.post('/user-profile', data);
+};
+
+export const updateUserProfile = async (data: {
+  idNumber?: string;
+  homePhone?: string;
+  workPhone?: string;
+  mobilePhone?: string;
+  driversLicenseNumber?: string;
+  driversLicenseExpiry?: string;
+}) => {
+  return api.put('/user-profile/me', data);
+};
+
+// Address
+export const getUserAddress = async () => {
+  return api.get('/address/me');
+};
+
+export const createUserAddress = async (data: {
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  country: string;
+}) => {
+  return api.post('/address', data);
+};
+
+export const updateUserAddress = async (data: {
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  country: string;
+}) => {
+  return api.put('/address/me', data);
+};
+
+// Vehicle Assignment
+export const getVehicleAssignments = async (vehicleId?: string) => {
+  const endpoint = vehicleId ? `/vehicle-assignments/vehicle/${vehicleId}` : '/vehicle-assignments';
+  return api.get(endpoint);
+};
+
+export const createVehicleAssignment = async (data: {
+  vehicleId: string;
+  assignedToUserId: string;
+  assignedByUserId: string;
+  startDate: string;
+  endDate?: string;
+  notes?: string;
+}) => {
+  return api.post('/vehicle-assignments', data);
+};
+
+export const updateVehicleAssignment = async (assignmentId: string, data: {
+  endDate?: string;
+  status?: 'ACTIVE' | 'INACTIVE';
+  notes?: string;
+}) => {
+  return api.put(`/vehicle-assignments/${assignmentId}`, data);
+};
+
+export const getVehicleAssignmentByAssignmentId = async (assignmentId: string) => {
+  return api.get(`/vehicle-assignments/${assignmentId}`);
+};
+
+// Vehicle Condition Report
+export const createVehicleConditionReport = async (assignmentId: string) => {
+  return api.post(`/vehicle-condition-reports/assignment/${assignmentId}`, {});
+};
+
+export const getVehicleConditionReport = async (assignmentId: string) => {
+  return api.get(`/vehicle-condition-reports/assignment/${assignmentId}`);
+};
+
+export const addConditionSection = async (reportId: string, data: {
+  sectionType: string;
+  condition: 'GOOD' | 'FAIR' | 'POOR' | 'DAMAGED';
+  notes?: string;
+}) => {
+  return api.post(`/vehicle-condition-reports/${reportId}/sections`, data);
+};
+
+export const addSectionImage = async (sectionId: string, formData: FormData) => {
+  return apiForm.post(`/vehicle-condition-reports/sections/${sectionId}/images`, formData);
+};
+
+export const addManagerNote = async (reportId: string, data: {
+  note: string;
+}) => {
+  return api.post(`/vehicle-condition-reports/${reportId}/notes`, data);
+};
+
+// Odometer Confirmation
+export const createOdometerConfirmation = async (data: {
+  assignmentId: string;
+  reading: number;
+  imageUrl?: string;
+}) => {
+  return api.post('/odometer-confirmations', data);
+};
+
+export const getOdometerConfirmation = async (assignmentId: string) => {
+  return api.get(`/odometer-confirmations/assignment/${assignmentId}`);
+};
+
+export const uploadOdometerConfirmationImage = async (confirmationId: string, formData: FormData) => {
+  return apiForm.post(`/odometer-confirmations/${confirmationId}/image`, formData);
+};

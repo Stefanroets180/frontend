@@ -18,10 +18,12 @@ import { cn } from "@/lib/utils";
 import { DashboardCollapsiblePanel } from "@/components/dashboard/dashboard-collapsible-panel";
 import { useAuth } from "@/lib/contexts/auth-context";
 import { UserRole, VehicleStatus } from "@/lib/types/database";
+import { VehicleConditionReport } from "@/components/VehicleConditionReport";
+import { OdometerConfirmationForm } from "@/components/OdometerConfirmationForm";
 
 export default function VehiclesPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isFleetMode } = useAuth();
   const currentUserRole = user?.role ?? UserRole.DRIVER;
   const isDriver = currentUserRole === UserRole.DRIVER;
   const isRentalCustomer = currentUserRole === UserRole.RENTAL_CUSTOMER;
@@ -35,6 +37,11 @@ export default function VehiclesPage() {
   const [rejectionReason, setRejectionReason] = useState('');
   const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
   const [viewingVehicle, setViewingVehicle] = useState<Vehicle | null>(null);
+  
+  // Fleet-specific state
+  const [conditionReportOpen, setConditionReportOpen] = useState(false);
+  const [odometerConfirmationOpen, setOdometerConfirmationOpen] = useState(false);
+  const [selectedVehicleForFleet, setSelectedVehicleForFleet] = useState<Vehicle | null>(null);
 
   useEffect(() => {
     fetchVehicles();
@@ -427,83 +434,111 @@ export default function VehiclesPage() {
                   )}
 
                   {/* Action buttons */}
-                  {!isDriver && (
-                    <div className="border-t border-border/50 pt-2">
-                      {/* Approval buttons for pending vehicles (admin only) */}
-                      {currentUserRole === UserRole.ADMIN && (vehicle.status === VehicleStatus.PENDING_CREATION || vehicle.status === VehicleStatus.PENDING_DELETION) ? (
-                        <div className="grid grid-cols-2 gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="col-span-2"
-                            onClick={() => handleViewDetails(vehicle)}
-                          >
-                            <Eye className="mr-1 h-3 w-3" />
-                            View Details
-                          </Button>
-                          {vehicle.status === VehicleStatus.PENDING_CREATION ? (
-                            <>
-                              <Button
-                                size="sm"
-                                variant="default"
-                                onClick={() => handleApproveVehicle(vehicle.id)}
-                              >
-                                <Check className="mr-1 h-3 w-3" />
-                                Approve
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                onClick={() => handleRejectVehicle(vehicle.id)}
-                              >
-                                <X className="mr-1 h-3 w-3" />
-                                Reject
-                              </Button>
-                            </>
-                          ) : (
-                            <>
-                              <Button
-                                size="sm"
-                                variant="default"
-                                className="px-2 text-xs"
-                                onClick={() => handleApproveDeletion(vehicle.id)}
-                              >
-                                <Check className="mr-1 h-3 w-3" />
-                                <span className="flex flex-col leading-tight">
-                                  <span>Approve</span>
-                                  <span>Delete</span>
-                                </span>
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                className="px-2"
-                                onClick={() => handleRejectDeletion(vehicle.id)}
-                              >
-                                <X className="mr-1 h-3 w-3" />
-                                Reject
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                      ) : (
-                        /* Standard actions for active vehicles */
-                        <EntryActions
-                          entryId={vehicle.id}
-                          entryType="vehicle"
-                          isLocked={vehicle.isLocked ?? false}
-                          lockedAt={vehicle.lockedAt}
-                          lockedByName={vehicle.lockedByName}
-                          lockedReason={vehicle.lockedReason}
-                          onEdit={() => router.push(`/dashboard/vehicles/${vehicle.id}/edit`)}
-                          onDelete={() => handleDeleteVehicle(vehicle.id)}
-                          onLock={(reason) => handleLockVehicle(vehicle.id, reason)}
-                          onUnlock={() => handleUnlockVehicle(vehicle.id)}
-                          variant="icons"
-                        />
-                      )}
-                    </div>
-                  )}
+                  <div className="border-t border-border/50 pt-2">
+                    {/* Fleet-specific buttons */}
+                    {isFleetMode && (
+                      <div className="grid grid-cols-2 gap-2 mb-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedVehicleForFleet(vehicle);
+                            setConditionReportOpen(true);
+                          }}
+                        >
+                          Condition Report
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedVehicleForFleet(vehicle);
+                            setOdometerConfirmationOpen(true);
+                          }}
+                        >
+                          Odometer
+                        </Button>
+                      </div>
+                    )}
+                    
+                    {!isDriver && (
+                      <>
+                        {/* Approval buttons for pending vehicles (admin only) */}
+                        {currentUserRole === UserRole.ADMIN && (vehicle.status === VehicleStatus.PENDING_CREATION || vehicle.status === VehicleStatus.PENDING_DELETION) ? (
+                          <div className="grid grid-cols-2 gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="col-span-2"
+                              onClick={() => handleViewDetails(vehicle)}
+                            >
+                              <Eye className="mr-1 h-3 w-3" />
+                              View Details
+                            </Button>
+                            {vehicle.status === VehicleStatus.PENDING_CREATION ? (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="default"
+                                  onClick={() => handleApproveVehicle(vehicle.id)}
+                                >
+                                  <Check className="mr-1 h-3 w-3" />
+                                  Approve
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => handleRejectVehicle(vehicle.id)}
+                                >
+                                  <X className="mr-1 h-3 w-3" />
+                                  Reject
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="default"
+                                  className="px-2 text-xs"
+                                  onClick={() => handleApproveDeletion(vehicle.id)}
+                                >
+                                  <Check className="mr-1 h-3 w-3" />
+                                  <span className="flex flex-col leading-tight">
+                                    <span>Approve</span>
+                                    <span>Delete</span>
+                                  </span>
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  className="px-2"
+                                  onClick={() => handleRejectDeletion(vehicle.id)}
+                                >
+                                  <X className="mr-1 h-3 w-3" />
+                                  Reject
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        ) : (
+                          /* Standard actions for active vehicles */
+                          <EntryActions
+                            entryId={vehicle.id}
+                            entryType="vehicle"
+                            isLocked={vehicle.isLocked ?? false}
+                            lockedAt={vehicle.lockedAt}
+                            lockedByName={vehicle.lockedByName}
+                            lockedReason={vehicle.lockedReason}
+                            onEdit={() => router.push(`/dashboard/vehicles/${vehicle.id}/edit`)}
+                            onDelete={() => handleDeleteVehicle(vehicle.id)}
+                            onLock={(reason) => handleLockVehicle(vehicle.id, reason)}
+                            onUnlock={() => handleUnlockVehicle(vehicle.id)}
+                            variant="icons"
+                          />
+                        )}
+                      </>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -714,6 +749,44 @@ export default function VehiclesPage() {
               Close
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Fleet: Vehicle Condition Report Dialog */}
+      <Dialog open={conditionReportOpen} onOpenChange={setConditionReportOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Vehicle Condition Report</DialogTitle>
+            <DialogDescription>
+              Document the condition of {selectedVehicleForFleet?.nickname || selectedVehicleForFleet?.make + ' ' + selectedVehicleForFleet?.model}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedVehicleForFleet && (
+            <VehicleConditionReport
+              assignmentId={selectedVehicleForFleet.id}
+              vehicleName={selectedVehicleForFleet.nickname || `${selectedVehicleForFleet.make} ${selectedVehicleForFleet.model}`}
+              onComplete={() => setConditionReportOpen(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Fleet: Odometer Confirmation Dialog */}
+      <Dialog open={odometerConfirmationOpen} onOpenChange={setOdometerConfirmationOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Odometer Confirmation</DialogTitle>
+            <DialogDescription>
+              Confirm the odometer reading for {selectedVehicleForFleet?.nickname || selectedVehicleForFleet?.make + ' ' + selectedVehicleForFleet?.model}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedVehicleForFleet && (
+            <OdometerConfirmationForm
+              assignmentId={selectedVehicleForFleet.id}
+              vehicleName={selectedVehicleForFleet.nickname || `${selectedVehicleForFleet.make} ${selectedVehicleForFleet.model}`}
+              onComplete={() => setOdometerConfirmationOpen(false)}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -13,9 +13,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/lib/contexts/auth-context'
-import { api, apiForm } from '@/lib/api/client'
+import { api, apiForm, getUserProfile, getUserAddress } from '@/lib/api/client'
 import { cn } from '@/lib/utils'
 import { ImageCropModal } from '@/components/ui/image-crop-modal'
+import { UserProfileForm } from '@/components/UserProfileForm'
+import { AddressForm } from '@/components/AddressForm'
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
@@ -33,7 +35,7 @@ const changePasswordSchema = z.object({
 type ChangePasswordInput = z.infer<typeof changePasswordSchema>
 
 export default function ProfilePage() {
-  const { user, refreshUser } = useAuth()
+  const { user, refreshUser, isFleetMode } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -52,6 +54,34 @@ export default function ProfilePage() {
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null)
   const [showCropModal, setShowCropModal] = useState(false)
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
+
+  // Fleet credentials state
+  const [userProfile, setUserProfile] = useState<any>(null)
+  const [userAddress, setUserAddress] = useState<any>(null)
+  const [isLoadingCredentials, setIsLoadingCredentials] = useState(false)
+
+  // Load fleet credentials on mount
+  useEffect(() => {
+    if (isFleetMode) {
+      loadFleetCredentials()
+    }
+  }, [isFleetMode])
+
+  const loadFleetCredentials = async () => {
+    setIsLoadingCredentials(true)
+    try {
+      const [profileRes, addressRes] = await Promise.all([
+        getUserProfile().catch(() => ({ data: null })),
+        getUserAddress().catch(() => ({ data: null })),
+      ])
+      setUserProfile(profileRes.data)
+      setUserAddress(addressRes.data)
+    } catch (error) {
+      console.error('Failed to load fleet credentials:', error)
+    } finally {
+      setIsLoadingCredentials(false)
+    }
+  }
 
   const {
     register,
@@ -330,6 +360,24 @@ export default function ProfilePage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Fleet Credentials - Only shown for fleet mode */}
+        {isFleetMode && (
+          <>
+            {!userProfile && (
+              <UserProfileForm 
+                existingProfile={userProfile}
+                onSuccess={loadFleetCredentials}
+              />
+            )}
+            {!userAddress && (
+              <AddressForm 
+                existingAddress={userAddress}
+                onSuccess={loadFleetCredentials}
+              />
+            )}
+          </>
+        )}
 
         {/* Change Password Card */}
         <Card>

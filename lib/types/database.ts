@@ -17,7 +17,8 @@ export enum UserRole {
 
 export enum OrganizationMode {
   SOLO = 'SOLO',
-  FLEET = 'FLEET'
+  BUSINESS_FLEET = 'BUSINESS_FLEET',
+  COMPANY = 'COMPANY'
 }
 
 export enum FuelType {

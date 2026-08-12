@@ -61,6 +61,8 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isSoloMode: boolean;
   isFleetMode: boolean;
+  isBusinessFleet: boolean;
+  isCompany: boolean;
   isAdmin: boolean;
   isManager: boolean;
   isDriver: boolean;
@@ -155,7 +157,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading,
     isAuthenticated: !!user,
     isSoloMode: user?.organizationMode === OrganizationMode.SOLO,
-    isFleetMode: user?.organizationMode === OrganizationMode.FLEET,
+    isFleetMode: user?.organizationMode === OrganizationMode.BUSINESS_FLEET || user?.organizationMode === OrganizationMode.COMPANY,
+    isBusinessFleet: user?.organizationMode === OrganizationMode.BUSINESS_FLEET,
+    isCompany: user?.organizationMode === OrganizationMode.COMPANY,
     isAdmin: user?.role === UserRole.ADMIN,
     isManager: user?.role === UserRole.MANAGER,
     isDriver: user?.role === UserRole.DRIVER,
