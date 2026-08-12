@@ -46,11 +46,13 @@ export default function VehiclesPage() {
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchVehicles();
-    if (!isDriver) {
-      fetchRejectedVehicles();
+    if (user) {
+      fetchVehicles();
+      if (!isDriver) {
+        fetchRejectedVehicles();
+      }
     }
-  }, []);
+  }, [user, isDriver]);
 
   const fetchVehicles = async () => {
     try {
