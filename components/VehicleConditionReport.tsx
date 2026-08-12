@@ -263,8 +263,9 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
             <h3 className="font-semibold">Add Condition Section</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Section Type</Label>
+                <Label htmlFor="sectionType">Section Type</Label>
                 <select
+                  id="sectionType"
                   value={selectedSectionType}
                   onChange={(e) => setSelectedSectionType(e.target.value)}
                   className="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -279,8 +280,9 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
               </div>
 
               <div className="space-y-2">
-                <Label>Condition</Label>
+                <Label htmlFor="condition">Condition</Label>
                 <select
+                  id="condition"
                   value={selectedCondition}
                   onChange={(e) => setSelectedCondition(e.target.value as any)}
                   className="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -295,8 +297,9 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
             </div>
 
             <div className="space-y-2">
-              <Label>Notes (Optional)</Label>
+              <Label htmlFor="sectionNotes">Notes (Optional)</Label>
               <Textarea
+                id="sectionNotes"
                 value={sectionNotes}
                 onChange={(e) => setSectionNotes(e.target.value)}
                 placeholder="Add any observations about this section..."
@@ -333,7 +336,7 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
                   )}
 
                   <div className="space-y-2">
-                    <Label>Section Images</Label>
+                    <Label htmlFor={`image-upload-${section.id}`}>Section Images</Label>
                     <div className="flex flex-wrap gap-2">
                       {section.images && section.images.map((image: any) => (
                         <div key={image.id} className="relative w-24 h-24">
@@ -344,9 +347,10 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
                           />
                         </div>
                       ))}
-                      <label className="w-24 h-24 border-2 border-dashed border-border rounded-lg flex items-center justify-center cursor-pointer bg-muted/30 hover:bg-muted/50">
+                      <label htmlFor={`image-upload-${section.id}`} className="w-24 h-24 border-2 border-dashed border-border rounded-lg flex items-center justify-center cursor-pointer bg-muted/30 hover:bg-muted/50">
                         <Camera className="h-6 w-6 text-muted-foreground" />
                         <input
+                          id={`image-upload-${section.id}`}
                           type="file"
                           accept="image/*"
                           className="hidden"
@@ -365,7 +369,9 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
             <h3 className="font-semibold">Manager Notes</h3>
             
             <div className="space-y-2">
+              <Label htmlFor="managerNote">Manager Note</Label>
               <Textarea
+                id="managerNote"
                 value={managerNote}
                 onChange={(e) => setManagerNote(e.target.value)}
                 placeholder="Add a manager note about this vehicle..."
