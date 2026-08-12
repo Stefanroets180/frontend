@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
-import ReactCrop, { Crop, PixelCrop } from 'react-image-crop'
+import ReactCrop, { Crop, PixelCrop, cropToCanvas, cropToImg } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
@@ -63,37 +63,12 @@ export function ImageCropModal({
   const generatePreview = async () => {
     if (!completedCrop || !imgRef.current) return
 
-    const image = imgRef.current
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-
-    if (!ctx) return
-
-    // In react-image-crop v11, PixelCrop values are already in pixels
-    canvas.width = completedCrop.width
-    canvas.height = completedCrop.height
-
-    ctx.drawImage(
-      image,
-      completedCrop.x,
-      completedCrop.y,
-      completedCrop.width,
-      completedCrop.height,
-      0,
-      0,
-      completedCrop.width,
-      completedCrop.height
-    )
-
-    canvas.toBlob(
-      (blob) => {
-        if (blob) {
-          setPreviewUrl(URL.createObjectURL(blob))
-        }
-      },
-      'image/jpeg',
-      0.9
-    )
+    try {
+      const previewSrc = await cropToImg(imgRef.current, completedCrop)
+      setPreviewUrl(previewSrc)
+    } catch (error) {
+      console.error('Preview generation error:', error)
+    }
   }
 
   const handleCropComplete = (crop: PixelCrop) => {
@@ -106,62 +81,22 @@ export function ImageCropModal({
     setIsProcessing(true)
 
     try {
-      const image = imgRef.current
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
-
-      if (!ctx) {
-        throw new Error('Failed to get canvas context')
-      }
-
-      // In react-image-crop v11, PixelCrop values are already in pixels
-      let cropWidth = completedCrop.width
-      let cropHeight = completedCrop.height
-
-      // Resize if larger than 1920px on longest side
-      const maxDimension = 1920
-      if (cropWidth > maxDimension || cropHeight > maxDimension) {
-        const ratio = Math.min(maxDimension / cropWidth, maxDimension / cropHeight)
-        cropWidth *= ratio
-        cropHeight *= ratio
-      }
-
-      canvas.width = cropWidth
-      canvas.height = cropHeight
-
-      // Simple crop without rotation for now
-      ctx.drawImage(
-        image,
-        completedCrop.x,
-        completedCrop.y,
-        completedCrop.width,
-        completedCrop.height,
-        0,
-        0,
-        cropWidth,
-        cropHeight
+      // Use the built-in cropToImg helper from react-image-crop v11
+      const croppedImgSrc = await cropToImg(imgRef.current, completedCrop)
+      
+      // Convert the data URL back to a File
+      const response = await fetch(croppedImgSrc)
+      const blob = await response.blob()
+      
+      const croppedFile = new File(
+        [blob],
+        imageFile.name.replace(/\.[^.]+$/, '_cropped.jpg'),
+        { type: 'image/jpeg' }
       )
-
-      canvas.toBlob(
-        (blob) => {
-          if (blob) {
-            const croppedFile = new File(
-              [blob],
-              imageFile.name.replace(/\.[^.]+$/, '_cropped.jpg'),
-              { type: 'image/jpeg' }
-            )
-            console.log('Crop modal - Confirming with cropped file:', croppedFile)
-            onConfirm(croppedFile, imageFile)
-          } else {
-            console.warn('Canvas toBlob failed, using original file')
-            console.log('Crop modal - Confirming with original file:', imageFile)
-            onConfirm(imageFile, imageFile)
-          }
-          setIsProcessing(false)
-        },
-        'image/jpeg',
-        0.9
-      )
+      
+      console.log('Crop modal - Confirming with cropped file:', croppedFile)
+      onConfirm(croppedFile, imageFile)
+      setIsProcessing(false)
     } catch (error) {
       console.error('Crop processing error:', error)
       // Fallback to original file
