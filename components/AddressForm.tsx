@@ -24,6 +24,7 @@ type AddressInput = z.infer<typeof addressSchema>
 
 interface AddressFormProps {
   existingAddress?: {
+    id?: string
     addressLine1?: string
     addressLine2?: string
     city?: string
@@ -74,8 +75,8 @@ export function AddressForm({ existingAddress, onSuccess }: AddressFormProps) {
     setSubmitSuccess(false)
 
     try {
-      if (existingAddress) {
-        await updateUserAddress(data)
+      if (existingAddress && existingAddress.id) {
+        await updateUserAddress(existingAddress.id, data)
       } else {
         await createUserAddress(data)
       }
