@@ -298,6 +298,26 @@ export const getLastOdometerReading = async (vehicleId: string) => {
   return api.get(`/trips/vehicle/${vehicleId}/last-odometer`);
 };
 
+/** Create odometer confirmation for a vehicle assignment */
+export const createOdometerConfirmation = async (data: {
+  assignmentId: string;
+  reading: number;
+}) => {
+  return api.post(`/odometer-confirmations/assignment/${data.assignmentId}`, {
+    odometerReading: data.reading,
+  });
+};
+
+/** Get odometer confirmation for a vehicle assignment */
+export const getOdometerConfirmation = async (assignmentId: string) => {
+  return api.get(`/odometer-confirmations/assignment/${assignmentId}`);
+};
+
+/** Upload odometer confirmation image */
+export const uploadOdometerConfirmationImage = async (confirmationId: string, formData: FormData) => {
+  return apiForm.post(`/odometer-confirmations/${confirmationId}/image`, formData);
+};
+
 /** Get all recurring trips for the current user */
 export const getRecurringTrips = async () => {
   return api.get('/recurring-trips');
