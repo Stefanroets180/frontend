@@ -296,6 +296,7 @@ export default function ProfilePage() {
                         placeholder="First name"
                         className="h-8 flex-1"
                         disabled={isUpdatingProfile}
+                        aria-label="First name"
                       />
                       <Input
                         value={editLastName}
@@ -303,6 +304,7 @@ export default function ProfilePage() {
                         placeholder="Last name"
                         className="h-8 flex-1"
                         disabled={isUpdatingProfile}
+                        aria-label="Last name"
                       />
                       <Button
                         size="icon"
