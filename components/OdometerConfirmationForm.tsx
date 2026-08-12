@@ -60,9 +60,11 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
       if (response.data) {
         reset({ reading: response.data.reading })
       }
-    } catch (error) {
-      console.error('Failed to load odometer confirmation:', error)
-      // Confirmation might not exist yet, that's okay
+    } catch (error: any) {
+      // 404 is expected when no confirmation exists yet - don't log as error
+      if (!error.message?.includes('404')) {
+        console.error('Failed to load odometer confirmation:', error)
+      }
     } finally {
       setIsLoading(false)
     }
