@@ -454,7 +454,14 @@ export default function VehiclesPage() {
                                 setSelectedAssignmentId(activeAssignment.id);
                                 setConditionReportOpen(true);
                               } else {
-                                alert('No active assignment found for this vehicle. Please assign this vehicle to a driver first.');
+                                // Admin, Super Admin, Manager can investigate without assignment
+                                if (currentUserRole === UserRole.ADMIN || currentUserRole === UserRole.SUPER_ADMIN || currentUserRole === UserRole.MANAGER) {
+                                  alert('No active assignment found for this vehicle. You can still investigate as an admin/manager.');
+                                  setSelectedAssignmentId(null);
+                                  setConditionReportOpen(true);
+                                } else {
+                                  alert('No active assignment found for this vehicle. Please assign this vehicle to a driver first.');
+                                }
                               }
                             } catch (error) {
                               console.error('Failed to fetch assignments:', error);
@@ -478,7 +485,14 @@ export default function VehiclesPage() {
                                 setSelectedAssignmentId(activeAssignment.id);
                                 setOdometerConfirmationOpen(true);
                               } else {
-                                alert('No active assignment found for this vehicle. Please assign this vehicle to a driver first.');
+                                // Admin, Super Admin, Manager can investigate without assignment
+                                if (currentUserRole === UserRole.ADMIN || currentUserRole === UserRole.SUPER_ADMIN || currentUserRole === UserRole.MANAGER) {
+                                  alert('No active assignment found for this vehicle. You can still investigate as an admin/manager.');
+                                  setSelectedAssignmentId(null);
+                                  setOdometerConfirmationOpen(true);
+                                } else {
+                                  alert('No active assignment found for this vehicle. Please assign this vehicle to a driver first.');
+                                }
                               }
                             } catch (error) {
                               console.error('Failed to fetch assignments:', error);

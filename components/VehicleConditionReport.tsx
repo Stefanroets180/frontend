@@ -35,7 +35,7 @@ const CONDITION_OPTIONS = [
 ]
 
 interface VehicleConditionReportProps {
-  assignmentId: string
+  assignmentId: string | null
   vehicleName?: string
   onComplete?: () => void
 }
@@ -62,10 +62,13 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
   const [managerNote, setManagerNote] = useState('')
 
   useEffect(() => {
-    loadReport()
+    if (assignmentId) {
+      loadReport()
+    }
   }, [assignmentId])
 
   const loadReport = async () => {
+    if (!assignmentId) return
     setIsLoading(true)
     try {
       const response = await getVehicleConditionReport(assignmentId)
@@ -78,6 +81,10 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
   }
 
   const createReport = async () => {
+    if (!assignmentId) {
+      setSubmitError('Cannot create condition report: Vehicle is not assigned to a driver')
+      return
+    }
     setIsSubmitting(true)
     setSubmitError(null)
     try {

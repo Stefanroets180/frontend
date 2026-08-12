@@ -19,7 +19,7 @@ const odometerSchema = z.object({
 type OdometerInput = z.infer<typeof odometerSchema>
 
 interface OdometerConfirmationFormProps {
-  assignmentId: string
+  assignmentId: string | null
   vehicleName?: string
   onComplete?: () => void
 }
@@ -46,10 +46,13 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
   })
 
   useEffect(() => {
-    loadConfirmation()
+    if (assignmentId) {
+      loadConfirmation()
+    }
   }, [assignmentId])
 
   const loadConfirmation = async () => {
+    if (!assignmentId) return
     setIsLoading(true)
     try {
       const response = await getOdometerConfirmation(assignmentId)
@@ -66,6 +69,10 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
   }
 
   const onSubmit = async (data: OdometerInput) => {
+    if (!assignmentId) {
+      setSubmitError('Cannot create odometer confirmation: Vehicle is not assigned to a driver')
+      return
+    }
     setIsSubmitting(true)
     setSubmitError(null)
     setSubmitSuccess(false)
