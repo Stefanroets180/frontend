@@ -17,6 +17,7 @@ import {
   type NormalizedAuthUser,
 } from "@/lib/auth/normalize-auth-response";
 import { UserRole, OrganizationMode } from "@/lib/types/database";
+import { API_URL } from "@/lib/api/client";
 
 type AuthUser = NormalizedAuthUser & {
   role: UserRole;
@@ -29,6 +30,19 @@ function mapMeToAuthUser(
   me: Record<string, unknown>,
   profile: Record<string, unknown> | null
 ): AuthUser {
+  const profilePhotoUrl = me.profilePhotoUrl ? String(me.profilePhotoUrl) : undefined;
+  
+  // Convert relative profile photo URLs to absolute URLs using backend API URL
+  let absoluteProfilePhotoUrl = undefined;
+  if (profilePhotoUrl) {
+    if (profilePhotoUrl.startsWith('/api/v1/storage/')) {
+      // Replace relative path with absolute backend URL
+      absoluteProfilePhotoUrl = `${API_URL}${profilePhotoUrl}`;
+    } else {
+      absoluteProfilePhotoUrl = profilePhotoUrl;
+    }
+  }
+
   return {
     id: String(me.id ?? profile?.id ?? ""),
     email: String(me.email ?? profile?.email ?? ""),
@@ -41,7 +55,7 @@ function mapMeToAuthUser(
       profile?.organizationMode ??
       OrganizationMode.SOLO) as OrganizationMode,
     passwordChanged: me.passwordChanged !== undefined ? Boolean(me.passwordChanged) : true,
-    profilePhotoUrl: me.profilePhotoUrl ? String(me.profilePhotoUrl) : undefined,
+    profilePhotoUrl: absoluteProfilePhotoUrl,
   };
 }
 

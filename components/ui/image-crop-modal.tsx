@@ -69,18 +69,16 @@ export function ImageCropModal({
 
     if (!ctx) return
 
-    const scaleX = image.naturalWidth / image.width
-    const scaleY = image.naturalHeight / image.height
-
+    // In react-image-crop v11, PixelCrop values are already in pixels
     canvas.width = completedCrop.width
     canvas.height = completedCrop.height
 
     ctx.drawImage(
       image,
-      completedCrop.x * scaleX,
-      completedCrop.y * scaleY,
-      completedCrop.width * scaleX,
-      completedCrop.height * scaleY,
+      completedCrop.x,
+      completedCrop.y,
+      completedCrop.width,
+      completedCrop.height,
       0,
       0,
       completedCrop.width,
@@ -116,11 +114,9 @@ export function ImageCropModal({
         throw new Error('Failed to get canvas context')
       }
 
-      const scaleX = image.naturalWidth / image.width
-      const scaleY = image.naturalHeight / image.height
-
-      let cropWidth = completedCrop.width * scaleX
-      let cropHeight = completedCrop.height * scaleY
+      // In react-image-crop v11, PixelCrop values are already in pixels
+      let cropWidth = completedCrop.width
+      let cropHeight = completedCrop.height
 
       // Resize if larger than 1920px on longest side
       const maxDimension = 1920
@@ -139,10 +135,10 @@ export function ImageCropModal({
         ctx.rotate((rotation * Math.PI) / 180)
         ctx.drawImage(
           image,
-          completedCrop.x * scaleX,
-          completedCrop.y * scaleY,
-          completedCrop.width * scaleX,
-          completedCrop.height * scaleY,
+          completedCrop.x,
+          completedCrop.y,
+          completedCrop.width,
+          completedCrop.height,
           -cropWidth / 2,
           -cropHeight / 2,
           cropWidth,
@@ -151,10 +147,10 @@ export function ImageCropModal({
       } else {
         ctx.drawImage(
           image,
-          completedCrop.x * scaleX,
-          completedCrop.y * scaleY,
-          completedCrop.width * scaleX,
-          completedCrop.height * scaleY,
+          completedCrop.x,
+          completedCrop.y,
+          completedCrop.width,
+          completedCrop.height,
           0,
           0,
           cropWidth,

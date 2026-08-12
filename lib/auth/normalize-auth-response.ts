@@ -1,3 +1,5 @@
+import { API_URL } from '@/lib/api/client'
+
 /** Spring Boot AuthResponse — flat JSON (no nested `user`). */
 export interface SpringAuthPayload {
   accessToken: string
@@ -12,6 +14,8 @@ export interface SpringAuthPayload {
   organizationMode: string
   verificationToken?: string
   emailSent?: boolean
+  profilePhotoUrl?: string
+  passwordChanged?: boolean
 }
 
 export interface NormalizedAuthUser {
@@ -23,6 +27,8 @@ export interface NormalizedAuthUser {
   organizationId: string
   organizationName: string
   organizationMode: string
+  profilePhotoUrl?: string
+  passwordChanged?: boolean
 }
 
 export interface NormalizedAuthResponse {
@@ -35,6 +41,15 @@ export interface NormalizedAuthResponse {
 
 function isFlatSpringAuth(data: Record<string, unknown>): data is Record<string, unknown> & SpringAuthPayload {
   return typeof data.accessToken === 'string' && data.user === undefined
+}
+
+// Helper to convert relative profile photo URLs to absolute URLs
+function convertProfilePhotoUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined
+  if (url.startsWith('/api/v1/storage/')) {
+    return `${API_URL}${url}`
+  }
+  return url
 }
 
 export function normalizeAuthResponse(raw: unknown): NormalizedAuthResponse {
@@ -60,6 +75,8 @@ export function normalizeAuthResponse(raw: unknown): NormalizedAuthResponse {
         organizationId: String(u.organizationId),
         organizationName: String(u.organizationName ?? ''),
         organizationMode: String(u.organizationMode),
+        profilePhotoUrl: convertProfilePhotoUrl(u.profilePhotoUrl ? String(u.profilePhotoUrl) : undefined),
+        passwordChanged: u.passwordChanged !== undefined ? Boolean(u.passwordChanged) : true,
       },
     }
   }
@@ -82,6 +99,8 @@ export function normalizeAuthResponse(raw: unknown): NormalizedAuthResponse {
       organizationId: String(data.organizationId),
       organizationName: data.organizationName,
       organizationMode: data.organizationMode,
+      profilePhotoUrl: convertProfilePhotoUrl(data.profilePhotoUrl ? String(data.profilePhotoUrl) : undefined),
+      passwordChanged: data.passwordChanged !== undefined ? Boolean(data.passwordChanged) : true,
     },
   }
 }
