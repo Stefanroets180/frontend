@@ -364,13 +364,13 @@ export default function ProfilePage() {
         {/* Fleet Credentials - Only shown for fleet mode */}
         {isFleetMode && (
           <>
-            {!userProfile && (
+            {(!userProfile || !userProfile.id) && (
               <UserProfileForm 
                 existingProfile={userProfile}
                 onSuccess={loadFleetCredentials}
               />
             )}
-            {!userAddress && (
+            {(!userAddress || !userAddress.id) && (
               <AddressForm 
                 existingAddress={userAddress}
                 onSuccess={loadFleetCredentials}
