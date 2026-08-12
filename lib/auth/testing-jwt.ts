@@ -40,7 +40,7 @@ export function getTestAuthHeader(userEmail: string): string {
       email: 'admin@example.com',
       organizationId: 'b32e54c4-1f12-42ea-8bd4-2511f1f962bd',
       role: UserRole.ADMIN,
-      mode: OrganizationMode.FLEET
+      mode: OrganizationMode.BUSINESS_FLEET
     }
   }
 
