@@ -388,29 +388,40 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
           {/* Date */}
           <div className="space-y-2">
             <Label htmlFor="date">Date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="date"
-                  variant="outline"
-                  className={cn(
-                    'w-full h-12 touch-target justify-start text-left font-normal',
-                    !watch('date') && 'text-muted-foreground'
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {watch('date') ? format(watch('date'), 'PPP') : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={watch('date')}
-                  onSelect={(date) => setValue('date', date || new Date())}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <Input
+              id="date"
+              type="text"
+              inputMode="numeric"
+              pattern="\d{4}-\d{2}-\d{2}"
+              placeholder="YYYY-MM-DD"
+              value={watch('date') ? format(watch('date'), 'yyyy-MM-dd') : ''}
+              onChange={(e) => {
+                let value = e.target.value;
+                value = value.replace(/[^\d-]/g, '');
+                const digits = value.replace(/\D/g, '');
+                if (digits.length > 0) {
+                  let formatted = digits.slice(0, 4);
+                  if (digits.length > 4) {
+                    formatted += '-' + digits.slice(4, 6);
+                  }
+                  if (digits.length > 6) {
+                    formatted += '-' + digits.slice(6, 8);
+                  }
+                  value = formatted;
+                }
+                if (value && value.length >= 4) {
+                  const year = parseInt(value.slice(0, 4));
+                  if (year < 1900 || year > 2099) {
+                    return;
+                  }
+                }
+                if (value.length === 10) {
+                  setValue('date', new Date(value));
+                }
+              }}
+              maxLength={10}
+              className="h-12 touch-target"
+            />
             {errors.date && (
               <p className="text-sm text-destructive">{errors.date.message}</p>
             )}

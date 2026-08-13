@@ -226,30 +226,40 @@ export function PersonalLicenseForm({
           {/* Entry Date */}
           <div className="space-y-2">
             <Label htmlFor="date">Entry Date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="date"
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !watchDate && "text-muted-foreground",
-                    errors.date && "border-red-500",
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {watchDate ? format(watchDate, "PPP") : "Select date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={watchDate}
-                  onSelect={(date) => date && setValue("date", date)}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <Input
+              id="date"
+              type="text"
+              inputMode="numeric"
+              pattern="\d{4}-\d{2}-\d{2}"
+              placeholder="YYYY-MM-DD"
+              value={watchDate ? format(watchDate, "yyyy-MM-dd") : ""}
+              onChange={(e) => {
+                let value = e.target.value;
+                value = value.replace(/[^\d-]/g, '');
+                const digits = value.replace(/\D/g, '');
+                if (digits.length > 0) {
+                  let formatted = digits.slice(0, 4);
+                  if (digits.length > 4) {
+                    formatted += '-' + digits.slice(4, 6);
+                  }
+                  if (digits.length > 6) {
+                    formatted += '-' + digits.slice(6, 8);
+                  }
+                  value = formatted;
+                }
+                if (value && value.length >= 4) {
+                  const year = parseInt(value.slice(0, 4));
+                  if (year < 1900 || year > 2099) {
+                    return;
+                  }
+                }
+                if (value.length === 10) {
+                  setValue("date", new Date(value));
+                }
+              }}
+              maxLength={10}
+              className={errors.date ? "border-red-500" : ""}
+            />
             {errors.date && (
               <p className="text-sm text-red-500">{errors.date.message}</p>
             )}
@@ -329,66 +339,82 @@ export function PersonalLicenseForm({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="issueDate">Issue Date *</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="issueDate"
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !watchIssueDate && "text-muted-foreground",
-                      errors.issueDate && "border-red-500",
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {watchIssueDate ? format(watchIssueDate, "PP") : "Issue"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={watchIssueDate}
-                    onSelect={(date) => date && setValue("issueDate", date)}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <Input
+                id="issueDate"
+                type="text"
+                inputMode="numeric"
+                pattern="\d{4}-\d{2}-\d{2}"
+                placeholder="YYYY-MM-DD"
+                value={watchIssueDate ? format(watchIssueDate, "yyyy-MM-dd") : ""}
+                onChange={(e) => {
+                  let value = e.target.value;
+                  value = value.replace(/[^\d-]/g, '');
+                  const digits = value.replace(/\D/g, '');
+                  if (digits.length > 0) {
+                    let formatted = digits.slice(0, 4);
+                    if (digits.length > 4) {
+                      formatted += '-' + digits.slice(4, 6);
+                    }
+                    if (digits.length > 6) {
+                      formatted += '-' + digits.slice(6, 8);
+                    }
+                    value = formatted;
+                  }
+                  if (value && value.length >= 4) {
+                    const year = parseInt(value.slice(0, 4));
+                    if (year < 1900 || year > 2099) {
+                      return;
+                    }
+                  }
+                  if (value.length === 10) {
+                    setValue("issueDate", new Date(value));
+                  }
+                }}
+                maxLength={10}
+                className={errors.issueDate ? "border-red-500" : ""}
+              />
               {errors.issueDate && (
-                <p className="text-sm text-red-500">
-                  {errors.issueDate.message}
-                </p>
+                <p className="text-sm text-red-500">{errors.issueDate.message}</p>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="expiryDate">Expiry Date *</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="expiryDate"
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !watchExpiryDate && "text-muted-foreground",
-                      errors.expiryDate && "border-red-500",
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {watchExpiryDate ? format(watchExpiryDate, "PP") : "Expiry"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={watchExpiryDate}
-                    onSelect={(date) => date && setValue("expiryDate", date)}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <Input
+                id="expiryDate"
+                type="text"
+                inputMode="numeric"
+                pattern="\d{4}-\d{2}-\d{2}"
+                placeholder="YYYY-MM-DD"
+                value={watchExpiryDate ? format(watchExpiryDate, "yyyy-MM-dd") : ""}
+                onChange={(e) => {
+                  let value = e.target.value;
+                  value = value.replace(/[^\d-]/g, '');
+                  const digits = value.replace(/\D/g, '');
+                  if (digits.length > 0) {
+                    let formatted = digits.slice(0, 4);
+                    if (digits.length > 4) {
+                      formatted += '-' + digits.slice(4, 6);
+                    }
+                    if (digits.length > 6) {
+                      formatted += '-' + digits.slice(6, 8);
+                    }
+                    value = formatted;
+                  }
+                  if (value && value.length >= 4) {
+                    const year = parseInt(value.slice(0, 4));
+                    if (year < 1900 || year > 2099) {
+                      return;
+                    }
+                  }
+                  if (value.length === 10) {
+                    setValue("expiryDate", new Date(value));
+                  }
+                }}
+                maxLength={10}
+                className={errors.expiryDate ? "border-red-500" : ""}
+              />
               {errors.expiryDate && (
-                <p className="text-sm text-red-500">
-                  {errors.expiryDate.message}
-                </p>
+                <p className="text-sm text-red-500">{errors.expiryDate.message}</p>
               )}
             </div>
           </div>

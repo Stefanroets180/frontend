@@ -4,10 +4,16 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
 import { ImageCropModal } from '@/components/ui/image-crop-modal'
 import { Camera, CheckCircle2, AlertCircle } from 'lucide-react'
 import { createUserProfile, updateUserProfile } from '@/lib/api/client'
@@ -235,9 +241,35 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
               <Input
                 {...register('driversLicenseExpiry')}
                 id="driversLicenseExpiry"
-                type="date"
+                type="text"
+                inputMode="numeric"
+                pattern="\d{4}-\d{2}-\d{2}"
+                placeholder="YYYY-MM-DD"
                 className="h-12"
                 autoComplete="off"
+                onChange={(e) => {
+                  let value = e.target.value;
+                  value = value.replace(/[^\d-]/g, '');
+                  const digits = value.replace(/\D/g, '');
+                  if (digits.length > 0) {
+                    let formatted = digits.slice(0, 4);
+                    if (digits.length > 4) {
+                      formatted += '-' + digits.slice(4, 6);
+                    }
+                    if (digits.length > 6) {
+                      formatted += '-' + digits.slice(6, 8);
+                    }
+                    value = formatted;
+                  }
+                  if (value && value.length >= 4) {
+                    const year = parseInt(value.slice(0, 4));
+                    if (year < 1900 || year > 2099) {
+                      return;
+                    }
+                  }
+                  register('driversLicenseExpiry').onChange({ target: { value } });
+                }}
+                maxLength={10}
               />
               {errors.driversLicenseExpiry && (
                 <p className="text-sm text-destructive">{errors.driversLicenseExpiry.message}</p>

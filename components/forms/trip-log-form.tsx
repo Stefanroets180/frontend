@@ -192,11 +192,35 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
         <Input
           id="tripDate"
           name="tripDate"
-          type="date"
+          type="text"
+          inputMode="numeric"
+          pattern="\d{4}-\d{2}-\d{2}"
+          placeholder="YYYY-MM-DD"
           value={formData.tripDate}
-          onChange={(e) => setFormData({ ...formData, tripDate: e.target.value })}
+          onChange={(e) => {
+            let value = e.target.value;
+            value = value.replace(/[^\d-]/g, '');
+            const digits = value.replace(/\D/g, '');
+            if (digits.length > 0) {
+              let formatted = digits.slice(0, 4);
+              if (digits.length > 4) {
+                formatted += '-' + digits.slice(4, 6);
+              }
+              if (digits.length > 6) {
+                formatted += '-' + digits.slice(6, 8);
+              }
+              value = formatted;
+            }
+            if (value && value.length >= 4) {
+              const year = parseInt(value.slice(0, 4));
+              if (year < 1900 || year > 2099) {
+                return;
+              }
+            }
+            setFormData({ ...formData, tripDate: value });
+          }}
           className="h-14 text-base"
-          required
+          maxLength={10}
         />
       </div>
 

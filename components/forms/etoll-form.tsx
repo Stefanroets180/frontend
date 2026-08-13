@@ -236,30 +236,40 @@ export function ETollForm({
           {/* Date */}
           <div className="space-y-2">
             <Label htmlFor="date">Payment Date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="date"
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !watchDate && "text-muted-foreground",
-                    errors.date && "border-red-500",
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {watchDate ? format(watchDate, "PPP") : "Select date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={watchDate}
-                  onSelect={(date) => date && setValue("date", date)}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <Input
+              id="date"
+              type="text"
+              inputMode="numeric"
+              pattern="\d{4}-\d{2}-\d{2}"
+              placeholder="YYYY-MM-DD"
+              value={watchDate ? format(watchDate, "yyyy-MM-dd") : ""}
+              onChange={(e) => {
+                let value = e.target.value;
+                value = value.replace(/[^\d-]/g, '');
+                const digits = value.replace(/\D/g, '');
+                if (digits.length > 0) {
+                  let formatted = digits.slice(0, 4);
+                  if (digits.length > 4) {
+                    formatted += '-' + digits.slice(4, 6);
+                  }
+                  if (digits.length > 6) {
+                    formatted += '-' + digits.slice(6, 8);
+                  }
+                  value = formatted;
+                }
+                if (value && value.length >= 4) {
+                  const year = parseInt(value.slice(0, 4));
+                  if (year < 1900 || year > 2099) {
+                    return;
+                  }
+                }
+                if (value.length === 10) {
+                  setValue("date", new Date(value));
+                }
+              }}
+              maxLength={10}
+              className={errors.date ? "border-red-500" : ""}
+            />
             {errors.date && (
               <p className="text-sm text-red-500">{errors.date.message}</p>
             )}
@@ -329,59 +339,75 @@ export function ETollForm({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="periodStartDate">Period Start (Optional)</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="periodStartDate"
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !watchPeriodStart && "text-muted-foreground",
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {watchPeriodStart
-                      ? format(watchPeriodStart, "PP")
-                      : "Start"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={watchPeriodStart}
-                    onSelect={(date) =>
-                      date && setValue("periodStartDate", date)
+              <Input
+                id="periodStartDate"
+                type="text"
+                inputMode="numeric"
+                pattern="\d{4}-\d{2}-\d{2}"
+                placeholder="YYYY-MM-DD"
+                value={watchPeriodStart ? format(watchPeriodStart, "yyyy-MM-dd") : ""}
+                onChange={(e) => {
+                  let value = e.target.value;
+                  value = value.replace(/[^\d-]/g, '');
+                  const digits = value.replace(/\D/g, '');
+                  if (digits.length > 0) {
+                    let formatted = digits.slice(0, 4);
+                    if (digits.length > 4) {
+                      formatted += '-' + digits.slice(4, 6);
                     }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+                    if (digits.length > 6) {
+                      formatted += '-' + digits.slice(6, 8);
+                    }
+                    value = formatted;
+                  }
+                  if (value && value.length >= 4) {
+                    const year = parseInt(value.slice(0, 4));
+                    if (year < 1900 || year > 2099) {
+                      return;
+                    }
+                  }
+                  if (value.length === 10) {
+                    setValue("periodStartDate", new Date(value));
+                  }
+                }}
+                maxLength={10}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="periodEndDate">Period End (Optional)</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="periodEndDate"
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !watchPeriodEnd && "text-muted-foreground",
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {watchPeriodEnd ? format(watchPeriodEnd, "PP") : "End"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={watchPeriodEnd}
-                    onSelect={(date) => date && setValue("periodEndDate", date)}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <Input
+                id="periodEndDate"
+                type="text"
+                inputMode="numeric"
+                pattern="\d{4}-\d{2}-\d{2}"
+                placeholder="YYYY-MM-DD"
+                value={watchPeriodEnd ? format(watchPeriodEnd, "yyyy-MM-dd") : ""}
+                onChange={(e) => {
+                  let value = e.target.value;
+                  value = value.replace(/[^\d-]/g, '');
+                  const digits = value.replace(/\D/g, '');
+                  if (digits.length > 0) {
+                    let formatted = digits.slice(0, 4);
+                    if (digits.length > 4) {
+                      formatted += '-' + digits.slice(4, 6);
+                    }
+                    if (digits.length > 6) {
+                      formatted += '-' + digits.slice(6, 8);
+                    }
+                    value = formatted;
+                  }
+                  if (value && value.length >= 4) {
+                    const year = parseInt(value.slice(0, 4));
+                    if (year < 1900 || year > 2099) {
+                      return;
+                    }
+                  }
+                  if (value.length === 10) {
+                    setValue("periodEndDate", new Date(value));
+                  }
+                }}
+                maxLength={10}
+              />
             </div>
           </div>
 

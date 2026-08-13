@@ -472,28 +472,40 @@ function DatePickerField({
   return (
     <div className="space-y-2">
       <Label htmlFor={id}>{label}{required && <span className="text-destructive"> *</span>}</Label>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            id={id}
-            variant="outline"
-            className={cn(
-              "w-full h-12 justify-start text-left font-normal",
-              !value && "text-muted-foreground"
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {value ? format(value, "PPP") : "Select date"}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="single"
-            selected={value}
-            onSelect={onChange}
-          />
-        </PopoverContent>
-      </Popover>
+      <Input
+        id={id}
+        type="text"
+        inputMode="numeric"
+        pattern="\d{4}-\d{2}-\d{2}"
+        placeholder="YYYY-MM-DD"
+        value={value ? format(value, "yyyy-MM-dd") : ""}
+        onChange={(e) => {
+          let val = e.target.value;
+          val = val.replace(/[^\d-]/g, '');
+          const digits = val.replace(/\D/g, '');
+          if (digits.length > 0) {
+            let formatted = digits.slice(0, 4);
+            if (digits.length > 4) {
+              formatted += '-' + digits.slice(4, 6);
+            }
+            if (digits.length > 6) {
+              formatted += '-' + digits.slice(6, 8);
+            }
+            val = formatted;
+          }
+          if (val && val.length >= 4) {
+            const year = parseInt(val.slice(0, 4));
+            if (year < 1900 || year > 2099) {
+              return;
+            }
+          }
+          if (val.length === 10) {
+            onChange(new Date(val));
+          }
+        }}
+        maxLength={10}
+        className={error ? "border-red-500" : ""}
+      />
       {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
   )

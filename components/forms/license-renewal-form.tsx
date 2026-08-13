@@ -233,30 +233,40 @@ export function LicenseRenewalForm({
           {/* Date */}
           <div className="space-y-2">
             <Label htmlFor="date">Renewal Date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="date"
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !watchDate && "text-muted-foreground",
-                    errors.date && "border-red-500",
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {watchDate ? format(watchDate, "PPP") : "Select date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={watchDate}
-                  onSelect={(date) => date && setValue("date", date)}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <Input
+              id="date"
+              type="text"
+              inputMode="numeric"
+              pattern="\d{4}-\d{2}-\d{2}"
+              placeholder="YYYY-MM-DD"
+              value={watchDate ? format(watchDate, "yyyy-MM-dd") : ""}
+              onChange={(e) => {
+                let value = e.target.value;
+                value = value.replace(/[^\d-]/g, '');
+                const digits = value.replace(/\D/g, '');
+                if (digits.length > 0) {
+                  let formatted = digits.slice(0, 4);
+                  if (digits.length > 4) {
+                    formatted += '-' + digits.slice(4, 6);
+                  }
+                  if (digits.length > 6) {
+                    formatted += '-' + digits.slice(6, 8);
+                  }
+                  value = formatted;
+                }
+                if (value && value.length >= 4) {
+                  const year = parseInt(value.slice(0, 4));
+                  if (year < 1900 || year > 2099) {
+                    return;
+                  }
+                }
+                if (value.length === 10) {
+                  setValue("date", new Date(value));
+                }
+              }}
+              maxLength={10}
+              className={errors.date ? "border-red-500" : ""}
+            />
             {errors.date && (
               <p className="text-sm text-red-500">{errors.date.message}</p>
             )}
@@ -311,62 +321,76 @@ export function LicenseRenewalForm({
               <Label htmlFor="previousExpiryDate">
                 Previous Expiry (Optional)
               </Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="previousExpiryDate"
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !watchPrevExpiry && "text-muted-foreground",
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {watchPrevExpiry
-                      ? format(watchPrevExpiry, "PP")
-                      : "Previous"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={watchPrevExpiry}
-                    onSelect={(date) =>
-                      date && setValue("previousExpiryDate", date)
+              <Input
+                id="previousExpiryDate"
+                type="text"
+                inputMode="numeric"
+                pattern="\d{4}-\d{2}-\d{2}"
+                placeholder="YYYY-MM-DD"
+                value={watchPrevExpiry ? format(watchPrevExpiry, "yyyy-MM-dd") : ""}
+                onChange={(e) => {
+                  let value = e.target.value;
+                  value = value.replace(/[^\d-]/g, '');
+                  const digits = value.replace(/\D/g, '');
+                  if (digits.length > 0) {
+                    let formatted = digits.slice(0, 4);
+                    if (digits.length > 4) {
+                      formatted += '-' + digits.slice(4, 6);
                     }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+                    if (digits.length > 6) {
+                      formatted += '-' + digits.slice(6, 8);
+                    }
+                    value = formatted;
+                  }
+                  if (value && value.length >= 4) {
+                    const year = parseInt(value.slice(0, 4));
+                    if (year < 1900 || year > 2099) {
+                      return;
+                    }
+                  }
+                  if (value.length === 10) {
+                    setValue("previousExpiryDate", new Date(value));
+                  }
+                }}
+                maxLength={10}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="newExpiryDate">New Expiry *</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="newExpiryDate"
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !watchNewExpiry && "text-muted-foreground",
-                      errors.newExpiryDate && "border-red-500",
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {watchNewExpiry
-                      ? format(watchNewExpiry, "PP")
-                      : "New expiry"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={watchNewExpiry}
-                    onSelect={(date) => date && setValue("newExpiryDate", date)}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <Input
+                id="newExpiryDate"
+                type="text"
+                inputMode="numeric"
+                pattern="\d{4}-\d{2}-\d{2}"
+                placeholder="YYYY-MM-DD"
+                value={watchNewExpiry ? format(watchNewExpiry, "yyyy-MM-dd") : ""}
+                onChange={(e) => {
+                  let value = e.target.value;
+                  value = value.replace(/[^\d-]/g, '');
+                  const digits = value.replace(/\D/g, '');
+                  if (digits.length > 0) {
+                    let formatted = digits.slice(0, 4);
+                    if (digits.length > 4) {
+                      formatted += '-' + digits.slice(4, 6);
+                    }
+                    if (digits.length > 6) {
+                      formatted += '-' + digits.slice(6, 8);
+                    }
+                    value = formatted;
+                  }
+                  if (value && value.length >= 4) {
+                    const year = parseInt(value.slice(0, 4));
+                    if (year < 1900 || year > 2099) {
+                      return;
+                    }
+                  }
+                  if (value.length === 10) {
+                    setValue("newExpiryDate", new Date(value));
+                  }
+                }}
+                maxLength={10}
+                className={errors.newExpiryDate ? "border-red-500" : ""}
+              />
               {errors.newExpiryDate && (
                 <p className="text-sm text-red-500">
                   {errors.newExpiryDate.message}
