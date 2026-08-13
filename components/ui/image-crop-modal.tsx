@@ -32,8 +32,8 @@ export function ImageCropModal({
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   // No aspect ratio locking - fully freeform cropping
-  const minCropWidth = 50
-  const minCropHeight = 50
+  const minCropWidth = 100
+  const minCropHeight = 100
 
   useEffect(() => {
     if (!imageFile) return
@@ -47,10 +47,10 @@ export function ImageCropModal({
     // Set initial crop - larger area for more flexibility
     setCrop({
       unit: '%',
-      width: 90,
-      height: 90,
-      x: 5,
-      y: 5,
+      width: 95,
+      height: 95,
+      x: 2.5,
+      y: 2.5,
     })
   }, [imageFile])
 
@@ -152,6 +152,8 @@ export function ImageCropModal({
                   onChange={(c) => setCrop(c)}
                   onComplete={handleCropComplete}
                   keepSelection
+                  minWidth={minCropWidth}
+                  minHeight={minCropHeight}
                   className="max-w-full max-h-[60vh]"
                 >
                   <img
