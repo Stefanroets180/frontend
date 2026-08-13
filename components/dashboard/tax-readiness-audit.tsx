@@ -427,14 +427,14 @@ function VehicleVerificationCard({
   onUnlock,
 }: VehicleVerificationCardProps) {
   return (
-    <div className="border rounded-lg overflow-hidden">
+    <div className="border rounded-lg overflow-hidden w-full" style={{ maxWidth: '100%', overflow: 'hidden' }}>
       {/* Vehicle Header */}
-      <div className="bg-muted/50 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="bg-muted/50 px-4 py-3 flex items-center justify-between w-full overflow-hidden">
+        <div className="flex items-center gap-2 min-w-0 overflow-hidden">
           <VehicleLogo make={vehicleMake} size="sm" />
-          <span className="font-medium">{vehicleReg}</span>
+          <span className="font-medium truncate">{vehicleReg}</span>
         </div>
-        <Badge variant={opening && closing ? "default" : "secondary"}>
+        <Badge variant={opening && closing ? "default" : "secondary"} className="shrink-0">
           {opening && closing
             ? "Both readings added"
             : opening || closing
@@ -444,25 +444,33 @@ function VehicleVerificationCard({
       </div>
 
       {/* Readings Grid */}
-      <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x">
-        <ReadingCard
-          type="OPENING"
-          vehicleId={vehicleId}
-          record={opening}
-          taxYear={taxYear}
-          onDelete={onDelete}
-          onLock={onLock}
-          onUnlock={onUnlock}
-        />
-        <ReadingCard
-          type="CLOSING"
-          vehicleId={vehicleId}
-          record={closing}
-          taxYear={taxYear}
-          onDelete={onDelete}
-          onLock={onLock}
-          onUnlock={onUnlock}
-        />
+      <div className="flex flex-col md:flex-row w-full overflow-hidden" style={{ maxWidth: '100%', overflow: 'hidden' }}>
+        <div className="w-full md:w-1/2 min-w-0 overflow-hidden border-r-0 md:border-r border-border" style={{ maxWidth: '50%', width: '50%', flex: '0 0 auto', overflow: 'hidden', isolation: 'isolate' }}>
+          <div className="w-full overflow-hidden" style={{ maxWidth: '100%', overflow: 'hidden' }}>
+            <ReadingCard
+              type="OPENING"
+              vehicleId={vehicleId}
+              record={opening}
+              taxYear={taxYear}
+              onDelete={onDelete}
+              onLock={onLock}
+              onUnlock={onUnlock}
+            />
+          </div>
+        </div>
+        <div className="w-full md:w-1/2 min-w-0 overflow-hidden" style={{ maxWidth: '50%', width: '50%', flex: '0 0 auto', overflow: 'hidden', isolation: 'isolate' }}>
+          <div className="w-full overflow-hidden" style={{ maxWidth: '100%', overflow: 'hidden' }}>
+            <ReadingCard
+              type="CLOSING"
+              vehicleId={vehicleId}
+              record={closing}
+              taxYear={taxYear}
+              onDelete={onDelete}
+              onLock={onLock}
+              onUnlock={onUnlock}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -648,7 +656,7 @@ function ReadingCard({
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 w-full" style={{ maxWidth: '100%', overflow: 'hidden', minWidth: '0' }}>
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
@@ -658,11 +666,11 @@ function ReadingCard({
         className="hidden"
       />
 
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between mb-3 w-full overflow-hidden">
+        <div className="flex items-center gap-2 min-w-0 overflow-hidden">
           <span
             className={cn(
-              "text-sm font-medium",
+              "text-sm font-medium truncate",
               record ? "text-foreground" : "text-muted-foreground",
             )}
           >
@@ -670,27 +678,28 @@ function ReadingCard({
           </span>
           {record ? (
             isLocked ? (
-              <Lock className="h-4 w-4 text-amber-500" />
+              <Lock className="h-4 w-4 text-amber-500 shrink-0" />
             ) : (
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
             )
           ) : (
-            <XCircle className="h-4 w-4 text-muted-foreground" />
+            <XCircle className="h-4 w-4 text-muted-foreground shrink-0" />
           )}
         </div>
-        <span className="text-xs text-muted-foreground">
+        <span className="text-xs text-muted-foreground shrink-0">
           {expectedMonth} {expectedYear}
         </span>
       </div>
 
       {record ? (
-        <div className="space-y-3">
+        <div className="space-y-3 w-full overflow-hidden" style={{ minWidth: '0' }}>
           {/* Photo Thumbnail */}
-          <div className="aspect-video bg-muted rounded-lg overflow-hidden relative group">
+          <div className="aspect-video bg-muted rounded-lg overflow-hidden relative group w-full" style={{ minWidth: '0' }}>
             <img
               src={record.imageUrlAvif}
               alt={`${type} odometer reading`}
               className="w-full h-full object-cover"
+              style={{ maxWidth: '100%', minWidth: '0' }}
               onError={(e) => {
                 // Fallback for missing images in demo
                 (e.target as HTMLImageElement).src =
@@ -706,12 +715,12 @@ function ReadingCard({
             )}
 
             {/* Action buttons overlay */}
-            <div className="absolute inset-0 bg-black/60 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 z-10">
+            <div className="absolute inset-0 bg-black/60 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 z-10 w-full h-full overflow-hidden">
               <Button
                 type="button"
                 variant="secondary"
                 size="icon"
-                className="h-8 w-8"
+                className="!flex-none h-8 w-8 shrink-0"
                 onClick={() => window.open(record.imageUrlAvif, "_blank")}
                 title="View full image"
               >
@@ -722,7 +731,7 @@ function ReadingCard({
                   type="button"
                   variant="secondary"
                   size="icon"
-                  className="h-8 w-8"
+                  className="!flex-none h-8 w-8 shrink-0"
                   onClick={() => setShowEditDialog(true)}
                   title="Edit reading / Replace photo"
                 >
@@ -734,7 +743,7 @@ function ReadingCard({
                   type="button"
                   variant="secondary"
                   size="icon"
-                  className="h-8 w-8 text-destructive hover:text-destructive"
+                  className="!flex-none h-8 w-8 shrink-0 text-destructive hover:text-destructive"
                   onClick={() => setShowDeleteDialog(true)}
                   title="Delete reading"
                 >
@@ -745,7 +754,7 @@ function ReadingCard({
                 type="button"
                 variant="secondary"
                 size="icon"
-                className="h-8 w-8"
+                className="!flex-none h-8 w-8 shrink-0"
                 onClick={() =>
                   isLocked ? setShowUnlockDialog(true) : setShowLockDialog(true)
                 }
@@ -763,25 +772,25 @@ function ReadingCard({
           </div>
 
           {/* Reading Details */}
-          <div className="space-y-2 text-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Odometer:</span>
-              <span className="font-mono font-medium">
+          <div className="space-y-2 text-sm w-full overflow-hidden">
+            <div className="flex items-center justify-between w-full overflow-hidden">
+              <span className="text-muted-foreground shrink-0">Odometer:</span>
+              <span className="font-mono font-medium truncate">
                 {record.odometerValue.toLocaleString()} km
               </span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground flex items-center gap-1">
+            <div className="flex items-center justify-between w-full overflow-hidden">
+              <span className="text-muted-foreground flex items-center gap-1 shrink-0">
                 <Clock className="h-3 w-3" />
                 Captured:
               </span>
-              <span className="text-xs">
+              <span className="text-xs truncate">
                 {new Date(record.capturedAt).toLocaleString("en-ZA")}
               </span>
             </div>
             {record.gpsLatitude && record.gpsLongitude && (
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground flex items-center gap-1">
+              <div className="flex items-center justify-between w-full overflow-hidden">
+                <span className="text-muted-foreground flex items-center gap-1 shrink-0">
                   <MapPin className="h-3 w-3" />
                   Location:
                 </span>
@@ -789,62 +798,27 @@ function ReadingCard({
                   href={`https://maps.google.com/?q=${record.gpsLatitude},${record.gpsLongitude}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-primary hover:underline"
+                  className="text-xs text-primary hover:underline truncate"
                 >
                   View on Map
                 </a>
               </div>
             )}
             {isLocked && record.lockedReason && (
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground flex items-center gap-1">
+              <div className="flex items-center justify-between w-full overflow-hidden">
+                <span className="text-muted-foreground flex items-center gap-1 shrink-0">
                   <Lock className="h-3 w-3" />
                   Confirmation note:
                 </span>
-                <span className="text-xs text-amber-600">
+                <span className="text-xs text-amber-600 truncate">
                   {record.lockedReason}
                 </span>
               </div>
             )}
           </div>
 
-          {/* Action buttons below image */}
-          <div className="flex items-center gap-2 pt-2 border-t">
-            {!isLocked && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1"
-                onClick={() => setShowEditDialog(true)}
-              >
-                <Pencil className="h-3 w-3 mr-1" />
-                Edit
-              </Button>
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              className={cn(
-                "flex-1",
-                isLocked && "text-amber-600 hover:text-amber-700",
-              )}
-              onClick={() =>
-                isLocked ? setShowUnlockDialog(true) : setShowLockDialog(true)
-              }
-            >
-              {isLocked ? (
-                <>
-                  <Unlock className="h-3 w-3 mr-1" />
-                  Re-open for editing
-                </>
-              ) : (
-                <>
-                  <Lock className="h-3 w-3 mr-1" />
-                  Confirm record
-                </>
-              )}
-            </Button>
-          </div>
+          {/* Action buttons below image - REMOVED to prevent overflow */}
+          {/* Buttons are now only available in the hover overlay above */}
         </div>
       ) : (
         <div className="aspect-video bg-muted/50 rounded-lg flex flex-col items-center justify-center text-muted-foreground">
@@ -930,10 +904,11 @@ function ReadingCard({
               variant="outline"
               onClick={() => setShowLockDialog(false)}
               disabled={isProcessing}
+              className="!flex-none"
             >
               Cancel
             </Button>
-            <Button onClick={handleLock} disabled={isProcessing}>
+            <Button onClick={handleLock} disabled={isProcessing} className="!flex-none">
               {isProcessing ? "Confirming..." : "Confirm record"}
             </Button>
           </DialogFooter>
@@ -980,11 +955,12 @@ function ReadingCard({
               variant="outline"
               onClick={() => setShowUnlockDialog(false)}
               disabled={isProcessing}
+              className="!flex-none"
             >
               Cancel
             </Button>
-            <Button onClick={handleUnlock} disabled={isProcessing}>
-              {isProcessing ? "Re-opening..." : "Re-open for editing"}
+            <Button onClick={handleUnlock} disabled={isProcessing} className="!flex-none">
+              {isProcessing ? "Re-opening..." : "Re-open Record"}
             </Button>
           </DialogFooter>
         </DialogContent>
