@@ -113,8 +113,6 @@ export function TrackingForm({
     defaultValues: initialData || {
       vehicleId: "",
       date: new Date(),
-      trackingProvider: "TRACKER",
-      paymentMethod: "DEBIT_ORDER",
     },
   });
 
