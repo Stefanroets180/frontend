@@ -2,16 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft, Save, Loader2, CalendarIcon } from "lucide-react";
+import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 import { api } from "@/lib/api/client";
 import { Vehicle, FuelType } from "@/lib/types/database";
 
@@ -23,7 +20,6 @@ export default function EditVehiclePage() {
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [licenseExpiryOpen, setLicenseExpiryOpen] = useState(false);
   
   const [formData, setFormData] = useState({
     make: "",
@@ -76,7 +72,7 @@ export default function EditVehiclePage() {
           fuelType: fuelCategory,
           tankCapacityLiters: data.tankCapacityLiters?.toString() || "",
           currentOdometer: data.currentOdometer?.toString() || "",
-          licenseExpiry: data.licenseExpiry ? new Date(data.licenseExpiry) : null,
+          licenseExpiry: data.licenseExpiry ? format(new Date(data.licenseExpiry), "yyyy-MM-dd") : "",
           insurancePolicyNumber: data.insurancePolicyNumber || "",
           trackerSerial: data.trackerSerial || "",
           notes: data.notes || "",
@@ -115,7 +111,7 @@ export default function EditVehiclePage() {
         fuelType: mappedFuelType,
         tankCapacityLiters: formData.tankCapacityLiters ? parseFloat(formData.tankCapacityLiters) : null,
         currentOdometer: parseInt(formData.currentOdometer),
-        licenseExpiry: formData.licenseExpiry ? format(formData.licenseExpiry, "yyyy-MM-dd") : null,
+        licenseExpiry: formData.licenseExpiry || null,
         insurancePolicyNumber: formData.insurancePolicyNumber || null,
         trackerSerial: formData.trackerSerial || null,
         notes: formData.notes || null,
@@ -287,35 +283,43 @@ export default function EditVehiclePage() {
               
               <div>
                 <Label htmlFor="licenseExpiry">License Expiry</Label>
-                <Popover open={licenseExpiryOpen} onOpenChange={setLicenseExpiryOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      id="licenseExpiry"
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !formData.licenseExpiry && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.licenseExpiry ? format(formData.licenseExpiry, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={formData.licenseExpiry || undefined}
-                      onSelect={(date) => {
-                        handleInputChange("licenseExpiry", date);
-                        setLicenseExpiryOpen(false);
-                      }}
-                      initialFocus
-                      fromYear={1980}
-                      toYear={2099}
-                      captionLayout="dropdown-buttons"
-                    />
-                  </PopoverContent>
-                </Popover>
+                <Input
+                  id="licenseExpiry"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="\d{4}-\d{2}-\d{2}"
+                  placeholder="YYYY-MM-DD"
+                  value={formData.licenseExpiry}
+                  onChange={(e) => {
+                    let value = e.target.value;
+                    // Remove non-digits and dashes
+                    value = value.replace(/[^\d-]/g, '');
+                    
+                    // Auto-format as YYYY-MM-DD
+                    const digits = value.replace(/\D/g, '');
+                    if (digits.length > 0) {
+                      let formatted = digits.slice(0, 4);
+                      if (digits.length > 4) {
+                        formatted += '-' + digits.slice(4, 6);
+                      }
+                      if (digits.length > 6) {
+                        formatted += '-' + digits.slice(6, 8);
+                      }
+                      value = formatted;
+                    }
+                    
+                    // Validate year is 4 digits and within range
+                    if (value && value.length >= 4) {
+                      const year = parseInt(value.slice(0, 4));
+                      if (year < 1900 || year > 2099) {
+                        return; // Reject invalid years
+                      }
+                    }
+                    
+                    handleInputChange("licenseExpiry", value);
+                  }}
+                  maxLength={10}
+                />
               </div>
               
               <div>
