@@ -445,6 +445,7 @@ export default function VehiclesPage() {
                         <Button
                           size="sm"
                           variant="outline"
+                          className="text-xs"
                           onClick={async () => {
                             setSelectedVehicleForFleet(vehicle);
                             try {
@@ -471,11 +472,13 @@ export default function VehiclesPage() {
                             }
                           }}
                         >
-                          Condition Report
+                          <span className="hidden sm:inline">Condition Report</span>
+                          <span className="sm:hidden">Condition</span>
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
+                          className="text-xs"
                           onClick={async () => {
                             setSelectedVehicleForFleet(vehicle);
                             try {
