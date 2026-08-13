@@ -494,7 +494,7 @@ export function TrackingForm({
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
               placeholder="YYYY-MM-DD"
-              value={watchInstallationDate ? format(watchInstallationDate, "yyyy-MM-DD") : ""}
+              value={watchInstallDate ? format(watchInstallDate, "yyyy-MM-DD") : ""}
               onChange={(e) => {
                 let value = e.target.value;
                 value = value.replace(/[^\d-]/g, '');
