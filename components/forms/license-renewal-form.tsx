@@ -355,7 +355,7 @@ export function LicenseRenewalForm({
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
                 placeholder="YYYY-MM-DD"
-                value={previousExpiryInput || (watchPrevExpiry ? format(watchPrevExpiry, "yyyy-MM-dd") : "")}
+                value={previousExpiryInput || (watchPreviousExpiry ? format(watchPreviousExpiry, "yyyy-MM-dd") : "")}
                 onChange={(e) => {
                   let value = e.target.value;
                   value = value.replace(/[^\d-]/g, '');
