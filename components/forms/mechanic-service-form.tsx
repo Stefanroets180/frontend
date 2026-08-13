@@ -85,6 +85,22 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
   const [dateInput, setDateInput] = useState("")
 
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<MechanicServiceInput>({
+    resolver: zodResolver(mechanicServiceSchema),
+    defaultValues: initialData || {
+      vehicleId: vehicles[0]?.id || '',
+      serviceType: ServiceType.MINOR_SERVICE,
+      date: new Date(),
+      odometerReading: vehicles[0]?.currentOdometer || 0,
+    },
+  })
+
   // Initialize date input from watched value when in edit mode
   useEffect(() => {
     if (mode === 'edit' && watch('date')) {
@@ -101,22 +117,6 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
       setPreviewUrl(firstImage.imageUrl)
     }
   }, [mode, existingImages])
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<MechanicServiceInput>({
-    resolver: zodResolver(mechanicServiceSchema),
-    defaultValues: initialData || {
-      vehicleId: vehicles[0]?.id || '',
-      serviceType: ServiceType.MINOR_SERVICE,
-      date: new Date(),
-      odometerReading: vehicles[0]?.currentOdometer || 0,
-    },
-  })
 
   const selectedVehicleId = watch('vehicleId')
   const totalCost = watch('totalCostZar')

@@ -105,6 +105,23 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
   const [dateInput, setDateInput] = useState("")
 
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<FuelLogInput>({
+    resolver: zodResolver(fuelLogSchema),
+    defaultValues: initialData || {
+      fullTank: true,
+      vehicleId: vehicles[0]?.id || '',
+      fuelType: vehicles[0]?.fuelType || FuelType.PETROL_UNLEADED_95,
+      date: new Date(),
+      odometerReading: vehicles[0]?.currentOdometer || 0,
+    },
+  })
+
   // Initialize date input from watched value when in edit mode
   useEffect(() => {
     if (mode === 'edit' && watch('date')) {

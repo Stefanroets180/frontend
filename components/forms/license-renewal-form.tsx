@@ -102,23 +102,6 @@ export function LicenseRenewalForm({
   const [previousExpiryInput, setPreviousExpiryInput] = useState("");
   const [newExpiryInput, setNewExpiryInput] = useState("");
 
-  // Initialize date inputs from watched values when in edit mode
-  useEffect(() => {
-    if (mode === 'edit') {
-      if (watch('date')) setDateInput(format(watch('date'), 'yyyy-MM-dd'))
-      if (watch('previousExpiryDate')) setPreviousExpiryInput(format(watch('previousExpiryDate'), 'yyyy-MM-dd'))
-      if (watch('newExpiryDate')) setNewExpiryInput(format(watch('newExpiryDate'), 'yyyy-MM-dd'))
-    }
-  }, [mode, watch('date'), watch('previousExpiryDate'), watch('newExpiryDate')]);
-
-  // Set preview from existing images when in edit mode
-  useEffect(() => {
-    if (mode === "edit" && existingImages.length > 0 && !previewUrl) {
-      const firstImage = existingImages[0];
-      setPreviewUrl(firstImage.imageUrl);
-    }
-  }, [mode, existingImages, previewUrl]);
-
   const {
     register,
     handleSubmit,
@@ -137,9 +120,26 @@ export function LicenseRenewalForm({
 
   const watchVehicleId = watch("vehicleId");
   const watchDate = watch("date");
-  const watchLicenseType = watch("licenseType");
-  const watchPrevExpiry = watch("previousExpiryDate");
+  const watchPreviousExpiry = watch("previousExpiryDate");
   const watchNewExpiry = watch("newExpiryDate");
+
+  // Initialize date inputs from watched values when in edit mode
+  useEffect(() => {
+    if (mode === 'edit') {
+      if (watchDate) setDateInput(format(watchDate, 'yyyy-MM-dd'))
+      if (watchPreviousExpiry) setPreviousExpiryInput(format(watchPreviousExpiry, 'yyyy-MM-dd'))
+      if (watchNewExpiry) setNewExpiryInput(format(watchNewExpiry, 'yyyy-MM-dd'))
+    }
+  }, [mode, watchDate, watchPreviousExpiry, watchNewExpiry]);
+
+  // Set preview from existing images when in edit mode
+  useEffect(() => {
+    if (mode === "edit" && existingImages.length > 0 && !previewUrl) {
+      const firstImage = existingImages[0];
+      setPreviewUrl(firstImage.imageUrl);
+    }
+  }, [mode, existingImages, previewUrl]);
+  const watchLicenseType = watch("licenseType");
   const watchRenewalMethod = watch("renewalMethod");
 
   const handleImageCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {

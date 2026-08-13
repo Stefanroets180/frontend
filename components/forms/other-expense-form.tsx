@@ -105,6 +105,27 @@ export function OtherExpenseForm({
   const [periodEndInput, setPeriodEndInput] = useState("");
   const [dateInput, setDateInput] = useState("");
 
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<OtherExpenseInput>({
+    resolver: zodResolver(otherExpenseSchema),
+    defaultValues: {
+      vehicleId: initialData?.vehicleId || "",
+      date: initialData?.date || new Date(),
+      isRecurring: initialData?.isRecurring ?? false,
+      recurrenceFrequency: initialData?.recurrenceFrequency || "ONCE_OFF",
+      ...initialData,
+    },
+  });
+
+  const watchDate = watch('date');
+  const watchPeriodStart = watch('periodStartDate');
+  const watchPeriodEnd = watch('periodEndDate');
+
   // Initialize date inputs from watched values when in edit mode
   useEffect(() => {
     if (mode === "edit") {
@@ -132,27 +153,7 @@ export function OtherExpenseForm({
     }
   }, [mode, existingImages, previewUrl]);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<OtherExpenseInput>({
-    resolver: zodResolver(otherExpenseSchema),
-    defaultValues: {
-      vehicleId: initialData?.vehicleId || "",
-      date: initialData?.date || new Date(),
-      isRecurring: initialData?.isRecurring ?? false,
-      recurrenceFrequency: initialData?.recurrenceFrequency || "ONCE_OFF",
-      ...initialData,
-    },
-  });
-
   const watchVehicleId = watch("vehicleId");
-  const watchDate = watch("date");
-  const watchPeriodStart = watch("periodStartDate");
-  const watchPeriodEnd = watch("periodEndDate");
   const watchIsRecurring = watch("isRecurring");
   const watchRecurrenceFrequency = watch("recurrenceFrequency");
 

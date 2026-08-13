@@ -96,23 +96,6 @@ export function RoadworthyForm({
   const [testDateInput, setTestDateInput] = useState("");
   const [expiryDateInput, setExpiryDateInput] = useState("");
 
-  // Initialize date inputs from watched values when in edit mode
-  useEffect(() => {
-    if (mode === 'edit') {
-      if (watch('date')) setDateInput(format(watch('date'), 'yyyy-MM-dd'))
-      if (watch('testDate')) setTestDateInput(format(watch('testDate'), 'yyyy-MM-dd'))
-      if (watch('expiryDate')) setExpiryDateInput(format(watch('expiryDate'), 'yyyy-MM-dd'))
-    }
-  }, [mode, watch('date'), watch('testDate'), watch('expiryDate')]);
-
-  // Set preview from existing images when in edit mode
-  useEffect(() => {
-    if (mode === "edit" && existingImages.length > 0 && !previewUrl) {
-      const firstImage = existingImages[0];
-      setPreviewUrl(firstImage.imageUrl);
-    }
-  }, [mode, existingImages, previewUrl]);
-
   const {
     register,
     handleSubmit,
@@ -133,6 +116,23 @@ export function RoadworthyForm({
   const watchDate = watch("date");
   const watchTestDate = watch("testDate");
   const watchExpiryDate = watch("expiryDate");
+
+  // Initialize date inputs from watched values when in edit mode
+  useEffect(() => {
+    if (mode === 'edit') {
+      if (watchDate) setDateInput(format(watchDate, 'yyyy-MM-dd'))
+      if (watchTestDate) setTestDateInput(format(watchTestDate, 'yyyy-MM-dd'))
+      if (watchExpiryDate) setExpiryDateInput(format(watchExpiryDate, 'yyyy-MM-dd'))
+    }
+  }, [mode, watchDate, watchTestDate, watchExpiryDate]);
+
+  // Set preview from existing images when in edit mode
+  useEffect(() => {
+    if (mode === "edit" && existingImages.length > 0 && !previewUrl) {
+      const firstImage = existingImages[0];
+      setPreviewUrl(firstImage.imageUrl);
+    }
+  }, [mode, existingImages, previewUrl]);
   const watchResult = watch("testResult");
 
   const handleImageCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {

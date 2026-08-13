@@ -103,6 +103,28 @@ export function TrackingForm({
   const [subscriptionEndInput, setSubscriptionEndInput] = useState("");
   const [installDateInput, setInstallDateInput] = useState("");
 
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<TrackingInput>({
+    resolver: zodResolver(trackingSchema),
+    defaultValues: initialData || {
+      vehicleId: "",
+      date: new Date(),
+      trackingProvider: "TRACKER",
+      paymentMethod: "DEBIT_ORDER",
+    },
+  });
+
+  const watchVehicleId = watch("vehicleId");
+  const watchDate = watch("date");
+  const watchSubscriptionStart = watch("subscriptionStartDate");
+  const watchSubscriptionEnd = watch("subscriptionEndDate");
+  const watchInstallDate = watch("installationDate");
+
   // Initialize date inputs from watched values when in edit mode
   useEffect(() => {
     if (mode === "edit") {
@@ -136,30 +158,7 @@ export function TrackingForm({
     }
   }, [mode, existingImages, previewUrl]);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<TrackingInput>({
-    resolver: zodResolver(trackingSchema),
-    defaultValues: {
-      vehicleId: "",
-      date: new Date(),
-      subscriptionType: "MONTHLY",
-      recoveryIncluded: false,
-      subscriptionStartDate: new Date(),
-      ...initialData,
-    },
-  });
-
-  const watchVehicleId = watch("vehicleId");
-  const watchDate = watch("date");
   const watchSubscriptionType = watch("subscriptionType");
-  const watchSubscriptionStart = watch("subscriptionStartDate");
-  const watchSubscriptionEnd = watch("subscriptionEndDate");
-  const watchInstallDate = watch("installationDate");
   const watchRecovery = watch("recoveryIncluded");
   const requiresNewReceipt = mode === "create";
 

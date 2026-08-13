@@ -111,23 +111,6 @@ export function PersonalLicenseForm({
   const [issueDateInput, setIssueDateInput] = useState("")
   const [expiryDateInput, setExpiryDateInput] = useState("")
 
-  // Initialize date inputs from watched values when in edit mode
-  useEffect(() => {
-    if (mode === 'edit') {
-      if (watch('date')) setDateInput(format(watch('date'), 'yyyy-MM-dd'))
-      if (watch('issueDate')) setIssueDateInput(format(watch('issueDate'), 'yyyy-MM-dd'))
-      if (watch('expiryDate')) setExpiryDateInput(format(watch('expiryDate'), 'yyyy-MM-dd'))
-    }
-  }, [mode, watch('date'), watch('issueDate'), watch('expiryDate')]);
-
-  // Set preview from existing images when in edit mode
-  useEffect(() => {
-    if (mode === "edit" && existingImages.length > 0 && !previewUrl) {
-      const firstImage = existingImages[0];
-      setPreviewUrl(firstImage.imageUrl);
-    }
-  }, [mode, existingImages, previewUrl]);
-
   const {
     register,
     handleSubmit,
@@ -150,6 +133,23 @@ export function PersonalLicenseForm({
   const watchLicenseType = watch("licenseType");
   const watchLicenseCode = watch("licenseCode");
   const watchRenewalMethod = watch("renewalMethod");
+
+  // Initialize date inputs from watched values when in edit mode
+  useEffect(() => {
+    if (mode === 'edit') {
+      if (watchDate) setDateInput(format(watchDate, 'yyyy-MM-dd'))
+      if (watchIssueDate) setIssueDateInput(format(watchIssueDate, 'yyyy-MM-dd'))
+      if (watchExpiryDate) setExpiryDateInput(format(watchExpiryDate, 'yyyy-MM-dd'))
+    }
+  }, [mode, watchDate, watchIssueDate, watchExpiryDate]);
+
+  // Set preview from existing images when in edit mode
+  useEffect(() => {
+    if (mode === "edit" && existingImages.length > 0 && !previewUrl) {
+      const firstImage = existingImages[0];
+      setPreviewUrl(firstImage.imageUrl);
+    }
+  }, [mode, existingImages, previewUrl]);
 
   const handleImageCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

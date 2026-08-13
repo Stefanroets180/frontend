@@ -79,6 +79,22 @@ export function MaintenanceTopupForm({ vehicles, onSubmit, initialData, mode = '
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
   const [dateInput, setDateInput] = useState("")
 
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<MaintenanceTopupInput>({
+    resolver: zodResolver(maintenanceTopupSchema),
+    defaultValues: initialData || {
+      vehicleId: vehicles[0]?.id || '',
+      itemType: MaintenanceItemType.ENGINE_OIL,
+      date: new Date(),
+      itemQuantity: 1,
+    },
+  })
+
   // Initialize date input from watched value when in edit mode
   useEffect(() => {
     if (mode === 'edit' && watch('date')) {
@@ -95,22 +111,6 @@ export function MaintenanceTopupForm({ vehicles, onSubmit, initialData, mode = '
       setPreviewUrl(firstImage.imageUrl)
     }
   }, [mode, existingImages])
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<MaintenanceTopupInput>({
-    resolver: zodResolver(maintenanceTopupSchema),
-    defaultValues: initialData || {
-      vehicleId: vehicles[0]?.id || '',
-      itemType: MaintenanceItemType.ENGINE_OIL,
-      date: new Date(),
-      itemQuantity: 1,
-    },
-  })
 
   const selectedVehicleId = watch('vehicleId')
   const priceZar = watch('priceZar')

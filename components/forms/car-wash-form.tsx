@@ -77,6 +77,21 @@ export function CarWashForm({ vehicles, onSubmit, initialData, mode, existingIma
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
   const [dateInput, setDateInput] = useState("")
 
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<CarWashInput>({
+    resolver: zodResolver(carWashSchema),
+    defaultValues: initialData || {
+      vehicleId: vehicles[0]?.id || '',
+      date: new Date(),
+      washType: CarWashType.WASH_AND_GO,
+    },
+  })
+
   // Initialize date input from watched value when in edit mode
   useEffect(() => {
     if (mode === 'edit' && watch('date')) {
@@ -93,21 +108,6 @@ export function CarWashForm({ vehicles, onSubmit, initialData, mode, existingIma
       setPreviewUrl(firstImage.imageUrl)
     }
   }, [mode, existingImages])
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<CarWashInput>({
-    resolver: zodResolver(carWashSchema),
-    defaultValues: initialData || {
-      vehicleId: vehicles[0]?.id || '',
-      date: new Date(),
-      washType: CarWashType.WASH_AND_GO,
-    },
-  })
 
   const selectedVehicleId = watch('vehicleId')
   const costZar = watch('costZar')

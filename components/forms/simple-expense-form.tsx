@@ -99,13 +99,6 @@ export function SimpleExpenseForm({
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
   const [dateInput, setDateInput] = useState("")
 
-  // Initialize date input from watched value when in edit mode
-  useEffect(() => {
-    if (mode === 'edit' && watch('date')) {
-      setDateInput(format(watch('date'), 'yyyy-MM-dd'))
-    }
-  }, [mode, watch('date')])
-
   const {
     register,
     handleSubmit,
@@ -121,6 +114,13 @@ export function SimpleExpenseForm({
       description: '',
     },
   })
+
+  // Initialize date input from watched value when in edit mode
+  useEffect(() => {
+    if (mode === 'edit' && watch('date')) {
+      setDateInput(format(watch('date'), 'yyyy-MM-dd'))
+    }
+  }, [mode, watch('date')])
 
   const selectedVehicleId = watch('vehicleId')
   const date = watch('date')
