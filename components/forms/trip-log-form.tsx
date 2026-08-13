@@ -49,12 +49,25 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
   const [tripPurpose, setTripPurpose] = useState<"BUSINESS" | "PRIVATE">("BUSINESS");
   const [dateInput, setDateInput] = useState("")
 
+  const [formData, setFormData] = useState({
+    vehicleId: vehicleId || "",
+    tripDate: new Date().toISOString().split("T")[0],
+    startOdometer: "",
+    endOdometer: "",
+    startLocation: "",
+    endLocation: "",
+    description: "",
+    projectCode: "",
+    clientName: "",
+  });
+
   // Initialize date input from formData when it changes
   useEffect(() => {
     if (formData.tripDate) {
       setDateInput(formData.tripDate)
     }
   }, [formData.tripDate]);
+  
   useEffect(() => {
     api.get("/vehicles").then(({ data }) => {
       const list = Array.isArray(data) ? data : [];
@@ -68,18 +81,6 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
       );
     }).catch(console.error);
   }, []);
-
-  const [formData, setFormData] = useState({
-    vehicleId: vehicleId || "",
-    tripDate: new Date().toISOString().split("T")[0],
-    startOdometer: "",
-    endOdometer: "",
-    startLocation: "",
-    endLocation: "",
-    description: "",
-    projectCode: "",
-    clientName: "",
-  });
 
   const distanceTraveled = formData.endOdometer && formData.startOdometer
     ? Number(formData.endOdometer) - Number(formData.startOdometer)
