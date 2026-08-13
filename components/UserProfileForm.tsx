@@ -110,7 +110,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
       formData.append('type', cropTarget === 'front' ? 'front' : 'back')
       
       // Upload to backend
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/driver-license-images`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/driver-license-images`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
