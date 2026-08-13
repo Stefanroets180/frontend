@@ -269,12 +269,18 @@ export function AddVehicleForm() {
               <Label htmlFor="year">Year <span className="text-destructive">*</span></Label>
               <Input
                 id="year"
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="\d{4}"
                 min={1980}
                 max={2030}
+                maxLength={4}
                 placeholder="2022"
                 value={form.year}
-                onChange={e => set("year", e.target.value)}
+                onChange={e => {
+                  const value = e.target.value.replace(/\D/g, '').slice(0, 4)
+                  set("year", value)
+                }}
                 className="h-12"
                 required
               />
@@ -357,6 +363,7 @@ export function AddVehicleForm() {
                 value={form.licenseExpiry}
                 onChange={e => set("licenseExpiry", e.target.value)}
                 className="h-12"
+                max="2099-12-31"
               />
               <p className="text-xs text-muted-foreground">
                 Enter the expiry date of your vehicle's license disc. This helps you track when your license needs renewal.
