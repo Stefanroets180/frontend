@@ -53,6 +53,8 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
   const [selectedLicenseFront, setSelectedLicenseFront] = useState<File | null>(null)
   const [selectedLicenseBack, setSelectedLicenseBack] = useState<File | null>(null)
   const [showCropModal, setShowCropModal] = useState(false)
+  const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
+  const [expiryInput, setExpiryInput] = useState("")
   const [cropTarget, setCropTarget] = useState<'front' | 'back'>('front')
   const [isUploadingLicense, setIsUploadingLicense] = useState(false)
 
@@ -244,6 +246,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
                 placeholder="YYYY-MM-DD"
+                value={expiryInput}
                 className="h-12"
                 autoComplete="off"
                 onChange={(e) => {
@@ -260,6 +263,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                     }
                     value = formatted;
                   }
+                  setExpiryInput(value);
                   if (value && value.length >= 4) {
                     const year = parseInt(value.slice(0, 4));
                     if (year < 1900 || year > 2099) {

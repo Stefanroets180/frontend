@@ -92,6 +92,9 @@ export function RoadworthyForm({
   } | null>(null);
   const [showCropModal, setShowCropModal] = useState(false);
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
+  const [dateInput, setDateInput] = useState("");
+  const [testDateInput, setTestDateInput] = useState("");
+  const [expiryDateInput, setExpiryDateInput] = useState("");
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
@@ -232,7 +235,7 @@ export function RoadworthyForm({
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
               placeholder="YYYY-MM-DD"
-              value={watchDate ? format(watchDate, "yyyy-MM-dd") : ""}
+              value={dateInput || (watchDate ? format(watchDate, "yyyy-MM-dd") : "")}
               onChange={(e) => {
                 let value = e.target.value;
                 value = value.replace(/[^\d-]/g, '');
@@ -247,6 +250,7 @@ export function RoadworthyForm({
                   }
                   value = formatted;
                 }
+                setDateInput(value);
                 if (value && value.length >= 4) {
                   const year = parseInt(value.slice(0, 4));
                   if (year < 1900 || year > 2099) {
@@ -312,7 +316,7 @@ export function RoadworthyForm({
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
               placeholder="YYYY-MM-DD"
-              value={watchTestDate ? format(watchTestDate, "yyyy-MM-dd") : ""}
+              value={testDateInput || (watchTestDate ? format(watchTestDate, "yyyy-MM-dd") : "")}
               onChange={(e) => {
                 let value = e.target.value;
                 value = value.replace(/[^\d-]/g, '');
@@ -327,6 +331,7 @@ export function RoadworthyForm({
                   }
                   value = formatted;
                 }
+                setTestDateInput(value);
                 if (value && value.length >= 4) {
                   const year = parseInt(value.slice(0, 4));
                   if (year < 1900 || year > 2099) {
@@ -389,7 +394,7 @@ export function RoadworthyForm({
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
               placeholder="YYYY-MM-DD"
-              value={watchExpiryDate ? format(watchExpiryDate, "yyyy-MM-dd") : ""}
+              value={expiryDateInput || (watchExpiryDate ? format(watchExpiryDate, "yyyy-MM-dd") : "")}
               onChange={(e) => {
                 let value = e.target.value;
                 value = value.replace(/[^\d-]/g, '');
@@ -404,6 +409,7 @@ export function RoadworthyForm({
                   }
                   value = formatted;
                 }
+                setExpiryDateInput(value);
                 if (value && value.length >= 4) {
                   const year = parseInt(value.slice(0, 4));
                   if (year < 1900 || year > 2099) {

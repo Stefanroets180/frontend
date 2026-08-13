@@ -77,6 +77,7 @@ export function MaintenanceTopupForm({ vehicles, onSubmit, initialData, mode = '
   } | null>(null)
   const [showCropModal, setShowCropModal] = useState(false)
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
+  const [dateInput, setDateInput] = useState("")
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
@@ -252,7 +253,7 @@ export function MaintenanceTopupForm({ vehicles, onSubmit, initialData, mode = '
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
               placeholder="YYYY-MM-DD"
-              value={watch('date') ? format(watch('date'), 'yyyy-MM-dd') : ''}
+              value={dateInput || (watch('date') ? format(watch('date'), 'yyyy-MM-dd') : '')}
               onChange={(e) => {
                 let value = e.target.value;
                 value = value.replace(/[^\d-]/g, '');
@@ -267,6 +268,7 @@ export function MaintenanceTopupForm({ vehicles, onSubmit, initialData, mode = '
                   }
                   value = formatted;
                 }
+                setDateInput(value);
                 if (value && value.length >= 4) {
                   const year = parseInt(value.slice(0, 4));
                   if (year < 1900 || year > 2099) {

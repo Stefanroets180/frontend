@@ -98,6 +98,9 @@ export function LicenseRenewalForm({
   } | null>(null);
   const [showCropModal, setShowCropModal] = useState(false);
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
+  const [dateInput, setDateInput] = useState("");
+  const [previousExpiryInput, setPreviousExpiryInput] = useState("");
+  const [newExpiryInput, setNewExpiryInput] = useState("");
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
@@ -239,7 +242,7 @@ export function LicenseRenewalForm({
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
               placeholder="YYYY-MM-DD"
-              value={watchDate ? format(watchDate, "yyyy-MM-dd") : ""}
+              value={dateInput || (watchDate ? format(watchDate, "yyyy-MM-dd") : "")}
               onChange={(e) => {
                 let value = e.target.value;
                 value = value.replace(/[^\d-]/g, '');
@@ -254,6 +257,7 @@ export function LicenseRenewalForm({
                   }
                   value = formatted;
                 }
+                setDateInput(value);
                 if (value && value.length >= 4) {
                   const year = parseInt(value.slice(0, 4));
                   if (year < 1900 || year > 2099) {
@@ -327,7 +331,7 @@ export function LicenseRenewalForm({
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
                 placeholder="YYYY-MM-DD"
-                value={watchPrevExpiry ? format(watchPrevExpiry, "yyyy-MM-dd") : ""}
+                value={previousExpiryInput || (watchPrevExpiry ? format(watchPrevExpiry, "yyyy-MM-dd") : "")}
                 onChange={(e) => {
                   let value = e.target.value;
                   value = value.replace(/[^\d-]/g, '');
@@ -342,6 +346,7 @@ export function LicenseRenewalForm({
                     }
                     value = formatted;
                   }
+                  setPreviousExpiryInput(value);
                   if (value && value.length >= 4) {
                     const year = parseInt(value.slice(0, 4));
                     if (year < 1900 || year > 2099) {
@@ -363,7 +368,7 @@ export function LicenseRenewalForm({
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
                 placeholder="YYYY-MM-DD"
-                value={watchNewExpiry ? format(watchNewExpiry, "yyyy-MM-dd") : ""}
+                value={newExpiryInput || (watchNewExpiry ? format(watchNewExpiry, "yyyy-MM-dd") : "")}
                 onChange={(e) => {
                   let value = e.target.value;
                   value = value.replace(/[^\d-]/g, '');
@@ -378,6 +383,7 @@ export function LicenseRenewalForm({
                     }
                     value = formatted;
                   }
+                  setNewExpiryInput(value);
                   if (value && value.length >= 4) {
                     const year = parseInt(value.slice(0, 4));
                     if (year < 1900 || year > 2099) {
@@ -392,9 +398,7 @@ export function LicenseRenewalForm({
                 className={errors.newExpiryDate ? "border-red-500" : ""}
               />
               {errors.newExpiryDate && (
-                <p className="text-sm text-red-500">
-                  {errors.newExpiryDate.message}
-                </p>
+                <p className="text-sm text-red-500">{errors.newExpiryDate.message}</p>
               )}
             </div>
           </div>

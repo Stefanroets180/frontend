@@ -138,6 +138,7 @@ export function TyrePurchaseForm({
   const [enableRotation, setEnableRotation] = useState(false);
   const [showCropModal, setShowCropModal] = useState(false);
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
+  const [dateInput, setDateInput] = useState("");
 
   const {
     register,
@@ -328,7 +329,7 @@ export function TyrePurchaseForm({
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
               placeholder="YYYY-MM-DD"
-              value={watch("date") ? format(watch("date"), "yyyy-MM-dd") : ""}
+              value={dateInput || (watch("date") ? format(watch("date"), "yyyy-MM-dd") : "")}
               onChange={(e) => {
                 let value = e.target.value;
                 value = value.replace(/[^\d-]/g, '');
@@ -343,6 +344,7 @@ export function TyrePurchaseForm({
                   }
                   value = formatted;
                 }
+                setDateInput(value);
                 if (value && value.length >= 4) {
                   const year = parseInt(value.slice(0, 4));
                   if (year < 1900 || year > 2099) {

@@ -99,12 +99,13 @@ export function PersonalLicenseForm({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
   const [isCompressing, setIsCompressing] = useState(false);
-  const [compressionInfo, setCompressionInfo] = useState<{
-    originalSize: number;
-    compressedSize: number;
-  } | null>(null);
+  const [selectedDaysOfWeek, setSelectedDaysOfWeek] = useState<string[]>([]);
+  const [selectedDaysOfMonth, setSelectedDaysOfMonth] = useState<number[]>([]);
   const [showCropModal, setShowCropModal] = useState(false);
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
+  const [dateInput, setDateInput] = useState("");
+  const [issueDateInput, setIssueDateInput] = useState("");
+  const [expiryDateInput, setExpiryDateInput] = useState("");
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
@@ -232,7 +233,7 @@ export function PersonalLicenseForm({
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
               placeholder="YYYY-MM-DD"
-              value={watchDate ? format(watchDate, "yyyy-MM-dd") : ""}
+              value={dateInput || (watchDate ? format(watchDate, "yyyy-MM-dd") : "")}
               onChange={(e) => {
                 let value = e.target.value;
                 value = value.replace(/[^\d-]/g, '');
@@ -247,6 +248,7 @@ export function PersonalLicenseForm({
                   }
                   value = formatted;
                 }
+                setDateInput(value);
                 if (value && value.length >= 4) {
                   const year = parseInt(value.slice(0, 4));
                   if (year < 1900 || year > 2099) {
@@ -345,7 +347,7 @@ export function PersonalLicenseForm({
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
                 placeholder="YYYY-MM-DD"
-                value={watchIssueDate ? format(watchIssueDate, "yyyy-MM-dd") : ""}
+                value={issueDateInput || (watchIssueDate ? format(watchIssueDate, "yyyy-MM-dd") : "")}
                 onChange={(e) => {
                   let value = e.target.value;
                   value = value.replace(/[^\d-]/g, '');
@@ -360,6 +362,7 @@ export function PersonalLicenseForm({
                     }
                     value = formatted;
                   }
+                  setIssueDateInput(value);
                   if (value && value.length >= 4) {
                     const year = parseInt(value.slice(0, 4));
                     if (year < 1900 || year > 2099) {
@@ -385,7 +388,7 @@ export function PersonalLicenseForm({
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
                 placeholder="YYYY-MM-DD"
-                value={watchExpiryDate ? format(watchExpiryDate, "yyyy-MM-dd") : ""}
+                value={expiryDateInput || (watchExpiryDate ? format(watchExpiryDate, "yyyy-MM-dd") : "")}
                 onChange={(e) => {
                   let value = e.target.value;
                   value = value.replace(/[^\d-]/g, '');
@@ -400,6 +403,7 @@ export function PersonalLicenseForm({
                     }
                     value = formatted;
                   }
+                  setExpiryDateInput(value);
                   if (value && value.length >= 4) {
                     const year = parseInt(value.slice(0, 4));
                     if (year < 1900 || year > 2099) {

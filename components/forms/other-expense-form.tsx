@@ -103,6 +103,7 @@ export function OtherExpenseForm({
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
   const [periodStartInput, setPeriodStartInput] = useState("");
   const [periodEndInput, setPeriodEndInput] = useState("");
+  const [dateInput, setDateInput] = useState("");
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
@@ -280,7 +281,7 @@ export function OtherExpenseForm({
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
               placeholder="YYYY-MM-DD"
-              value={watchDate ? format(watchDate, "yyyy-MM-dd") : ""}
+              value={dateInput || (watchDate ? format(watchDate, "yyyy-MM-dd") : "")}
               onChange={(e) => {
                 let value = e.target.value;
                 value = value.replace(/[^\d-]/g, '');
@@ -295,6 +296,7 @@ export function OtherExpenseForm({
                   }
                   value = formatted;
                 }
+                setDateInput(value);
                 if (value && value.length >= 4) {
                   const year = parseInt(value.slice(0, 4));
                   if (year < 1900 || year > 2099) {

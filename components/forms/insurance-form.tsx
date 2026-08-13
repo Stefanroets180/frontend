@@ -93,6 +93,9 @@ export function InsuranceForm({
   } | null>(null);
   const [showCropModal, setShowCropModal] = useState(false);
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
+  const [dateInput, setDateInput] = useState("");
+  const [coverageStartInput, setCoverageStartInput] = useState("");
+  const [coverageEndInput, setCoverageEndInput] = useState("");
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
@@ -232,7 +235,7 @@ export function InsuranceForm({
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
               placeholder="YYYY-MM-DD"
-              value={watchDate ? format(watchDate, "yyyy-MM-dd") : ""}
+              value={dateInput || (watchDate ? format(watchDate, "yyyy-MM-dd") : "")}
               onChange={(e) => {
                 let value = e.target.value;
                 value = value.replace(/[^\d-]/g, '');
@@ -247,6 +250,7 @@ export function InsuranceForm({
                   }
                   value = formatted;
                 }
+                setDateInput(value);
                 if (value && value.length >= 4) {
                   const year = parseInt(value.slice(0, 4));
                   if (year < 1900 || year > 2099) {
@@ -330,7 +334,7 @@ export function InsuranceForm({
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
                 placeholder="YYYY-MM-DD"
-                value={watchCoverageStart ? format(watchCoverageStart, "yyyy-MM-dd") : ""}
+                value={coverageStartInput || (watchCoverageStart ? format(watchCoverageStart, "yyyy-MM-dd") : "")}
                 onChange={(e) => {
                   let value = e.target.value;
                   value = value.replace(/[^\d-]/g, '');
@@ -345,6 +349,7 @@ export function InsuranceForm({
                     }
                     value = formatted;
                   }
+                  setCoverageStartInput(value);
                   if (value && value.length >= 4) {
                     const year = parseInt(value.slice(0, 4));
                     if (year < 1900 || year > 2099) {
@@ -370,7 +375,7 @@ export function InsuranceForm({
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
                 placeholder="YYYY-MM-DD"
-                value={watchCoverageEnd ? format(watchCoverageEnd, "yyyy-MM-dd") : ""}
+                value={coverageEndInput || (watchCoverageEnd ? format(watchCoverageEnd, "yyyy-MM-dd") : "")}
                 onChange={(e) => {
                   let value = e.target.value;
                   value = value.replace(/[^\d-]/g, '');
@@ -385,6 +390,7 @@ export function InsuranceForm({
                     }
                     value = formatted;
                   }
+                  setCoverageEndInput(value);
                   if (value && value.length >= 4) {
                     const year = parseInt(value.slice(0, 4));
                     if (year < 1900 || year > 2099) {

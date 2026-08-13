@@ -98,6 +98,10 @@ export function TrackingForm({
   } | null>(null);
   const [showCropModal, setShowCropModal] = useState(false);
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
+  const [dateInput, setDateInput] = useState("");
+  const [subscriptionStartInput, setSubscriptionStartInput] = useState("");
+  const [subscriptionEndInput, setSubscriptionEndInput] = useState("");
+  const [installDateInput, setInstallDateInput] = useState("");
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
@@ -267,7 +271,7 @@ export function TrackingForm({
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
               placeholder="YYYY-MM-DD"
-              value={watchDate ? format(watchDate, "yyyy-MM-dd") : ""}
+              value={dateInput || (watchDate ? format(watchDate, "yyyy-MM-dd") : "")}
               onChange={(e) => {
                 let value = e.target.value;
                 value = value.replace(/[^\d-]/g, '');
@@ -282,6 +286,7 @@ export function TrackingForm({
                   }
                   value = formatted;
                 }
+                setDateInput(value);
                 if (value && value.length >= 4) {
                   const year = parseInt(value.slice(0, 4));
                   if (year < 1900 || year > 2099) {
@@ -357,85 +362,6 @@ export function TrackingForm({
             )}
           </div>
 
-          {/* Subscription Dates */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="subscriptionStartDate">Subscription Start</Label>
-              <Input
-                id="subscriptionStartDate"
-                type="text"
-                inputMode="numeric"
-                pattern="\d{4}-\d{2}-\d{2}"
-                placeholder="YYYY-MM-DD"
-                value={watchSubscriptionStart ? format(watchSubscriptionStart, "yyyy-MM-dd") : ""}
-                onChange={(e) => {
-                  let value = e.target.value;
-                  value = value.replace(/[^\d-]/g, '');
-                  const digits = value.replace(/\D/g, '');
-                  if (digits.length > 0) {
-                    let formatted = digits.slice(0, 4);
-                    if (digits.length > 4) {
-                      formatted += '-' + digits.slice(4, 6);
-                    }
-                    if (digits.length > 6) {
-                      formatted += '-' + digits.slice(6, 8);
-                    }
-                    value = formatted;
-                  }
-                  if (value && value.length >= 4) {
-                    const year = parseInt(value.slice(0, 4));
-                    if (year < 1900 || year > 2099) {
-                      return;
-                    }
-                  }
-                  if (value.length === 10) {
-                    setValue("subscriptionStartDate", new Date(value));
-                  }
-                }}
-                maxLength={10}
-                className={errors.subscriptionStartDate ? "border-red-500" : ""}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="subscriptionEndDate">
-                Subscription End (Optional)
-              </Label>
-              <Input
-                id="subscriptionEndDate"
-                type="text"
-                inputMode="numeric"
-                pattern="\d{4}-\d{2}-\d{2}"
-                placeholder="YYYY-MM-DD"
-                value={watchSubscriptionEnd ? format(watchSubscriptionEnd, "yyyy-MM-dd") : ""}
-                onChange={(e) => {
-                  let value = e.target.value;
-                  value = value.replace(/[^\d-]/g, '');
-                  const digits = value.replace(/\D/g, '');
-                  if (digits.length > 0) {
-                    let formatted = digits.slice(0, 4);
-                    if (digits.length > 4) {
-                      formatted += '-' + digits.slice(4, 6);
-                    }
-                    if (digits.length > 6) {
-                      formatted += '-' + digits.slice(6, 8);
-                    }
-                    value = formatted;
-                  }
-                  if (value && value.length >= 4) {
-                    const year = parseInt(value.slice(0, 4));
-                    if (year < 1900 || year > 2099) {
-                      return;
-                    }
-                  }
-                  if (value.length === 10) {
-                    setValue("subscriptionEndDate", new Date(value));
-                  }
-                }}
-                maxLength={10}
-              />
-            </div>
-          </div>
-
           {/* Installation Fee & Contract Duration */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -494,7 +420,7 @@ export function TrackingForm({
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
               placeholder="YYYY-MM-DD"
-              value={watchInstallDate ? format(watchInstallDate, "yyyy-MM-DD") : ""}
+              value={installDateInput || (watchInstallDate ? format(watchInstallDate, "yyyy-MM-DD") : "")}
               onChange={(e) => {
                 let value = e.target.value;
                 value = value.replace(/[^\d-]/g, '');
@@ -509,6 +435,7 @@ export function TrackingForm({
                   }
                   value = formatted;
                 }
+                setInstallDateInput(value);
                 if (value && value.length >= 4) {
                   const year = parseInt(value.slice(0, 4));
                   if (year < 1900 || year > 2099) {

@@ -47,6 +47,7 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
   const [vehicles, setVehicles] = useState<VehicleOption[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tripPurpose, setTripPurpose] = useState<"BUSINESS" | "PRIVATE">("BUSINESS");
+  const [dateInput, setDateInput] = useState("");
   useEffect(() => {
     api.get("/vehicles").then(({ data }) => {
       const list = Array.isArray(data) ? data : [];
@@ -196,7 +197,7 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
           inputMode="numeric"
           pattern="\d{4}-\d{2}-\d{2}"
           placeholder="YYYY-MM-DD"
-          value={formData.tripDate}
+          value={dateInput || formData.tripDate}
           onChange={(e) => {
             let value = e.target.value;
             value = value.replace(/[^\d-]/g, '');
@@ -211,13 +212,16 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
               }
               value = formatted;
             }
+            setDateInput(value);
             if (value && value.length >= 4) {
               const year = parseInt(value.slice(0, 4));
               if (year < 1900 || year > 2099) {
                 return;
               }
             }
-            setFormData({ ...formData, tripDate: value });
+            if (value.length === 10) {
+              setFormData({ ...formData, tripDate: value });
+            }
           }}
           className="h-14 text-base"
           maxLength={10}
