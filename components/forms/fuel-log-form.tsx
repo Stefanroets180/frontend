@@ -174,23 +174,6 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
     }
   }, [mode, initialData, entryId, gpsManuallyCleared])
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<FuelLogInput>({
-    resolver: zodResolver(fuelLogSchema),
-    defaultValues: initialData || {
-      fullTank: true,
-      vehicleId: vehicles[0]?.id || '',
-      fuelType: vehicles[0]?.fuelType || FuelType.PETROL_UNLEADED_95,
-      date: new Date(),
-      odometerReading: vehicles[0]?.currentOdometer || 0,
-    },
-  })
-
   const selectedVehicleId = watch('vehicleId')
   const liters = watch('liters')
   const pricePerLiter = watch('pricePerLiter')
