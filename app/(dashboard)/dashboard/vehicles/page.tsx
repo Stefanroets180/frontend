@@ -441,11 +441,10 @@ export default function VehiclesPage() {
                   <div className="border-t border-border/50 pt-2">
                     {/* Fleet-specific buttons */}
                     {isFleetMode && (
-                      <div className="grid grid-cols-2 gap-2 mb-2">
+                      <div className="flex flex-col sm:grid sm:grid-cols-2 gap-2 mb-2">
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-xs"
                           onClick={async () => {
                             setSelectedVehicleForFleet(vehicle);
                             try {
@@ -472,13 +471,11 @@ export default function VehiclesPage() {
                             }
                           }}
                         >
-                          <span className="hidden sm:inline">Condition Report</span>
-                          <span className="sm:hidden">Condition</span>
+                          Condition Report
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-xs"
                           onClick={async () => {
                             setSelectedVehicleForFleet(vehicle);
                             try {
