@@ -153,8 +153,8 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
         ...data,
         driversLicenseNumber: data.driversLicenseNumber,
         driversLicenseExpiry: data.driversLicenseExpiry,
-        driverLicenseFrontUrl: (window as any).tempLicenseFrontUrl || existingProfile?.driversLicenseFrontUrl,
-        driverLicenseBackUrl: (window as any).tempLicenseBackUrl || existingProfile?.driversLicenseBackUrl,
+        driverLicenseFrontUrl: (window as any).tempLicenseFrontUrl || existingProfile?.driverLicenseFrontUrl,
+        driverLicenseBackUrl: (window as any).tempLicenseBackUrl || existingProfile?.driverLicenseBackUrl,
       }
       
       if (existingProfile) {
@@ -246,10 +246,10 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Front of License</Label>
-                    {existingProfile.driversLicenseFrontUrl ? (
+                    {existingProfile.driverLicenseFrontUrl ? (
                       <div className="relative">
                         <img
-                          src={existingProfile.driversLicenseFrontUrl}
+                          src={existingProfile.driverLicenseFrontUrl}
                           alt="License Front"
                           className="h-32 w-full object-cover rounded-lg"
                         />
@@ -262,10 +262,10 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                   </div>
                   <div className="space-y-2">
                     <Label>Back of License</Label>
-                    {existingProfile.driversLicenseBackUrl ? (
+                    {existingProfile.driverLicenseBackUrl ? (
                       <div className="relative">
                         <img
-                          src={existingProfile.driversLicenseBackUrl}
+                          src={existingProfile.driverLicenseBackUrl}
                           alt="License Back"
                           className="h-32 w-full object-cover rounded-lg"
                         />
@@ -434,14 +434,14 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                     <Label htmlFor="licenseFront">Front of License</Label>
                     <div className="relative">
                       <div className="h-32 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
-                        {existingProfile?.driversLicenseFrontUrl || selectedLicenseFront ? (
+                        {existingProfile?.driverLicenseFrontUrl || selectedLicenseFront ? (
                           <>
                             <img 
-                              src={selectedLicenseFront ? URL.createObjectURL(selectedLicenseFront) : existingProfile?.driversLicenseFrontUrl}
+                              src={selectedLicenseFront ? URL.createObjectURL(selectedLicenseFront) : existingProfile?.driverLicenseFrontUrl}
                               alt="License Front"
                               className="h-full w-full object-cover rounded-lg"
                             />
-                            {existingProfile?.driversLicenseFrontUrl && !selectedLicenseFront && (
+                            {existingProfile?.driverLicenseFrontUrl && !selectedLicenseFront && (
                               <button
                                 type="button"
                                 onClick={() => setSelectedLicenseFront(null)}
@@ -476,14 +476,14 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                     <Label htmlFor="licenseBack">Back of License</Label>
                     <div className="relative">
                       <div className="h-32 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
-                        {existingProfile?.driversLicenseBackUrl || selectedLicenseBack ? (
+                        {existingProfile?.driverLicenseBackUrl || selectedLicenseBack ? (
                           <>
                             <img 
-                              src={selectedLicenseBack ? URL.createObjectURL(selectedLicenseBack) : existingProfile?.driversLicenseBackUrl}
+                              src={selectedLicenseBack ? URL.createObjectURL(selectedLicenseBack) : existingProfile?.driverLicenseBackUrl}
                               alt="License Back"
                               className="h-full w-full object-cover rounded-lg"
                             />
-                            {existingProfile?.driversLicenseBackUrl && !selectedLicenseBack && (
+                            {existingProfile?.driverLicenseBackUrl && !selectedLicenseBack && (
                               <button
                                 type="button"
                                 onClick={() => setSelectedLicenseBack(null)}
