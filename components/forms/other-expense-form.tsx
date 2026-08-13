@@ -304,6 +304,21 @@ export function OtherExpenseForm({
                   }
                 }
                 if (value.length === 10) {
+                  const year = parseInt(value.slice(0, 4));
+                  const month = parseInt(value.slice(5, 7));
+                  const day = parseInt(value.slice(8, 10));
+                  
+                  // Validate month
+                  if (month < 1 || month > 12) {
+                    return;
+                  }
+                  
+                  // Validate day based on month
+                  const daysInMonth = new Date(year, month, 0).getDate();
+                  if (day < 1 || day > daysInMonth) {
+                    return;
+                  }
+                  
                   setValue("date", new Date(value));
                 }
               }}
@@ -489,30 +504,45 @@ export function OtherExpenseForm({
                   placeholder="YYYY-MM-DD"
                   value={periodStartInput || (watchPeriodStart ? format(watchPeriodStart, "yyyy-MM-dd") : "")}
                   onChange={(e) => {
-                    let value = e.target.value;
-                    value = value.replace(/[^\d-]/g, '');
-                    const digits = value.replace(/\D/g, '');
-                    if (digits.length > 0) {
-                      let formatted = digits.slice(0, 4);
-                      if (digits.length > 4) {
-                        formatted += '-' + digits.slice(4, 6);
-                      }
-                      if (digits.length > 6) {
-                        formatted += '-' + digits.slice(6, 8);
-                      }
-                      value = formatted;
+                  let value = e.target.value;
+                  value = value.replace(/[^\d-]/g, '');
+                  const digits = value.replace(/\D/g, '');
+                  if (digits.length > 0) {
+                    let formatted = digits.slice(0, 4);
+                    if (digits.length > 4) {
+                      formatted += '-' + digits.slice(4, 6);
                     }
-                    setPeriodStartInput(value);
-                    if (value && value.length >= 4) {
-                      const year = parseInt(value.slice(0, 4));
-                      if (year < 1900 || year > 2099) {
-                        return;
-                      }
+                    if (digits.length > 6) {
+                      formatted += '-' + digits.slice(6, 8);
                     }
-                    if (value.length === 10) {
-                      setValue("periodStartDate", new Date(value));
+                    value = formatted;
+                  }
+                  setPeriodStartInput(value);
+                  if (value && value.length >= 4) {
+                    const year = parseInt(value.slice(0, 4));
+                    if (year < 1900 || year > 2099) {
+                      return;
                     }
-                  }}
+                  }
+                  if (value.length === 10) {
+                    const year = parseInt(value.slice(0, 4));
+                    const month = parseInt(value.slice(5, 7));
+                    const day = parseInt(value.slice(8, 10));
+                    
+                    // Validate month
+                    if (month < 1 || month > 12) {
+                      return;
+                    }
+                    
+                    // Validate day based on month
+                    const daysInMonth = new Date(year, month, 0).getDate();
+                    if (day < 1 || day > daysInMonth) {
+                      return;
+                    }
+                    
+                    setValue("periodStartDate", new Date(value));
+                  }
+                }}  
                   maxLength={10}
                 />
               </div>
@@ -526,30 +556,45 @@ export function OtherExpenseForm({
                   placeholder="YYYY-MM-DD"
                   value={periodEndInput || (watchPeriodEnd ? format(watchPeriodEnd, "yyyy-MM-dd") : "")}
                   onChange={(e) => {
-                    let value = e.target.value;
-                    value = value.replace(/[^\d-]/g, '');
-                    const digits = value.replace(/\D/g, '');
-                    if (digits.length > 0) {
-                      let formatted = digits.slice(0, 4);
-                      if (digits.length > 4) {
-                        formatted += '-' + digits.slice(4, 6);
-                      }
-                      if (digits.length > 6) {
-                        formatted += '-' + digits.slice(6, 8);
-                      }
-                      value = formatted;
+                  let value = e.target.value;
+                  value = value.replace(/[^\d-]/g, '');
+                  const digits = value.replace(/\D/g, '');
+                  if (digits.length > 0) {
+                    let formatted = digits.slice(0, 4);
+                    if (digits.length > 4) {
+                      formatted += '-' + digits.slice(4, 6);
                     }
-                    setPeriodEndInput(value);
-                    if (value && value.length >= 4) {
-                      const year = parseInt(value.slice(0, 4));
-                      if (year < 1900 || year > 2099) {
-                        return;
-                      }
+                    if (digits.length > 6) {
+                      formatted += '-' + digits.slice(6, 8);
                     }
-                    if (value.length === 10) {
-                      setValue("periodEndDate", new Date(value));
+                    value = formatted;
+                  }
+                  setPeriodEndInput(value);
+                  if (value && value.length >= 4) {
+                    const year = parseInt(value.slice(0, 4));
+                    if (year < 1900 || year > 2099) {
+                      return;
                     }
-                  }}
+                  }
+                  if (value.length === 10) {
+                    const year = parseInt(value.slice(0, 4));
+                    const month = parseInt(value.slice(5, 7));
+                    const day = parseInt(value.slice(8, 10));
+                    
+                    // Validate month
+                    if (month < 1 || month > 12) {
+                      return;
+                    }
+                    
+                    // Validate day based on month
+                    const daysInMonth = new Date(year, month, 0).getDate();
+                    if (day < 1 || day > daysInMonth) {
+                      return;
+                    }
+                    
+                    setValue("periodEndDate", new Date(value));
+                  }
+                }}  
                   maxLength={10}
                 />
               </div>

@@ -260,6 +260,21 @@ export function PersonalLicenseForm({
                   }
                 }
                 if (value.length === 10) {
+                  const year = parseInt(value.slice(0, 4));
+                  const month = parseInt(value.slice(5, 7));
+                  const day = parseInt(value.slice(8, 10));
+                  
+                  // Validate month
+                  if (month < 1 || month > 12) {
+                    return;
+                  }
+                  
+                  // Validate day based on month
+                  const daysInMonth = new Date(year, month, 0).getDate();
+                  if (day < 1 || day > daysInMonth) {
+                    return;
+                  }
+                  
                   setValue("date", new Date(value));
                 }
               }}
@@ -374,6 +389,21 @@ export function PersonalLicenseForm({
                     }
                   }
                   if (value.length === 10) {
+                    const year = parseInt(value.slice(0, 4));
+                    const month = parseInt(value.slice(5, 7));
+                    const day = parseInt(value.slice(8, 10));
+                    
+                    // Validate month
+                    if (month < 1 || month > 12) {
+                      return;
+                    }
+                    
+                    // Validate day based on month
+                    const daysInMonth = new Date(year, month, 0).getDate();
+                    if (day < 1 || day > daysInMonth) {
+                      return;
+                    }
+                    
                     setValue("issueDate", new Date(value));
                   }
                 }}
@@ -415,6 +445,21 @@ export function PersonalLicenseForm({
                     }
                   }
                   if (value.length === 10) {
+                    const year = parseInt(value.slice(0, 4));
+                    const month = parseInt(value.slice(5, 7));
+                    const day = parseInt(value.slice(8, 10));
+                    
+                    // Validate month
+                    if (month < 1 || month > 12) {
+                      return;
+                    }
+                    
+                    // Validate day based on month
+                    const daysInMonth = new Date(year, month, 0).getDate();
+                    if (day < 1 || day > daysInMonth) {
+                      return;
+                    }
+                    
                     setValue("expiryDate", new Date(value));
                   }
                 }}
