@@ -102,6 +102,15 @@ export function LicenseRenewalForm({
   const [previousExpiryInput, setPreviousExpiryInput] = useState("");
   const [newExpiryInput, setNewExpiryInput] = useState("");
 
+  // Initialize date inputs from watched values when in edit mode
+  useEffect(() => {
+    if (mode === 'edit') {
+      if (watch('date')) setDateInput(format(watch('date'), 'yyyy-MM-dd'))
+      if (watch('previousExpiryDate')) setPreviousExpiryInput(format(watch('previousExpiryDate'), 'yyyy-MM-dd'))
+      if (watch('newExpiryDate')) setNewExpiryInput(format(watch('newExpiryDate'), 'yyyy-MM-dd'))
+    }
+  }, [mode, watch('date'), watch('previousExpiryDate'), watch('newExpiryDate')]);
+
   // Set preview from existing images when in edit mode
   useEffect(() => {
     if (mode === "edit" && existingImages.length > 0 && !previewUrl) {

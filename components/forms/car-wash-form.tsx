@@ -77,6 +77,13 @@ export function CarWashForm({ vehicles, onSubmit, initialData, mode, existingIma
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
   const [dateInput, setDateInput] = useState("")
 
+  // Initialize date input from watched value when in edit mode
+  useEffect(() => {
+    if (mode === 'edit' && watch('date')) {
+      setDateInput(format(watch('date'), 'yyyy-MM-dd'))
+    }
+  }, [mode, watch('date')])
+
   // Set preview from existing images when in edit mode
   useEffect(() => {
     console.log('CarWashForm - useEffect triggered:', { mode, existingImagesLength: existingImages.length });

@@ -97,6 +97,15 @@ export function InsuranceForm({
   const [coverageStartInput, setCoverageStartInput] = useState("");
   const [coverageEndInput, setCoverageEndInput] = useState("");
 
+  // Initialize date inputs from watched values when in edit mode
+  useEffect(() => {
+    if (mode === 'edit') {
+      if (watch('date')) setDateInput(format(watch('date'), 'yyyy-MM-dd'))
+      if (watch('coverageStartDate')) setCoverageStartInput(format(watch('coverageStartDate'), 'yyyy-MM-dd'))
+      if (watch('coverageEndDate')) setCoverageEndInput(format(watch('coverageEndDate'), 'yyyy-MM-dd'))
+    }
+  }, [mode, watch('date'), watch('coverageStartDate'), watch('coverageEndDate')]);
+
   // Set preview from existing images when in edit mode
   useEffect(() => {
     if (mode === "edit" && existingImages.length > 0 && !previewUrl) {

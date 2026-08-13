@@ -107,9 +107,18 @@ export function PersonalLicenseForm({
   const [selectedDaysOfMonth, setSelectedDaysOfMonth] = useState<number[]>([]);
   const [showCropModal, setShowCropModal] = useState(false);
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
-  const [dateInput, setDateInput] = useState("");
-  const [issueDateInput, setIssueDateInput] = useState("");
-  const [expiryDateInput, setExpiryDateInput] = useState("");
+  const [dateInput, setDateInput] = useState("")
+  const [issueDateInput, setIssueDateInput] = useState("")
+  const [expiryDateInput, setExpiryDateInput] = useState("")
+
+  // Initialize date inputs from watched values when in edit mode
+  useEffect(() => {
+    if (mode === 'edit') {
+      if (watch('date')) setDateInput(format(watch('date'), 'yyyy-MM-dd'))
+      if (watch('issueDate')) setIssueDateInput(format(watch('issueDate'), 'yyyy-MM-dd'))
+      if (watch('expiryDate')) setExpiryDateInput(format(watch('expiryDate'), 'yyyy-MM-dd'))
+    }
+  }, [mode, watch('date'), watch('issueDate'), watch('expiryDate')]);
 
   // Set preview from existing images when in edit mode
   useEffect(() => {

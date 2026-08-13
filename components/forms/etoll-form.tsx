@@ -99,6 +99,15 @@ export function ETollForm({
   const [periodEndInput, setPeriodEndInput] = useState("");
   const [dateInput, setDateInput] = useState("");
 
+  // Initialize date inputs from watched values when in edit mode
+  useEffect(() => {
+    if (mode === 'edit') {
+      if (watchDate) setDateInput(format(watchDate, 'yyyy-MM-dd'))
+      if (watchPeriodStart) setPeriodStartInput(format(watchPeriodStart, 'yyyy-MM-dd'))
+      if (watchPeriodEnd) setPeriodEndInput(format(watchPeriodEnd, 'yyyy-MM-dd'))
+    }
+  }, [mode, watchDate, watchPeriodStart, watchPeriodEnd]);
+
   // Set preview from existing images when in edit mode
   useEffect(() => {
     if (mode === "edit" && existingImages.length > 0 && !previewUrl) {

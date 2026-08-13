@@ -96,6 +96,15 @@ export function RoadworthyForm({
   const [testDateInput, setTestDateInput] = useState("");
   const [expiryDateInput, setExpiryDateInput] = useState("");
 
+  // Initialize date inputs from watched values when in edit mode
+  useEffect(() => {
+    if (mode === 'edit') {
+      if (watch('date')) setDateInput(format(watch('date'), 'yyyy-MM-dd'))
+      if (watch('testDate')) setTestDateInput(format(watch('testDate'), 'yyyy-MM-dd'))
+      if (watch('expiryDate')) setExpiryDateInput(format(watch('expiryDate'), 'yyyy-MM-dd'))
+    }
+  }, [mode, watch('date'), watch('testDate'), watch('expiryDate')]);
+
   // Set preview from existing images when in edit mode
   useEffect(() => {
     if (mode === "edit" && existingImages.length > 0 && !previewUrl) {

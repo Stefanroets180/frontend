@@ -55,6 +55,14 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
   const [showCropModal, setShowCropModal] = useState(false)
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
   const [expiryInput, setExpiryInput] = useState("")
+
+  // Initialize expiry input from watched value when in edit mode
+  useEffect(() => {
+    if (existingProfile?.driversLicenseExpiry) {
+      const date = new Date(existingProfile.driversLicenseExpiry)
+      setExpiryInput(format(date, 'yyyy-MM-dd'))
+    }
+  }, [existingProfile])
   const [cropTarget, setCropTarget] = useState<'front' | 'back'>('front')
   const [isUploadingLicense, setIsUploadingLicense] = useState(false)
 

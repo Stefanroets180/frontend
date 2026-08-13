@@ -138,7 +138,14 @@ export function TyrePurchaseForm({
   const [enableRotation, setEnableRotation] = useState(false);
   const [showCropModal, setShowCropModal] = useState(false);
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
-  const [dateInput, setDateInput] = useState("");
+  const [dateInput, setDateInput] = useState("")
+
+  // Initialize date input from watched value when in edit mode
+  useEffect(() => {
+    if (mode === 'edit' && watch('date')) {
+      setDateInput(format(watch('date'), 'yyyy-MM-dd'))
+    }
+  }, [mode, watch('date')]);
 
   const {
     register,

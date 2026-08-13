@@ -103,6 +103,25 @@ export function TrackingForm({
   const [subscriptionEndInput, setSubscriptionEndInput] = useState("");
   const [installDateInput, setInstallDateInput] = useState("");
 
+  // Initialize date inputs from watched values when in edit mode
+  useEffect(() => {
+    if (mode === "edit") {
+      if (watchDate) setDateInput(format(watchDate, "yyyy-MM-dd"));
+      if (watchSubscriptionStart)
+        setSubscriptionStartInput(format(watchSubscriptionStart, "yyyy-MM-dd"));
+      if (watchSubscriptionEnd)
+        setSubscriptionEndInput(format(watchSubscriptionEnd, "yyyy-MM-dd"));
+      if (watchInstallDate)
+        setInstallDateInput(format(watchInstallDate, "yyyy-MM-dd"));
+    }
+  }, [
+    mode,
+    watchDate,
+    watchSubscriptionStart,
+    watchSubscriptionEnd,
+    watchInstallDate,
+  ]);
+
   // Set preview from existing images when in edit mode
   useEffect(() => {
     console.log("TrackingForm - useEffect triggered:", {

@@ -105,6 +105,13 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
   const [dateInput, setDateInput] = useState("")
 
+  // Initialize date input from watched value when in edit mode
+  useEffect(() => {
+    if (mode === 'edit' && watch('date')) {
+      setDateInput(format(watch('date'), 'yyyy-MM-dd'))
+    }
+  }, [mode, watch('date')])
+
   // Reset GPS position when entryId changes (new expense being edited/created)
   useEffect(() => {
     setGpsPosition(null)

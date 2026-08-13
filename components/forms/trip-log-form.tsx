@@ -47,7 +47,14 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
   const [vehicles, setVehicles] = useState<VehicleOption[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tripPurpose, setTripPurpose] = useState<"BUSINESS" | "PRIVATE">("BUSINESS");
-  const [dateInput, setDateInput] = useState("");
+  const [dateInput, setDateInput] = useState("")
+
+  // Initialize date input from formData when it changes
+  useEffect(() => {
+    if (formData.tripDate) {
+      setDateInput(formData.tripDate)
+    }
+  }, [formData.tripDate]);
   useEffect(() => {
     api.get("/vehicles").then(({ data }) => {
       const list = Array.isArray(data) ? data : [];
