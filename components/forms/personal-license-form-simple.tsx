@@ -99,6 +99,10 @@ export function PersonalLicenseForm({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
   const [isCompressing, setIsCompressing] = useState(false);
+  const [compressionInfo, setCompressionInfo] = useState<{
+    originalSize: number;
+    compressedSize: number;
+  } | null>(null);
   const [selectedDaysOfWeek, setSelectedDaysOfWeek] = useState<string[]>([]);
   const [selectedDaysOfMonth, setSelectedDaysOfMonth] = useState<number[]>([]);
   const [showCropModal, setShowCropModal] = useState(false);
