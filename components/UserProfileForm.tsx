@@ -37,8 +37,8 @@ interface UserProfileFormProps {
     mobilePhone?: string
     driversLicenseNumber?: string
     driversLicenseExpiry?: string
-    driversLicenseFrontUrl?: string
-    driversLicenseBackUrl?: string
+    driverLicenseFrontUrl?: string
+    driverLicenseBackUrl?: string
   }
   onSuccess?: () => void
 }
