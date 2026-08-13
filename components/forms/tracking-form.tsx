@@ -35,7 +35,6 @@ import {
 import { ReceiptSupportProps } from "./form-types";
 import { EntryImageManager } from "@/components/entries/entry-image-manager";
 import { API_URL } from "@/lib/api/client";
-import { useEffect } from "react";
 import { ImageCropModal } from "@/components/ui/image-crop-modal";
 
 const trackingSchema = z.object({
