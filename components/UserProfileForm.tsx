@@ -142,6 +142,15 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
     }
   }
 
+  // Convert relative storage URLs to absolute URLs
+  const getAbsoluteUrl = (url: string | null | undefined) => {
+    if (!url) return null;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    // Remove /api/v1 prefix since API_URL already includes it
+    const storagePath = url.replace('/api/v1', '');
+    return `${process.env.NEXT_PUBLIC_API_URL}${storagePath}`;
+  }
+
   const onSubmit = async (data: UserProfileInput) => {
     setIsSubmitting(true)
     setSubmitError(null)
@@ -249,7 +258,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                     {existingProfile.driverLicenseFrontUrl ? (
                       <div className="relative">
                         <img
-                          src={existingProfile.driverLicenseFrontUrl}
+                          src={getAbsoluteUrl(existingProfile.driverLicenseFrontUrl) || undefined}
                           alt="License Front"
                           className="h-32 w-full object-cover rounded-lg"
                         />
@@ -265,7 +274,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                     {existingProfile.driverLicenseBackUrl ? (
                       <div className="relative">
                         <img
-                          src={existingProfile.driverLicenseBackUrl}
+                          src={getAbsoluteUrl(existingProfile.driverLicenseBackUrl) || undefined}
                           alt="License Back"
                           className="h-32 w-full object-cover rounded-lg"
                         />
@@ -437,7 +446,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                         {existingProfile?.driverLicenseFrontUrl || selectedLicenseFront ? (
                           <>
                             <img 
-                              src={selectedLicenseFront ? URL.createObjectURL(selectedLicenseFront) : existingProfile?.driverLicenseFrontUrl}
+                              src={selectedLicenseFront ? URL.createObjectURL(selectedLicenseFront) : getAbsoluteUrl(existingProfile?.driverLicenseFrontUrl) || undefined}
                               alt="License Front"
                               className="h-full w-full object-cover rounded-lg"
                             />
@@ -479,7 +488,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                         {existingProfile?.driverLicenseBackUrl || selectedLicenseBack ? (
                           <>
                             <img 
-                              src={selectedLicenseBack ? URL.createObjectURL(selectedLicenseBack) : existingProfile?.driverLicenseBackUrl}
+                              src={selectedLicenseBack ? URL.createObjectURL(selectedLicenseBack) : getAbsoluteUrl(existingProfile?.driverLicenseBackUrl) || undefined}
                               alt="License Back"
                               className="h-full w-full object-cover rounded-lg"
                             />
