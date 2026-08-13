@@ -113,7 +113,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/driver-license-images`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`,
         },
         body: formData,
       })
