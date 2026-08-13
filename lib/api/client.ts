@@ -458,7 +458,7 @@ export const updateUserProfile = async (data: {
   driversLicenseNumber?: string;
   driversLicenseExpiry?: string;
 }) => {
-  return api.put('/user-profile/me', data);
+  return api.put('/user-profiles/me', data);
 };
 
 // Address
