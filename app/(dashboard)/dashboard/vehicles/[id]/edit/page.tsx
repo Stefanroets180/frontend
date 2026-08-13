@@ -189,9 +189,11 @@ export default function EditVehiclePage() {
                 <Label htmlFor="year">Year *</Label>
                 <Input
                   id="year"
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="\d{4}"
                   value={formData.year}
-                  onChange={(e) => handleInputChange("year", e.target.value)}
+                  onChange={(e) => handleInputChange("year", e.target.value.replace(/\D/g, '').slice(0, 4))}
                   required
                   placeholder="e.g., 2023"
                 />
@@ -285,7 +287,20 @@ export default function EditVehiclePage() {
                   id="licenseExpiry"
                   type="date"
                   value={formData.licenseExpiry}
-                  onChange={(e) => handleInputChange("licenseExpiry", e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Limit year to 4 digits by parsing and reformatting
+                    if (value && value.length > 4) {
+                      const parts = value.split('-');
+                      if (parts[0] && parts[0].length > 4) {
+                        parts[0] = parts[0].slice(0, 4);
+                        handleInputChange("licenseExpiry", parts.join('-'));
+                        return;
+                      }
+                    }
+                    handleInputChange("licenseExpiry", value);
+                  }}
+                  max="2099-12-31"
                 />
               </div>
               
