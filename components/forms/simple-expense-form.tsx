@@ -115,13 +115,6 @@ export function SimpleExpenseForm({
     },
   })
 
-  // Initialize date input from watched value when in edit mode
-  useEffect(() => {
-    if (mode === 'edit' && watch('date')) {
-      setDateInput(format(watch('date'), 'yyyy-MM-dd'))
-    }
-  }, [mode, watch('date')])
-
   const selectedVehicleId = watch('vehicleId')
   const date = watch('date')
   const amount = watch('amount')
