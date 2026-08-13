@@ -59,6 +59,7 @@ export default function ProfilePage() {
   const [userProfile, setUserProfile] = useState<any>(null)
   const [userAddress, setUserAddress] = useState<any>(null)
   const [isLoadingCredentials, setIsLoadingCredentials] = useState(false)
+  const [isEditingCredentials, setIsEditingCredentials] = useState(false)
 
   // Load fleet credentials on mount
   useEffect(() => {
@@ -366,18 +367,14 @@ export default function ProfilePage() {
         {/* Fleet Credentials - Only shown for fleet mode */}
         {isFleetMode && (
           <>
-            {(!userProfile || !userProfile.id) && (
-              <UserProfileForm 
-                existingProfile={userProfile}
-                onSuccess={loadFleetCredentials}
-              />
-            )}
-            {(!userAddress || !userAddress.id) && (
-              <AddressForm 
-                existingAddress={userAddress}
-                onSuccess={loadFleetCredentials}
-              />
-            )}
+            <UserProfileForm 
+              existingProfile={userProfile}
+              onSuccess={loadFleetCredentials}
+            />
+            <AddressForm 
+              existingAddress={userAddress}
+              onSuccess={loadFleetCredentials}
+            />
           </>
         )}
 
