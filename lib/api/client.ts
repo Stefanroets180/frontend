@@ -446,6 +446,8 @@ export const createUserProfile = async (data: {
   mobilePhone?: string;
   driversLicenseNumber?: string;
   driversLicenseExpiry?: string;
+  driverLicenseFrontUrl?: string;
+  driverLicenseBackUrl?: string;
 }) => {
   return api.post('/user-profiles', data);
 };
@@ -457,6 +459,8 @@ export const updateUserProfile = async (data: {
   mobilePhone?: string;
   driversLicenseNumber?: string;
   driversLicenseExpiry?: string;
+  driverLicenseFrontUrl?: string;
+  driverLicenseBackUrl?: string;
 }) => {
   return api.put('/user-profiles/me', data);
 };

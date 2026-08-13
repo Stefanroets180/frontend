@@ -107,14 +107,30 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
     try {
       const formData = new FormData()
       formData.append('file', croppedFile)
-      formData.append('type', cropTarget === 'front' ? 'license_front' : 'license_back')
+      formData.append('type', cropTarget === 'front' ? 'front' : 'back')
       
-      // This would need to be implemented in the backend
-      // For now, we'll just store the file reference
+      // Upload to backend
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/driver-license-images`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: formData,
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to upload image')
+      }
+      
+      const data = await response.json()
+      
       if (cropTarget === 'front') {
         setSelectedLicenseFront(croppedFile)
+        // Store the URL in a ref or state to be used when saving profile
+        ;(window as any).tempLicenseFrontUrl = data.url
       } else {
         setSelectedLicenseBack(croppedFile)
+        ;(window as any).tempLicenseBackUrl = data.url
       }
       
       setShowCropModal(false)
@@ -132,15 +148,28 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
     setSubmitSuccess(false)
 
     try {
+      // Include uploaded image URLs if available
+      const profileData = {
+        ...data,
+        driversLicenseNumber: data.driversLicenseNumber,
+        driversLicenseExpiry: data.driversLicenseExpiry,
+        driverLicenseFrontUrl: (window as any).tempLicenseFrontUrl || existingProfile?.driversLicenseFrontUrl,
+        driverLicenseBackUrl: (window as any).tempLicenseBackUrl || existingProfile?.driversLicenseBackUrl,
+      }
+      
       if (existingProfile) {
-        await updateUserProfile(data)
+        await updateUserProfile(profileData)
       } else {
-        await createUserProfile(data)
+        await createUserProfile(profileData)
       }
       
       setSubmitSuccess(true)
       setIsEditing(false) // Exit edit mode after successful save
       onSuccess?.()
+      
+      // Clear temporary URLs
+      ;(window as any).tempLicenseFrontUrl = null
+      ;(window as any).tempLicenseBackUrl = null
       
       setTimeout(() => setSubmitSuccess(false), 3000)
     } catch (error) {
