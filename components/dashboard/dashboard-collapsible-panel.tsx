@@ -225,7 +225,7 @@ export function DashboardCollapsiblePanel({
         </div>
 
         {(headerActions || shouldShowToggle) && (
-          <div className="flex w-full flex-col gap-2 self-start sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-end min-w-0">
+          <div className="flex w-full flex-col gap-2 self-start sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-end shrink-0">
             {headerActions}
             {shouldShowToggle && (
               <Button
@@ -233,7 +233,7 @@ export function DashboardCollapsiblePanel({
                 variant="outline"
                 size="sm"
                 className={cn(
-                  "w-full justify-center gap-2 sm:w-auto",
+                  "w-full justify-center gap-2 sm:w-auto whitespace-nowrap",
                   DASHBOARD_TOGGLE_BUTTON_STYLES[tone],
                 )}
                 onClick={handleToggle}
@@ -243,7 +243,7 @@ export function DashboardCollapsiblePanel({
                 {isOpen ? openLabel : closedLabel}
                 <ChevronDown
                   className={cn(
-                    "h-4 w-4 transition-transform",
+                    "h-4 w-4 transition-transform shrink-0",
                     isOpen && "rotate-180",
                   )}
                 />
