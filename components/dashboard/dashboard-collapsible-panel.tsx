@@ -198,7 +198,7 @@ export function DashboardCollapsiblePanel({
   };
 
   const panelContentId = `${panelId}-panel`;
-  const shouldShowToggle = preferencesReady && isMobile;
+  const shouldShowToggle = preferencesReady;
   const shouldShowContent = !isMobile || isOpen;
 
   return (
