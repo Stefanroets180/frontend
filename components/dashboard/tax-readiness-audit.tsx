@@ -817,8 +817,45 @@ function ReadingCard({
             )}
           </div>
 
-          {/* Action buttons below image - REMOVED to prevent overflow */}
-          {/* Buttons are now only available in the hover overlay above */}
+          {/* Action buttons below image */}
+          <div className="flex flex-col gap-2 pt-2 border-t w-full overflow-hidden">
+            {!isLocked && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full h-8 !flex-none"
+                onClick={() => setShowEditDialog(true)}
+                title="Edit"
+              >
+                <Pencil className="h-3 w-3 mr-1 shrink-0" />
+                <span className="truncate">Edit</span>
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn(
+                "w-full h-8 !flex-none",
+                isLocked && "text-amber-600 hover:text-amber-700",
+              )}
+              onClick={() =>
+                isLocked ? setShowUnlockDialog(true) : setShowLockDialog(true)
+              }
+              title={isLocked ? "Re-open for editing" : "Confirm record"}
+            >
+              {isLocked ? (
+                <>
+                  <Unlock className="h-3 w-3 mr-1 shrink-0" />
+                  <span className="truncate">Re-open</span>
+                </>
+              ) : (
+                <>
+                  <Lock className="h-3 w-3 mr-1 shrink-0" />
+                  <span className="truncate">Confirm record</span>
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="aspect-video bg-muted/50 rounded-lg flex flex-col items-center justify-center text-muted-foreground">
