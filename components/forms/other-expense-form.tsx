@@ -101,6 +101,8 @@ export function OtherExpenseForm({
   const [selectedDaysOfMonth, setSelectedDaysOfMonth] = useState<number[]>([]);
   const [showCropModal, setShowCropModal] = useState(false);
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
+  const [periodStartInput, setPeriodStartInput] = useState("");
+  const [periodEndInput, setPeriodEndInput] = useState("");
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
@@ -483,7 +485,7 @@ export function OtherExpenseForm({
                   inputMode="numeric"
                   pattern="\d{4}-\d{2}-\d{2}"
                   placeholder="YYYY-MM-DD"
-                  value={watchPeriodStart ? format(watchPeriodStart, "yyyy-MM-dd") : ""}
+                  value={periodStartInput || (watchPeriodStart ? format(watchPeriodStart, "yyyy-MM-dd") : "")}
                   onChange={(e) => {
                     let value = e.target.value;
                     value = value.replace(/[^\d-]/g, '');
@@ -498,6 +500,7 @@ export function OtherExpenseForm({
                       }
                       value = formatted;
                     }
+                    setPeriodStartInput(value);
                     if (value && value.length >= 4) {
                       const year = parseInt(value.slice(0, 4));
                       if (year < 1900 || year > 2099) {
@@ -519,7 +522,7 @@ export function OtherExpenseForm({
                   inputMode="numeric"
                   pattern="\d{4}-\d{2}-\d{2}"
                   placeholder="YYYY-MM-DD"
-                  value={watchPeriodEnd ? format(watchPeriodEnd, "yyyy-MM-dd") : ""}
+                  value={periodEndInput || (watchPeriodEnd ? format(watchPeriodEnd, "yyyy-MM-dd") : "")}
                   onChange={(e) => {
                     let value = e.target.value;
                     value = value.replace(/[^\d-]/g, '');
@@ -534,6 +537,7 @@ export function OtherExpenseForm({
                       }
                       value = formatted;
                     }
+                    setPeriodEndInput(value);
                     if (value && value.length >= 4) {
                       const year = parseInt(value.slice(0, 4));
                       if (year < 1900 || year > 2099) {
