@@ -111,9 +111,13 @@ export function AddressForm({ existingAddress, onSuccess }: AddressFormProps) {
       }
       
       setSubmitSuccess(true)
-      setIsEditing(false) // Exit edit mode after successful save
       reset()
-      onSuccess?.()
+      onSuccess?.() // Reload data first
+      
+      // Exit edit mode after parent has had time to reload data
+      setTimeout(() => {
+        setIsEditing(false)
+      }, 100)
       
       setTimeout(() => setSubmitSuccess(false), 3000)
     } catch (error) {
