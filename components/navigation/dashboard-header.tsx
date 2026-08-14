@@ -383,7 +383,7 @@ export function DashboardHeader({
     refreshReceipts,
   } = useMissingReceipts();
 
-  const isFleet = profile.organizationMode === "BUSINESS_FLEET" || profile.organizationMode === "COMPANY";
+  const isFleet = profile.organizationMode === "FLEET" || profile.organizationMode === "BUSINESS_FLEET" || profile.organizationMode === "COMPANY";
   const isRentalCustomer = profile.role === UserRole.RENTAL_CUSTOMER;
   const displayName = profile.firstName
     ? `${profile.firstName} ${profile.lastName ?? ""}`.trim()
