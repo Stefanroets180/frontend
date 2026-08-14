@@ -549,3 +549,22 @@ export const addManagerNote = async (reportId: string, data: {
 }) => {
   return api.post(`/vehicle-condition-reports/${reportId}/notes`, data);
 };
+
+export const deleteConditionSection = async (sectionId: string) => {
+  return api.delete(`/vehicle-condition-reports/sections/${sectionId}`);
+};
+
+export const updateConditionSection = async (sectionId: string, data: {
+  condition?: 'GOOD' | 'FAIR' | 'POOR' | 'DAMAGED';
+  notes?: string;
+}) => {
+  return api.put(`/vehicle-condition-reports/sections/${sectionId}`, data);
+};
+
+export const lockConditionSection = async (sectionId: string) => {
+  return api.post(`/vehicle-condition-reports/sections/${sectionId}/lock`, {});
+};
+
+export const unlockConditionSection = async (sectionId: string) => {
+  return api.post(`/vehicle-condition-reports/sections/${sectionId}/unlock`, {});
+};

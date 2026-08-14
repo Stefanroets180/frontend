@@ -7,14 +7,18 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { CheckCircle2, AlertCircle, Camera, Plus, Car, Armchair, Cog, CircleDot, Lightbulb, Disc3, Droplets, FileText, ShieldCheck, MessageSquare, ImageOff } from 'lucide-react'
+import { CheckCircle2, AlertCircle, Camera, Plus, Car, Armchair, Cog, CircleDot, Lightbulb, Disc3, Droplets, FileText, ShieldCheck, MessageSquare, ImageOff, Trash2, Edit2, Lock, Unlock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { 
   createVehicleConditionReport, 
   getVehicleConditionReport, 
   addConditionSection,
   addSectionImage,
-  addManagerNote
+  addManagerNote,
+  deleteConditionSection,
+  updateConditionSection,
+  lockConditionSection,
+  unlockConditionSection
 } from '@/lib/api/client'
 import { ImageCropModal } from '@/components/ui/image-crop-modal'
 
@@ -181,11 +185,26 @@ function OverviewHeader({ sections }: { sections: any[] }) {
   )
 }
 
-function SectionCard({ section, onImageUpload }: { section: any; onImageUpload: (sectionId: string, e: React.ChangeEvent<HTMLInputElement>) => void }) {
+function SectionCard({ 
+  section, 
+  onImageUpload, 
+  onDelete, 
+  onEdit, 
+  onLock, 
+  onUnlock 
+}: { 
+  section: any; 
+  onImageUpload: (sectionId: string, e: React.ChangeEvent<HTMLInputElement>) => void;
+  onDelete: (sectionId: string) => void;
+  onEdit: (section: any) => void;
+  onLock: (sectionId: string) => void;
+  onUnlock: (sectionId: string) => void;
+}) {
   const cfg = SECTION_TYPES.find((t) => t.value === section.sectionType)
   const Icon = cfg?.icon ?? Car
   const meta = CONDITION_META[section.condition]
   const images = section.images ?? []
+  const isLocked = section.locked ?? false
 
   return (
     <div className={cn('rounded-xl border bg-card p-4 ring-1 ring-inset', meta?.ring)}>
@@ -201,7 +220,38 @@ function SectionCard({ section, onImageUpload }: { section: any; onImageUpload: 
             </p>
           </div>
         </div>
-        <ConditionChip condition={section.condition} />
+        <div className="flex items-center gap-2">
+          <ConditionChip condition={section.condition} />
+          <div className="flex gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => onEdit(section)}
+              title="Edit section"
+            >
+              <Edit2 className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => isLocked ? onUnlock(section.id) : onLock(section.id)}
+              title={isLocked ? "Unlock section" : "Lock section"}
+            >
+              {isLocked ? <Unlock className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5" />}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-destructive hover:text-destructive"
+              onClick={() => onDelete(section.id)}
+              title="Delete section"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
       </div>
 
       {section.notes && (
@@ -220,17 +270,19 @@ function SectionCard({ section, onImageUpload }: { section: any; onImageUpload: 
             crossOrigin="anonymous"
           />
         ))}
-        <label htmlFor={`image-upload-${section.id}`} className="flex h-16 w-16 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-border bg-muted/30 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary cursor-pointer">
-          <Camera className="h-4 w-4" />
-          <span className="text-[10px] font-medium">Add</span>
-          <input
-            id={`image-upload-${section.id}`}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => onImageUpload(section.id, e)}
-          />
-        </label>
+        {!isLocked && (
+          <label htmlFor={`image-upload-${section.id}`} className="flex h-16 w-16 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-border bg-muted/30 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary cursor-pointer">
+            <Camera className="h-4 w-4" />
+            <span className="text-[10px] font-medium">Add</span>
+            <input
+              id={`image-upload-${section.id}`}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => onImageUpload(section.id, e)}
+            />
+          </label>
+        )}
       </div>
     </div>
   )
@@ -239,25 +291,55 @@ function SectionCard({ section, onImageUpload }: { section: any; onImageUpload: 
 function AddSectionPanel({
   usedTypes,
   onAdd,
+  editingSection,
+  onCancelEdit,
 }: {
   usedTypes: string[]
   onAdd: (s: { sectionType: string; condition: string; notes: string }) => void
+  editingSection: { id: string; sectionType: string; condition: string; notes: string } | null
+  onCancelEdit: () => void
 }) {
   const [sectionType, setSectionType] = useState('')
   const [condition, setCondition] = useState<string>('GOOD')
   const [notes, setNotes] = useState('')
 
-  const available = SECTION_TYPES.filter((t) => !usedTypes.includes(t.value))
+  // Initialize with editing section data if provided
+  useEffect(() => {
+    if (editingSection) {
+      setSectionType(editingSection.sectionType)
+      setCondition(editingSection.condition)
+      setNotes(editingSection.notes || '')
+    } else {
+      setSectionType('')
+      setCondition('GOOD')
+      setNotes('')
+    }
+  }, [editingSection])
+
+  const available = editingSection 
+    ? SECTION_TYPES.filter((t) => t.value === editingSection.sectionType)
+    : SECTION_TYPES.filter((t) => !usedTypes.includes(t.value))
 
   const submit = () => {
     if (!sectionType) return
     onAdd({ sectionType, condition, notes })
+    if (!editingSection) {
+      setSectionType('')
+      setCondition('GOOD')
+      setNotes('')
+    }
+  }
+
+  const cancel = () => {
+    if (editingSection) {
+      onCancelEdit()
+    }
     setSectionType('')
     setCondition('GOOD')
     setNotes('')
   }
 
-  if (available.length === 0) {
+  if (!editingSection && available.length === 0) {
     return (
       <div className="flex items-center gap-3 rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
         <CheckCircle2 className="h-5 w-5 text-green-500" />
@@ -268,12 +350,19 @@ function AddSectionPanel({
 
   return (
     <div className="rounded-xl border bg-muted/30 p-4">
-      <h3 className="mb-1 flex items-center gap-2 font-semibold">
-        <Plus className="h-4 w-4 text-primary" />
-        Log an inspection area
-      </h3>
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="flex items-center gap-2 font-semibold">
+          {editingSection ? <Edit2 className="h-4 w-4 text-primary" /> : <Plus className="h-4 w-4 text-primary" />}
+          {editingSection ? 'Edit inspection area' : 'Log an inspection area'}
+        </h3>
+        {editingSection && (
+          <Button variant="ghost" size="sm" onClick={cancel}>
+            Cancel
+          </Button>
+        )}
+      </div>
       <p className="mb-3 text-xs text-muted-foreground">
-        Pick the area, then tap its condition.
+        {editingSection ? 'Update the condition and notes for this area.' : 'Pick the area, then tap its condition.'}
       </p>
 
       {/* Area picker */}
@@ -287,11 +376,13 @@ function AddSectionPanel({
               key={t.value}
               type="button"
               onClick={() => setSectionType(t.value)}
+              disabled={!!editingSection}
               className={cn(
                 'flex min-w-0 flex-col items-center gap-1.5 rounded-lg border p-3 text-center text-xs font-medium leading-tight transition-all',
                 active
                   ? 'border-primary bg-primary/5 text-primary ring-1 ring-primary'
                   : 'bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground',
+                editingSection && 'opacity-50 cursor-not-allowed',
               )}
             >
               <Icon className="h-5 w-5 shrink-0" />
@@ -341,8 +432,17 @@ function AddSectionPanel({
       />
 
       <Button onClick={submit} disabled={!sectionType} className="w-full">
-        <Plus className="mr-1.5 h-4 w-4" />
-        Add {sectionType ? SECTION_TYPES.find((t) => t.value === sectionType)?.label : 'area'}
+        {editingSection ? (
+          <>
+            <Edit2 className="mr-1.5 h-4 w-4" />
+            Update {SECTION_TYPES.find((t) => t.value === sectionType)?.label || 'area'}
+          </>
+        ) : (
+          <>
+            <Plus className="mr-1.5 h-4 w-4" />
+            Add {sectionType ? SECTION_TYPES.find((t) => t.value === sectionType)?.label : 'area'}
+          </>
+        )}
       </Button>
     </div>
   )
@@ -374,6 +474,7 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
   // Manager note state
   const [managerNote, setManagerNote] = useState('')
   const [toast, setToast] = useState<string | null>(null)
+  const [editingSectionId, setEditingSectionId] = useState<string | null>(null)
 
   const flash = (msg: string) => {
     setToast(msg)
@@ -424,22 +525,32 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
     setIsSubmitting(true)
     setSubmitError(null)
     try {
-      await addConditionSection(report.id, {
-        sectionType: selectedSectionType,
-        condition: selectedCondition,
-        notes: sectionNotes,
-      })
-      
-      await loadReport()
+      if (editingSectionId) {
+        // Update existing section
+        await updateConditionSection(editingSectionId, {
+          condition: selectedCondition,
+          notes: sectionNotes,
+        })
+        await loadReport()
+        setEditingSectionId(null)
+        flash('Section updated')
+      } else {
+        // Create new section
+        await addConditionSection(report.id, {
+          sectionType: selectedSectionType,
+          condition: selectedCondition,
+          notes: sectionNotes,
+        })
+        await loadReport()
+        flash('Inspection area added')
+      }
       
       setSelectedSectionType('')
       setSelectedCondition('GOOD')
       setSectionNotes('')
-      
-      flash('Inspection area added')
     } catch (error) {
-      console.error('Failed to add section:', error)
-      setSubmitError(error instanceof Error ? error.message : 'Failed to add section')
+      console.error('Failed to save section:', error)
+      setSubmitError(error instanceof Error ? error.message : 'Failed to save section')
     } finally {
       setIsSubmitting(false)
     }
@@ -495,6 +606,48 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
       setSubmitError(error instanceof Error ? error.message : 'Failed to add note')
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const handleDeleteSection = async (sectionId: string) => {
+    if (!confirm('Are you sure you want to delete this section?')) return
+
+    try {
+      await deleteConditionSection(sectionId)
+      await loadReport()
+      flash('Section deleted')
+    } catch (error) {
+      console.error('Failed to delete section:', error)
+      setSubmitError('Failed to delete section')
+    }
+  }
+
+  const handleEditSection = (section: any) => {
+    setSelectedSectionType(section.sectionType)
+    setSelectedCondition(section.condition)
+    setSectionNotes(section.notes || '')
+    setEditingSectionId(section.id)
+  }
+
+  const handleLockSection = async (sectionId: string) => {
+    try {
+      await lockConditionSection(sectionId)
+      await loadReport()
+      flash('Section locked')
+    } catch (error) {
+      console.error('Failed to lock section:', error)
+      setSubmitError('Failed to lock section')
+    }
+  }
+
+  const handleUnlockSection = async (sectionId: string) => {
+    try {
+      await unlockConditionSection(sectionId)
+      await loadReport()
+      flash('Section unlocked')
+    } catch (error) {
+      console.error('Failed to unlock section:', error)
+      setSubmitError('Failed to unlock section')
     }
   }
 
@@ -577,7 +730,15 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
               {sections.map((s: any) => (
-                <SectionCard key={s.id} section={s} onImageUpload={handleImageSelect} />
+                <SectionCard 
+                  key={s.id} 
+                  section={s} 
+                  onImageUpload={handleImageSelect}
+                  onDelete={handleDeleteSection}
+                  onEdit={handleEditSection}
+                  onLock={handleLockSection}
+                  onUnlock={handleUnlockSection}
+                />
               ))}
             </div>
           )}
@@ -585,6 +746,8 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
 
         <AddSectionPanel 
           usedTypes={usedTypes} 
+          editingSection={editingSectionId ? sections.find((s: any) => s.id === editingSectionId) : null}
+          onCancelEdit={() => setEditingSectionId(null)}
           onAdd={(s) => {
             setSelectedSectionType(s.sectionType)
             setSelectedCondition(s.condition as any)
