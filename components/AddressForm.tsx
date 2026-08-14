@@ -14,6 +14,7 @@ import { createUserAddress, updateUserAddress } from '@/lib/api/client'
 const addressSchema = z.object({
   addressLine1: z.string().min(1, 'Address line 1 is required'),
   addressLine2: z.string().optional(),
+  suburb: z.string().optional(),
   city: z.string().min(1, 'City is required'),
   province: z.string().min(1, 'Province is required'),
   postalCode: z.string().min(1, 'Postal code is required'),
@@ -27,6 +28,7 @@ interface AddressFormProps {
     id?: string
     addressLine1?: string
     addressLine2?: string
+    suburb?: string
     city?: string
     province?: string
     postalCode?: string
@@ -62,6 +64,7 @@ export function AddressForm({ existingAddress, onSuccess }: AddressFormProps) {
     defaultValues: existingAddress || {
       addressLine1: '',
       addressLine2: '',
+      suburb: '',
       city: '',
       province: '',
       postalCode: '',
@@ -144,6 +147,18 @@ export function AddressForm({ existingAddress, onSuccess }: AddressFormProps) {
               placeholder="Apt 4B"
               className="h-12"
               autoComplete="address-line2"
+            />
+          </div>
+
+          {/* Suburb */}
+          <div className="space-y-2">
+            <Label htmlFor="suburb">Suburb / Neighborhood (Optional)</Label>
+            <Input
+              {...register('suburb')}
+              id="suburb"
+              placeholder="e.g., Rosebank"
+              className="h-12"
+              autoComplete="address-level3"
             />
           </div>
 

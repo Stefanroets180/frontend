@@ -473,6 +473,7 @@ export const getUserAddress = async () => {
 export const createUserAddress = async (data: {
   addressLine1: string;
   addressLine2?: string;
+  suburb?: string;
   city: string;
   province: string;
   postalCode: string;
@@ -484,6 +485,7 @@ export const createUserAddress = async (data: {
 export const updateUserAddress = async (addressId: string, data: {
   addressLine1: string;
   addressLine2?: string;
+  suburb?: string;
   city: string;
   province: string;
   postalCode: string;
