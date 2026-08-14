@@ -73,6 +73,21 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
       setExpiryInput(format(date, 'yyyy-MM-dd'))
     }
   }, [existingProfile])
+  
+  // Reset form when entering edit mode with existing profile data
+  useEffect(() => {
+    if (isEditing && existingProfile) {
+      reset({
+        idNumber: existingProfile.idNumber || '',
+        homePhone: existingProfile.homePhone || '',
+        workPhone: existingProfile.workPhone || '',
+        mobilePhone: existingProfile.mobilePhone || '',
+        driversLicenseNumber: existingProfile.driversLicenseNumber || '',
+        driversLicenseExpiry: existingProfile.driversLicenseExpiry || '',
+      })
+    }
+  }, [isEditing, existingProfile, reset])
+  
   const [cropTarget, setCropTarget] = useState<'front' | 'back'>('front')
   const [isUploadingLicense, setIsUploadingLicense] = useState(false)
 
