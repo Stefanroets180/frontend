@@ -14,7 +14,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ImageCropModal } from '@/components/ui/image-crop-modal'
-import { Camera, CheckCircle2, AlertCircle, Edit2, Trash2 } from 'lucide-react'
+import { Camera, CheckCircle2, AlertCircle, Edit2, Trash2, Lock } from 'lucide-react'
 import { createUserProfile, updateUserProfile } from '@/lib/api/client'
 import { useAuth } from '@/lib/contexts/auth-context'
 
@@ -49,6 +49,15 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isEditing, setIsEditing] = useState(!existingProfile) // Start in edit mode if no profile exists
+  
+  // Update edit mode when existingProfile changes
+  useEffect(() => {
+    if (existingProfile) {
+      setIsEditing(false)
+    } else {
+      setIsEditing(true)
+    }
+  }, [existingProfile])
   
   // Driver license upload state
   const [selectedLicenseFront, setSelectedLicenseFront] = useState<File | null>(null)
@@ -189,16 +198,40 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
     }
   }
 
+  // Check if profile is complete (has all required fields)
+  const isProfileComplete = existingProfile && 
+    existingProfile.idNumber && 
+    existingProfile.mobilePhone &&
+    existingProfile.driversLicenseNumber &&
+    existingProfile.driversLicenseExpiry &&
+    existingProfile.driversLicenseFrontUrl &&
+    existingProfile.driversLicenseBackUrl
+
+  // Get border color based on completion status
+  const getBorderColor = () => {
+    if (!existingProfile) return 'border-border'
+    if (isProfileComplete) return 'border-green-500'
+    return 'border-orange-500'
+  }
+
   return (
     <>
-      <Card>
+      <Card className={cn(getBorderColor(), 'border-2')}>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>User Credentials</CardTitle>
-              <CardDescription>
-                Complete your profile information for fleet management
-              </CardDescription>
+            <div className="flex items-center gap-2">
+              <div>
+                <CardTitle>User Credentials</CardTitle>
+                <CardDescription>
+                  Complete your profile information for fleet management
+                </CardDescription>
+              </div>
+              {existingProfile && isProfileComplete && !isEditing && (
+                <div className="flex items-center gap-1 text-green-600">
+                  <Lock className="h-4 w-4" />
+                  <span className="text-xs font-medium">Complete</span>
+                </div>
+              )}
             </div>
             {existingProfile && !isEditing && (
               <Button
