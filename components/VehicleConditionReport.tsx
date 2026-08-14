@@ -19,7 +19,14 @@ import {
 import { ImageCropModal } from '@/components/ui/image-crop-modal'
 
 const SECTION_TYPES = [
-  { value: 'EXTERIOR', label: 'Exterior', icon: Car },
+  { value: 'EXTERIOR_FRONT', label: 'Front', icon: Car },
+  { value: 'EXTERIOR_FRONT_RIGHT', label: 'Front Right', icon: Car },
+  { value: 'EXTERIOR_RIGHT', label: 'Right Side', icon: Car },
+  { value: 'EXTERIOR_REAR_RIGHT', label: 'Rear Right', icon: Car },
+  { value: 'EXTERIOR_REAR', label: 'Rear', icon: Car },
+  { value: 'EXTERIOR_REAR_LEFT', label: 'Rear Left', icon: Car },
+  { value: 'EXTERIOR_LEFT', label: 'Left Side', icon: Car },
+  { value: 'EXTERIOR_FRONT_LEFT', label: 'Front Left', icon: Car },
   { value: 'INTERIOR', label: 'Interior', icon: Armchair },
   { value: 'ENGINE', label: 'Engine', icon: Cog },
   { value: 'TIRES', label: 'Tires & Rims', icon: CircleDot },
