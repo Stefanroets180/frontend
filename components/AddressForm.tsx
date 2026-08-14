@@ -27,9 +27,12 @@ type AddressInput = z.infer<typeof addressSchema>
 interface AddressFormProps {
   existingAddress?: {
     id?: string
+    streetNumber?: string
+    streetName?: string
     addressLine1?: string
     addressLine2?: string
     suburb?: string
+    cityTown?: string
     city?: string
     province?: string
     postalCode?: string
@@ -72,14 +75,14 @@ export function AddressForm({ existingAddress, onSuccess }: AddressFormProps) {
     reset,
   } = useForm<AddressInput>({
     resolver: zodResolver(addressSchema),
-    defaultValues: existingAddress || {
-      addressLine1: '',
-      addressLine2: '',
-      suburb: '',
-      city: '',
-      province: '',
-      postalCode: '',
-      country: 'South Africa',
+    defaultValues: {
+      addressLine1: existingAddress?.addressLine1 || (existingAddress?.streetNumber && existingAddress?.streetName ? `${existingAddress.streetNumber} ${existingAddress.streetName}` : ''),
+      addressLine2: existingAddress?.addressLine2 || '',
+      suburb: existingAddress?.suburb || '',
+      city: existingAddress?.city || existingAddress?.cityTown || '',
+      province: existingAddress?.province || '',
+      postalCode: existingAddress?.postalCode || '',
+      country: existingAddress?.country || 'South Africa',
     },
   })
 
@@ -87,10 +90,10 @@ export function AddressForm({ existingAddress, onSuccess }: AddressFormProps) {
   useEffect(() => {
     if (isEditing && existingAddress) {
       reset({
-        addressLine1: existingAddress.addressLine1 || '',
+        addressLine1: existingAddress.addressLine1 || (existingAddress.streetNumber && existingAddress.streetName ? `${existingAddress.streetNumber} ${existingAddress.streetName}` : ''),
         addressLine2: existingAddress.addressLine2 || '',
         suburb: existingAddress.suburb || '',
-        city: existingAddress.city || '',
+        city: existingAddress.city || existingAddress.cityTown || '',
         province: existingAddress.province || '',
         postalCode: existingAddress.postalCode || '',
         country: existingAddress.country || 'South Africa',
@@ -130,8 +133,8 @@ export function AddressForm({ existingAddress, onSuccess }: AddressFormProps) {
 
   // Check if address is complete (has all required fields)
   const isAddressComplete = existingAddress && 
-    existingAddress.addressLine1 && 
-    existingAddress.city &&
+    (existingAddress.addressLine1 || (existingAddress.streetNumber && existingAddress.streetName)) &&
+    (existingAddress.city || existingAddress.cityTown) &&
     existingAddress.province &&
     existingAddress.postalCode &&
     existingAddress.country
@@ -182,7 +185,7 @@ export function AddressForm({ existingAddress, onSuccess }: AddressFormProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label className="text-muted-foreground">Street Address</Label>
-                <p className="font-medium">{existingAddress.addressLine1 || '-'}</p>
+                <p className="font-medium">{existingAddress.addressLine1 || (existingAddress.streetNumber && existingAddress.streetName ? `${existingAddress.streetNumber} ${existingAddress.streetName}` : '-')}</p>
               </div>
               <div>
                 <Label className="text-muted-foreground">Apartment / Suite</Label>
@@ -194,7 +197,7 @@ export function AddressForm({ existingAddress, onSuccess }: AddressFormProps) {
               </div>
               <div>
                 <Label className="text-muted-foreground">City / Town</Label>
-                <p className="font-medium">{existingAddress.city || '-'}</p>
+                <p className="font-medium">{existingAddress.city || existingAddress.cityTown || '-'}</p>
               </div>
               <div>
                 <Label className="text-muted-foreground">Province</Label>
