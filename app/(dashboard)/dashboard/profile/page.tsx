@@ -291,25 +291,31 @@ export default function ProfilePage() {
                   <p className="text-sm text-muted-foreground">Full Name</p>
                   {isEditingProfile ? (
                     <div className="flex items-center gap-2 mt-1">
-                      <Input
-                        value={editFirstName}
-                        onChange={(e) => setEditFirstName(e.target.value)}
-                        placeholder="First name"
-                        className="h-8 flex-1"
-                        disabled={isUpdatingProfile}
-                        aria-label="First name"
-                      />
-                      <Input
-                        value={editLastName}
-                        onChange={(e) => setEditLastName(e.target.value)}
-                        placeholder="Last name"
-                        className="h-8 flex-1"
-                        disabled={isUpdatingProfile}
-                        aria-label="Last name"
-                      />
+                      <div className="flex-1 space-y-2">
+                        <Label htmlFor="editFirstName">First Name</Label>
+                        <Input
+                          id="editFirstName"
+                          value={editFirstName}
+                          onChange={(e) => setEditFirstName(e.target.value)}
+                          placeholder="First name"
+                          className="h-8"
+                          disabled={isUpdatingProfile}
+                        />
+                      </div>
+                      <div className="flex-1 space-y-2">
+                        <Label htmlFor="editLastName">Last Name</Label>
+                        <Input
+                          id="editLastName"
+                          value={editLastName}
+                          onChange={(e) => setEditLastName(e.target.value)}
+                          placeholder="Last name"
+                          className="h-8"
+                          disabled={isUpdatingProfile}
+                        />
+                      </div>
                       <Button
                         size="icon"
-                        className="h-8 w-8"
+                        className="h-8 w-8 mt-6"
                         onClick={handleUpdateProfile}
                         disabled={isUpdatingProfile || !editFirstName.trim() || !editLastName.trim()}
                       >
@@ -318,7 +324,7 @@ export default function ProfilePage() {
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-8 w-8"
+                        className="h-8 w-8 mt-6"
                         onClick={() => setIsEditingProfile(false)}
                         disabled={isUpdatingProfile}
                       >
