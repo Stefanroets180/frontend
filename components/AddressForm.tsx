@@ -184,31 +184,31 @@ export function AddressForm({ existingAddress, onSuccess }: AddressFormProps) {
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label className="text-muted-foreground">Street Address</Label>
+                <span className="text-sm text-muted-foreground">Street Address</span>
                 <p className="font-medium">{existingAddress.addressLine1 || (existingAddress.streetNumber && existingAddress.streetName ? `${existingAddress.streetNumber} ${existingAddress.streetName}` : '-')}</p>
               </div>
               <div>
-                <Label className="text-muted-foreground">Apartment / Suite</Label>
+                <span className="text-sm text-muted-foreground">Apartment / Suite</span>
                 <p className="font-medium">{existingAddress.addressLine2 || '-'}</p>
               </div>
               <div>
-                <Label className="text-muted-foreground">Suburb / Neighborhood</Label>
+                <span className="text-sm text-muted-foreground">Suburb / Neighborhood</span>
                 <p className="font-medium">{existingAddress.suburb || '-'}</p>
               </div>
               <div>
-                <Label className="text-muted-foreground">City / Town</Label>
+                <span className="text-sm text-muted-foreground">City / Town</span>
                 <p className="font-medium">{existingAddress.city || existingAddress.cityTown || '-'}</p>
               </div>
               <div>
-                <Label className="text-muted-foreground">Province</Label>
+                <span className="text-sm text-muted-foreground">Province</span>
                 <p className="font-medium">{existingAddress.province || '-'}</p>
               </div>
               <div>
-                <Label className="text-muted-foreground">Postal Code</Label>
+                <span className="text-sm text-muted-foreground">Postal Code</span>
                 <p className="font-medium">{existingAddress.postalCode || '-'}</p>
               </div>
               <div className="md:col-span-2">
-                <Label className="text-muted-foreground">Country</Label>
+                <span className="text-sm text-muted-foreground">Country</span>
                 <p className="font-medium">{existingAddress.country || '-'}</p>
               </div>
             </div>

@@ -268,27 +268,27 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-muted-foreground">ID Number</Label>
+                  <span className="text-sm text-muted-foreground">ID Number</span>
                   <p className="font-medium">{existingProfile.idNumber || '-'}</p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">Mobile Phone</Label>
+                  <span className="text-sm text-muted-foreground">Mobile Phone</span>
                   <p className="font-medium">{existingProfile.mobilePhone || '-'}</p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">Home Phone</Label>
+                  <span className="text-sm text-muted-foreground">Home Phone</span>
                   <p className="font-medium">{existingProfile.homePhone || '-'}</p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">Work Phone</Label>
+                  <span className="text-sm text-muted-foreground">Work Phone</span>
                   <p className="font-medium">{existingProfile.workPhone || '-'}</p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">Driver License Number</Label>
+                  <span className="text-sm text-muted-foreground">Driver License Number</span>
                   <p className="font-medium">{existingProfile.driversLicenseNumber || '-'}</p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">License Expiry Date</Label>
+                  <span className="text-sm text-muted-foreground">License Expiry Date</span>
                   <p className="font-medium">
                     {existingProfile.driversLicenseExpiry 
                       ? format(new Date(existingProfile.driversLicenseExpiry), 'yyyy-MM-dd')
@@ -302,7 +302,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                 <p className="text-sm font-medium">Driver License Photos</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Front of License</Label>
+                    <span className="text-sm">Front of License</span>
                     {existingProfile.driversLicenseFrontUrl ? (
                       <div className="relative">
                         <img
@@ -318,7 +318,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label>Back of License</Label>
+                    <span className="text-sm">Back of License</span>
                     {existingProfile.driversLicenseBackUrl ? (
                       <div className="relative">
                         <img
