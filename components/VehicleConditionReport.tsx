@@ -22,7 +22,7 @@ const SECTION_TYPES = [
   { value: 'EXTERIOR', label: 'Exterior', icon: Car },
   { value: 'INTERIOR', label: 'Interior', icon: Armchair },
   { value: 'ENGINE', label: 'Engine', icon: Cog },
-  { value: 'TIRES', label: 'Tires', icon: CircleDot },
+  { value: 'TIRES', label: 'Tires & Rims', icon: CircleDot },
   { value: 'LIGHTS', label: 'Lights', icon: Lightbulb },
   { value: 'BRAKES', label: 'Brakes', icon: Disc3 },
   { value: 'FLUIDS', label: 'Fluids', icon: Droplets },
