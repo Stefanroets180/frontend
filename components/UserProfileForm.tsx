@@ -162,8 +162,8 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
         ...data,
         driversLicenseNumber: data.driversLicenseNumber,
         driversLicenseExpiry: data.driversLicenseExpiry,
-        driversLicenseFrontUrl: (window as any).tempLicenseFrontUrl || existingProfile?.driverLicenseFrontUrl,
-        driversLicenseBackUrl: (window as any).tempLicenseBackUrl || existingProfile?.driverLicenseBackUrl,
+        driversLicenseFrontUrl: (window as any).tempLicenseFrontUrl || existingProfile?.driversLicenseFrontUrl,
+        driversLicenseBackUrl: (window as any).tempLicenseBackUrl || existingProfile?.driversLicenseBackUrl,
       }
       
       if (existingProfile) {
