@@ -800,7 +800,7 @@ export default function VehiclesPage() {
 
       {/* Fleet: Vehicle Condition Report Dialog */}
       <Dialog open={conditionReportOpen} onOpenChange={setConditionReportOpen}>
-        <DialogContent className="!max-w-[95vw] sm:!max-w-[90vw] lg:!max-w-[85vw] xl:!max-w-[80vw] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[95vw] sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[80vw] xl:max-w-[75vw] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Vehicle Condition Report</DialogTitle>
             <DialogDescription>
