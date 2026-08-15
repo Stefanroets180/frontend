@@ -208,13 +208,21 @@ function SectionCard({
   const meta = CONDITION_META[section.condition]
   const images = section.images ?? []
   const isLocked = section.locked ?? false
+  const isExterior = section.sectionType?.startsWith('EXTERIOR_')
 
   return (
     <div className={cn('rounded-xl border bg-card p-4 ring-1 ring-inset', meta?.ring)}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2.5">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-background">
-            <Icon className="h-5 w-5 text-foreground" />
+          <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-lg', cfg?.tile)}>
+            {isExterior ? (
+              <VehicleSideDiagram
+                sectionType={section.sectionType}
+                className={cn('h-5 w-5', cfg?.iconColor)}
+              />
+            ) : (
+              <Icon className={cn('h-5 w-5', cfg?.iconColor)} />
+            )}
           </div>
           <div className="min-w-0">
             <p className="font-semibold leading-tight truncate">{cfg?.label ?? section.sectionType}</p>
