@@ -385,7 +385,7 @@ function AddSectionPanel({
               onClick={() => setSectionType(t.value)}
               disabled={!!editingSection}
               className={cn(
-                'flex items-start gap-2.5 rounded-lg border p-3 text-left transition-all',
+                'flex items-center gap-3 rounded-lg border p-3 text-left transition-all',
                 active
                   ? 'border-primary bg-primary/5 ring-1 ring-primary'
                   : 'bg-background hover:border-primary/40',
@@ -394,25 +394,25 @@ function AddSectionPanel({
             >
               <span
                 className={cn(
-                  'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors',
+                  'flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors sm:h-14 sm:w-14',
                   active ? 'bg-primary/10' : t.tile,
                 )}
               >
                 {isExterior ? (
                   <VehicleSideDiagram
                     sectionType={t.value}
-                    className={cn(active ? 'text-primary' : t.iconColor)}
+                    className={cn('h-6 w-6 sm:h-7 sm:w-7', active ? 'text-primary' : t.iconColor)}
                   />
                 ) : (
-                  <Icon className={cn('h-5 w-5', active ? 'text-primary' : t.iconColor)} />
+                  <Icon className={cn('h-5 w-5 sm:h-6 sm:w-6', active ? 'text-primary' : t.iconColor)} />
                 )}
               </span>
-              <span className="min-w-0">
-                <span className={cn('block text-sm font-semibold leading-tight', active ? 'text-primary' : 'text-foreground')}>
+              <span className="min-w-0 flex-1">
+                <span className={cn('block text-sm font-semibold leading-tight sm:text-base', active ? 'text-primary' : 'text-foreground')}>
                   {t.label}
                 </span>
                 {t.desc && (
-                  <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{t.desc}</span>
+                  <span className="mt-0.5 block text-xs leading-snug text-muted-foreground sm:text-sm">{t.desc}</span>
                 )}
               </span>
             </button>
