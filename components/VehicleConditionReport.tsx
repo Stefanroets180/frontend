@@ -370,7 +370,7 @@ function AddSectionPanel({
 
       {/* Area picker */}
       <p className="mb-2 text-xs font-medium text-muted-foreground">Area</p>
-      <div role="radiogroup" aria-label="Select inspection area" className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      <div role="radiogroup" aria-label="Select inspection area" className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
         {available.map((t) => {
           const Icon = t.icon
           const active = sectionType === t.value
