@@ -21,17 +21,18 @@ import {
   unlockConditionSection
 } from '@/lib/api/client'
 import { ImageCropModal } from '@/components/ui/image-crop-modal'
+import { VehicleSideDiagram } from '@/components/vehicle-side-diagram'
 
 const SECTION_TYPES = [
   // The 8 sides of a car (exterior walk-around)
-  { value: 'EXTERIOR_FRONT', label: 'Front', icon: Car, desc: 'Bumper, grille, headlights, and hood.', tile: 'bg-chart-1/10', iconColor: 'text-chart-1' },
-  { value: 'EXTERIOR_REAR', label: 'Rear', icon: Car, desc: 'Back bumper, trunk, tailgate, and taillights.', tile: 'bg-chart-2/10', iconColor: 'text-chart-2' },
+  { value: 'EXTERIOR_FRONT', label: 'Front', icon: Car, desc: 'Bumper, grille, headlights, and hood.', tile: 'bg-sky-500/10', iconColor: 'text-sky-500' },
+  { value: 'EXTERIOR_REAR', label: 'Rear', icon: Car, desc: 'Back bumper, trunk, tailgate, and taillights.', tile: 'bg-sky-500/10', iconColor: 'text-sky-500' },
   { value: 'EXTERIOR_FRONT_LEFT', label: 'Front Left', icon: Car, desc: 'Driver side: front fender, wheel, and front door.', tile: 'bg-sky-500/10', iconColor: 'text-sky-500' },
-  { value: 'EXTERIOR_REAR_LEFT', label: 'Rear Left', icon: Car, desc: 'Driver side: rear door, quarter panel, and rear wheel.', tile: 'bg-violet-500/10', iconColor: 'text-violet-500' },
-  { value: 'EXTERIOR_FRONT_RIGHT', label: 'Front Right', icon: Car, desc: 'Passenger side: front fender, wheel, and front door.', tile: 'bg-teal-500/10', iconColor: 'text-teal-500' },
-  { value: 'EXTERIOR_REAR_RIGHT', label: 'Rear Right', icon: Car, desc: 'Passenger side: rear door, quarter panel, and rear wheel.', tile: 'bg-indigo-500/10', iconColor: 'text-indigo-500' },
-  { value: 'EXTERIOR_TOP', label: 'Top (Roof)', icon: PanelTop, desc: 'Sunroof, roof panel, and roof racks.', tile: 'bg-chart-4/10', iconColor: 'text-chart-4' },
-  { value: 'EXTERIOR_UNDERCARRIAGE', label: 'Undercarriage', icon: Wrench, desc: 'Frame, exhaust, suspension, and floor pans.', tile: 'bg-chart-5/10', iconColor: 'text-chart-5' },
+  { value: 'EXTERIOR_REAR_LEFT', label: 'Rear Left', icon: Car, desc: 'Driver side: rear door, quarter panel, and rear wheel.', tile: 'bg-sky-500/10', iconColor: 'text-sky-500' },
+  { value: 'EXTERIOR_FRONT_RIGHT', label: 'Front Right', icon: Car, desc: 'Passenger side: front fender, wheel, and front door.', tile: 'bg-sky-500/10', iconColor: 'text-sky-500' },
+  { value: 'EXTERIOR_REAR_RIGHT', label: 'Rear Right', icon: Car, desc: 'Passenger side: rear door, quarter panel, and rear wheel.', tile: 'bg-sky-500/10', iconColor: 'text-sky-500' },
+  { value: 'EXTERIOR_TOP', label: 'Top (Roof)', icon: PanelTop, desc: 'Sunroof, roof panel, and roof racks.', tile: 'bg-sky-500/10', iconColor: 'text-sky-500' },
+  { value: 'EXTERIOR_UNDERCARRIAGE', label: 'Undercarriage', icon: Wrench, desc: 'Frame, exhaust, suspension, and floor pans.', tile: 'bg-sky-500/10', iconColor: 'text-sky-500' },
   // Other inspection areas
   { value: 'INTERIOR', label: 'Interior', icon: Armchair, desc: 'Seats, dashboard, trim, and upholstery.', tile: 'bg-rose-500/10', iconColor: 'text-rose-500' },
   { value: 'ENGINE', label: 'Engine', icon: Cog, desc: 'Engine bay, belts, hoses, and mounts.', tile: 'bg-chart-3/10', iconColor: 'text-chart-3' },
@@ -397,7 +398,14 @@ function AddSectionPanel({
                   active ? 'bg-primary/10' : t.tile,
                 )}
               >
-                <Icon className={cn('h-5 w-5', active ? 'text-primary' : t.iconColor)} />
+                {isExterior ? (
+                  <VehicleSideDiagram
+                    sectionType={t.value}
+                    className={cn(active ? 'text-primary' : t.iconColor)}
+                  />
+                ) : (
+                  <Icon className={cn('h-5 w-5', active ? 'text-primary' : t.iconColor)} />
+                )}
               </span>
               <span className="min-w-0">
                 <span className={cn('block text-sm font-semibold leading-tight', active ? 'text-primary' : 'text-foreground')}>
