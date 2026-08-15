@@ -208,25 +208,25 @@ function SectionCard({
 
   return (
     <div className={cn('rounded-xl border bg-card p-4 ring-1 ring-inset', meta?.ring)}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-background">
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-background">
             <Icon className="h-5 w-5 text-foreground" />
           </div>
-          <div>
-            <p className="font-semibold leading-tight">{cfg?.label ?? section.sectionType}</p>
+          <div className="min-w-0">
+            <p className="font-semibold leading-tight truncate">{cfg?.label ?? section.sectionType}</p>
             <p className="text-xs text-muted-foreground">
               {images.length} photo{images.length === 1 ? '' : 's'}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1.5">
           <ConditionChip condition={section.condition} />
-          <div className="flex gap-1">
+          <div className="flex gap-0.5">
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7"
+              className="h-7 w-7 shrink-0"
               onClick={() => onEdit(section)}
               title="Edit section"
             >
@@ -235,7 +235,7 @@ function SectionCard({
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7"
+              className="h-7 w-7 shrink-0"
               onClick={() => isLocked ? onUnlock(section.id) : onLock(section.id)}
               title={isLocked ? "Unlock section" : "Lock section"}
             >
@@ -244,7 +244,7 @@ function SectionCard({
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7 text-destructive hover:text-destructive"
+              className="h-7 w-7 shrink-0 text-destructive hover:text-destructive"
               onClick={() => onDelete(section.id)}
               title="Delete section"
             >
@@ -430,6 +430,7 @@ function AddSectionPanel({
       </Label>
       <Textarea
         id="section-notes"
+        name="section-notes"
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         placeholder="e.g. Small scratch on rear bumper, otherwise clean."
@@ -771,6 +772,8 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
 
           <div className="flex flex-col gap-2 sm:flex-row">
             <Textarea
+              id="manager-note"
+              name="manager-note"
               value={managerNote}
               onChange={(e) => setManagerNote(e.target.value)}
               placeholder="Add a note about this vehicle…"
