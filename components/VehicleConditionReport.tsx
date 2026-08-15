@@ -551,8 +551,12 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
     }
   }
 
-  const handleAddSection = async () => {
-    if (!selectedSectionType || !report) return
+  const handleAddSection = async (sectionType?: string, condition?: string, notes?: string) => {
+    const finalSectionType = sectionType || selectedSectionType
+    const finalCondition = (condition || selectedCondition) as 'GOOD' | 'FAIR' | 'POOR' | 'DAMAGED'
+    const finalNotes = notes || sectionNotes
+
+    if (!finalSectionType || !report) return
 
     setIsSubmitting(true)
     setSubmitError(null)
@@ -560,8 +564,8 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
       if (editingSectionId) {
         // Update existing section
         await updateConditionSection(editingSectionId, {
-          condition: selectedCondition,
-          notes: sectionNotes,
+          condition: finalCondition,
+          notes: finalNotes,
         })
         await loadReport()
         setEditingSectionId(null)
@@ -569,9 +573,9 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
       } else {
         // Create new section
         await addConditionSection(report.id, {
-          sectionType: selectedSectionType,
-          condition: selectedCondition,
-          notes: sectionNotes,
+          sectionType: finalSectionType,
+          condition: finalCondition,
+          notes: finalNotes,
         })
         await loadReport()
         flash('Inspection area added')
@@ -780,12 +784,7 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
           usedTypes={usedTypes} 
           editingSection={editingSectionId ? sections.find((s: any) => s.id === editingSectionId) : null}
           onCancelEdit={() => setEditingSectionId(null)}
-          onAdd={(s) => {
-            setSelectedSectionType(s.sectionType)
-            setSelectedCondition(s.condition as any)
-            setSectionNotes(s.notes)
-            handleAddSection()
-          }} 
+          onAdd={(s) => handleAddSection(s.sectionType, s.condition, s.notes)} 
         />
 
         {/* Manager notes */}
