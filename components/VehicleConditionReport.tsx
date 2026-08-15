@@ -366,8 +366,8 @@ function AddSectionPanel({
       </p>
 
       {/* Area picker */}
-      <Label htmlFor="area-picker" className="mb-2 block text-xs font-medium text-muted-foreground">Area</Label>
-      <div id="area-picker" role="radiogroup" className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <p className="mb-2 text-xs font-medium text-muted-foreground">Area</p>
+      <div role="radiogroup" aria-label="Select inspection area" className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
         {available.map((t) => {
           const Icon = t.icon
           const active = sectionType === t.value
@@ -396,8 +396,8 @@ function AddSectionPanel({
       </div>
 
       {/* Condition picker */}
-      <Label htmlFor="condition-picker" className="mb-2 block text-xs font-medium text-muted-foreground">Condition</Label>
-      <div id="condition-picker" role="radiogroup" className="mb-4 grid grid-cols-4 gap-2">
+      <p className="mb-2 text-xs font-medium text-muted-foreground">Condition</p>
+      <div role="radiogroup" aria-label="Select condition" className="mb-4 grid grid-cols-4 gap-2">
         {CONDITION_ORDER.map((c) => {
           const meta = CONDITION_META[c]
           const active = condition === c
