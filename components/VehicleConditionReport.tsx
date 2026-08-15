@@ -366,8 +366,8 @@ function AddSectionPanel({
       </p>
 
       {/* Area picker */}
-      <Label className="mb-2 block text-xs font-medium text-muted-foreground">Area</Label>
-      <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <Label htmlFor="area-picker" className="mb-2 block text-xs font-medium text-muted-foreground">Area</Label>
+      <div id="area-picker" role="radiogroup" className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
         {available.map((t) => {
           const Icon = t.icon
           const active = sectionType === t.value
@@ -375,6 +375,9 @@ function AddSectionPanel({
             <button
               key={t.value}
               type="button"
+              role="radio"
+              aria-checked={active}
+              aria-label={t.label}
               onClick={() => setSectionType(t.value)}
               disabled={!!editingSection}
               className={cn(
@@ -393,8 +396,8 @@ function AddSectionPanel({
       </div>
 
       {/* Condition picker */}
-      <Label className="mb-2 block text-xs font-medium text-muted-foreground">Condition</Label>
-      <div className="mb-4 grid grid-cols-4 gap-2">
+      <Label htmlFor="condition-picker" className="mb-2 block text-xs font-medium text-muted-foreground">Condition</Label>
+      <div id="condition-picker" role="radiogroup" className="mb-4 grid grid-cols-4 gap-2">
         {CONDITION_ORDER.map((c) => {
           const meta = CONDITION_META[c]
           const active = condition === c
@@ -402,6 +405,9 @@ function AddSectionPanel({
             <button
               key={c}
               type="button"
+              role="radio"
+              aria-checked={active}
+              aria-label={meta.label}
               onClick={() => setCondition(c)}
               className={cn(
                 'flex min-w-0 flex-col items-center gap-1.5 rounded-lg border p-2.5 text-center text-xs font-semibold leading-tight transition-all',
