@@ -761,9 +761,16 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
         {/* Sections */}
         <section>
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Inspection areas
-            </h3>
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                Inspection areas
+              </h3>
+              {sections.length > 0 && (
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Added areas appear here
+                </p>
+              )}
+            </div>
             <span className="text-xs text-muted-foreground">
               {sections.length} of {SECTION_TYPES.length} logged
             </span>
