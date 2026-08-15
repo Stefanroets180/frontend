@@ -272,15 +272,19 @@ function SectionCard({
       )}
 
       <div className="mt-3 flex flex-wrap gap-2">
-        {images.map((img: any) => (
-          <img
-            key={img.id}
-            src={img.imageUrl || '/placeholder.svg'}
-            alt={`${cfg?.label ?? section.sectionType} condition`}
-            className="h-16 w-16 rounded-lg border object-cover"
-            crossOrigin="anonymous"
-          />
-        ))}
+        {images.map((img: any) => {
+          const imageUrl = img.imageUrl || '/placeholder.svg'
+          const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `https://fleet-expense-app.duckdns.org${imageUrl}`
+          return (
+            <img
+              key={img.id}
+              src={fullImageUrl}
+              alt={`${cfg?.label ?? section.sectionType} condition`}
+              className="h-16 w-16 rounded-lg border object-cover"
+              crossOrigin="anonymous"
+            />
+          )
+        })}
         {!isLocked && (
           <label htmlFor={`image-upload-${section.id}`} className="flex h-16 w-16 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-border bg-muted/30 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary cursor-pointer">
             <Camera className="h-4 w-4" />
