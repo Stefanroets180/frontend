@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { CheckCircle2, AlertCircle, Camera, Plus, Car, Armchair, Cog, CircleDot, Lightbulb, Disc3, Droplets, FileText, ShieldCheck, MessageSquare, ImageOff, Trash2, Edit2, Lock, Unlock } from 'lucide-react'
+import { CheckCircle2, AlertCircle, Camera, Plus, Car, Armchair, Cog, CircleDot, Lightbulb, Disc3, Droplets, FileText, ShieldCheck, MessageSquare, ImageOff, Trash2, Edit2, Lock, Unlock, PanelTop, Wrench } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { 
   createVehicleConditionReport, 
@@ -23,21 +23,23 @@ import {
 import { ImageCropModal } from '@/components/ui/image-crop-modal'
 
 const SECTION_TYPES = [
-  { value: 'EXTERIOR_FRONT', label: 'Front', icon: Car },
-  { value: 'EXTERIOR_FRONT_RIGHT', label: 'Front Right', icon: Car },
-  { value: 'EXTERIOR_RIGHT', label: 'Right Side', icon: Car },
-  { value: 'EXTERIOR_REAR_RIGHT', label: 'Rear Right', icon: Car },
-  { value: 'EXTERIOR_REAR', label: 'Rear', icon: Car },
-  { value: 'EXTERIOR_REAR_LEFT', label: 'Rear Left', icon: Car },
-  { value: 'EXTERIOR_LEFT', label: 'Left Side', icon: Car },
-  { value: 'EXTERIOR_FRONT_LEFT', label: 'Front Left', icon: Car },
-  { value: 'INTERIOR', label: 'Interior', icon: Armchair },
-  { value: 'ENGINE', label: 'Engine', icon: Cog },
-  { value: 'TIRES', label: 'Tires & Rims', icon: CircleDot },
-  { value: 'LIGHTS', label: 'Lights', icon: Lightbulb },
-  { value: 'BRAKES', label: 'Brakes', icon: Disc3 },
-  { value: 'FLUIDS', label: 'Fluids', icon: Droplets },
-  { value: 'DOCUMENTATION', label: 'Documentation', icon: FileText },
+  // The 8 sides of a car (exterior walk-around)
+  { value: 'EXTERIOR_FRONT', label: 'Front', icon: Car, desc: 'Bumper, grille, headlights, and hood.', tile: 'bg-chart-1/10', iconColor: 'text-chart-1' },
+  { value: 'EXTERIOR_REAR', label: 'Rear', icon: Car, desc: 'Back bumper, trunk, tailgate, and taillights.', tile: 'bg-chart-2/10', iconColor: 'text-chart-2' },
+  { value: 'EXTERIOR_FRONT_LEFT', label: 'Front Left', icon: Car, desc: 'Driver side: front fender, wheel, and front door.', tile: 'bg-sky-500/10', iconColor: 'text-sky-500' },
+  { value: 'EXTERIOR_REAR_LEFT', label: 'Rear Left', icon: Car, desc: 'Driver side: rear door, quarter panel, and rear wheel.', tile: 'bg-violet-500/10', iconColor: 'text-violet-500' },
+  { value: 'EXTERIOR_FRONT_RIGHT', label: 'Front Right', icon: Car, desc: 'Passenger side: front fender, wheel, and front door.', tile: 'bg-teal-500/10', iconColor: 'text-teal-500' },
+  { value: 'EXTERIOR_REAR_RIGHT', label: 'Rear Right', icon: Car, desc: 'Passenger side: rear door, quarter panel, and rear wheel.', tile: 'bg-indigo-500/10', iconColor: 'text-indigo-500' },
+  { value: 'EXTERIOR_TOP', label: 'Top (Roof)', icon: PanelTop, desc: 'Sunroof, roof panel, and roof racks.', tile: 'bg-chart-4/10', iconColor: 'text-chart-4' },
+  { value: 'EXTERIOR_UNDERCARRIAGE', label: 'Undercarriage', icon: Wrench, desc: 'Frame, exhaust, suspension, and floor pans.', tile: 'bg-chart-5/10', iconColor: 'text-chart-5' },
+  // Other inspection areas
+  { value: 'INTERIOR', label: 'Interior', icon: Armchair, desc: 'Seats, dashboard, trim, and upholstery.', tile: 'bg-rose-500/10', iconColor: 'text-rose-500' },
+  { value: 'ENGINE', label: 'Engine', icon: Cog, desc: 'Engine bay, belts, hoses, and mounts.', tile: 'bg-chart-3/10', iconColor: 'text-chart-3' },
+  { value: 'TIRES', label: 'Tires & Rims', icon: CircleDot, desc: 'Tread depth, pressure, and rim condition.', tile: 'bg-amber-500/10', iconColor: 'text-amber-500' },
+  { value: 'LIGHTS', label: 'Lights', icon: Lightbulb, desc: 'Head, tail, brake, and indicator lights.', tile: 'bg-yellow-500/10', iconColor: 'text-yellow-500' },
+  { value: 'BRAKES', label: 'Brakes', icon: Disc3, desc: 'Pads, discs, and handbrake.', tile: 'bg-orange-500/10', iconColor: 'text-orange-500' },
+  { value: 'FLUIDS', label: 'Fluids', icon: Droplets, desc: 'Oil, coolant, brake, and washer fluid levels.', tile: 'bg-emerald-500/10', iconColor: 'text-emerald-500' },
+  { value: 'DOCUMENTATION', label: 'Documentation', icon: FileText, desc: 'Registration, insurance, and service records.', tile: 'bg-slate-500/10', iconColor: 'text-slate-500' },
 ]
 
 const CONDITION_META: Record<string, {
@@ -367,29 +369,44 @@ function AddSectionPanel({
 
       {/* Area picker */}
       <p className="mb-2 text-xs font-medium text-muted-foreground">Area</p>
-      <div role="radiogroup" aria-label="Select inspection area" className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div role="radiogroup" aria-label="Select inspection area" className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {available.map((t) => {
           const Icon = t.icon
           const active = sectionType === t.value
+          const isExterior = t.value.startsWith('EXTERIOR_')
           return (
             <button
               key={t.value}
               type="button"
               role="radio"
               aria-checked={active}
-              aria-label={t.label}
+              aria-label={t.desc ? `${t.label}. ${t.desc}` : t.label}
               onClick={() => setSectionType(t.value)}
               disabled={!!editingSection}
               className={cn(
-                'flex min-w-0 flex-col items-center gap-1.5 rounded-lg border p-3 text-center text-xs font-medium leading-tight transition-all',
+                'flex items-start gap-2.5 rounded-lg border p-3 text-left transition-all',
                 active
-                  ? 'border-primary bg-primary/5 text-primary ring-1 ring-primary'
-                  : 'bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground',
+                  ? 'border-primary bg-primary/5 ring-1 ring-primary'
+                  : 'bg-background hover:border-primary/40',
                 editingSection && 'opacity-50 cursor-not-allowed',
               )}
             >
-              <Icon className="h-5 w-5 shrink-0" />
-              <span className="w-full break-words">{t.label}</span>
+              <span
+                className={cn(
+                  'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors',
+                  active ? 'bg-primary/10' : t.tile,
+                )}
+              >
+                <Icon className={cn('h-5 w-5', active ? 'text-primary' : t.iconColor)} />
+              </span>
+              <span className="min-w-0">
+                <span className={cn('block text-sm font-semibold leading-tight', active ? 'text-primary' : 'text-foreground')}>
+                  {t.label}
+                </span>
+                {t.desc && (
+                  <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{t.desc}</span>
+                )}
+              </span>
             </button>
           )
         })}
