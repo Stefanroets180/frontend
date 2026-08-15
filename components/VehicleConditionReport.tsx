@@ -321,7 +321,7 @@ function AddSectionPanel({
 
   const available = editingSection 
     ? SECTION_TYPES.filter((t) => t.value === editingSection.sectionType)
-    : SECTION_TYPES.filter((t) => !usedTypes.includes(t.value))
+    : SECTION_TYPES
 
   const submit = () => {
     if (!sectionType) return
@@ -375,6 +375,7 @@ function AddSectionPanel({
           const Icon = t.icon
           const active = sectionType === t.value
           const isExterior = t.value.startsWith('EXTERIOR_')
+          const isUsed = usedTypes.includes(t.value)
           return (
             <button
               key={t.value}
@@ -382,14 +383,14 @@ function AddSectionPanel({
               role="radio"
               aria-checked={active}
               aria-label={t.desc ? `${t.label}. ${t.desc}` : t.label}
-              onClick={() => setSectionType(t.value)}
-              disabled={!!editingSection}
+              onClick={() => !isUsed && setSectionType(t.value)}
+              disabled={!!editingSection || isUsed}
               className={cn(
                 'flex items-center gap-3 rounded-lg border p-3 text-left transition-all',
                 active
                   ? 'border-primary bg-primary/5 ring-1 ring-primary'
                   : 'bg-background hover:border-primary/40',
-                editingSection && 'opacity-50 cursor-not-allowed',
+                (editingSection || isUsed) && 'opacity-50 cursor-not-allowed',
               )}
             >
               <span
@@ -408,9 +409,14 @@ function AddSectionPanel({
                 )}
               </span>
               <span className="min-w-0 flex-1">
-                <span className={cn('block text-sm font-semibold leading-tight sm:text-base', active ? 'text-primary' : 'text-foreground')}>
-                  {t.label}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className={cn('block text-sm font-semibold leading-tight sm:text-base', active ? 'text-primary' : 'text-foreground')}>
+                    {t.label}
+                  </span>
+                  {isUsed && (
+                    <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+                  )}
+                </div>
                 {t.desc && (
                   <span className="mt-0.5 block text-xs leading-snug text-muted-foreground sm:text-sm">{t.desc}</span>
                 )}
