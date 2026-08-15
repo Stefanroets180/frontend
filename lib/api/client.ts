@@ -544,6 +544,10 @@ export const addSectionImage = async (sectionId: string, formData: FormData) => 
   return apiForm.post(`/vehicle-condition-reports/sections/${sectionId}/images`, formData);
 };
 
+export const deleteConditionSectionImage = async (sectionId: string, imageId: string) => {
+  return api.delete(`/vehicle-condition-reports/sections/${sectionId}/images/${imageId}`);
+};
+
 export const addManagerNote = async (reportId: string, data: {
   note: string;
 }) => {

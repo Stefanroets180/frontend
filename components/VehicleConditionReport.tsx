@@ -14,6 +14,7 @@ import {
   getVehicleConditionReport, 
   addConditionSection,
   addSectionImage,
+  deleteConditionSectionImage,
   addManagerNote,
   deleteConditionSection,
   updateConditionSection,
@@ -191,6 +192,7 @@ function OverviewHeader({ sections }: { sections: any[] }) {
 function SectionCard({ 
   section, 
   onImageUpload, 
+  onImageDelete,
   onDelete, 
   onEdit, 
   onLock, 
@@ -198,6 +200,7 @@ function SectionCard({
 }: { 
   section: any; 
   onImageUpload: (sectionId: string, e: React.ChangeEvent<HTMLInputElement>) => void;
+  onImageDelete: (sectionId: string, imageId: string) => void;
   onDelete: (sectionId: string) => void;
   onEdit: (section: any) => void;
   onLock: (sectionId: string) => void;
@@ -209,6 +212,7 @@ function SectionCard({
   const images = section.images ?? []
   const isLocked = section.locked ?? false
   const isExterior = section.sectionType?.startsWith('EXTERIOR_')
+  const [viewingImage, setViewingImage] = useState<string | null>(null)
 
   return (
     <div className={cn('rounded-xl border bg-card p-4 ring-1 ring-inset', meta?.ring)}>
@@ -276,13 +280,42 @@ function SectionCard({
           const imageUrl = img.imageUrl || '/placeholder.svg'
           const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `https://fleet-expense-app.duckdns.org${imageUrl}`
           return (
-            <img
-              key={img.id}
-              src={fullImageUrl}
-              alt={`${cfg?.label ?? section.sectionType} condition`}
-              className="h-16 w-16 rounded-lg border object-cover"
-              crossOrigin="anonymous"
-            />
+            <div key={img.id} className="relative group">
+              <img
+                src={fullImageUrl}
+                alt={`${cfg?.label ?? section.sectionType} condition`}
+                className="h-16 w-16 rounded-lg border object-cover cursor-pointer hover:opacity-80"
+                crossOrigin="anonymous"
+                onClick={() => setViewingImage(fullImageUrl)}
+              />
+              {!isLocked && (
+                <div className="absolute inset-0 flex items-center justify-center gap-1 rounded-lg bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setViewingImage(fullImageUrl)
+                    }}
+                    className="p-1 text-white hover:text-blue-300"
+                    title="View"
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onImageDelete(section.id, img.id)
+                    }}
+                    className="p-1 text-white hover:text-red-300"
+                    title="Delete"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+            </div>
           )
         })}
         {!isLocked && (
@@ -299,6 +332,26 @@ function SectionCard({
           </label>
         )}
       </div>
+
+      {/* Image viewer modal */}
+      {viewingImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={() => setViewingImage(null)}>
+          <img
+            src={viewingImage}
+            alt="Full size"
+            className="max-w-full max-h-full object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button
+            onClick={() => setViewingImage(null)}
+            className="absolute top-4 right-4 p-2 text-white hover:text-gray-300"
+          >
+            <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   )
 }
@@ -619,6 +672,17 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
     }
   }
 
+  const handleImageDelete = async (sectionId: string, imageId: string) => {
+    try {
+      await deleteConditionSectionImage(sectionId, imageId)
+      await loadReport()
+      flash('Image deleted')
+    } catch (error) {
+      console.error('Failed to delete image:', error)
+      setSubmitError(error instanceof Error ? error.message : 'Failed to delete image')
+    }
+  }
+
   const handleCropConfirm = async (croppedFile: File) => {
     setIsUploadingImage(true)
     try {
@@ -795,6 +859,7 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
                   key={s.id} 
                   section={s} 
                   onImageUpload={handleImageSelect}
+                  onImageDelete={handleImageDelete}
                   onDelete={handleDeleteSection}
                   onEdit={handleEditSection}
                   onLock={handleLockSection}
