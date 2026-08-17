@@ -23,6 +23,10 @@ import {
   MapPin,
   X,
   Sparkles,
+  CreditCard,
+  FileCheck,
+  IdCard,
+  MoreHorizontal,
   type LucideIcon,
 } from "lucide-react";
 import { VehicleLogo } from "@/components/vehicles/vehicle-logo";
@@ -73,14 +77,14 @@ const categoryIcons: Record<ExpenseCategory, any> = {
   [ExpenseCategory.MAINTENANCE_TOPUP]: Droplets,
   [ExpenseCategory.TIRES]: CircleDot,
   [ExpenseCategory.CAR_WASH]: Sparkles,
-  [ExpenseCategory.INSURANCE_PREMIUM]: FileText,
+  [ExpenseCategory.INSURANCE_PREMIUM]: Shield,
   [ExpenseCategory.VEHICLE_TRACKING]: MapPin,
-  [ExpenseCategory.ETOLL_SANRAL]: FileText,
-  [ExpenseCategory.LICENSE_RENEWAL]: FileText,
-  [ExpenseCategory.PERSONAL_LICENSE]: FileText,
+  [ExpenseCategory.ETOLL_SANRAL]: CreditCard,
+  [ExpenseCategory.LICENSE_RENEWAL]: FileCheck,
+  [ExpenseCategory.PERSONAL_LICENSE]: IdCard,
   [ExpenseCategory.ROADWORTHY]: Car,
-  [ExpenseCategory.OTHER_FIXED]: FileText,
-  [ExpenseCategory.PARKING]: FileText,
+  [ExpenseCategory.OTHER_FIXED]: MoreHorizontal,
+  [ExpenseCategory.PARKING]: MoreHorizontal,
 };
 
 const categoryColors: Record<
@@ -142,18 +146,18 @@ const categoryColors: Record<
 };
 
 const categoryDescriptions: Record<ExpenseCategory, string> = {
-  [ExpenseCategory.FUEL_LOG]: "Petrol, diesel, electricity",
-  [ExpenseCategory.CAR_WASH]: "Wash & Valet services",
-  [ExpenseCategory.MECHANIC_SERVICE]: "Workshop invoices",
-  [ExpenseCategory.MAINTENANCE_TOPUP]: "Oil, antifreeze, wipers",
-  [ExpenseCategory.TIRES]: "Purchase & rotation",
+  [ExpenseCategory.FUEL_LOG]: "Diesel or Petrol purchase",
+  [ExpenseCategory.CAR_WASH]: "Car wash, full valet, engine clean",
+  [ExpenseCategory.MECHANIC_SERVICE]: "Workshop invoice, windscreen, glass",
+  [ExpenseCategory.MAINTENANCE_TOPUP]: "Oil, battery, fuses, brake fluid",
+  [ExpenseCategory.TIRES]: "Purchase and rotation tracking",
   [ExpenseCategory.INSURANCE_PREMIUM]: "Vehicle insurance premiums",
   [ExpenseCategory.VEHICLE_TRACKING]: "Vehicle tracking subscriptions",
   [ExpenseCategory.ETOLL_SANRAL]: "SANRAL e-toll payments",
   [ExpenseCategory.LICENSE_RENEWAL]: "Vehicle license disc renewal",
   [ExpenseCategory.PERSONAL_LICENSE]: "Driver's license & ID card renewal",
   [ExpenseCategory.ROADWORTHY]: "Roadworthy certificate testing",
-  [ExpenseCategory.OTHER_FIXED]: "Parking, tolls, other costs",
+  [ExpenseCategory.OTHER_FIXED]: "Parking, tolls, other vehicle costs",
   [ExpenseCategory.PARKING]: "Parking fees",
 };
 
