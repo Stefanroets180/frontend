@@ -701,20 +701,21 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
     }
   }
 
-  const handleCropConfirm = async (croppedFile: File) => {
+  const handleCropConfirm = async (croppedFile: File, originalFile: File) => {
+    console.log('VehicleConditionReport - handleCropConfirm called with:', croppedFile.name, croppedFile.size)
     setIsUploadingImage(true)
     try {
       const formData = new FormData()
       formData.append('file', croppedFile)
-      
+
       await addSectionImage(targetSectionId, formData)
-      
+
       await loadReport()
-      
+
       setShowCropModal(false)
       setSelectedImage(null)
       setTargetSectionId('')
-      
+
       flash('Image uploaded')
     } catch (error) {
       console.error('Failed to upload image:', error)
