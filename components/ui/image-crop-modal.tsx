@@ -81,20 +81,25 @@ export function ImageCropModal({
     setIsProcessing(true)
 
     try {
+      console.log('Crop modal - Starting crop process, imageFile:', imageFile.name, imageFile.size, imageFile.type)
+      console.log('Crop modal - Crop dimensions:', completedCrop)
+
       // Use the built-in cropToImg helper from react-image-crop v11
       const croppedImgSrc = await cropToImg(imgRef.current, completedCrop)
-      
+      console.log('Crop modal - Cropped image data URL length:', croppedImgSrc.length)
+
       // Convert the data URL back to a File
       const response = await fetch(croppedImgSrc)
       const blob = await response.blob()
-      
+      console.log('Crop modal - Blob size:', blob.size, 'type:', blob.type)
+
       const croppedFile = new File(
         [blob],
         imageFile.name.replace(/\.[^.]+$/, '_cropped.jpg'),
         { type: 'image/jpeg' }
       )
-      
-      console.log('Crop modal - Confirming with cropped file:', croppedFile)
+
+      console.log('Crop modal - Confirming with cropped file:', croppedFile.name, croppedFile.size, croppedFile.type)
       onConfirm(croppedFile, imageFile)
       setIsProcessing(false)
     } catch (error) {
