@@ -76,22 +76,33 @@ export function ImageCropModal({
   }
 
   const handleConfirm = async () => {
-    if (!completedCrop || !imgRef.current) return
+    if (!completedCrop || !imgRef.current) {
+      console.error('Crop modal - Missing completedCrop or imgRef')
+      return
+    }
 
     setIsProcessing(true)
 
     try {
-      console.log('Crop modal - Starting crop process, imageFile:', imageFile.name, imageFile.size, imageFile.type)
+      console.log('Crop modal - Starting crop process, imageFile:', imageFile?.name, imageFile?.size, imageFile?.type)
       console.log('Crop modal - Crop dimensions:', completedCrop)
 
       // Use the built-in cropToImg helper from react-image-crop v11
       const croppedImgSrc = await cropToImg(imgRef.current, completedCrop)
-      console.log('Crop modal - Cropped image data URL length:', croppedImgSrc.length)
+      console.log('Crop modal - Cropped image data URL length:', croppedImgSrc?.length)
+
+      if (!croppedImgSrc) {
+        throw new Error('cropToImg returned empty result')
+      }
 
       // Convert the data URL back to a File
       const response = await fetch(croppedImgSrc)
       const blob = await response.blob()
-      console.log('Crop modal - Blob size:', blob.size, 'type:', blob.type)
+      console.log('Crop modal - Blob size:', blob?.size, 'type:', blob?.type)
+
+      if (!blob || blob.size === 0) {
+        throw new Error('Blob is empty or invalid')
+      }
 
       const croppedFile = new File(
         [blob],
@@ -104,9 +115,16 @@ export function ImageCropModal({
       setIsProcessing(false)
     } catch (error) {
       console.error('Crop processing error:', error)
+      console.error('Crop modal - Error details:', error instanceof Error ? error.message : String(error))
+      console.error('Crop modal - Error stack:', error instanceof Error ? error.stack : 'No stack')
+
       // Fallback to original file
       console.log('Crop modal - Error, using original file:', imageFile)
-      onConfirm(imageFile, imageFile)
+      try {
+        onConfirm(imageFile, imageFile)
+      } catch (fallbackError) {
+        console.error('Crop modal - Fallback also failed:', fallbackError)
+      }
       setIsProcessing(false)
     }
   }

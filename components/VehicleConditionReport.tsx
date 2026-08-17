@@ -702,12 +702,29 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
   }
 
   const handleCropConfirm = async (croppedFile: File, originalFile: File) => {
-    console.log('VehicleConditionReport - handleCropConfirm called with:', croppedFile.name, croppedFile.size)
+    console.log('VehicleConditionReport - handleCropConfirm called with:', croppedFile?.name, croppedFile?.size)
+    console.log('VehicleConditionReport - targetSectionId:', targetSectionId)
+
+    if (!targetSectionId) {
+      console.error('VehicleConditionReport - Missing targetSectionId')
+      setSubmitError('Failed to upload image: Missing section ID')
+      setShowCropModal(false)
+      return
+    }
+
+    if (!croppedFile) {
+      console.error('VehicleConditionReport - Missing croppedFile')
+      setSubmitError('Failed to upload image: No cropped file provided')
+      setShowCropModal(false)
+      return
+    }
+
     setIsUploadingImage(true)
     try {
       const formData = new FormData()
       formData.append('file', croppedFile)
 
+      console.log('VehicleConditionReport - Uploading image to section:', targetSectionId)
       await addSectionImage(targetSectionId, formData)
 
       await loadReport()
@@ -718,8 +735,10 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
 
       flash('Image uploaded')
     } catch (error) {
-      console.error('Failed to upload image:', error)
+      console.error('VehicleConditionReport - Failed to upload image:', error)
+      console.error('VehicleConditionReport - Error details:', error instanceof Error ? error.message : String(error))
       setSubmitError('Failed to upload image')
+      setShowCropModal(false)
     } finally {
       setIsUploadingImage(false)
     }
