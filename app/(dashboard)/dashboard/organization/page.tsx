@@ -1084,10 +1084,12 @@ export default function OrganizationPage() {
                   </SelectItem>
                   {teamMembers
                     .filter((m) => {
-                      // Admins can assign to both MANAGER and DRIVER
-                      // Managers can only assign to DRIVER
-                      if (isAdmin) {
-                        return m.role === UserRole.DRIVER || m.role === UserRole.MANAGER
+                      // Admins and Super Admins can assign to DRIVER, MANAGER, and RENTAL_CUSTOMER
+                      // Managers can assign to DRIVER and RENTAL_CUSTOMER
+                      if (isAdmin || isSuperAdmin) {
+                        return m.role === UserRole.DRIVER || m.role === UserRole.MANAGER || m.role === UserRole.RENTAL_CUSTOMER
+                      } else if (isManager) {
+                        return m.role === UserRole.DRIVER || m.role === UserRole.RENTAL_CUSTOMER
                       } else {
                         return m.role === UserRole.DRIVER
                       }
