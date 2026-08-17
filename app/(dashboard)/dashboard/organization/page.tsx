@@ -62,6 +62,10 @@ export default function OrganizationPage() {
   const isManager = currentUserRole === UserRole.MANAGER
   const isAdmin = currentUserRole === UserRole.ADMIN
   const isSuperAdmin = currentUserRole === UserRole.SUPER_ADMIN
+
+  console.log('Organization Page - User role:', currentUserRole)
+  console.log('Organization Page - isFleetMode:', isFleetMode)
+  console.log('Organization Page - isSoloMode:', isSoloMode)
   
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
