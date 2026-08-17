@@ -82,7 +82,7 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
       if (confirmation && isEditing) {
         // Update existing confirmation
         response = await updateOdometerConfirmation(confirmation.id, {
-          reading: data.reading,
+          odometerReading: data.reading,
         })
         setConfirmation(response.data)
       } else {

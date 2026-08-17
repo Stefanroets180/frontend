@@ -335,7 +335,7 @@ export const uploadOdometerConfirmationImage = async (confirmationId: string, fo
 
 /** Update odometer confirmation */
 export const updateOdometerConfirmation = async (confirmationId: string, data: {
-  reading: number;
+  odometerReading: number;
 }) => {
   return api.put(`/odometer-confirmations/${confirmationId}`, data);
 };
