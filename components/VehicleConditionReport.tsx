@@ -319,12 +319,11 @@ function SectionCard({
           )
         })}
         {!isLocked && (
-          <label htmlFor={`image-upload-${section.id}`} className="flex h-16 w-16 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-border bg-muted/30 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary cursor-pointer">
+          <label className="flex h-16 w-16 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-border bg-muted/30 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary cursor-pointer">
             <span className="sr-only">Add image for {cfg?.label ?? section.sectionType}</span>
             <Camera className="h-4 w-4" />
             <span className="text-[10px] font-medium">Add</span>
             <input
-              id={`image-upload-${section.id}`}
               type="file"
               accept="image/*"
               className="hidden"
