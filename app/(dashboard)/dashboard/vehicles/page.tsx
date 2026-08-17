@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Plus, Car, AlertCircle, Lock, Image as ImageIcon, Clock, Trash2, Check, X, MessageSquare, Eye } from "lucide-react";
+import { Plus, Car, AlertCircle, Lock, Image as ImageIcon, Clock, Trash2, Check, X, MessageSquare, Eye, Edit } from "lucide-react";
 import { VehicleLogo } from "@/components/vehicles/vehicle-logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api/client";
 import { getVehicleAssignments } from "@/lib/api/client";
 import type { Vehicle } from "@/lib/types/database";
@@ -38,6 +39,12 @@ export default function VehiclesPage() {
   const [rejectionReason, setRejectionReason] = useState('');
   const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
   const [viewingVehicle, setViewingVehicle] = useState<Vehicle | null>(null);
+  
+  // Odometer editing state
+  const [editOdometerOpen, setEditOdometerOpen] = useState(false);
+  const [editingOdometerVehicle, setEditingOdometerVehicle] = useState<Vehicle | null>(null);
+  const [newOdometerReading, setNewOdometerReading] = useState('');
+  const [isUpdatingOdometer, setIsUpdatingOdometer] = useState(false);
   
   // Fleet-specific state
   const [conditionReportOpen, setConditionReportOpen] = useState(false);
@@ -116,6 +123,42 @@ export default function VehiclesPage() {
   const handleViewDetails = (vehicle: Vehicle) => {
     setViewingVehicle(vehicle);
     setViewDetailsOpen(true);
+  };
+
+  const handleEditOdometer = (vehicle: Vehicle) => {
+    setEditingOdometerVehicle(vehicle);
+    setNewOdometerReading(vehicle.currentOdometer.toString());
+    setEditOdometerOpen(true);
+  };
+
+  const handleUpdateOdometer = async () => {
+    if (!editingOdometerVehicle || !newOdometerReading) return;
+
+    const odometerValue = parseInt(newOdometerReading);
+    if (isNaN(odometerValue) || odometerValue < 0) {
+      alert('Please enter a valid odometer reading');
+      return;
+    }
+
+    setIsUpdatingOdometer(true);
+    try {
+      await api.patch(`/vehicles/${editingOdometerVehicle.id}/odometer?odometerReading=${odometerValue}`, {});
+      setVehicles(
+        vehicles.map((v) =>
+          v.id === editingOdometerVehicle.id
+            ? { ...v, currentOdometer: odometerValue }
+            : v
+        )
+      );
+      setEditOdometerOpen(false);
+      setEditingOdometerVehicle(null);
+      setNewOdometerReading('');
+    } catch (err) {
+      console.error('Failed to update odometer:', err);
+      alert('Failed to update odometer. Please try again.');
+    } finally {
+      setIsUpdatingOdometer(false);
+    }
   };
 
   const handleLockVehicle = async (vehicleId: string, reason?: string) => {
@@ -405,6 +448,26 @@ export default function VehiclesPage() {
                     <p className="text-sm text-muted-foreground capitalize">
                       {vehicle.fuelType ? vehicle.fuelType.toLowerCase().replace("_", " ") : "N/A"}
                     </p>
+                  </div>
+
+                  {/* Odometer Reading - Editable for managers/admins/super admins */}
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="text-xs text-muted-foreground">Odometer</Label>
+                      <p className="text-sm font-medium">
+                        {vehicle.currentOdometer.toLocaleString()} km
+                      </p>
+                    </div>
+                    {!isDriver && !isRentalCustomer && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 w-7 p-0"
+                        onClick={() => handleEditOdometer(vehicle)}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                    )}
                   </div>
 
                   {/* Image count indicator */}
@@ -793,6 +856,42 @@ export default function VehiclesPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setViewDetailsOpen(false)}>
               Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Odometer Dialog */}
+      <Dialog open={editOdometerOpen} onOpenChange={setEditOdometerOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Odometer Reading</DialogTitle>
+            <DialogDescription>
+              Update the current odometer reading for {editingOdometerVehicle?.nickname || editingOdometerVehicle?.make + ' ' + editingOdometerVehicle?.model}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="odometer-reading">Current Odometer (km)</Label>
+              <Input
+                id="odometer-reading"
+                type="number"
+                value={newOdometerReading}
+                onChange={(e) => setNewOdometerReading(e.target.value)}
+                placeholder="Enter odometer reading"
+                min="0"
+              />
+              <p className="text-xs text-muted-foreground">
+                Previous reading: {editingOdometerVehicle?.currentOdometer.toLocaleString()} km
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditOdometerOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleUpdateOdometer} disabled={isUpdatingOdometer}>
+              {isUpdatingOdometer ? 'Updating...' : 'Update Odometer'}
             </Button>
           </DialogFooter>
         </DialogContent>
