@@ -558,7 +558,7 @@ export const deleteConditionSectionImage = async (sectionId: string, imageId: st
 export const addManagerNote = async (reportId: string, data: {
   note: string;
 }) => {
-  return api.post(`/vehicle-condition-reports/${reportId}/notes`, data);
+  return api.post(`/vehicle-condition-reports/${reportId}/manager-notes`, data);
 };
 
 export const deleteConditionSection = async (sectionId: string) => {
