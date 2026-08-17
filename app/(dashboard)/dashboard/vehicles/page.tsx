@@ -450,7 +450,7 @@ export default function VehiclesPage() {
                     </p>
                   </div>
 
-                  {/* Odometer Reading - Editable for managers/admins/super admins */}
+                  {/* Odometer Reading - Editable for all users */}
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label className="text-xs text-muted-foreground">Odometer</Label>
@@ -458,16 +458,14 @@ export default function VehiclesPage() {
                         {vehicle.currentOdometer.toLocaleString()} km
                       </p>
                     </div>
-                    {!isDriver && !isRentalCustomer && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-7 w-7 p-0"
-                        onClick={() => handleEditOdometer(vehicle)}
-                      >
-                        <Edit className="h-3 w-3" />
-                      </Button>
-                    )}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 w-7 p-0"
+                      onClick={() => handleEditOdometer(vehicle)}
+                    >
+                      <Edit className="h-3 w-3" />
+                    </Button>
                   </div>
 
                   {/* Image count indicator */}
