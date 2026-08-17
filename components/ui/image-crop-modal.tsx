@@ -5,7 +5,7 @@ import ReactCrop from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
-import { Loader2, RotateCw } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 
 interface ImageCropModalProps {
   imageFile: File
@@ -127,10 +127,6 @@ export function ImageCropModal({
     onConfirm(imageFile, imageFile)
   }
 
-  const handleRotate = () => {
-    setRotation((prev) => (prev + 90) % 360)
-  }
-
   return (
     <Dialog open={isOpen} onOpenChange={onCancel}>
       <DialogContent 
@@ -146,18 +142,6 @@ export function ImageCropModal({
             <h2 className="text-white text-lg font-semibold">
               {mode === 'receipt' ? 'Crop RECEIPT' : mode === 'odometer' ? 'Crop ODOMETER' : mode === 'logo' ? 'Crop LOGO' : 'Crop PROFILE'}
             </h2>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleRotate}
-                className="bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
-              >
-                <RotateCw className="h-4 w-4 mr-2" />
-                Rotate
-              </Button>
-            </div>
           </div>
 
           {/* Image Area */}
