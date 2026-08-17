@@ -213,6 +213,11 @@ function SectionCard({
   const isLocked = section.locked ?? false
   const isExterior = section.sectionType?.startsWith('EXTERIOR_')
   const [viewingImage, setViewingImage] = useState<string | null>(null)
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
+
+  const handleImageError = (imageId: string) => {
+    setImageErrors(prev => new Set(prev).add(imageId))
+  }
 
   return (
     <div className={cn('rounded-xl border bg-card p-4 ring-1 ring-inset', meta?.ring)}>
@@ -279,16 +284,24 @@ function SectionCard({
         {images.map((img: any) => {
           const imageUrl = img.imageUrl || '/placeholder.svg'
           const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `https://fleet-expense-app.duckdns.org${imageUrl}`
+          const hasError = imageErrors.has(img.id)
           return (
             <div key={img.id} className="relative group">
-              <img
-                src={fullImageUrl}
-                alt={`${cfg?.label ?? section.sectionType} condition`}
-                className="h-16 w-16 rounded-lg border object-cover cursor-pointer hover:opacity-80"
-                crossOrigin="anonymous"
-                onClick={() => setViewingImage(fullImageUrl)}
-              />
-              {!isLocked && (
+              {hasError ? (
+                <div className="h-16 w-16 rounded-lg border border-dashed border-muted-foreground/30 flex items-center justify-center bg-muted/30">
+                  <span className="text-xs text-muted-foreground">Image not found</span>
+                </div>
+              ) : (
+                <img
+                  src={fullImageUrl}
+                  alt={`${cfg?.label ?? section.sectionType} condition`}
+                  className="h-16 w-16 rounded-lg border object-cover cursor-pointer hover:opacity-80"
+                  crossOrigin="anonymous"
+                  onClick={() => setViewingImage(fullImageUrl)}
+                  onError={() => handleImageError(img.id)}
+                />
+              )}
+              {!isLocked && !hasError && (
                 <div className="absolute inset-0 flex items-center justify-center gap-1 rounded-lg bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={(e) => {
