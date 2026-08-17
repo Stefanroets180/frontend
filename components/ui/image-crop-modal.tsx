@@ -204,24 +204,23 @@ export function ImageCropModal({
                   'Use This Crop'
                 )}
               </Button>
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleUseOriginal}
-                    className="flex-1 h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
-                  >
-                    Use Original
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={onCancel}
-                    className="flex-1 h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
-                  >
-                    Retake
-                  </Button>
-                </div>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleUseOriginal}
+                  className="flex-1 h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
+                >
+                  Use Original
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onCancel}
+                  className="flex-1 h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
+                >
+                  Retake
+                </Button>
               </div>
             </div>
           </div>
