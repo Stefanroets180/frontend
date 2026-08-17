@@ -870,19 +870,19 @@ export default function VehiclesPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>
+              <Label htmlFor="odometer-reading">
                 Current Odometer (km)
-                <Input
-                  id="odometer-reading"
-                  name="odometer-reading"
-                  type="number"
-                  value={newOdometerReading}
-                  onChange={(e) => setNewOdometerReading(e.target.value)}
-                  placeholder="Enter odometer reading"
-                  min="0"
-                  className="mt-2"
-                />
               </Label>
+              <Input
+                id="odometer-reading"
+                name="odometer-reading"
+                type="number"
+                value={newOdometerReading}
+                onChange={(e) => setNewOdometerReading(e.target.value)}
+                placeholder="Enter odometer reading"
+                min="0"
+                className="mt-2"
+              />
               <p className="text-xs text-muted-foreground">
                 Previous reading: {editingOdometerVehicle?.currentOdometer.toLocaleString()} km
               </p>
