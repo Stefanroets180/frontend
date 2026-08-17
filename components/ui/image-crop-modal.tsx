@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
-import ReactCrop, { Crop, PixelCrop, cropToCanvas, cropToImg } from 'react-image-crop'
+import ReactCrop, { Crop, PixelCrop, cropToCanvas, cropToImg, centerCrop, makeAspectCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
@@ -30,6 +30,7 @@ export function ImageCropModal({
   const [rotation, setRotation] = useState(0)
   const imgRef = useRef<HTMLImageElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null)
 
   // No aspect ratio locking - fully freeform cropping
   const minCropWidth = 100
@@ -38,11 +39,16 @@ export function ImageCropModal({
   useEffect(() => {
     if (!imageFile) return
 
-    const reader = new FileReader()
-    reader.onload = () => {
-      setImgSrc(reader.result as string)
+    const loadImage = async () => {
+      const resizedFile = await resizeImageIfNeeded(imageFile)
+      const reader = new FileReader()
+      reader.onload = () => {
+        setImgSrc(reader.result as string)
+      }
+      reader.readAsDataURL(resizedFile)
     }
-    reader.readAsDataURL(imageFile)
+
+    loadImage()
 
     // Set initial crop - larger area for more flexibility
     setCrop({
@@ -54,8 +60,51 @@ export function ImageCropModal({
     })
   }, [imageFile])
 
+  // Resize large images for better mobile performance
+  const resizeImageIfNeeded = async (file: File): Promise<File> => {
+    const isMobile = window.innerWidth < 768
+    const MAX_SIZE = isMobile ? 1920 : 4096 // Lower max size for mobile
+
+    if (file.size < 2 * 1024 * 1024) return file // Skip if under 2MB
+
+    return new Promise((resolve) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        let { width, height } = img
+
+        // Scale down if too large
+        if (width > MAX_SIZE || height > MAX_SIZE) {
+          const ratio = Math.min(MAX_SIZE / width, MAX_SIZE / height)
+          width *= ratio
+          height *= ratio
+        }
+
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')
+        ctx?.drawImage(img, 0, 0, width, height)
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const resizedFile = new File([blob], file.name, { type: file.type })
+            console.log('Image resized from', file.size, 'to', resizedFile.size)
+            resolve(resizedFile)
+          } else {
+            resolve(file)
+          }
+        }, file.type, 0.9)
+      }
+      img.onerror = () => resolve(file)
+      img.src = URL.createObjectURL(file)
+    })
+  }
+
   useEffect(() => {
+    // Disable auto-preview on mobile for performance
+    // Only generate preview on desktop
     if (!completedCrop || !imgRef.current) return
+    if (window.innerWidth < 768) return // Mobile breakpoint
 
     generatePreview()
   }, [completedCrop])
@@ -87,22 +136,43 @@ export function ImageCropModal({
       console.log('Crop modal - Starting crop process, imageFile:', imageFile?.name, imageFile?.size, imageFile?.type)
       console.log('Crop modal - Crop dimensions:', completedCrop)
 
-      // Use the built-in cropToImg helper from react-image-crop v11
-      const croppedImgSrc = await cropToImg(imgRef.current, completedCrop)
-      console.log('Crop modal - Cropped image data URL length:', croppedImgSrc?.length)
+      // Use canvas-based cropping for better performance
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
 
-      if (!croppedImgSrc) {
-        throw new Error('cropToImg returned empty result')
+      if (!ctx) {
+        throw new Error('Failed to get canvas context')
       }
 
-      // Convert the data URL back to a File
-      const response = await fetch(croppedImgSrc)
-      const blob = await response.blob()
-      console.log('Crop modal - Blob size:', blob?.size, 'type:', blob?.type)
+      const image = imgRef.current
+      const scaleX = image.naturalWidth / image.width
+      const scaleY = image.naturalHeight / image.height
+
+      canvas.width = completedCrop.width
+      canvas.height = completedCrop.height
+
+      ctx.drawImage(
+        image,
+        completedCrop.x * scaleX,
+        completedCrop.y * scaleY,
+        completedCrop.width * scaleX,
+        completedCrop.height * scaleY,
+        0,
+        0,
+        completedCrop.width,
+        completedCrop.height
+      )
+
+      // Convert canvas to blob
+      const blob = await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob(resolve, 'image/jpeg', 0.9)
+      })
 
       if (!blob || blob.size === 0) {
-        throw new Error('Blob is empty or invalid')
+        throw new Error('Canvas to blob failed or returned empty blob')
       }
+
+      console.log('Crop modal - Blob size:', blob.size, 'type:', blob.type)
 
       const croppedFile = new File(
         [blob],
