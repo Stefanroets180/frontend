@@ -339,6 +339,7 @@ function SectionCard({
             <input
               type="file"
               accept="image/*"
+              capture="environment"
               className="hidden"
               onChange={(e) => onImageUpload(section.id, e)}
             />
