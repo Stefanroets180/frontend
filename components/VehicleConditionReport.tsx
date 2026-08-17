@@ -434,8 +434,9 @@ function AddSectionPanel({
       </p>
 
       {/* Area picker */}
-      <p className="mb-2 text-xs font-medium text-muted-foreground">Area</p>
-      <div role="radiogroup" aria-label="Select inspection area" className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      <fieldset>
+        <legend className="mb-2 text-xs font-medium text-muted-foreground">Area</legend>
+        <div role="radiogroup" aria-label="Select inspection area" className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {available.map((t) => {
           const Icon = t.icon
           const active = sectionType === t.value
@@ -490,10 +491,12 @@ function AddSectionPanel({
           )
         })}
       </div>
+      </fieldset>
 
       {/* Condition picker */}
-      <p className="mb-2 text-xs font-medium text-muted-foreground">Condition</p>
-      <div role="radiogroup" aria-label="Select condition" className="mb-4 grid grid-cols-4 gap-2">
+      <fieldset>
+        <legend className="mb-2 text-xs font-medium text-muted-foreground">Condition</legend>
+        <div role="radiogroup" aria-label="Select condition" className="mb-4 grid grid-cols-4 gap-2">
         {CONDITION_ORDER.map((c) => {
           const meta = CONDITION_META[c]
           const active = condition === c
@@ -519,6 +522,7 @@ function AddSectionPanel({
           )
         })}
       </div>
+      </fieldset>
 
       {/* Notes */}
       <Label htmlFor="section-notes" className="mb-2 block text-xs font-medium text-muted-foreground">
