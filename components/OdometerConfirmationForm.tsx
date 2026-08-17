@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { CheckCircle2, AlertCircle, Camera, Gauge, Edit2 } from 'lucide-react'
 import { ImageCropModal } from '@/components/ui/image-crop-modal'
-import { createOdometerConfirmation, getOdometerConfirmation, uploadOdometerConfirmationImage } from '@/lib/api/client'
+import { createOdometerConfirmation, getOdometerConfirmation, updateOdometerConfirmation, uploadOdometerConfirmationImage } from '@/lib/api/client'
 
 const odometerSchema = z.object({
   reading: z.number().min(0, 'Odometer reading must be positive'),
@@ -78,12 +78,22 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
     setSubmitSuccess(false)
 
     try {
-      const response = await createOdometerConfirmation({
-        assignmentId,
-        reading: data.reading,
-      })
+      let response
+      if (confirmation && isEditing) {
+        // Update existing confirmation
+        response = await updateOdometerConfirmation(confirmation.id, {
+          reading: data.reading,
+        })
+        setConfirmation(response.data)
+      } else {
+        // Create new confirmation
+        response = await createOdometerConfirmation({
+          assignmentId,
+          reading: data.reading,
+        })
+        setConfirmation(response.data)
+      }
       
-      setConfirmation(response.data)
       setSubmitSuccess(true)
       setIsEditing(false)
       

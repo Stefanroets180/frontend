@@ -572,3 +572,25 @@ export const lockConditionSection = async (sectionId: string) => {
 export const unlockConditionSection = async (sectionId: string) => {
   return api.post(`/vehicle-condition-reports/sections/${sectionId}/unlock`, {});
 };
+
+// Odometer Confirmation
+export const createOdometerConfirmation = async (data: {
+  assignmentId: string;
+  reading: number;
+}) => {
+  return api.post('/odometer-confirmations/assignment/' + data.assignmentId, data);
+};
+
+export const getOdometerConfirmation = async (assignmentId: string) => {
+  return api.get(`/odometer-confirmations/assignment/${assignmentId}`);
+};
+
+export const updateOdometerConfirmation = async (confirmationId: string, data: {
+  reading: number;
+}) => {
+  return api.put(`/odometer-confirmations/${confirmationId}`, data);
+};
+
+export const uploadOdometerConfirmationImage = async (confirmationId: string, formData: FormData) => {
+  return apiForm.post(`/odometer-confirmations/${confirmationId}/images`, formData);
+};
