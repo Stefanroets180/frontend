@@ -66,6 +66,7 @@ import {
 import type { EntryImage } from "@/lib/types/database";
 import { api, API_URL, apiForm } from "@/lib/api/client";
 import { ImageCropModal } from "@/components/ui/image-crop-modal";
+import { useAuth } from "@/lib/contexts/auth-context";
 
 interface OdometerVerificationRecord {
   id: string;
@@ -98,6 +99,7 @@ interface TaxReadinessAuditProps {
  * Provides a visual audit trail for SARS compliance with edit, delete, and lock capabilities.
  */
 export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
+  const { user } = useAuth();
   const [selectedYear, setSelectedYear] = useState<number>(getSATaxYear());
   const [verifications, setVerifications] = useState<
     OdometerVerificationRecord[]
@@ -106,6 +108,8 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
     Array<{ id: string; registrationNumber: string; make: string }>
   >([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const isAdminOrManager = user?.role === 'ADMIN' || user?.role === 'MANAGER' || user?.role === 'SUPER_ADMIN';
 
   const { isOpeningWindow, isClosingWindow } = getTaxYearReadingWindow();
 
@@ -375,6 +379,7 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
                 onDelete={handleDeleteVerification}
                 onLock={handleLockVerification}
                 onUnlock={handleUnlockVerification}
+                isAdminOrManager={isAdminOrManager}
               />
             ))}
           </div>
@@ -413,6 +418,7 @@ interface VehicleVerificationCardProps {
   onDelete: (id: string) => Promise<void>;
   onLock: (id: string, reason?: string) => Promise<void>;
   onUnlock: (id: string) => Promise<void>;
+  isAdminOrManager: boolean;
 }
 
 function VehicleVerificationCard({
@@ -425,6 +431,7 @@ function VehicleVerificationCard({
   onDelete,
   onLock,
   onUnlock,
+  isAdminOrManager,
 }: VehicleVerificationCardProps) {
   return (
     <div className="border rounded-lg overflow-hidden w-full" style={{ maxWidth: '100%', overflow: 'hidden' }}>
@@ -455,6 +462,7 @@ function VehicleVerificationCard({
               onDelete={onDelete}
               onLock={onLock}
               onUnlock={onUnlock}
+              isAdminOrManager={isAdminOrManager}
             />
           </div>
         </div>
@@ -468,6 +476,7 @@ function VehicleVerificationCard({
               onDelete={onDelete}
               onLock={onLock}
               onUnlock={onUnlock}
+              isAdminOrManager={isAdminOrManager}
             />
           </div>
         </div>
@@ -484,6 +493,7 @@ interface ReadingCardProps {
   onDelete: (id: string) => Promise<void>;
   onLock: (id: string, reason?: string) => Promise<void>;
   onUnlock: (id: string) => Promise<void>;
+  isAdminOrManager: boolean;
 }
 
 function ReadingCard({
@@ -494,6 +504,7 @@ function ReadingCard({
   onDelete,
   onLock,
   onUnlock,
+  isAdminOrManager,
 }: ReadingCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showLockDialog, setShowLockDialog] = useState(false);
@@ -750,24 +761,26 @@ function ReadingCard({
                   <Trash2 className="h-4 w-4" />
                 </Button>
               )}
-              <Button
-                type="button"
-                variant="secondary"
-                size="icon"
-                className="!flex-none h-8 w-8 shrink-0"
-                onClick={() =>
-                  isLocked ? setShowUnlockDialog(true) : setShowLockDialog(true)
-                }
-                title={
-                  isLocked ? "Re-open record for editing" : "Confirm record"
-                }
-              >
-                {isLocked ? (
-                  <Unlock className="h-4 w-4" />
-                ) : (
-                  <Lock className="h-4 w-4" />
-                )}
-              </Button>
+              {isAdminOrManager && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="icon"
+                  className="!flex-none h-8 w-8 shrink-0"
+                  onClick={() =>
+                    isLocked ? setShowUnlockDialog(true) : setShowLockDialog(true)
+                  }
+                  title={
+                    isLocked ? "Re-open record for editing" : "Confirm record"
+                  }
+                >
+                  {isLocked ? (
+                    <Unlock className="h-4 w-4" />
+                  ) : (
+                    <Lock className="h-4 w-4" />
+                  )}
+                </Button>
+              )}
             </div>
           </div>
 
@@ -831,30 +844,32 @@ function ReadingCard({
                 <span className="truncate">Edit</span>
               </Button>
             )}
-            <Button
-              variant="outline"
-              size="sm"
-              className={cn(
-                "w-full h-8 !flex-none",
-                isLocked && "text-amber-600 hover:text-amber-700",
-              )}
-              onClick={() =>
-                isLocked ? setShowUnlockDialog(true) : setShowLockDialog(true)
-              }
-              title={isLocked ? "Re-open for editing" : "Confirm record"}
-            >
-              {isLocked ? (
-                <>
-                  <Unlock className="h-3 w-3 mr-1 shrink-0" />
-                  <span className="truncate">Re-open</span>
-                </>
-              ) : (
-                <>
-                  <Lock className="h-3 w-3 mr-1 shrink-0" />
-                  <span className="truncate">Confirm record</span>
-                </>
-              )}
-            </Button>
+            {isAdminOrManager && (
+              <Button
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "w-full h-8 !flex-none",
+                  isLocked && "text-amber-600 hover:text-amber-700",
+                )}
+                onClick={() =>
+                  isLocked ? setShowUnlockDialog(true) : setShowLockDialog(true)
+                }
+                title={isLocked ? "Re-open for editing" : "Confirm record"}
+              >
+                {isLocked ? (
+                  <>
+                    <Unlock className="h-3 w-3 mr-1 shrink-0" />
+                    <span className="truncate">Re-open</span>
+                  </>
+                ) : (
+                  <>
+                    <Lock className="h-3 w-3 mr-1 shrink-0" />
+                    <span className="truncate">Confirm record</span>
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         </div>
       ) : (
