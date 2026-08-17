@@ -172,7 +172,7 @@ export function ImageCropModal({
               <div className="relative">
                 <ReactCrop
                   crop={crop}
-                  onChange={(c) => setCrop(c)}
+                  onChange={(_, percentCrop) => setCrop(percentCrop)}
                   onComplete={handleCropComplete}
                   keepSelection
                   minWidth={minCropWidth}
