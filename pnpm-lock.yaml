@@ -147,8 +147,8 @@ importers:
         specifier: ^7.54.1
         version: 7.71.1(react@19.2.4)
       react-image-crop:
-        specifier: ^11.1.2
-        version: 11.1.2(react@19.2.4)
+        specifier: ^10.1.8
+        version: 10.1.8(react@19.2.4)
       react-resizable-panels:
         specifier: ^2.1.7
         version: 2.1.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -1665,8 +1665,8 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
 
-  react-image-crop@11.1.2:
-    resolution: {integrity: sha512-+0Pc2fxpwKL4u4oLmdKBw8XSwUceFbXbKEHvFOlsl/MGB1OVNic4uBlAPmEHGXYgoJIq+b63xHbc/aJMG0AVkA==}
+  react-image-crop@10.1.8:
+    resolution: {integrity: sha512-4rb8XtXNx7ZaOZarKKnckgz4xLMvds/YrU6mpJfGhGAsy2Mg4mIw1x+DCCGngVGq2soTBVVOxx2s/C6mTX9+pA==}
     peerDependencies:
       react: '>=16.13.1'
 
@@ -3178,7 +3178,7 @@ snapshots:
     dependencies:
       react: 19.2.4
 
-  react-image-crop@11.1.2(react@19.2.4):
+  react-image-crop@10.1.8(react@19.2.4):
     dependencies:
       react: 19.2.4
 
