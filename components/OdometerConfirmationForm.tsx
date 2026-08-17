@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { CheckCircle2, AlertCircle, Camera, Gauge } from 'lucide-react'
+import { CheckCircle2, AlertCircle, Camera, Gauge, Edit2 } from 'lucide-react'
 import { ImageCropModal } from '@/components/ui/image-crop-modal'
 import { createOdometerConfirmation, getOdometerConfirmation, uploadOdometerConfirmationImage } from '@/lib/api/client'
 
@@ -30,6 +30,7 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [isEditing, setIsEditing] = useState(false)
   
   // Image upload state
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
@@ -84,6 +85,7 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
       
       setConfirmation(response.data)
       setSubmitSuccess(true)
+      setIsEditing(false)
       
       setTimeout(() => setSubmitSuccess(false), 3000)
     } catch (error) {
@@ -91,6 +93,20 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
       setSubmitError(error instanceof Error ? error.message : 'Failed to save odometer reading')
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const handleEdit = () => {
+    setIsEditing(true)
+    if (confirmation) {
+      reset({ reading: confirmation.odometerReading || confirmation.reading })
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setIsEditing(false)
+    if (confirmation) {
+      reset({ reading: confirmation.odometerReading || confirmation.reading })
     }
   }
 
@@ -169,14 +185,28 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
           {/* Odometer Reading Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="reading">Current Odometer Reading (km) *</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="reading">Current Odometer Reading (km) *</Label>
+                {confirmation && !isEditing && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleEdit}
+                    className="h-8 text-xs"
+                  >
+                    <Edit2 className="h-3 w-3 mr-1" />
+                    Edit
+                  </Button>
+                )}
+              </div>
               <Input
                 {...register('reading', { valueAsNumber: true })}
                 id="reading"
                 type="number"
                 placeholder="e.g., 50000"
                 className="h-12 text-lg font-semibold"
-                disabled={!!confirmation}
+                disabled={!!confirmation && !isEditing}
               />
               {errors.reading && (
                 <p className="text-sm text-destructive">{errors.reading.message}</p>
@@ -191,6 +221,27 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
               >
                 {isSubmitting ? 'Saving...' : 'Save Odometer Reading'}
               </Button>
+            )}
+
+            {isEditing && confirmation && (
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1 h-12"
+                  onClick={handleCancelEdit}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  className="flex-1 h-12"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Updating...' : 'Update Reading'}
+                </Button>
+              </div>
             )}
           </form>
 
