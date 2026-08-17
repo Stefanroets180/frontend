@@ -410,7 +410,7 @@ export default function VehiclesPage() {
 
                   {/* Odometer Reading */}
                   <div className="space-y-0.5">
-                    <Label className="text-xs text-muted-foreground">Odometer</Label>
+                    <span className="text-xs text-muted-foreground">Odometer</span>
                     <p className="text-sm font-medium">
                       {vehicle.currentOdometer.toLocaleString()} km
                     </p>
@@ -737,60 +737,60 @@ export default function VehiclesPage() {
             <div className="space-y-4 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Registration Number</Label>
+                  <span className="text-xs text-muted-foreground">Registration Number</span>
                   <p className="font-medium">{viewingVehicle.registrationNumber}</p>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Year</Label>
+                  <span className="text-xs text-muted-foreground">Year</span>
                   <p className="font-medium">{viewingVehicle.year}</p>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Make</Label>
+                  <span className="text-xs text-muted-foreground">Make</span>
                   <p className="font-medium">{viewingVehicle.make}</p>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Model</Label>
+                  <span className="text-xs text-muted-foreground">Model</span>
                   <p className="font-medium">{viewingVehicle.model}</p>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Nickname</Label>
+                  <span className="text-xs text-muted-foreground">Nickname</span>
                   <p className="font-medium">{viewingVehicle.nickname || 'N/A'}</p>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Color</Label>
+                  <span className="text-xs text-muted-foreground">Color</span>
                   <p className="font-medium">{viewingVehicle.color || 'N/A'}</p>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Fuel Type</Label>
+                  <span className="text-xs text-muted-foreground">Fuel Type</span>
                   <p className="font-medium">{viewingVehicle.fuelType?.toLowerCase().replace('_', ' ') || 'N/A'}</p>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Tank Capacity</Label>
+                  <span className="text-xs text-muted-foreground">Tank Capacity</span>
                   <p className="font-medium">{viewingVehicle.tankCapacityLiters ? `${viewingVehicle.tankCapacityLiters}L` : 'N/A'}</p>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">VIN</Label>
+                  <span className="text-xs text-muted-foreground">VIN</span>
                   <p className="font-medium">{viewingVehicle.vin || 'N/A'}</p>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">License Expiry</Label>
+                  <span className="text-xs text-muted-foreground">License Expiry</span>
                   <p className="font-medium">{viewingVehicle.licenseExpiry ? new Date(viewingVehicle.licenseExpiry).toLocaleDateString() : 'N/A'}</p>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Insurance Policy Number</Label>
+                  <span className="text-xs text-muted-foreground">Insurance Policy Number</span>
                   <p className="font-medium">{viewingVehicle.insurancePolicyNumber || 'N/A'}</p>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Tracker Serial</Label>
+                  <span className="text-xs text-muted-foreground">Tracker Serial</span>
                   <p className="font-medium">{viewingVehicle.trackerSerial || 'N/A'}</p>
                 </div>
                 <div className="space-y-1 col-span-2">
-                  <Label className="text-xs text-muted-foreground">Notes</Label>
+                  <span className="text-xs text-muted-foreground">Notes</span>
                   <p className="font-medium">{viewingVehicle.notes || 'N/A'}</p>
                 </div>
               </div>
               <div className="border-t pt-4">
-                <Label className="text-xs text-muted-foreground">Status</Label>
+                <span className="text-xs text-muted-foreground">Status</span>
                 <Badge className="ml-2">
                   {viewingVehicle.status === VehicleStatus.PENDING_CREATION ? 'Pending Creation' :
                    viewingVehicle.status === VehicleStatus.PENDING_DELETION ? 'Pending Delete' :
