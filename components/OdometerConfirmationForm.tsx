@@ -22,9 +22,10 @@ interface OdometerConfirmationFormProps {
   assignmentId: string | null
   vehicleName?: string
   onComplete?: () => void
+  onOdometerUpdate?: (newReading: number) => void
 }
 
-export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete }: OdometerConfirmationFormProps) {
+export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete, onOdometerUpdate }: OdometerConfirmationFormProps) {
   const [confirmation, setConfirmation] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -96,6 +97,11 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
       
       setSubmitSuccess(true)
       setIsEditing(false)
+      
+      // Notify parent component of odometer update
+      if (onOdometerUpdate && response.data) {
+        onOdometerUpdate(response.data.odometerReading)
+      }
       
       setTimeout(() => setSubmitSuccess(false), 3000)
     } catch (error) {

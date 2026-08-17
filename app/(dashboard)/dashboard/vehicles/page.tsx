@@ -840,6 +840,15 @@ export default function VehiclesPage() {
               assignmentId={selectedAssignmentId}
               vehicleName={selectedVehicleForFleet.nickname || `${selectedVehicleForFleet.make} ${selectedVehicleForFleet.model}`}
               onComplete={() => setOdometerConfirmationOpen(false)}
+              onOdometerUpdate={(newReading) => {
+                setVehicles(
+                  vehicles.map((v) =>
+                    v.id === selectedVehicleForFleet?.id
+                      ? { ...v, currentOdometer: newReading }
+                      : v
+                  )
+                )
+              }}
             />
           ) : (
             <div className="text-center py-8 text-muted-foreground">
