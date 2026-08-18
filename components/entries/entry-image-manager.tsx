@@ -122,7 +122,10 @@ export function EntryImageManager({
 
     try {
       const processed = await processReceiptImage(croppedFile);
-      const processedFile = new File([processed.blob], croppedFile.name, {
+      // Update filename extension to match actual format (avif/webp)
+      const extension = processed.format.split('/')[1]; // "image/avif" -> "avif"
+      const baseName = croppedFile.name.replace(/\.[^.]+$/, ''); // Remove existing extension
+      const processedFile = new File([processed.blob], `${baseName}.${extension}`, {
         type: processed.format,
       });
 
