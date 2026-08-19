@@ -465,7 +465,7 @@ function VehicleVerificationCard({
               onDelete={onDelete}
               onLock={onLock}
               onUnlock={onUnlock}
-              onRefresh={fetchData}
+              onRefresh={onRefresh}
               isAdminOrManager={isAdminOrManager}
             />
           </div>
@@ -480,7 +480,7 @@ function VehicleVerificationCard({
               onDelete={onDelete}
               onLock={onLock}
               onUnlock={onUnlock}
-              onRefresh={fetchData}
+              onRefresh={onRefresh}
               isAdminOrManager={isAdminOrManager}
             />
           </div>
