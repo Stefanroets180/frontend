@@ -697,6 +697,9 @@ export function TyrePurchaseForm({
                     </span>
                   </>
                 )}
+                <label htmlFor="receiptImage" className="sr-only">
+                  Upload Receipt Image
+                </label>
                 <input
                   id="receiptImage"
                   name="receiptImage"

@@ -431,6 +431,9 @@ export function MaintenanceTopupForm({ vehicles, onSubmit, initialData, mode = '
                     <span className="text-xs text-muted-foreground mt-1">Photo will be compressed automatically</span>
                   </>
                 )}
+                <label htmlFor="receiptImage" className="sr-only">
+                  Upload Receipt Image
+                </label>
                 <input
                   id="receiptImage"
                   name="receiptImage"

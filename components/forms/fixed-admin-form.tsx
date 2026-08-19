@@ -482,6 +482,9 @@ function ReceiptImageCapture({
                 <span className="text-xs text-muted-foreground mt-1">Photo will be compressed automatically</span>
               </>
             )}
+            <label htmlFor="fixed-receiptImage" className="sr-only">
+              Upload Receipt Image
+            </label>
             <input
               id="fixed-receiptImage"
               name="receiptImage"

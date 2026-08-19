@@ -669,8 +669,12 @@ function ReadingCard({
   return (
     <div className="p-4 w-full" style={{ maxWidth: '100%', overflow: 'hidden', minWidth: '0' }}>
       {/* Hidden file input */}
+      <label htmlFor="tax-audit-file-upload" className="sr-only">
+        Upload Tax Audit Photo
+      </label>
       <input
         ref={fileInputRef}
+        id="tax-audit-file-upload"
         type="file"
         accept="image/*"
         onChange={handleFileSelect}

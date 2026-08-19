@@ -216,6 +216,9 @@ export function EntryImageManager({
   return (
     <div className={cn("space-y-4", className)}>
       {/* Hidden file inputs */}
+      <label htmlFor="entryImageUpload" className="sr-only">
+        Upload Entry Image
+      </label>
       <input
         ref={fileInputRef}
         id="entryImageUpload"
@@ -225,6 +228,9 @@ export function EntryImageManager({
         onChange={handleFileSelect}
         className="hidden"
       />
+      <label htmlFor="entryImageReupload" className="sr-only">
+        Re-upload Entry Image
+      </label>
       <input
         ref={reuploadInputRef}
         id="entryImageReupload"

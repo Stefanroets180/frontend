@@ -527,6 +527,9 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
                     <span className="text-xs text-muted-foreground mt-1">Photo will be compressed automatically</span>
                   </>
                 )}
+                <label htmlFor="invoiceImage" className="sr-only">
+                  Upload Invoice Image
+                </label>
                 <input
                   id="invoiceImage"
                   name="invoiceImage"
