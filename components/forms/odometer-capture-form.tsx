@@ -335,6 +335,9 @@ export function OdometerCaptureForm({
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Hidden file input for camera */}
+            <label htmlFor="odometerImage" className="sr-only">
+              Capture Odometer Photo
+            </label>
             <input
               id="odometerImage"
               name="odometerImage"

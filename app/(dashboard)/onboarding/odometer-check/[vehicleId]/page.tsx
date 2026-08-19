@@ -214,6 +214,9 @@ export default function OdometerCheckPage() {
                 </button>
               )}
 
+              <label htmlFor="photo" className="sr-only">
+                Capture Odometer Photo
+              </label>
               <input
                 ref={fileInputRef}
                 id="photo"
