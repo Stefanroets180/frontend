@@ -646,6 +646,38 @@ function ReadingCard({
 
       setShowEditDialog(false);
       setSelectedFile(null);
+      // Refresh data to show updated image
+      const { data: refreshedData } = await api.get(
+        `/compliance/odometer?taxYear=${selectedYear}`,
+      );
+      const rows = Array.isArray(refreshedData) ? refreshedData : [];
+      const mapped: OdometerVerificationRecord[] = rows.map((v: any) => {
+        const id = String(v.id);
+        let lockedAt: Date | undefined;
+        if (v.lockedAt) {
+          const d = new Date(String(v.lockedAt));
+          if (!Number.isNaN(d.getTime())) {
+            lockedAt = d;
+          }
+        }
+        return {
+          id,
+          vehicleId: String(v.vehicleId),
+          vehicleReg: String(v.vehicleReg ?? ""),
+          vehicleMake: String(v.vehicleMake ?? ""),
+          taxYear: Number(v.taxYear),
+          readingType: v.readingType as OdometerReadingType,
+          odometerValue: Number(v.odometerValue),
+          imageUrlAvif: String(v.imageUrl ?? ""),
+          capturedAt: String(v.capturedAt ?? ""),
+          createdAt: String(v.capturedAt ?? ""),
+          isLocked: typeof v.isLocked === "boolean" ? v.isLocked : undefined,
+          lockedAt,
+          lockedByName: v.lockedByName ? String(v.lockedByName) : undefined,
+          lockedReason: v.lockedReason ? String(v.lockedReason) : undefined,
+        };
+      });
+      setVerifications(mapped);
     } catch (err) {
       console.error("Failed to save odometer changes:", err);
     } finally {
