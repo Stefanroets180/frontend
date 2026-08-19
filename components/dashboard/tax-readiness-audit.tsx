@@ -648,7 +648,7 @@ function ReadingCard({
       setSelectedFile(null);
       // Refresh data to show updated image
       const { data: refreshedData } = await api.get(
-        `/compliance/odometer?taxYear=${selectedYear}`,
+        `/compliance/odometer?taxYear=${record.taxYear}`,
       );
       const rows = Array.isArray(refreshedData) ? refreshedData : [];
       const mapped: OdometerVerificationRecord[] = rows.map((v: any) => {
