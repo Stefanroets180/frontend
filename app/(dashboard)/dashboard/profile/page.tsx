@@ -236,12 +236,17 @@ export default function ProfilePage() {
                   )}
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                  <label htmlFor="photo-upload" className="cursor-pointer">
-                    <Camera className="h-5 w-5 text-white" />
-                  </label>
-                  <label htmlFor="photo-upload" className="sr-only">
+                  <label htmlFor="photo-upload" className="cursor-pointer sr-only">
                     Upload Profile Photo
                   </label>
+                  <button
+                    type="button"
+                    onClick={() => document.getElementById('photo-upload')?.click()}
+                    className="cursor-pointer"
+                    aria-label="Upload Profile Photo"
+                  >
+                    <Camera className="h-5 w-5 text-white" />
+                  </button>
                   <input
                     id="photo-upload"
                     type="file"

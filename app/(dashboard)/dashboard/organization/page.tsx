@@ -523,6 +523,14 @@ export default function OrganizationPage() {
               <label htmlFor="logo-upload" className="sr-only">
                 Upload Organization Logo
               </label>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="sr-only"
+                aria-label="Upload Organization Logo"
+              >
+                Upload Logo
+              </button>
               <input
                 id="logo-upload"
                 ref={fileInputRef}
