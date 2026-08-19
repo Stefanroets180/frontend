@@ -1107,6 +1107,7 @@ function ReadingCard({
                       setSelectedFile(null);
                       fileInputRef.current?.click();
                     }}
+                    aria-label="Choose different odometer photo"
                   >
                     <RefreshCw className="h-3 w-3 mr-1" />
                     Choose different photo
@@ -1117,6 +1118,7 @@ function ReadingCard({
                   variant="outline"
                   className="w-full h-24 border-dashed"
                   onClick={() => fileInputRef.current?.click()}
+                  aria-label="Select new odometer photo"
                 >
                   <Camera className="h-6 w-6 mr-2" />
                   Select new photo
