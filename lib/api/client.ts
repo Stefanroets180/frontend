@@ -1,6 +1,6 @@
 import { clearAuthCookies } from '@/lib/auth/normalize-auth-response'
 
-const DEFAULT_BACKEND = 'http://localhost:8080';
+const DEFAULT_BACKEND = 'https://localhost:8080';
 
 /** Resolve API base URL — always absolute in the browser when possible. */
 function resolveApiBaseUrl(): string {

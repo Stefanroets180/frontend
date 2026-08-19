@@ -10,7 +10,7 @@ import { apiFormFetch } from "@/lib/api/client";
 /** Resolve API base URL — same logic as client.ts */
 function resolveApiBaseUrl(): string {
   const raw = (process.env.NEXT_PUBLIC_API_URL ?? '').trim();
-  const fallback = 'http://localhost:8080/api/v1';
+  const fallback = 'https://localhost:8080/api/v1';
 
   if (!raw) {
     if (typeof window !== 'undefined') {

@@ -519,8 +519,12 @@ export default function OrganizationPage() {
                   Remove Logo
                 </Button>
               )}
-              
+
+              <label htmlFor="logo-upload" className="sr-only">
+                Upload Organization Logo
+              </label>
               <input
+                id="logo-upload"
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
