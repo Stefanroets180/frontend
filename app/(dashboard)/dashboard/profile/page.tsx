@@ -239,6 +239,9 @@ export default function ProfilePage() {
                   <label htmlFor="photo-upload" className="cursor-pointer">
                     <Camera className="h-5 w-5 text-white" />
                   </label>
+                  <label htmlFor="photo-upload" className="sr-only">
+                    Upload Profile Photo
+                  </label>
                   <input
                     id="photo-upload"
                     type="file"

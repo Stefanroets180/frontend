@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import ReactCrop from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Loader2 } from 'lucide-react'
 
 interface ImageCropModalProps {
@@ -129,13 +129,16 @@ export function ImageCropModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onCancel}>
-      <DialogContent 
+      <DialogContent
         className="max-w-4xl w-full h-[90vh] flex flex-col p-0 overflow-hidden"
         showCloseButton={false}
       >
         <DialogTitle className="sr-only">
           {mode === 'receipt' ? 'Crop Receipt Image' : mode === 'odometer' ? 'Crop Odometer Image' : mode === 'logo' ? 'Crop Logo Image' : 'Crop Profile Image'}
         </DialogTitle>
+        <DialogDescription className="sr-only">
+          Adjust the crop area to select the portion of the image to use
+        </DialogDescription>
         <div className="flex-1 flex flex-col bg-black">
           {/* Header */}
           <div className="flex items-center justify-between p-4 bg-gray-900 border-b border-gray-800">
