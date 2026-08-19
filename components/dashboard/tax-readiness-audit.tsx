@@ -117,64 +117,64 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
   const currentYear = getSATaxYear();
   const availableYears = Array.from({ length: 5 }, (_, i) => currentYear - i);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        // Fetch all vehicles
-        const { data: vehiclesData } = await api.get("/vehicles");
-        const vehicleList = Array.isArray(vehiclesData) ? vehiclesData : [];
-        setVehicles(
-          vehicleList.map((v: any) => ({
-            id: String(v.id),
-            registrationNumber: String(v.registrationNumber ?? ""),
-            make: String(v.make ?? ""),
-          })),
-        );
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      // Fetch all vehicles
+      const { data: vehiclesData } = await api.get("/vehicles");
+      const vehicleList = Array.isArray(vehiclesData) ? vehiclesData : [];
+      setVehicles(
+        vehicleList.map((v: any) => ({
+          id: String(v.id),
+          registrationNumber: String(v.registrationNumber ?? ""),
+          make: String(v.make ?? ""),
+        })),
+      );
 
-        // Fetch verifications
-        const { data } = await api.get(
-          `/compliance/odometer?taxYear=${selectedYear}`,
-        );
-        const rows = Array.isArray(data) ? data : [];
+      // Fetch verifications
+      const { data } = await api.get(
+        `/compliance/odometer?taxYear=${selectedYear}`,
+      );
+      const rows = Array.isArray(data) ? data : [];
 
-        const mapped: OdometerVerificationRecord[] = rows.map((v: any) => {
-          const id = String(v.id);
+      const mapped: OdometerVerificationRecord[] = rows.map((v: any) => {
+        const id = String(v.id);
 
-          let lockedAt: Date | undefined;
-          if (v.lockedAt) {
-            const d = new Date(String(v.lockedAt));
-            if (!Number.isNaN(d.getTime())) {
-              lockedAt = d;
-            }
+        let lockedAt: Date | undefined;
+        if (v.lockedAt) {
+          const d = new Date(String(v.lockedAt));
+          if (!Number.isNaN(d.getTime())) {
+            lockedAt = d;
           }
+        }
 
-          return {
-            id,
-            vehicleId: String(v.vehicleId),
-            vehicleReg: String(v.vehicleReg ?? ""),
-            vehicleMake: String(v.vehicleMake ?? ""),
-            taxYear: Number(v.taxYear),
-            readingType: v.readingType as OdometerReadingType,
-            odometerValue: Number(v.odometerValue),
-            imageUrlAvif: String(v.imageUrl ?? ""),
-            capturedAt: String(v.capturedAt ?? ""),
-            createdAt: String(v.capturedAt ?? ""),
-            isLocked: typeof v.isLocked === "boolean" ? v.isLocked : undefined,
-            lockedAt,
-            lockedByName: v.lockedByName ? String(v.lockedByName) : undefined,
-            lockedReason: v.lockedReason ? String(v.lockedReason) : undefined,
-          };
-        });
+        return {
+          id,
+          vehicleId: String(v.vehicleId),
+          vehicleReg: String(v.vehicleReg ?? ""),
+          vehicleMake: String(v.vehicleMake ?? ""),
+          taxYear: Number(v.taxYear),
+          readingType: v.readingType as OdometerReadingType,
+          odometerValue: Number(v.odometerValue),
+          imageUrlAvif: String(v.imageUrl ?? ""),
+          capturedAt: String(v.capturedAt ?? ""),
+          createdAt: String(v.capturedAt ?? ""),
+          isLocked: typeof v.isLocked === "boolean" ? v.isLocked : undefined,
+          lockedAt,
+          lockedByName: v.lockedByName ? String(v.lockedByName) : undefined,
+          lockedReason: v.lockedReason ? String(v.lockedReason) : undefined,
+        };
+      });
 
-        setVerifications(mapped);
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      setVerifications(mapped);
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, [selectedYear]);
 
@@ -462,6 +462,7 @@ function VehicleVerificationCard({
               onDelete={onDelete}
               onLock={onLock}
               onUnlock={onUnlock}
+              onRefresh={fetchData}
               isAdminOrManager={isAdminOrManager}
             />
           </div>
@@ -476,6 +477,7 @@ function VehicleVerificationCard({
               onDelete={onDelete}
               onLock={onLock}
               onUnlock={onUnlock}
+              onRefresh={fetchData}
               isAdminOrManager={isAdminOrManager}
             />
           </div>
@@ -493,6 +495,7 @@ interface ReadingCardProps {
   onDelete: (id: string) => Promise<void>;
   onLock: (id: string, reason?: string) => Promise<void>;
   onUnlock: (id: string) => Promise<void>;
+  onRefresh: () => Promise<void>;
   isAdminOrManager: boolean;
 }
 
@@ -504,6 +507,7 @@ function ReadingCard({
   onDelete,
   onLock,
   onUnlock,
+  onRefresh,
   isAdminOrManager,
 }: ReadingCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -647,37 +651,7 @@ function ReadingCard({
       setShowEditDialog(false);
       setSelectedFile(null);
       // Refresh data to show updated image
-      const { data: refreshedData } = await api.get(
-        `/compliance/odometer?taxYear=${record.taxYear}`,
-      );
-      const rows = Array.isArray(refreshedData) ? refreshedData : [];
-      const mapped: OdometerVerificationRecord[] = rows.map((v: any) => {
-        const id = String(v.id);
-        let lockedAt: Date | undefined;
-        if (v.lockedAt) {
-          const d = new Date(String(v.lockedAt));
-          if (!Number.isNaN(d.getTime())) {
-            lockedAt = d;
-          }
-        }
-        return {
-          id,
-          vehicleId: String(v.vehicleId),
-          vehicleReg: String(v.vehicleReg ?? ""),
-          vehicleMake: String(v.vehicleMake ?? ""),
-          taxYear: Number(v.taxYear),
-          readingType: v.readingType as OdometerReadingType,
-          odometerValue: Number(v.odometerValue),
-          imageUrlAvif: String(v.imageUrl ?? ""),
-          capturedAt: String(v.capturedAt ?? ""),
-          createdAt: String(v.capturedAt ?? ""),
-          isLocked: typeof v.isLocked === "boolean" ? v.isLocked : undefined,
-          lockedAt,
-          lockedByName: v.lockedByName ? String(v.lockedByName) : undefined,
-          lockedReason: v.lockedReason ? String(v.lockedReason) : undefined,
-        };
-      });
-      setVerifications(mapped);
+      await onRefresh();
     } catch (err) {
       console.error("Failed to save odometer changes:", err);
     } finally {
