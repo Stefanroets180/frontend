@@ -1048,7 +1048,7 @@ function ReadingCard({
             {/* Current image preview */}
             {record && (
               <div className="space-y-2">
-                <Label>Current Photo</Label>
+                <p className="text-sm font-medium">Current Photo</p>
                 <div className="aspect-video bg-muted rounded-lg overflow-hidden">
                   <img
                     src={record.imageUrlAvif}
@@ -1086,7 +1086,7 @@ function ReadingCard({
 
             {/* New image upload */}
             <div className="space-y-2">
-              <Label>Replace with new photo</Label>
+              <p className="text-sm font-medium">Replace with new photo</p>
               {selectedFile ? (
                 <div className="space-y-2">
                   <div className="aspect-video bg-muted rounded-lg overflow-hidden">
