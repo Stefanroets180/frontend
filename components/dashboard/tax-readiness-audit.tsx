@@ -379,6 +379,7 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
                 onDelete={handleDeleteVerification}
                 onLock={handleLockVerification}
                 onUnlock={handleUnlockVerification}
+                onRefresh={fetchData}
                 isAdminOrManager={isAdminOrManager}
               />
             ))}
@@ -418,6 +419,7 @@ interface VehicleVerificationCardProps {
   onDelete: (id: string) => Promise<void>;
   onLock: (id: string, reason?: string) => Promise<void>;
   onUnlock: (id: string) => Promise<void>;
+  onRefresh: () => Promise<void>;
   isAdminOrManager: boolean;
 }
 
@@ -431,6 +433,7 @@ function VehicleVerificationCard({
   onDelete,
   onLock,
   onUnlock,
+  onRefresh,
   isAdminOrManager,
 }: VehicleVerificationCardProps) {
   return (
