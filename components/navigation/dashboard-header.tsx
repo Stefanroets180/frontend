@@ -46,6 +46,7 @@ import { AppUsageGuideDialog } from "@/components/navigation/app-usage-guide-dia
 import { useTyreRotationWarnings } from "@/lib/hooks/use-tyre-rotation-warnings";
 import { useExpiryAlerts } from "@/lib/hooks/use-expiry-alerts";
 import { useMissingReceipts } from "@/lib/hooks/use-missing-receipts";
+import { useOdometerDriftAlerts, OdometerDriftAlert } from "@/lib/hooks/use-odometer-drift-alerts";
 import {
   TyreRotationWarning,
   getTyreRotationStatusColor,
@@ -347,7 +348,7 @@ export function DashboardHeader({
   const { logout, user } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"expired" | "warning" | "receipts">("expired");
+  const [activeTab, setActiveTab] = useState<"expired" | "warning" | "receipts" | "odometer">("expired");
 
   // Real user data — use auth context user as source of truth
   const profile: StoredProfile = user ? {
@@ -382,6 +383,14 @@ export function DashboardHeader({
     isLoading: missingReceiptsLoading,
     refreshReceipts,
   } = useMissingReceipts();
+
+  // Odometer drift alerts
+  const {
+    activeAlerts: odometerDriftAlerts,
+    dismissAlert: dismissOdometerDriftAlert,
+    deleteAlert: deleteOdometerDriftAlert,
+    refreshAlerts: refreshOdometerDriftAlerts,
+  } = useOdometerDriftAlerts();
 
   const isFleet = profile.organizationMode === "FLEET" || profile.organizationMode === "BUSINESS_FLEET" || profile.organizationMode === "COMPANY";
   const isRentalCustomer = profile.role === UserRole.RENTAL_CUSTOMER;
@@ -438,7 +447,8 @@ export function DashboardHeader({
     expiryCounts.upcomingCount +
     (tyreWarningCount - tyreCriticalCount);
   const totalMissingReceipts = missingReceipts.length;
-  const totalNotifications = totalExpiredAlerts + totalWarningAlerts + totalMissingReceipts;
+  const totalOdometerDriftAlerts = odometerDriftAlerts.length;
+  const totalNotifications = totalExpiredAlerts + totalWarningAlerts + totalMissingReceipts + totalOdometerDriftAlerts;
 
   // Check for critical items
   const hasExpiryExpired = expiryCounts.expiredCount > 0 || tyreCriticalCount > 0;
@@ -537,7 +547,7 @@ export function DashboardHeader({
 
               <Tabs
                 value={activeTab}
-                onValueChange={(v) => setActiveTab(v as "expired" | "warning" | "receipts")}
+                onValueChange={(v) => setActiveTab(v as "expired" | "warning" | "receipts" | "odometer")}
                 className="w-full"
               >
                 <TabsList className="w-full rounded-none border-b h-10 bg-transparent p-0">
@@ -582,6 +592,20 @@ export function DashboardHeader({
                       {totalMissingReceipts > 0 && (
                         <Badge className="h-5 px-1.5 text-[10px] bg-blue-500 text-white border-2 border-blue-500">
                           {totalMissingReceipts}
+                        </Badge>
+                      )}
+                    </div>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="odometer"
+                    className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent h-10"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Car className="h-4 w-4" />
+                      <span>Odometer</span>
+                      {totalOdometerDriftAlerts > 0 && (
+                        <Badge className="h-5 px-1.5 text-[10px] bg-purple-500 text-white border-2 border-purple-500">
+                          {totalOdometerDriftAlerts}
                         </Badge>
                       )}
                     </div>
@@ -828,6 +852,71 @@ export function DashboardHeader({
                           </p>
                         </div>
                       )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="odometer" className="m-0">
+                  <div className="max-h-[400px] overflow-y-auto p-2">
+                    {odometerDriftAlerts.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-8 text-center">
+                        <div className="p-3 rounded-full bg-muted mb-3">
+                          <Check className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                        <p className="text-sm font-medium">All odometers synced!</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          No odometer drift detected.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2 px-1">
+                          Odometer Drift Alerts ({odometerDriftAlerts.length})
+                        </p>
+                        {odometerDriftAlerts.map((alert) => (
+                          <div
+                            key={alert.id}
+                            className="flex flex-col gap-2 p-3 rounded-lg border border-border bg-card"
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex items-center gap-2">
+                                <div className="p-1.5 rounded-full bg-purple-500/20">
+                                  <Car className="h-4 w-4 text-purple-600" />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium">{alert.vehicleRegistration}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    Stored: {alert.storedOdometer.toLocaleString()} km | Computed: {alert.computedOdometer.toLocaleString()} km
+                                  </p>
+                                </div>
+                              </div>
+                              <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-600 border-purple-500/20">
+                                Drift: {(alert.computedOdometer - alert.storedOdometer).toLocaleString()} km
+                              </Badge>
+                            </div>
+                            <div className="flex gap-2 pt-1">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="flex-1 h-8 text-xs"
+                                onClick={() => window.location.href = `/dashboard/vehicles/${alert.vehicleId}/edit`}
+                              >
+                                <ExternalLink className="h-3 w-3 mr-1" />
+                                Recalculate
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 text-xs text-muted-foreground"
+                                onClick={() => dismissOdometerDriftAlert(alert.vehicleId)}
+                              >
+                                <X className="h-3 w-3 mr-1" />
+                                Dismiss
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
               </Tabs>
