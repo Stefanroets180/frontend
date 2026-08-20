@@ -520,7 +520,7 @@ export function DashboardHeader({
               </PopoverTrigger>
             <PopoverContent
               align="end"
-              className="w-[600px] p-0 bg-card"
+              className="w-[calc(100vw-2rem)] max-w-[600px] p-0 bg-card"
               sideOffset={8}
             >
               <div className="flex items-center justify-between border-b border-border px-4 py-3">
@@ -550,18 +550,18 @@ export function DashboardHeader({
                 onValueChange={(v) => setActiveTab(v as "expired" | "warning" | "receipts" | "odometer")}
                 className="w-full flex flex-col"
               >
-                <TabsList className="w-full rounded-none border-b bg-background p-0 grid grid-cols-2 gap-0 flex-shrink-0 h-28 relative z-10">
+                <TabsList className="w-full rounded-none border-b bg-background p-0 grid grid-cols-2 gap-0 flex-shrink-0 h-20 sm:h-28 relative z-10">
                   <TabsTrigger
                     value="expired"
-                    className="rounded-none border-b-2 border-r border-border data-[state=active]:border-primary data-[state=active]:bg-accent h-14 text-base"
+                    className="rounded-none border-b-2 border-r border-border data-[state=active]:border-primary data-[state=active]:bg-accent h-10 sm:h-14 text-sm sm:text-base"
                   >
                     <div className="flex items-center gap-2">
-                      <AlertTriangle className="h-5 w-5" />
+                      <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5" />
                       <span>Expired</span>
                       {totalExpiredAlerts > 0 && (
                         <Badge
                           variant="destructive"
-                          className="h-6 px-2 text-xs"
+                          className="h-5 px-1.5 sm:h-6 sm:px-2 text-[10px] sm:text-xs"
                         >
                           {totalExpiredAlerts}
                         </Badge>
@@ -570,13 +570,13 @@ export function DashboardHeader({
                   </TabsTrigger>
                   <TabsTrigger
                     value="warning"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-accent h-14 text-base"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-accent h-10 sm:h-14 text-sm sm:text-base"
                   >
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-5 w-5" />
+                      <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
                       <span>Warning</span>
                       {totalWarningAlerts > 0 && (
-                        <Badge className="h-6 px-2 text-xs bg-orange-500 text-white border-2 border-orange-500">
+                        <Badge className="h-5 px-1.5 sm:h-6 sm:px-2 text-[10px] sm:text-xs bg-orange-500 text-white border-2 border-orange-500">
                           {totalWarningAlerts}
                         </Badge>
                       )}
@@ -584,13 +584,13 @@ export function DashboardHeader({
                   </TabsTrigger>
                   <TabsTrigger
                     value="receipts"
-                    className="rounded-none border-b-2 border-r border-border data-[state=active]:border-primary data-[state=active]:bg-accent h-14 text-base"
+                    className="rounded-none border-b-2 border-r border-border data-[state=active]:border-primary data-[state=active]:bg-accent h-10 sm:h-14 text-sm sm:text-base"
                   >
                     <div className="flex items-center gap-2">
-                      <FileText className="h-5 w-5" />
+                      <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
                       <span>Receipts</span>
                       {totalMissingReceipts > 0 && (
-                        <Badge className="h-6 px-2 text-xs bg-blue-500 text-white border-2 border-blue-500">
+                        <Badge className="h-5 px-1.5 sm:h-6 sm:px-2 text-[10px] sm:text-xs bg-blue-500 text-white border-2 border-blue-500">
                           {totalMissingReceipts}
                         </Badge>
                       )}
@@ -598,13 +598,13 @@ export function DashboardHeader({
                   </TabsTrigger>
                   <TabsTrigger
                     value="odometer"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-accent h-14 text-base"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-accent h-10 sm:h-14 text-sm sm:text-base"
                   >
                     <div className="flex items-center gap-2">
-                      <Car className="h-5 w-5" />
+                      <Car className="h-4 w-4 sm:h-5 sm:w-5" />
                       <span>Odometer</span>
                       {totalOdometerDriftAlerts > 0 && (
-                        <Badge className="h-6 px-2 text-xs bg-purple-500 text-white border-2 border-purple-500">
+                        <Badge className="h-5 px-1.5 sm:h-6 sm:px-2 text-[10px] sm:text-xs bg-purple-500 text-white border-2 border-purple-500">
                           {totalOdometerDriftAlerts}
                         </Badge>
                       )}
