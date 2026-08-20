@@ -520,7 +520,7 @@ export function DashboardHeader({
               </PopoverTrigger>
             <PopoverContent
               align="end"
-              className="w-96 p-0 bg-card"
+              className="w-[400px] p-0 bg-card"
               sideOffset={8}
             >
               <div className="flex items-center justify-between border-b border-border px-4 py-3">
@@ -548,9 +548,9 @@ export function DashboardHeader({
               <Tabs
                 value={activeTab}
                 onValueChange={(v) => setActiveTab(v as "expired" | "warning" | "receipts" | "odometer")}
-                className="w-full"
+                className="w-full flex flex-col"
               >
-                <TabsList className="w-full rounded-none border-b bg-transparent p-0 grid grid-cols-2 gap-0">
+                <TabsList className="w-full rounded-none border-b bg-transparent p-0 grid grid-cols-2 gap-0 flex-shrink-0">
                   <TabsTrigger
                     value="expired"
                     className="rounded-none border-b-2 border-r border-border data-[state=active]:border-primary data-[state=active]:bg-transparent h-10"
