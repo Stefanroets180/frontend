@@ -22,6 +22,7 @@ export interface UseOdometerDriftAlertsResult {
   dismissAlert: (vehicleId: string) => Promise<void>
   deleteAlert: (vehicleId: string) => Promise<void>
   refreshAlerts: () => Promise<void>
+  checkAllVehicles: () => Promise<number>
 }
 
 export function useOdometerDriftAlerts(): UseOdometerDriftAlertsResult {
@@ -69,6 +70,17 @@ export function useOdometerDriftAlerts(): UseOdometerDriftAlertsResult {
     }
   }, [loadAlerts])
 
+  const checkAllVehicles = useCallback(async () => {
+    try {
+      const { data } = await api.post('/alerts/odometer-drift/check-all', {})
+      await loadAlerts()
+      return data.alertsCreated || 0
+    } catch (err) {
+      console.error('[useOdometerDriftAlerts] Failed to check all vehicles:', err)
+      throw err
+    }
+  }, [loadAlerts])
+
   const activeAlerts = alerts.filter((a) => !a.isDismissed)
 
   return {
@@ -79,5 +91,6 @@ export function useOdometerDriftAlerts(): UseOdometerDriftAlertsResult {
     dismissAlert,
     deleteAlert,
     refreshAlerts: loadAlerts,
+    checkAllVehicles,
   }
 }

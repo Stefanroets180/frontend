@@ -23,6 +23,7 @@ import {
   BadgeCheck,
   ExternalLink,
   Calendar,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -390,6 +391,7 @@ export function DashboardHeader({
     dismissAlert: dismissOdometerDriftAlert,
     deleteAlert: deleteOdometerDriftAlert,
     refreshAlerts: refreshOdometerDriftAlerts,
+    checkAllVehicles: checkAllOdometerDrift,
   } = useOdometerDriftAlerts();
 
   const isFleet = profile.organizationMode === "FLEET" || profile.organizationMode === "BUSINESS_FLEET" || profile.organizationMode === "COMPANY";
@@ -857,67 +859,88 @@ export function DashboardHeader({
                 </TabsContent>
 
                 <TabsContent value="odometer" className="m-0 h-full">
-                  <div className="max-h-[400px] overflow-y-auto p-2">
-                    {odometerDriftAlerts.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center py-8 text-center">
-                        <div className="p-3 rounded-full bg-muted mb-3">
-                          <Check className="h-6 w-6 text-muted-foreground" />
-                        </div>
-                        <p className="text-sm font-medium">All odometers synced!</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          No odometer drift detected.
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2 px-1">
-                          Odometer Drift Alerts ({odometerDriftAlerts.length})
-                        </p>
-                        {odometerDriftAlerts.map((alert) => (
-                          <div
-                            key={alert.id}
-                            className="flex flex-col gap-2 p-3 rounded-lg border border-border bg-card"
-                          >
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="flex items-center gap-2">
-                                <div className="p-1.5 rounded-full bg-purple-500/20">
-                                  <Car className="h-4 w-4 text-purple-600" />
-                                </div>
-                                <div>
-                                  <p className="text-sm font-medium">{alert.vehicleRegistration}</p>
-                                  <p className="text-xs text-muted-foreground">
-                                    Stored: {alert.storedOdometer.toLocaleString()} km | Computed: {alert.computedOdometer.toLocaleString()} km
-                                  </p>
-                                </div>
-                              </div>
-                              <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-600 border-purple-500/20">
-                                Drift: {(alert.computedOdometer - alert.storedOdometer).toLocaleString()} km
-                              </Badge>
-                            </div>
-                            <div className="flex gap-2 pt-1">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="flex-1 h-8 text-xs"
-                                onClick={() => window.location.href = `/dashboard/vehicles/${alert.vehicleId}/edit`}
-                              >
-                                <ExternalLink className="h-3 w-3 mr-1" />
-                                Recalculate
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 text-xs text-muted-foreground"
-                                onClick={() => dismissOdometerDriftAlert(alert.vehicleId)}
-                              >
-                                <X className="h-3 w-3 mr-1" />
-                                Dismiss
-                              </Button>
-                            </div>
+                  <div className="flex flex-col h-full">
+                    <div className="flex items-center justify-between px-2 py-1 border-b border-border">
+                      <p className="text-xs font-medium text-purple-600 dark:text-purple-400">
+                        Odometer Drift Alerts ({odometerDriftAlerts.length})
+                      </p>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-xs"
+                        onClick={async () => {
+                          try {
+                            const alertsCreated = await checkAllOdometerDrift();
+                            // Optionally show a toast or notification
+                            console.log(`Checked all vehicles, created ${alertsCreated} alerts`);
+                          } catch (err) {
+                            console.error('Failed to check vehicles:', err);
+                          }
+                        }}
+                      >
+                        <RefreshCw className="h-3 w-3 mr-1" />
+                        Check All
+                      </Button>
+                    </div>
+                    <div className="flex-1 max-h-[400px] overflow-y-auto p-2">
+                      {odometerDriftAlerts.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-8 text-center">
+                          <div className="p-3 rounded-full bg-muted mb-3">
+                            <Check className="h-6 w-6 text-muted-foreground" />
                           </div>
-                        ))}
-                      </div>
-                    )}
+                          <p className="text-sm font-medium">All odometers synced!</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            No odometer drift detected.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          {odometerDriftAlerts.map((alert) => (
+                            <div
+                              key={alert.id}
+                              className="flex flex-col gap-2 p-3 rounded-lg border border-border bg-card"
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex items-center gap-2">
+                                  <div className="p-1.5 rounded-full bg-purple-500/20">
+                                    <Car className="h-4 w-4 text-purple-600" />
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium">{alert.vehicleRegistration}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      Stored: {alert.storedOdometer.toLocaleString()} km | Computed: {alert.computedOdometer.toLocaleString()} km
+                                    </p>
+                                  </div>
+                                </div>
+                                <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-600 border-purple-500/20">
+                                  Drift: {(alert.computedOdometer - alert.storedOdometer).toLocaleString()} km
+                                </Badge>
+                              </div>
+                              <div className="flex gap-2 pt-1">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="flex-1 h-8 text-xs"
+                                  onClick={() => window.location.href = `/dashboard/vehicles/${alert.vehicleId}/edit`}
+                                >
+                                  <ExternalLink className="h-3 w-3 mr-1" />
+                                  Recalculate
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 text-xs text-muted-foreground"
+                                  onClick={() => dismissOdometerDriftAlert(alert.vehicleId)}
+                                >
+                                  <X className="h-3 w-3 mr-1" />
+                                  Dismiss
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </TabsContent>
                 </div>
