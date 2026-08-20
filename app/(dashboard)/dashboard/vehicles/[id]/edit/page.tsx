@@ -23,6 +23,7 @@ export default function EditVehiclePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [recalculating, setRecalculating] = useState(false);
+  const [showDriftWarning, setShowDriftWarning] = useState(fromOdometerDrift);
   
   const [formData, setFormData] = useState({
     make: "",
@@ -121,7 +122,7 @@ export default function EditVehiclePage() {
       };
 
       await api.put(`/vehicles/${vehicleId}`, updateData);
-      router.push("/dashboard/vehicles");
+      window.location.href = "/dashboard/vehicles";
     } catch (error) {
       console.error("Error updating vehicle:", error);
       alert("Failed to update vehicle. Please try again.");
@@ -147,6 +148,7 @@ export default function EditVehiclePage() {
         ...prev,
         currentOdometer: data.currentOdometer?.toString() || ""
       }));
+      setShowDriftWarning(false);
       alert("Odometer recalculated successfully!");
     } catch (error) {
       console.error("Error recalculating odometer:", error);
@@ -181,7 +183,7 @@ export default function EditVehiclePage() {
         <h1 className="text-2xl font-bold">Edit Vehicle</h1>
       </div>
 
-      {fromOdometerDrift && (
+      {showDriftWarning && (
         <div className="mb-6 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg p-4 animate-pulse">
           <div className="flex items-start gap-3">
             <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
@@ -323,18 +325,18 @@ export default function EditVehiclePage() {
                     onChange={(e) => handleInputChange("currentOdometer", e.target.value)}
                     required
                     placeholder="e.g., 50000"
-                    className={fromOdometerDrift ? "border-amber-500 ring-2 ring-amber-500/20" : ""}
+                    className={showDriftWarning ? "border-amber-500 ring-2 ring-amber-500/20" : ""}
                   />
                   <Button
                     type="button"
-                    variant={fromOdometerDrift ? "default" : "outline"}
-                    size={fromOdometerDrift ? "default" : "icon"}
-                    className={fromOdometerDrift ? "bg-amber-600 hover:bg-amber-700 text-white animate-pulse" : ""}
+                    variant={showDriftWarning ? "default" : "outline"}
+                    size={showDriftWarning ? "default" : "icon"}
+                    className={showDriftWarning ? "bg-amber-600 hover:bg-amber-700 text-white animate-pulse" : ""}
                     onClick={handleRecalculateOdometer}
                     disabled={recalculating}
                     title="Recalculate odometer from expenses"
                   >
-                    {fromOdometerDrift ? (
+                    {showDriftWarning ? (
                       <>
                         <RefreshCw className={`h-4 w-4 mr-2 ${recalculating ? 'animate-spin' : ''}`} />
                         {recalculating ? 'Recalculating...' : 'Recalculate Odometer'}
@@ -346,8 +348,8 @@ export default function EditVehiclePage() {
                     )}
                   </Button>
                 </div>
-                <p className={`text-xs mt-1 ${fromOdometerDrift ? "text-amber-700 dark:text-amber-300 font-medium" : "text-muted-foreground"}`}>
-                  {fromOdometerDrift ? "⚠️ Click to fix odometer drift" : "Click refresh to sync with highest odometer from expenses"}
+                <p className={`text-xs mt-1 ${showDriftWarning ? "text-amber-700 dark:text-amber-300 font-medium" : "text-muted-foreground"}`}>
+                  {showDriftWarning ? "⚠️ Click to fix odometer drift" : "Click refresh to sync with highest odometer from expenses"}
                 </p>
               </div>
               
