@@ -139,7 +139,7 @@ export default function EditVehiclePage() {
 
     setRecalculating(true);
     try {
-      const { data } = await api.post(`/vehicles/${vehicleId}/recalculate-odometer`);
+      const { data } = await api.post(`/vehicles/${vehicleId}/recalculate-odometer`, {});
       setVehicle(data);
       setFormData(prev => ({
         ...prev,
