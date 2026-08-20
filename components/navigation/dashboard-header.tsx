@@ -921,7 +921,7 @@ export function DashboardHeader({
                                   variant="outline"
                                   size="sm"
                                   className="flex-1 h-8 text-xs"
-                                  onClick={() => window.location.href = `/dashboard/vehicles/${alert.vehicleId}/edit`}
+                                  onClick={() => window.location.href = `/dashboard/vehicles/${alert.vehicleId}/edit?from=odometer-drift`}
                                 >
                                   <ExternalLink className="h-3 w-3 mr-1" />
                                   Recalculate

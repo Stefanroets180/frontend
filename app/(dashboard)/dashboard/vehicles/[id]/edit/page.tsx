@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft, Save, Loader2, RefreshCw } from "lucide-react";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
+import { ArrowLeft, Save, Loader2, RefreshCw, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,8 @@ export default function EditVehiclePage() {
   const router = useRouter();
   const params = useParams();
   const vehicleId = params.id as string;
+  const searchParams = useSearchParams();
+  const fromOdometerDrift = searchParams.get('from') === 'odometer-drift';
   
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
   const [loading, setLoading] = useState(true);
@@ -179,6 +181,25 @@ export default function EditVehiclePage() {
         <h1 className="text-2xl font-bold">Edit Vehicle</h1>
       </div>
 
+      {fromOdometerDrift && (
+        <div className="mb-6 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg p-4 animate-pulse">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-1">Odometer Drift Detected</h3>
+              <p className="text-sm text-amber-800 dark:text-amber-200 mb-3">
+                This vehicle's stored odometer differs from the calculated value based on expenses. Click the <strong>Recalculate Odometer</strong> button below to sync the stored value with the highest odometer reading from all expenses.
+              </p>
+              <div className="flex items-center gap-2 text-xs text-amber-700 dark:text-amber-300">
+                <span className="font-medium">Look for the</span>
+                <RefreshCw className="h-4 w-4" />
+                <span className="font-medium">button in the Current Odometer field</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
           <CardHeader>
@@ -302,20 +323,31 @@ export default function EditVehiclePage() {
                     onChange={(e) => handleInputChange("currentOdometer", e.target.value)}
                     required
                     placeholder="e.g., 50000"
+                    className={fromOdometerDrift ? "border-amber-500 ring-2 ring-amber-500/20" : ""}
                   />
                   <Button
                     type="button"
-                    variant="outline"
-                    size="icon"
+                    variant={fromOdometerDrift ? "default" : "outline"}
+                    size={fromOdometerDrift ? "default" : "icon"}
+                    className={fromOdometerDrift ? "bg-amber-600 hover:bg-amber-700 text-white animate-pulse" : ""}
                     onClick={handleRecalculateOdometer}
                     disabled={recalculating}
                     title="Recalculate odometer from expenses"
                   >
-                    {recalculating ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                    {fromOdometerDrift ? (
+                      <>
+                        <RefreshCw className={`h-4 w-4 mr-2 ${recalculating ? 'animate-spin' : ''}`} />
+                        {recalculating ? 'Recalculating...' : 'Recalculate Odometer'}
+                      </>
+                    ) : recalculating ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <RefreshCw className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Click refresh to sync with highest odometer from expenses
+                <p className={`text-xs mt-1 ${fromOdometerDrift ? "text-amber-700 dark:text-amber-300 font-medium" : "text-muted-foreground"}`}>
+                  {fromOdometerDrift ? "⚠️ Click to fix odometer drift" : "Click refresh to sync with highest odometer from expenses"}
                 </p>
               </div>
               
