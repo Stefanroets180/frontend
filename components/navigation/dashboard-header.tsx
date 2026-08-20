@@ -550,10 +550,10 @@ export function DashboardHeader({
                 onValueChange={(v) => setActiveTab(v as "expired" | "warning" | "receipts" | "odometer")}
                 className="w-full"
               >
-                <TabsList className="w-full rounded-none border-b h-10 bg-transparent p-0">
+                <TabsList className="w-full rounded-none border-b bg-transparent p-0 grid grid-cols-2 gap-0">
                   <TabsTrigger
                     value="expired"
-                    className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent h-10"
+                    className="rounded-none border-b-2 border-r border-border data-[state=active]:border-primary data-[state=active]:bg-transparent h-10"
                   >
                     <div className="flex items-center gap-2">
                       <AlertTriangle className="h-4 w-4" />
@@ -570,7 +570,7 @@ export function DashboardHeader({
                   </TabsTrigger>
                   <TabsTrigger
                     value="warning"
-                    className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent h-10"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent h-10"
                   >
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
@@ -584,7 +584,7 @@ export function DashboardHeader({
                   </TabsTrigger>
                   <TabsTrigger
                     value="receipts"
-                    className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent h-10"
+                    className="rounded-none border-b-2 border-r border-border data-[state=active]:border-primary data-[state=active]:bg-transparent h-10"
                   >
                     <div className="flex items-center gap-2">
                       <FileText className="h-4 w-4" />
@@ -598,7 +598,7 @@ export function DashboardHeader({
                   </TabsTrigger>
                   <TabsTrigger
                     value="odometer"
-                    className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent h-10"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent h-10"
                   >
                     <div className="flex items-center gap-2">
                       <Car className="h-4 w-4" />
