@@ -35,6 +35,7 @@ import { ExpenseCategoryCard } from "@/components/dashboard/expense-category-car
 import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { TaxAlertBanner } from "@/components/dashboard/tax-alert-banner";
 import { FuelConsumptionAlertBanner } from "@/components/dashboard/fuel-consumption-alert-banner";
+import { OdometerDriftAlertBanner } from "@/components/dashboard/odometer-drift-alert-banner";
 import { VehicleExportDialog } from "@/components/dashboard/vehicle-export-dialog";
 import { TripExportDialog } from "@/components/dashboard/trip-export-dialog";
 import { ExpenseBreakdownChart } from "@/components/dashboard/expense-breakdown-chart";
@@ -1081,6 +1082,14 @@ export default function DashboardPage() {
       {/* SARS Compliance Banner — scoped to selected vehicle - hide for RENTAL_CUSTOMER */}
       {selectedVehicle && !isRentalCustomer && (
         <TaxAlertBanner
+          vehicleId={selectedVehicle.id}
+          vehicleReg={selectedVehicle.registrationNumber}
+        />
+      )}
+
+      {/* Odometer Drift Alert - hide for RENTAL_CUSTOMER */}
+      {selectedVehicle && !isRentalCustomer && (
+        <OdometerDriftAlertBanner
           vehicleId={selectedVehicle.id}
           vehicleReg={selectedVehicle.registrationNumber}
         />
