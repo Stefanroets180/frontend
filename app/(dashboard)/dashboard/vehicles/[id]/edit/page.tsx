@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft, Save, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,7 @@ export default function EditVehiclePage() {
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [recalculating, setRecalculating] = useState(false);
   
   const [formData, setFormData] = useState({
     make: "",
@@ -129,6 +130,28 @@ export default function EditVehiclePage() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleRecalculateOdometer = async () => {
+    if (!confirm("This will recalculate the vehicle's stored odometer baseline to match the highest odometer reading from all expenses. Continue?")) {
+      return;
+    }
+
+    setRecalculating(true);
+    try {
+      const { data } = await api.post(`/vehicles/${vehicleId}/recalculate-odometer`);
+      setVehicle(data);
+      setFormData(prev => ({
+        ...prev,
+        currentOdometer: data.currentOdometer?.toString() || ""
+      }));
+      alert("Odometer recalculated successfully!");
+    } catch (error) {
+      console.error("Error recalculating odometer:", error);
+      alert("Failed to recalculate odometer. Please try again.");
+    } finally {
+      setRecalculating(false);
+    }
   };
 
   if (loading) {
@@ -271,14 +294,29 @@ export default function EditVehiclePage() {
               
               <div>
                 <Label htmlFor="currentOdometer">Current Odometer (km) *</Label>
-                <Input
-                  id="currentOdometer"
-                  type="number"
-                  value={formData.currentOdometer}
-                  onChange={(e) => handleInputChange("currentOdometer", e.target.value)}
-                  required
-                  placeholder="e.g., 50000"
-                />
+                <div className="flex gap-2">
+                  <Input
+                    id="currentOdometer"
+                    type="number"
+                    value={formData.currentOdometer}
+                    onChange={(e) => handleInputChange("currentOdometer", e.target.value)}
+                    required
+                    placeholder="e.g., 50000"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={handleRecalculateOdometer}
+                    disabled={recalculating}
+                    title="Recalculate odometer from expenses"
+                  >
+                    {recalculating ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Click refresh to sync with highest odometer from expenses
+                </p>
               </div>
               
               <div>
