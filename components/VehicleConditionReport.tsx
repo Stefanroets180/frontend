@@ -682,7 +682,11 @@ export function VehicleConditionReport({ assignmentId, vehicleId, vehicleName, o
           condition: finalCondition,
           notes: finalNotes,
         })
-        await loadReport()
+        if (assignmentId) {
+          await loadReport()
+        } else {
+          await loadReportByVehicleId()
+        }
         setEditingSectionId(null)
         flash('Section updated')
       } else {
@@ -692,7 +696,11 @@ export function VehicleConditionReport({ assignmentId, vehicleId, vehicleName, o
           condition: finalCondition,
           notes: finalNotes,
         })
-        await loadReport()
+        if (assignmentId) {
+          await loadReport()
+        } else {
+          await loadReportByVehicleId()
+        }
         flash('Inspection area added')
       }
       
@@ -719,7 +727,11 @@ export function VehicleConditionReport({ assignmentId, vehicleId, vehicleName, o
   const handleImageDelete = async (sectionId: string, imageId: string) => {
     try {
       await deleteConditionSectionImage(sectionId, imageId)
-      await loadReport()
+      if (assignmentId) {
+        await loadReport()
+      } else {
+        await loadReportByVehicleId()
+      }
       flash('Image deleted')
     } catch (error) {
       console.error('Failed to delete image:', error)
@@ -753,7 +765,11 @@ export function VehicleConditionReport({ assignmentId, vehicleId, vehicleName, o
       console.log('VehicleConditionReport - Uploading image to section:', targetSectionId)
       await addSectionImage(targetSectionId, formData)
 
-      await loadReport()
+      if (assignmentId) {
+        await loadReport()
+      } else {
+        await loadReportByVehicleId()
+      }
 
       setShowCropModal(false)
       setSelectedImage(null)
@@ -778,7 +794,11 @@ export function VehicleConditionReport({ assignmentId, vehicleId, vehicleName, o
     try {
       await addManagerNote(report.id, { note: managerNote })
       
-      await loadReport()
+      if (assignmentId) {
+        await loadReport()
+      } else {
+        await loadReportByVehicleId()
+      }
       
       setManagerNote('')
       
@@ -796,7 +816,11 @@ export function VehicleConditionReport({ assignmentId, vehicleId, vehicleName, o
 
     try {
       await deleteConditionSection(sectionId)
-      await loadReport()
+      if (assignmentId) {
+        await loadReport()
+      } else {
+        await loadReportByVehicleId()
+      }
       flash('Section deleted')
     } catch (error) {
       console.error('Failed to delete section:', error)
@@ -814,7 +838,11 @@ export function VehicleConditionReport({ assignmentId, vehicleId, vehicleName, o
   const handleLockSection = async (sectionId: string) => {
     try {
       await lockConditionSection(sectionId)
-      await loadReport()
+      if (assignmentId) {
+        await loadReport()
+      } else {
+        await loadReportByVehicleId()
+      }
       flash('Section locked')
     } catch (error) {
       console.error('Failed to lock section:', error)
@@ -825,7 +853,11 @@ export function VehicleConditionReport({ assignmentId, vehicleId, vehicleName, o
   const handleUnlockSection = async (sectionId: string) => {
     try {
       await unlockConditionSection(sectionId)
-      await loadReport()
+      if (assignmentId) {
+        await loadReport()
+      } else {
+        await loadReportByVehicleId()
+      }
       flash('Section unlocked')
     } catch (error) {
       console.error('Failed to unlock section:', error)
