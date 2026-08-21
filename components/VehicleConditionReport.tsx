@@ -973,35 +973,36 @@ export function VehicleConditionReport({ assignmentId, vehicleId, vehicleName, o
           onAdd={(s) => handleAddSection(s.sectionType, s.condition, s.notes)} 
         />
 
-        {/* Manager notes */}
-        <section className="rounded-xl border bg-muted/30 p-4">
-          <h3 className="mb-3 flex items-center gap-2 font-semibold">
-            <MessageSquare className="h-4 w-4 text-primary" />
-            Manager notes
-          </h3>
+        {/* Manager notes - only for fleet accounts */}
+        {assignmentId && (
+          <section className="rounded-xl border bg-muted/30 p-4">
+            <h3 className="mb-3 flex items-center gap-2 font-semibold">
+              <MessageSquare className="h-4 w-4 text-primary" />
+              Manager notes
+            </h3>
 
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <Label htmlFor="manager-note" className="sr-only">
-              Manager note
-            </Label>
-            <Textarea
-              id="manager-note"
-              name="manager-note"
-              value={managerNote}
-              onChange={(e) => setManagerNote(e.target.value)}
-              placeholder="Add a note about this vehicle…"
-              rows={2}
-              className="bg-background"
-            />
-            <Button
-              onClick={handleAddManagerNote}
-              disabled={!managerNote.trim() || isSubmitting}
-              className="sm:self-end"
-            >
-              <Plus className="mr-1.5 h-4 w-4" />
-              Add
-            </Button>
-          </div>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Label htmlFor="manager-note" className="sr-only">
+                Manager note
+              </Label>
+              <Textarea
+                id="manager-note"
+                name="manager-note"
+                value={managerNote}
+                onChange={(e) => setManagerNote(e.target.value)}
+                placeholder="Add a note about this vehicle…"
+                rows={2}
+                className="bg-background"
+              />
+              <Button
+                onClick={handleAddManagerNote}
+                disabled={!managerNote.trim() || isSubmitting}
+                className="sm:self-end"
+              >
+                <Plus className="mr-1.5 h-4 w-4" />
+                Add
+              </Button>
+            </div>
 
           {report.managerNotes && report.managerNotes.length > 0 && (
             <ul className="mt-3 space-y-2">
