@@ -61,7 +61,7 @@ export default function VehiclesPage() {
 
   // Fetch organization visibility settings
   useEffect(() => {
-    if (user && isFleetMode) {
+    if (user) {
       api
         .get("/organization")
         .then(({ data }) => {
@@ -76,7 +76,7 @@ export default function VehiclesPage() {
           setOdometerConfirmationEnabled(true);
         });
     }
-  }, [user, isFleetMode]);
+  }, [user]);
 
   const fetchVehicles = async () => {
     try {
@@ -471,15 +471,15 @@ export default function VehiclesPage() {
 
                   {/* Action buttons */}
                   <div className="border-t border-border/50 pt-2">
-                    {/* Fleet-specific buttons */}
-                    {isFleetMode && (
+                    {/* Condition Report - available for both Fleet and Solo modes */}
+                    {conditionReportEnabled && (
                       <div className="flex flex-col sm:grid sm:grid-cols-2 gap-2 mb-2">
-                        {conditionReportEnabled && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={async () => {
-                              setSelectedVehicleForFleet(vehicle);
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={async () => {
+                            setSelectedVehicleForFleet(vehicle);
+                            if (isFleetMode) {
                               try {
                                 const assignments = await getVehicleAssignments(vehicle.id);
                                 const assignmentData = (assignments as any).data || assignments;
@@ -502,12 +502,17 @@ export default function VehiclesPage() {
                                 console.error('Failed to fetch assignments:', error);
                                 alert('Failed to fetch vehicle assignments. Please try again.');
                               }
-                            }}
-                          >
-                            Condition Report
-                          </Button>
-                        )}
-                        {odometerConfirmationEnabled && (
+                            } else {
+                              // Solo mode - no assignment needed
+                              setSelectedAssignmentId(null);
+                              setConditionReportOpen(true);
+                            }
+                          }}
+                        >
+                          Condition Report
+                        </Button>
+                        {/* Odometer Confirmation - fleet mode only */}
+                        {isFleetMode && odometerConfirmationEnabled && (
                           <Button
                             size="sm"
                             variant="outline"

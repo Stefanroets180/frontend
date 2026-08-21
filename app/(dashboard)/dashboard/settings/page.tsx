@@ -592,13 +592,13 @@ function SettingsContent() {
             </CardContent>
           </Card>
 
-        {/* Fleet Feature Visibility — SUPER_ADMIN and ADMIN only */}
-        {isFleet && (user?.role === "SUPER_ADMIN" || user?.role === "ADMIN") && (
+        {/* Feature Visibility — SUPER_ADMIN and ADMIN only */}
+        {(user?.role === "SUPER_ADMIN" || user?.role === "ADMIN") && (
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Shield className="h-5 w-5" />
-                Fleet Feature Visibility
+                Feature Visibility
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -610,7 +610,7 @@ function SettingsContent() {
                       Condition Report
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      Show/hide Condition Report button on vehicle cards
+                      Show/hide Condition Report button (available for both Fleet and Solo accounts)
                     </p>
                   </div>
                 </div>
@@ -630,7 +630,7 @@ function SettingsContent() {
                       Odometer Confirmation
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      Show/hide Odometer Confirmation button on vehicle cards
+                      Show/hide Odometer Confirmation button (Fleet accounts only)
                     </p>
                   </div>
                 </div>
