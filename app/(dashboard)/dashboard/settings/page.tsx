@@ -621,26 +621,30 @@ function SettingsContent() {
                   disabled={isUpdatingVisibility}
                 />
               </div>
-              <Separator />
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <Database className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <Label htmlFor="odometer-toggle" className="font-medium">
-                      Odometer Confirmation
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      Show/hide Odometer Confirmation button (Fleet accounts only)
-                    </p>
+              {isFleet && (
+                <>
+                  <Separator />
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <Database className="h-5 w-5 text-muted-foreground" />
+                      <div>
+                        <Label htmlFor="odometer-toggle" className="font-medium">
+                          Odometer Confirmation
+                        </Label>
+                        <p className="text-sm text-muted-foreground">
+                          Show/hide Odometer Confirmation button (Fleet accounts only)
+                        </p>
+                      </div>
+                    </div>
+                    <Switch
+                      id="odometer-toggle"
+                      checked={odometerConfirmationEnabled}
+                      onCheckedChange={(checked) => handleVisibilityToggle("odometerConfirmation", checked)}
+                      disabled={isUpdatingVisibility}
+                    />
                   </div>
-                </div>
-                <Switch
-                  id="odometer-toggle"
-                  checked={odometerConfirmationEnabled}
-                  onCheckedChange={(checked) => handleVisibilityToggle("odometerConfirmation", checked)}
-                  disabled={isUpdatingVisibility}
-                />
-              </div>
+                </>
+              )}
               <p className="text-xs text-muted-foreground">
                 When disabled, these buttons will be hidden from all users including admins.
               </p>
