@@ -1019,6 +1019,7 @@ export function VehicleConditionReport({ assignmentId, vehicleId, vehicleName, o
             </ul>
           )}
         </section>
+        )}
 
         {onComplete && (
           <Button
