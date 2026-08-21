@@ -417,7 +417,7 @@ export default function DashboardPage() {
   const isDriver = role === UserRole.DRIVER;
   const isRentalCustomer = role === UserRole.RENTAL_CUSTOMER;
   const showTaxReadinessShortcut =
-    !isFleetMode || !isDriver;
+    !isFleetMode || (!isDriver && !isRentalCustomer);
   const { preferences } = useUserPreferences();
 
   // User display name — from localStorage (set during login / register)

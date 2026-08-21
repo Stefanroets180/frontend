@@ -6,14 +6,27 @@ import { OdometerCaptureForm } from '@/components/forms/odometer-capture-form'
 import { OdometerReadingType } from '@/lib/types/database'
 import { Skeleton } from '@/components/ui/skeleton'
 import { api } from '@/lib/api/client'
+import { useAuth } from '@/lib/contexts/auth-context'
+import { UserRole } from '@/lib/types/database'
+import { useRouter } from 'next/navigation'
 
 function OdometerVerificationContent() {
+  const router = useRouter()
+  const { user } = useAuth()
   const searchParams = useSearchParams()
   const vehicleId = searchParams.get('vehicleId')
   const typeParam = searchParams.get('type')
 
   const readingType =
     typeParam === 'CLOSING' ? OdometerReadingType.CLOSING : OdometerReadingType.OPENING
+
+  // Prevent RENTAL_CUSTOMER from accessing odometer verification
+  useEffect(() => {
+    if (user?.role === UserRole.RENTAL_CUSTOMER) {
+      router.replace('/dashboard')
+      return
+    }
+  }, [user, router])
 
   const [vehicle, setVehicle] = useState<{ reg: string; lastOdometer: number } | null>(null)
   const [loading, setLoading] = useState(true)
