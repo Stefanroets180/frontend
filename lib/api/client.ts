@@ -535,8 +535,16 @@ export const createVehicleConditionReport = async (assignmentId: string) => {
   return api.post(`/vehicle-condition-reports/assignment/${assignmentId}`, {});
 };
 
+export const createVehicleConditionReportForVehicle = async (vehicleId: string) => {
+  return api.post(`/vehicle-condition-reports/vehicle/${vehicleId}`, {});
+};
+
 export const getVehicleConditionReport = async (assignmentId: string) => {
   return api.get(`/vehicle-condition-reports/assignment/${assignmentId}`);
+};
+
+export const getVehicleConditionReportByVehicleId = async (vehicleId: string) => {
+  return api.get(`/vehicle-condition-reports/vehicle/${vehicleId}`);
 };
 
 export const addConditionSection = async (reportId: string, data: {

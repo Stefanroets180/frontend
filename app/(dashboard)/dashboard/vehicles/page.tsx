@@ -848,9 +848,10 @@ export default function VehiclesPage() {
               Document the condition of {selectedVehicleForFleet?.nickname || selectedVehicleForFleet?.make + ' ' + selectedVehicleForFleet?.model}
             </DialogDescription>
           </DialogHeader>
-          {selectedVehicleForFleet && selectedAssignmentId && (
+          {selectedVehicleForFleet && (
             <VehicleConditionReport
-              assignmentId={selectedAssignmentId}
+              assignmentId={isFleetMode ? selectedAssignmentId : null}
+              vehicleId={!isFleetMode ? selectedVehicleForFleet.id : null}
               vehicleName={selectedVehicleForFleet.nickname || `${selectedVehicleForFleet.make} ${selectedVehicleForFleet.model}`}
               onComplete={() => setConditionReportOpen(false)}
             />

@@ -11,7 +11,9 @@ import { CheckCircle2, AlertCircle, Camera, Plus, Car, Armchair, Cog, CircleDot,
 import { cn } from '@/lib/utils'
 import { 
   createVehicleConditionReport, 
+  createVehicleConditionReportForVehicle,
   getVehicleConditionReport, 
+  getVehicleConditionReportByVehicleId,
   addConditionSection,
   addSectionImage,
   deleteConditionSectionImage,
@@ -574,11 +576,12 @@ function AddSectionPanel({
 
 interface VehicleConditionReportProps {
   assignmentId: string | null
+  vehicleId: string | null
   vehicleName?: string
   onComplete?: () => void
 }
 
-export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }: VehicleConditionReportProps) {
+export function VehicleConditionReport({ assignmentId, vehicleId, vehicleName, onComplete }: VehicleConditionReportProps) {
   const [report, setReport] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -608,8 +611,10 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
   useEffect(() => {
     if (assignmentId) {
       loadReport()
+    } else if (vehicleId) {
+      loadReportByVehicleId()
     }
-  }, [assignmentId])
+  }, [assignmentId, vehicleId])
 
   const loadReport = async () => {
     if (!assignmentId) return
@@ -624,15 +629,33 @@ export function VehicleConditionReport({ assignmentId, vehicleName, onComplete }
     }
   }
 
+  const loadReportByVehicleId = async () => {
+    if (!vehicleId) return
+    setIsLoading(true)
+    try {
+      const response = await getVehicleConditionReportByVehicleId(vehicleId)
+      setReport(response.data)
+    } catch (error) {
+      console.error('Failed to load condition report:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const createReport = async () => {
-    if (!assignmentId) {
-      setSubmitError('Cannot create condition report: Vehicle is not assigned to a driver')
+    if (!assignmentId && !vehicleId) {
+      setSubmitError('Cannot create condition report: Missing assignment or vehicle ID')
       return
     }
     setIsSubmitting(true)
     setSubmitError(null)
     try {
-      const response = await createVehicleConditionReport(assignmentId)
+      let response
+      if (assignmentId) {
+        response = await createVehicleConditionReport(assignmentId)
+      } else {
+        response = await createVehicleConditionReportForVehicle(vehicleId!)
+      }
       setReport(response.data)
       flash('Report created')
     } catch (error) {
