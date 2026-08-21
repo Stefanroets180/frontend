@@ -78,6 +78,11 @@ function SettingsContent() {
   const [dbStatus, setDbStatus] = useState<"loading" | "up" | "down">(
     "loading",
   );
+  
+  // Fleet feature visibility settings
+  const [conditionReportEnabled, setConditionReportEnabled] = useState(true);
+  const [odometerConfirmationEnabled, setOdometerConfirmationEnabled] = useState(true);
+  const [isUpdatingVisibility, setIsUpdatingVisibility] = useState(false);
 
   const isDark = resolvedTheme === "dark";
   const isFleet = isFleetMode;
@@ -171,6 +176,25 @@ function SettingsContent() {
       .catch(() => setVehicles([]));
   }, []);
 
+  // Fetch organization visibility settings (for SUPER_ADMIN and ADMIN only)
+  useEffect(() => {
+    if (user?.role === "SUPER_ADMIN" || user?.role === "ADMIN") {
+      api
+        .get("/organization")
+        .then(({ data }) => {
+          if (data) {
+            setConditionReportEnabled(data.conditionReportEnabled ?? true);
+            setOdometerConfirmationEnabled(data.odometerConfirmationEnabled ?? true);
+          }
+        })
+        .catch(() => {
+          // Default to true if fetch fails
+          setConditionReportEnabled(true);
+          setOdometerConfirmationEnabled(true);
+        });
+    }
+  }, [user]);
+
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
@@ -183,6 +207,29 @@ function SettingsContent() {
   const handleThemeToggle = (checked: boolean) => {
     setTheme(checked ? "dark" : "light");
     toast.success(checked ? "Dark mode enabled" : "Light mode enabled");
+  };
+
+  const handleVisibilityToggle = async (setting: "conditionReport" | "odometerConfirmation", value: boolean) => {
+    setIsUpdatingVisibility(true);
+    try {
+      await api.put("/organization", {
+        conditionReportEnabled: setting === "conditionReport" ? value : conditionReportEnabled,
+        odometerConfirmationEnabled: setting === "odometerConfirmation" ? value : odometerConfirmationEnabled,
+      });
+      
+      if (setting === "conditionReport") {
+        setConditionReportEnabled(value);
+      } else {
+        setOdometerConfirmationEnabled(value);
+      }
+      
+      toast.success(`${setting === "conditionReport" ? "Condition Report" : "Odometer Confirmation"} ${value ? "enabled" : "disabled"}`);
+    } catch (error) {
+      console.error("Failed to update visibility settings:", error);
+      toast.error("Failed to update settings. Please try again.");
+    } finally {
+      setIsUpdatingVisibility(false);
+    }
   };
 
   const exportVehicleLabel = () => {
@@ -544,6 +591,62 @@ function SettingsContent() {
               )}
             </CardContent>
           </Card>
+
+        {/* Fleet Feature Visibility — SUPER_ADMIN and ADMIN only */}
+        {isFleet && (user?.role === "SUPER_ADMIN" || user?.role === "ADMIN") && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Shield className="h-5 w-5" />
+                Fleet Feature Visibility
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <FileText className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <Label htmlFor="condition-report-toggle" className="font-medium">
+                      Condition Report
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      Show/hide Condition Report button on vehicle cards
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  id="condition-report-toggle"
+                  checked={conditionReportEnabled}
+                  onCheckedChange={(checked) => handleVisibilityToggle("conditionReport", checked)}
+                  disabled={isUpdatingVisibility}
+                />
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <Database className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <Label htmlFor="odometer-toggle" className="font-medium">
+                      Odometer Confirmation
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      Show/hide Odometer Confirmation button on vehicle cards
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  id="odometer-toggle"
+                  checked={odometerConfirmationEnabled}
+                  onCheckedChange={(checked) => handleVisibilityToggle("odometerConfirmation", checked)}
+                  disabled={isUpdatingVisibility}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                When disabled, these buttons will be hidden from all users including admins.
+              </p>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Regional — persisted locally */}
         <Card>

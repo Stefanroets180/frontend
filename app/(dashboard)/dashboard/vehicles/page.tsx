@@ -45,6 +45,10 @@ export default function VehiclesPage() {
   const [odometerConfirmationOpen, setOdometerConfirmationOpen] = useState(false);
   const [selectedVehicleForFleet, setSelectedVehicleForFleet] = useState<Vehicle | null>(null);
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(null);
+  
+  // Organization visibility settings
+  const [conditionReportEnabled, setConditionReportEnabled] = useState(true);
+  const [odometerConfirmationEnabled, setOdometerConfirmationEnabled] = useState(true);
 
   useEffect(() => {
     if (user) {
@@ -54,6 +58,25 @@ export default function VehiclesPage() {
       }
     }
   }, [user, isDriver]);
+
+  // Fetch organization visibility settings
+  useEffect(() => {
+    if (user && isFleetMode) {
+      api
+        .get("/organization")
+        .then(({ data }) => {
+          if (data) {
+            setConditionReportEnabled(data.conditionReportEnabled ?? true);
+            setOdometerConfirmationEnabled(data.odometerConfirmationEnabled ?? true);
+          }
+        })
+        .catch(() => {
+          // Default to true if fetch fails
+          setConditionReportEnabled(true);
+          setOdometerConfirmationEnabled(true);
+        });
+    }
+  }, [user, isFleetMode]);
 
   const fetchVehicles = async () => {
     try {
@@ -451,68 +474,72 @@ export default function VehiclesPage() {
                     {/* Fleet-specific buttons */}
                     {isFleetMode && (
                       <div className="flex flex-col sm:grid sm:grid-cols-2 gap-2 mb-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={async () => {
-                            setSelectedVehicleForFleet(vehicle);
-                            try {
-                              const assignments = await getVehicleAssignments(vehicle.id);
-                              const assignmentData = (assignments as any).data || assignments;
-                              const assignmentArray = Array.isArray(assignmentData) ? assignmentData : (assignmentData as any).content || [];
-                              const activeAssignment = assignmentArray.find((a: any) => a.status === 'ACTIVE');
-                              if (activeAssignment) {
-                                setSelectedAssignmentId(activeAssignment.id);
-                                setConditionReportOpen(true);
-                              } else {
-                                // Admin, Super Admin, Manager can investigate without assignment
-                                if (currentUserRole === UserRole.ADMIN || currentUserRole === UserRole.SUPER_ADMIN || currentUserRole === UserRole.MANAGER) {
-                                  alert('No active assignment found for this vehicle. You can still investigate as an admin/manager.');
-                                  setSelectedAssignmentId(null);
+                        {conditionReportEnabled && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={async () => {
+                              setSelectedVehicleForFleet(vehicle);
+                              try {
+                                const assignments = await getVehicleAssignments(vehicle.id);
+                                const assignmentData = (assignments as any).data || assignments;
+                                const assignmentArray = Array.isArray(assignmentData) ? assignmentData : (assignmentData as any).content || [];
+                                const activeAssignment = assignmentArray.find((a: any) => a.status === 'ACTIVE');
+                                if (activeAssignment) {
+                                  setSelectedAssignmentId(activeAssignment.id);
                                   setConditionReportOpen(true);
                                 } else {
-                                  alert('No active assignment found for this vehicle. Please assign this vehicle to a driver first.');
+                                  // Admin, Super Admin, Manager can investigate without assignment
+                                  if (currentUserRole === UserRole.ADMIN || currentUserRole === UserRole.SUPER_ADMIN || currentUserRole === UserRole.MANAGER) {
+                                    alert('No active assignment found for this vehicle. You can still investigate as an admin/manager.');
+                                    setSelectedAssignmentId(null);
+                                    setConditionReportOpen(true);
+                                  } else {
+                                    alert('No active assignment found for this vehicle. Please assign this vehicle to a driver first.');
+                                  }
                                 }
+                              } catch (error) {
+                                console.error('Failed to fetch assignments:', error);
+                                alert('Failed to fetch vehicle assignments. Please try again.');
                               }
-                            } catch (error) {
-                              console.error('Failed to fetch assignments:', error);
-                              alert('Failed to fetch vehicle assignments. Please try again.');
-                            }
-                          }}
-                        >
-                          Condition Report
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={async () => {
-                            setSelectedVehicleForFleet(vehicle);
-                            try {
-                              const assignments = await getVehicleAssignments(vehicle.id);
-                              const assignmentData = (assignments as any).data || assignments;
-                              const assignmentArray = Array.isArray(assignmentData) ? assignmentData : (assignmentData as any).content || [];
-                              const activeAssignment = assignmentArray.find((a: any) => a.status === 'ACTIVE');
-                              if (activeAssignment) {
-                                setSelectedAssignmentId(activeAssignment.id);
-                                setOdometerConfirmationOpen(true);
-                              } else {
-                                // Admin, Super Admin, Manager can investigate without assignment
-                                if (currentUserRole === UserRole.ADMIN || currentUserRole === UserRole.SUPER_ADMIN || currentUserRole === UserRole.MANAGER) {
-                                  alert('No active assignment found for this vehicle. You can still investigate as an admin/manager.');
-                                  setSelectedAssignmentId(null);
+                            }}
+                          >
+                            Condition Report
+                          </Button>
+                        )}
+                        {odometerConfirmationEnabled && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={async () => {
+                              setSelectedVehicleForFleet(vehicle);
+                              try {
+                                const assignments = await getVehicleAssignments(vehicle.id);
+                                const assignmentData = (assignments as any).data || assignments;
+                                const assignmentArray = Array.isArray(assignmentData) ? assignmentData : (assignmentData as any).content || [];
+                                const activeAssignment = assignmentArray.find((a: any) => a.status === 'ACTIVE');
+                                if (activeAssignment) {
+                                  setSelectedAssignmentId(activeAssignment.id);
                                   setOdometerConfirmationOpen(true);
                                 } else {
-                                  alert('No active assignment found for this vehicle. Please assign this vehicle to a driver first.');
+                                  // Admin, Super Admin, Manager can investigate without assignment
+                                  if (currentUserRole === UserRole.ADMIN || currentUserRole === UserRole.SUPER_ADMIN || currentUserRole === UserRole.MANAGER) {
+                                    alert('No active assignment found for this vehicle. You can still investigate as an admin/manager.');
+                                    setSelectedAssignmentId(null);
+                                    setOdometerConfirmationOpen(true);
+                                  } else {
+                                    alert('No active assignment found for this vehicle. Please assign this vehicle to a driver first.');
+                                  }
                                 }
+                              } catch (error) {
+                                console.error('Failed to fetch assignments:', error);
+                                alert('Failed to fetch vehicle assignments. Please try again.');
                               }
-                            } catch (error) {
-                              console.error('Failed to fetch assignments:', error);
-                              alert('Failed to fetch vehicle assignments. Please try again.');
-                            }
-                          }}
-                        >
-                          Odometer
-                        </Button>
+                            }}
+                          >
+                            Odometer
+                          </Button>
+                        )}
                       </div>
                     )}
                     
