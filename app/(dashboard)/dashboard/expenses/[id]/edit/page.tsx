@@ -306,6 +306,7 @@ export default function EditExpensePage({
                 data.amountZar ??
                 0,
               excessAmountZar: data.insurancePremium?.excessAmountZar,
+              odometerReading: data.insurancePremium?.odometerReading ?? data.odometerReading ?? 0,
               brokerName: data.insurancePremium?.brokerName,
               brokerPhone: data.insurancePremium?.brokerPhone,
               claimPhoneNumber: data.insurancePremium?.claimPhoneNumber,
@@ -337,6 +338,7 @@ export default function EditExpensePage({
               contractDurationMonths:
                 data.vehicleTracking?.contractDurationMonths,
               recoveryIncluded: data.vehicleTracking?.recoveryIncluded || false,
+              odometerReading: data.vehicleTracking?.odometerReading ?? data.odometerReading ?? 0,
               appLoginEmail: data.vehicleTracking?.appLoginEmail,
               supportPhone: data.vehicleTracking?.supportPhone,
               features: data.vehicleTracking?.features,

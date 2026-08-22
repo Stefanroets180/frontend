@@ -53,6 +53,7 @@ const trackingSchema = z.object({
   installationFeeZar: z.coerce.number().optional(),
   contractDurationMonths: z.coerce.number().optional(),
   recoveryIncluded: z.boolean().default(false),
+  odometerReading: z.coerce.number().positive("Enter odometer reading"),
   appLoginEmail: z.string().email().optional().or(z.literal("")),
   supportPhone: z.string().optional(),
   features: z.string().optional(),
@@ -121,6 +122,7 @@ export function TrackingForm({
   const watchSubscriptionStart = watch("subscriptionStartDate");
   const watchSubscriptionEnd = watch("subscriptionEndDate");
   const watchInstallDate = watch("installationDate");
+  const watchOdometerReading = watch("odometerReading");
 
   // Initialize date inputs from watched values when in edit mode
   useEffect(() => {
@@ -604,6 +606,21 @@ export function TrackingForm({
               }}
               maxLength={10}
             />
+          </div>
+
+          {/* Odometer Reading */}
+          <div className="space-y-2">
+            <Label htmlFor="odometerReading">Odometer Reading (km) *</Label>
+            <Input
+              id="odometerReading"
+              type="number"
+              placeholder="0"
+              {...register("odometerReading")}
+              className={errors.odometerReading ? "border-red-500" : ""}
+            />
+            {errors.odometerReading && (
+              <p className="text-sm text-red-500">{errors.odometerReading.message}</p>
+            )}
           </div>
 
           {/* Recovery Service */}

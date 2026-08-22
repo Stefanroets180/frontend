@@ -49,6 +49,7 @@ const insuranceSchema = z.object({
   coverageEndDate: z.date({ required_error: "Select coverage end date" }),
   monthlyPremiumZar: z.coerce.number().positive("Enter monthly premium"),
   excessAmountZar: z.coerce.number().optional(),
+  odometerReading: z.coerce.number().positive("Enter odometer reading"),
   brokerName: z.string().optional(),
   brokerPhone: z.string().optional(),
   claimPhoneNumber: z.string().optional(),
@@ -117,6 +118,7 @@ export function InsuranceForm({
   const watchCoverageStart = watch("coverageStartDate");
   const watchCoverageEnd = watch("coverageEndDate");
   const watchPolicyType = watch("policyType");
+  const watchOdometerReading = watch("odometerReading");
 
   // Initialize date inputs from watched values when in edit mode
   useEffect(() => {
@@ -494,6 +496,21 @@ export function InsuranceForm({
               placeholder="0.00"
               {...register("excessAmountZar")}
             />
+          </div>
+
+          {/* Odometer Reading */}
+          <div className="space-y-2">
+            <Label htmlFor="odometerReading">Odometer Reading (km) *</Label>
+            <Input
+              id="odometerReading"
+              type="number"
+              placeholder="0"
+              {...register("odometerReading")}
+              className={errors.odometerReading ? "border-red-500" : ""}
+            />
+            {errors.odometerReading && (
+              <p className="text-sm text-red-500">{errors.odometerReading.message}</p>
+            )}
           </div>
 
           {/* Broker */}
