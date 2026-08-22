@@ -58,30 +58,31 @@ export function ImageCropModal({
   const getCroppedImg = (image: HTMLImageElement, crop: any) => {
     const canvas = document.createElement('canvas')
     
-    // Calculate scale factors based on natural image dimensions
-    const scaleX = image.naturalWidth / image.width
-    const scaleY = image.naturalHeight / image.height
-
     console.log('getCroppedImg - naturalWidth:', image.naturalWidth, 'naturalHeight:', image.naturalHeight)
     console.log('getCroppedImg - displayedWidth:', image.width, 'displayedHeight:', image.height)
-    console.log('getCroppedImg - scaleX:', scaleX, 'scaleY:', scaleY)
     console.log('getCroppedImg - crop:', crop)
 
-    // Convert crop dimensions to natural image dimensions
-    // If crop is in percentage, convert to pixels first
+    // Always convert to percentage first, then to natural dimensions
+    // This ensures consistency regardless of displayed size
     let cropX, cropY, cropWidth, cropHeight
     
     if (crop.unit === '%') {
+      // Already in percentage, convert directly to natural dimensions
       cropX = (crop.x / 100) * image.naturalWidth
       cropY = (crop.y / 100) * image.naturalHeight
       cropWidth = (crop.width / 100) * image.naturalWidth
       cropHeight = (crop.height / 100) * image.naturalHeight
     } else {
-      // Already in pixels, scale to natural dimensions
-      cropX = crop.x * scaleX
-      cropY = crop.y * scaleY
-      cropWidth = crop.width * scaleX
-      cropHeight = crop.height * scaleY
+      // Convert pixels to percentage based on displayed size, then to natural dimensions
+      const percentX = (crop.x / image.width) * 100
+      const percentY = (crop.y / image.height) * 100
+      const percentWidth = (crop.width / image.width) * 100
+      const percentHeight = (crop.height / image.height) * 100
+      
+      cropX = (percentX / 100) * image.naturalWidth
+      cropY = (percentY / 100) * image.naturalHeight
+      cropWidth = (percentWidth / 100) * image.naturalWidth
+      cropHeight = (percentHeight / 100) * image.naturalHeight
     }
 
     console.log('getCroppedImg - final crop dimensions:', { cropX, cropY, cropWidth, cropHeight })
