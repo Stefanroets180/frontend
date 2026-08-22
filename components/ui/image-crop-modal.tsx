@@ -193,9 +193,9 @@ export function ImageCropModal({
                 <ReactCrop
                   crop={crop}
                   onChange={(c) => setCrop(c)}
-                  keepSelection
-                  minWidth={100}
-                  minHeight={100}
+                  keepSelection={mode !== 'odometer'}
+                  minWidth={mode === 'odometer' ? 50 : 100}
+                  minHeight={mode === 'odometer' ? 50 : 100}
                   className="max-w-full max-h-[60vh]"
                 >
                   <img

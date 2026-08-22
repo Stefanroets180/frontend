@@ -494,9 +494,8 @@ export function InsuranceForm({
                 placeholder="YYYY-MM-DD"
                 value={coverageEndInput || (watchCoverageEnd ? format(watchCoverageEnd, "yyyy-MM-dd") : "")}
                 onChange={(e) => {
-                  let value = e.target.value;
-                  value = value.replace(/[^\d-]/g, '');
-                  const digits = value.replace(/\D/g, '');
+                  let value = e.target.value.replace(/\D/g, '');
+                  const digits = value;
                   if (digits.length > 0) {
                     let formatted = digits.slice(0, 4);
                     if (digits.length > 4) {
@@ -534,6 +533,7 @@ export function InsuranceForm({
                   }
                 }}
                 maxLength={10}
+                name="coverageEndDate"
                 className={errors.coverageEndDate ? "border-red-500" : ""}
               />
               {errors.coverageEndDate && (
