@@ -57,6 +57,7 @@ const licenseSchema = z.object({
   transactionNumber: z.string().optional(),
   renewalMethod: z.enum(["ONLINE", "POST_OFFICE", "LICENSING_DEPT", "AGENT"]),
   processingDays: z.coerce.number().optional(),
+  odometerReading: z.coerce.number().positive("Enter odometer reading"),
   notes: z.string().optional(),
 });
 
@@ -122,6 +123,7 @@ export function LicenseRenewalForm({
   const watchDate = watch("date");
   const watchPreviousExpiry = watch("previousExpiryDate");
   const watchNewExpiry = watch("newExpiryDate");
+  const watchOdometerReading = watch("odometerReading");
 
   // Initialize date inputs from watched values when in edit mode
   useEffect(() => {
@@ -543,6 +545,21 @@ export function LicenseRenewalForm({
                 {...register("processingDays")}
               />
             </div>
+          </div>
+
+          {/* Odometer Reading */}
+          <div className="space-y-2">
+            <Label htmlFor="odometerReading">Odometer Reading (km) *</Label>
+            <Input
+              id="odometerReading"
+              type="number"
+              placeholder="0"
+              {...register("odometerReading")}
+              className={errors.odometerReading ? "border-red-500" : ""}
+            />
+            {errors.odometerReading && (
+              <p className="text-sm text-red-500">{errors.odometerReading.message}</p>
+            )}
           </div>
 
           {/* Notes */}

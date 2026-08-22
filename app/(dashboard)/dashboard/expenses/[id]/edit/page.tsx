@@ -397,6 +397,7 @@ export default function EditExpensePage({
               transactionNumber: data.licenseRenewal?.transactionNumber,
               renewalMethod:
                 data.licenseRenewal?.renewalMethod || "LICENSING_DEPT",
+              odometerReading: data.licenseRenewal?.odometerReading ?? data.odometerReading ?? 0,
               processingDays: data.licenseRenewal?.processingDays,
               notes: data.licenseRenewal?.notes,
             });
