@@ -604,10 +604,10 @@ export function InsuranceForm({
               <label htmlFor="odometer-photo" className="h-48 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors">
                 <span className="sr-only">Upload odometer photo</span>
                 {odometerPreviewUrl ? (
-                  <img 
+                  <img
                     src={odometerPreviewUrl}
                     alt="Odometer reading"
-                    className="h-full w-full object-cover rounded-lg"
+                    className="h-full w-full object-contain rounded-lg"
                   />
                 ) : (
                   <div className="text-center">
