@@ -50,7 +50,7 @@ const insuranceSchema = z.object({
   monthlyPremiumZar: z.coerce.number().positive("Enter monthly premium"),
   excessAmountZar: z.coerce.number().optional(),
   odometerReading: z.coerce.number().positive("Enter odometer reading"),
-  odometerReadingDate: z.date({ required_error: "Select odometer reading date" }),
+  odometerReadingDate: z.date().optional(),
   brokerName: z.string().optional(),
   brokerPhone: z.string().optional(),
   claimPhoneNumber: z.string().optional(),
@@ -68,7 +68,7 @@ interface Vehicle {
 
 interface InsuranceFormProps extends ReceiptSupportProps {
   vehicles: Vehicle[];
-  onSubmit: (data: InsuranceInput, receiptImage: File | null) => Promise<void>;
+  onSubmit: (data: InsuranceInput, receiptImage: File | null, odometerImage: File | null) => Promise<void>;
   initialData?: Partial<InsuranceInput>;
 }
 
@@ -99,6 +99,14 @@ export function InsuranceForm({
   const [coverageStartInput, setCoverageStartInput] = useState("");
   const [coverageEndInput, setCoverageEndInput] = useState("");
   const [odometerDateInput, setOdometerDateInput] = useState("");
+  
+  // Odometer photo state
+  const [odometerImage, setOdometerImage] = useState<File | null>(null);
+  const [odometerPreviewUrl, setOdometerPreviewUrl] = useState<string | null>(null);
+  const [odometerImageError, setOdometerImageError] = useState<string | null>(null);
+  const [isCompressingOdometer, setIsCompressingOdometer] = useState(false);
+  const [showOdometerCropModal, setShowOdometerCropModal] = useState(false);
+  const [originalOdometerFile, setOriginalOdometerFile] = useState<File | null>(null);
 
   const {
     register,
@@ -140,6 +148,16 @@ export function InsuranceForm({
       setPreviewUrl(firstImage.imageUrl);
     }
   }, [mode, existingImages, previewUrl]);
+
+  // Set odometer preview from existing images when in edit mode (look for ODOMETER type)
+  useEffect(() => {
+    if (mode === "edit" && existingImages.length > 0 && !odometerPreviewUrl) {
+      const odometerImage = existingImages.find(img => img.imageType === 'ODOMETER');
+      if (odometerImage) {
+        setOdometerPreviewUrl(odometerImage.imageUrl);
+      }
+    }
+  }, [mode, existingImages, odometerPreviewUrl]);
 
   const handleImageCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -190,14 +208,68 @@ export function InsuranceForm({
     setImageError(null);
   };
 
+  // Odometer image handlers
+  const handleOdometerImageCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validation = validateImageFile(file);
+    if (!validation.valid) {
+      setOdometerImageError(validation.error || "Invalid image file");
+      return;
+    }
+
+    setOriginalOdometerFile(file);
+    setShowOdometerCropModal(true);
+  };
+
+  const handleOdometerCropConfirm = async (croppedFile: File, originalFile: File) => {
+    setShowOdometerCropModal(false);
+    setIsCompressingOdometer(true);
+
+    try {
+      const processed = await processReceiptImage(croppedFile);
+      const processedFile = new File([processed.blob], croppedFile.name, {
+        type: processed.format,
+      });
+      setOdometerImage(processedFile);
+      setOdometerPreviewUrl(URL.createObjectURL(processed.blob));
+      setOdometerImageError(null);
+    } catch (err) {
+      setOdometerImageError("Failed to process image. Please try again.");
+    } finally {
+      setIsCompressingOdometer(false);
+    }
+  };
+
+  const handleOdometerCropCancel = () => {
+    setShowOdometerCropModal(false);
+    setOriginalOdometerFile(null);
+  };
+
+  const clearOdometerImage = () => {
+    setOdometerImage(null);
+    setOdometerPreviewUrl(null);
+    setOdometerImageError(null);
+  };
+
   const handleFormSubmit = async (data: InsuranceInput) => {
     if (mode === "create" && !receiptImage) {
       setImageError("Please capture a receipt image");
       return;
     }
+    if (mode === "create" && !odometerImage) {
+      setOdometerImageError("Please capture an odometer photo as proof of reading");
+      return;
+    }
     setIsSubmitting(true);
     try {
-      await onSubmit(data, mode === "create" ? receiptImage : null);
+      // Set odometerReadingDate to current date when odometer photo is provided
+      if (odometerImage && !data.odometerReadingDate) {
+        setValue("odometerReadingDate", new Date());
+        data.odometerReadingDate = new Date();
+      }
+      await onSubmit(data, mode === "create" ? receiptImage : null, mode === "create" ? odometerImage : null);
     } finally {
       setIsSubmitting(false);
     }
@@ -517,62 +589,54 @@ export function InsuranceForm({
             )}
           </div>
 
-          {/* Odometer Reading Date */}
+          {/* Odometer Photo (Proof of Reading) */}
           <div className="space-y-2">
-            <Label htmlFor="odometerReadingDate">Odometer Reading Date *</Label>
-            <Input
-              id="odometerReadingDate"
-              type="text"
-              inputMode="numeric"
-              pattern="\d{4}-\d{2}-\d{2}"
-              placeholder="YYYY-MM-DD"
-              value={odometerDateInput || (watchOdometerReadingDate ? format(watchOdometerReadingDate, 'yyyy-MM-dd') : '')}
-              onChange={(e) => {
-                let value = e.target.value;
-                value = value.replace(/[^\d-]/g, '');
-                const digits = value.replace(/\D/g, '');
-                if (digits.length > 0) {
-                  let formatted = digits.slice(0, 4);
-                  if (digits.length > 4) {
-                    formatted += '-' + digits.slice(4, 6);
-                  }
-                  if (digits.length > 6) {
-                    formatted += '-' + digits.slice(6, 8);
-                  }
-                  value = formatted;
-                }
-                setOdometerDateInput(value);
-                if (value && value.length >= 4) {
-                  const year = parseInt(value.slice(0, 4));
-                  if (year < 1900 || year > 2099) {
-                    return;
-                  }
-                }
-                if (value.length === 10) {
-                  const year = parseInt(value.slice(0, 4));
-                  const month = parseInt(value.slice(5, 7));
-                  const day = parseInt(value.slice(8, 10));
-
-                  // Validate month
-                  if (month < 1 || month > 12) {
-                    return;
-                  }
-
-                  // Validate day based on month
-                  const daysInMonth = new Date(year, month, 0).getDate();
-                  if (day < 1 || day > daysInMonth) {
-                    return;
-                  }
-
-                  setValue("odometerReadingDate", new Date(value));
-                }
-              }}
-              maxLength={10}
-              className={errors.odometerReadingDate ? "border-red-500" : ""}
-            />
-            {errors.odometerReadingDate && (
-              <p className="text-sm text-red-500">{errors.odometerReadingDate.message}</p>
+            <Label htmlFor="odometer-photo">Odometer Photo (Proof of Reading) *</Label>
+            <div className="relative">
+              <label htmlFor="odometer-photo" className="h-48 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors">
+                <span className="sr-only">Upload odometer photo</span>
+                {odometerPreviewUrl ? (
+                  <img 
+                    src={odometerPreviewUrl}
+                    alt="Odometer reading"
+                    className="h-full w-full object-cover rounded-lg"
+                  />
+                ) : (
+                  <div className="text-center">
+                    <Camera className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">
+                      {isCompressingOdometer ? "Processing..." : "Take a photo of the odometer"}
+                    </p>
+                  </div>
+                )}
+                <input
+                  id="odometer-photo"
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  className="hidden"
+                  onChange={handleOdometerImageCapture}
+                  disabled={isCompressingOdometer}
+                />
+              </label>
+              {odometerPreviewUrl && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  className="mt-2 w-full"
+                  onClick={clearOdometerImage}
+                >
+                  Remove Photo
+                </Button>
+              )}
+            </div>
+            {odometerImageError && (
+              <p className="text-sm text-red-500">{odometerImageError}</p>
             )}
+            <p className="text-xs text-muted-foreground">
+              Take a clear photo of the odometer showing the current reading for legal proof
+            </p>
           </div>
 
           {/* Broker */}
@@ -707,7 +771,7 @@ export function InsuranceForm({
           <Button
             type="submit"
             className="w-full"
-            disabled={isSubmitting || (mode === "create" && !receiptImage)}
+            disabled={isSubmitting || (mode === "create" && (!receiptImage || !odometerImage))}
           >
             {isSubmitting ? "Saving..." : "Save Insurance Premium"}
           </Button>
@@ -723,6 +787,17 @@ export function InsuranceForm({
         onConfirm={handleCropConfirm}
         onCancel={handleCropCancel}
         isOpen={showCropModal}
+      />
+    )}
+
+    {/* Odometer Image Crop Modal */}
+    {originalOdometerFile && (
+      <ImageCropModal
+        imageFile={originalOdometerFile}
+        mode="receipt"
+        onConfirm={handleOdometerCropConfirm}
+        onCancel={handleOdometerCropCancel}
+        isOpen={showOdometerCropModal}
       />
     )}
     </>
