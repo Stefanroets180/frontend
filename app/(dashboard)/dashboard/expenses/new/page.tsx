@@ -937,7 +937,7 @@ function NewExpenseContent() {
       case ExpenseCategory.LICENSE_RENEWAL:
         return (
           <LicenseRenewalForm
-            vehicles={vehicles}
+            vehicles={vehicles.map(v => ({ ...v, currentOdometer: v.currentOdometer }))}
             onSubmit={handleLicenseSubmit}
             mode="create"
           />

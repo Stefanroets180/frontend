@@ -951,7 +951,7 @@ export default function EditExpensePage({
       case ExpenseCategory.LICENSE_RENEWAL:
         return (
           <LicenseRenewalForm
-            vehicles={vehicles}
+            vehicles={vehicles.map(v => ({ ...v, currentOdometer: v.currentOdometer }))}
             initialData={initialData}
             mode="edit"
             existingImages={receiptImages}

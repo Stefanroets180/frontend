@@ -59,6 +59,12 @@ const licenseSchema = z.object({
   processingDays: z.coerce.number().optional(),
   odometerReading: z.coerce.number().positive("Enter odometer reading"),
   notes: z.string().optional(),
+}).refine((data) => {
+  // This validation will be handled in the component with access to vehicles array
+  return true;
+}, {
+  message: "Odometer reading must be equal to or higher than current vehicle odometer",
+  path: ["odometerReading"],
 });
 
 type LicenseInput = z.infer<typeof licenseSchema>;
@@ -68,6 +74,7 @@ interface Vehicle {
   registrationNumber: string;
   make: string;
   model: string;
+  currentOdometer?: number;
 }
 
 interface LicenseRenewalFormProps extends ReceiptSupportProps {
@@ -198,6 +205,16 @@ export function LicenseRenewalForm({
       setImageError("Please capture a receipt image");
       return;
     }
+
+    // Validate odometer reading against current vehicle odometer
+    const selectedVehicle = vehicles.find(v => v.id === data.vehicleId);
+    if (selectedVehicle && selectedVehicle.currentOdometer !== undefined) {
+      if (data.odometerReading < selectedVehicle.currentOdometer) {
+        alert(`Odometer reading (${data.odometerReading} km) cannot be lower than current vehicle odometer (${selectedVehicle.currentOdometer} km). Please enter a value equal to or higher than the current odometer.`);
+        return;
+      }
+    }
+
     setIsSubmitting(true);
     try {
       await onSubmit(data, mode === "create" ? receiptImage : null);
