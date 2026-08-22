@@ -22,23 +22,21 @@ export function ImageCropModal({
   onCancel,
   isOpen,
 }: ImageCropModalProps) {
-  const [crop, setCrop] = useState<any>({
-    unit: '%',
-    width: mode === 'odometer' ? 100 : 95,
-    height: mode === 'odometer' ? 100 : 95,
-    x: mode === 'odometer' ? 0 : 2.5,
-    y: mode === 'odometer' ? 0 : 2.5,
-  })
+  const [crop, setCrop] = useState<any>(null)
 
   // Update crop when mode changes
   useEffect(() => {
-    setCrop({
-      unit: '%',
-      width: mode === 'odometer' ? 100 : 95,
-      height: mode === 'odometer' ? 100 : 95,
-      x: mode === 'odometer' ? 0 : 2.5,
-      y: mode === 'odometer' ? 0 : 2.5,
-    })
+    if (mode === 'odometer') {
+      setCrop(null) // No initial crop for odometer - show full image
+    } else {
+      setCrop({
+        unit: '%',
+        width: 95,
+        height: 95,
+        x: 2.5,
+        y: 2.5,
+      })
+    }
   }, [mode])
   const [imgSrc, setImgSrc] = useState<string>('')
   const [isProcessing, setIsProcessing] = useState(false)
@@ -110,8 +108,15 @@ export function ImageCropModal({
   }
 
   const handleConfirm = async () => {
-    if (!crop || !imgRef.current) {
-      console.error('Crop modal - Missing crop or imgRef')
+    if (!imgRef.current) {
+      console.error('Crop modal - Missing imgRef')
+      return
+    }
+
+    // If no crop selection (odometer mode), use full image
+    if (!crop) {
+      console.log('Crop modal - No crop selection, using original image')
+      onConfirm(imageFile, imageFile)
       return
     }
 
