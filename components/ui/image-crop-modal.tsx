@@ -38,6 +38,11 @@ export function ImageCropModal({
       })
     }
   }, [mode])
+
+  // Always use percentCrop for state to ensure consistency
+  const handleCropChange = (_crop: any, percentCrop: any) => {
+    setCrop(percentCrop)
+  }
   const [imgSrc, setImgSrc] = useState<string>('')
   const [isProcessing, setIsProcessing] = useState(false)
   const imgRef = useRef<HTMLImageElement>(null)
@@ -192,23 +197,23 @@ export function ImageCropModal({
           </div>
 
           {/* Image Area */}
-          <div className="flex-1 flex items-center justify-center p-4 overflow-auto">
+          <div className="flex-1 flex items-center justify-center p-4 overflow-auto bg-gray-950">
             {imgSrc && (
               <div className="relative">
                 <ReactCrop
                   crop={crop}
-                  onChange={(c) => setCrop(c)}
+                  onChange={handleCropChange}
                   keepSelection={mode !== 'odometer'}
                   minWidth={mode === 'odometer' ? 50 : 100}
                   minHeight={mode === 'odometer' ? 50 : 100}
-                  className="max-w-full max-h-[60vh]"
+                  className="max-w-full"
                 >
                   <img
                     ref={imgRef}
                     src={imgSrc}
                     alt="Crop target"
                     style={{
-                      maxHeight: '60vh',
+                      maxHeight: '80vh',
                       maxWidth: '100%',
                     }}
                   />
