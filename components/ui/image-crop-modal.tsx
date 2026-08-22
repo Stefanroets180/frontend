@@ -24,10 +24,10 @@ export function ImageCropModal({
 }: ImageCropModalProps) {
   const [crop, setCrop] = useState<any>({
     unit: '%',
-    width: 95,
-    height: 95,
-    x: 2.5,
-    y: 2.5,
+    width: mode === 'odometer' ? 100 : 95,
+    height: mode === 'odometer' ? 100 : 95,
+    x: mode === 'odometer' ? 0 : 2.5,
+    y: mode === 'odometer' ? 0 : 2.5,
   })
   const [imgSrc, setImgSrc] = useState<string>('')
   const [isProcessing, setIsProcessing] = useState(false)

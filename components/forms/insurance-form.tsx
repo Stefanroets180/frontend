@@ -794,7 +794,7 @@ export function InsuranceForm({
     {originalOdometerFile && (
       <ImageCropModal
         imageFile={originalOdometerFile}
-        mode="receipt"
+        mode="odometer"
         onConfirm={handleOdometerCropConfirm}
         onCancel={handleOdometerCropCancel}
         isOpen={showOdometerCropModal}
