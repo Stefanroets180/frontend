@@ -46,7 +46,7 @@ export function ImageCropModal({
   }, [mode])
 
   // Always use percentCrop for state to ensure consistency
-  const handleCropChange = (_crop: any, percentCrop: any) => {
+  const handleCropChange = (crop: any, percentCrop: any) => {
     setCrop(percentCrop)
   }
   const [imgSrc, setImgSrc] = useState<string>('')
