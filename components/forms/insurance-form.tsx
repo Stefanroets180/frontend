@@ -600,51 +600,54 @@ export function InsuranceForm({
           {/* Odometer Photo (Proof of Reading) */}
           <div className="space-y-2">
             <Label htmlFor="odometer-photo">Odometer Photo (Proof of Reading) *</Label>
-            <div className="relative">
-              <label htmlFor="odometer-photo" className="h-48 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors">
-                <span className="sr-only">Upload odometer photo</span>
-                {odometerPreviewUrl ? (
-                  <img
-                    src={odometerPreviewUrl}
-                    alt="Odometer reading"
-                    className="h-full w-full object-contain rounded-lg"
-                  />
-                ) : (
-                  <div className="text-center">
-                    <Camera className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">
-                      {isCompressingOdometer ? "Processing..." : "Take a photo of the odometer"}
-                    </p>
-                  </div>
-                )}
+
+            <div className="flex items-center gap-4">
+              <div className="relative">
                 <input
-                  id="odometer-photo"
                   type="file"
                   accept="image/*"
                   capture="environment"
-                  className="hidden"
                   onChange={handleOdometerImageCapture}
-                  disabled={isCompressingOdometer}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  id="odometer-photo"
                 />
-              </label>
-              {odometerPreviewUrl && (
                 <Button
                   type="button"
-                  variant="destructive"
+                  variant="outline"
+                  disabled={isCompressingOdometer}
+                  className={odometerImageError ? "border-red-500" : ""}
+                >
+                  <Camera className="mr-2 h-4 w-4" />
+                  {isCompressingOdometer
+                    ? "Processing..."
+                    : odometerImage
+                      ? "Change Photo"
+                      : "Capture Odometer"}
+                </Button>
+              </div>
+              {odometerImage && (
+                <Button
+                  type="button"
+                  variant="ghost"
                   size="sm"
-                  className="mt-2 w-full"
                   onClick={clearOdometerImage}
                 >
-                  Remove Photo
+                  Remove
                 </Button>
               )}
             </div>
             {odometerImageError && (
               <p className="text-sm text-red-500">{odometerImageError}</p>
             )}
-            <p className="text-xs text-muted-foreground">
-              Take a clear photo of the odometer showing the current reading for legal proof
-            </p>
+            {odometerPreviewUrl && (
+              <div className="mt-2">
+                <img
+                  src={odometerPreviewUrl}
+                  alt="Odometer reading"
+                  className="max-h-48 rounded-lg border object-contain"
+                />
+              </div>
+            )}
           </div>
 
           {/* Broker */}
