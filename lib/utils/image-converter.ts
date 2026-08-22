@@ -149,6 +149,19 @@ export async function processReceiptImage(file: File): Promise<ConversionResult>
 }
 
 /**
+ * Process an odometer photo for upload
+ * Optimized settings for high-resolution odometer readings
+ * Uses much higher quality and larger dimensions to ensure readability
+ */
+export async function processOdometerImage(file: File): Promise<ConversionResult> {
+  return convertToAvif(file, {
+    quality: 90,
+    maxWidth: 4000,
+    maxHeight: 4000,
+  });
+}
+
+/**
  * Process a general expense image for upload
  */
 export async function processExpenseImage(file: File): Promise<ConversionResult> {

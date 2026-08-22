@@ -28,6 +28,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { INSURANCE_POLICY_TYPE_LABELS } from "@/lib/types/database";
 import {
   processReceiptImage,
+  processOdometerImage,
   validateImageFile,
   formatFileSize,
 } from "@/lib/utils/image-converter";
@@ -220,8 +221,8 @@ export function InsuranceForm({
     setIsCompressingOdometer(true);
 
     try {
-      // Process original image directly without cropping
-      const processed = await processReceiptImage(file);
+      // Process original image directly without cropping using high-quality settings
+      const processed = await processOdometerImage(file);
       const processedFile = new File([processed.blob], file.name, {
         type: processed.format,
       });
