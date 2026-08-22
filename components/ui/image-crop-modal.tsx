@@ -27,13 +27,7 @@ export function ImageCropModal({
   // Update crop when mode changes
   useEffect(() => {
     if (mode === 'odometer') {
-      setCrop({
-        unit: '%',
-        width: 100,
-        height: 100,
-        x: 0,
-        y: 0,
-      }) // Full image selection for odometer
+      setCrop(null) // No initial crop for odometer - show full image
     } else {
       setCrop({
         unit: '%',
@@ -121,6 +115,13 @@ export function ImageCropModal({
   const handleConfirm = async () => {
     if (!imgRef.current) {
       console.error('Crop modal - Missing imgRef')
+      return
+    }
+
+    // If no crop selection (odometer mode), use full image
+    if (!crop) {
+      console.log('Crop modal - No crop selection, using original image')
+      onConfirm(imageFile, imageFile)
       return
     }
 
@@ -235,24 +236,28 @@ export function ImageCropModal({
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     Processing...
                   </>
-                ) : (
+                ) : crop ? (
                   'Use This Crop'
+                ) : (
+                  'Use Original Image'
                 )}
               </Button>
               <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleUseOriginal}
-                  className="flex-1 h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
-                >
-                  Use Original
-                </Button>
+                {crop && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleUseOriginal}
+                    className="flex-1 h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
+                  >
+                    Use Original
+                  </Button>
+                )}
                 <Button
                   type="button"
                   variant="outline"
                   onClick={onCancel}
-                  className="flex-1 h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
+                  className={crop ? "flex-1 h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700" : "w-full h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700"}
                 >
                   Retake
                 </Button>
