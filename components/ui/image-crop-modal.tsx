@@ -49,8 +49,9 @@ export function ImageCropModal({
     const scaleX = image.naturalWidth / image.width
     const scaleY = image.naturalHeight / image.height
 
-    canvas.width = crop.width
-    canvas.height = crop.height
+    // Use scaled dimensions for canvas to maintain original resolution
+    canvas.width = crop.width * scaleX
+    canvas.height = crop.height * scaleY
 
     const ctx = canvas.getContext('2d')
     if (!ctx) return null
@@ -63,8 +64,8 @@ export function ImageCropModal({
       crop.height * scaleY,
       0,
       0,
-      crop.width,
-      crop.height
+      crop.width * scaleX,
+      crop.height * scaleY
     )
 
     return canvas
