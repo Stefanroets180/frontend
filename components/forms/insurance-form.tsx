@@ -106,6 +106,8 @@ export function InsuranceForm({
   const [odometerPreviewUrl, setOdometerPreviewUrl] = useState<string | null>(null);
   const [odometerImageError, setOdometerImageError] = useState<string | null>(null);
   const [isCompressingOdometer, setIsCompressingOdometer] = useState(false);
+  const [showOdometerCropModal, setShowOdometerCropModal] = useState(false);
+  const [originalOdometerFile, setOriginalOdometerFile] = useState<File | null>(null);
 
   const {
     register,
@@ -207,7 +209,7 @@ export function InsuranceForm({
     setImageError(null);
   };
 
-  // Odometer image handlers - skip crop modal, use original image directly
+  // Odometer image handlers - show crop modal with full image by default
   const handleOdometerImageCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -218,12 +220,18 @@ export function InsuranceForm({
       return;
     }
 
+    setOriginalOdometerFile(file);
+    setShowOdometerCropModal(true);
+  };
+
+  const handleOdometerCropConfirm = async (croppedFile: File, originalFile: File) => {
+    setShowOdometerCropModal(false);
     setIsCompressingOdometer(true);
 
     try {
-      // Process original image directly without cropping using high-quality settings
-      const processed = await processOdometerImage(file);
-      const processedFile = new File([processed.blob], file.name, {
+      // Process cropped image with high-quality settings
+      const processed = await processOdometerImage(croppedFile);
+      const processedFile = new File([processed.blob], croppedFile.name, {
         type: processed.format,
       });
       setOdometerImage(processedFile);
@@ -234,6 +242,11 @@ export function InsuranceForm({
     } finally {
       setIsCompressingOdometer(false);
     }
+  };
+
+  const handleOdometerCropCancel = () => {
+    setShowOdometerCropModal(false);
+    setOriginalOdometerFile(null);
   };
 
 
@@ -777,6 +790,17 @@ export function InsuranceForm({
         onConfirm={handleCropConfirm}
         onCancel={handleCropCancel}
         isOpen={showCropModal}
+      />
+    )}
+
+    {/* Odometer Image Crop Modal */}
+    {originalOdometerFile && (
+      <ImageCropModal
+        imageFile={originalOdometerFile}
+        mode="odometer"
+        onConfirm={handleOdometerCropConfirm}
+        onCancel={handleOdometerCropCancel}
+        isOpen={showOdometerCropModal}
       />
     )}
     </>

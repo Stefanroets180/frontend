@@ -228,7 +228,7 @@ export function ImageCropModal({
               <Button
                 type="button"
                 onClick={handleConfirm}
-                disabled={!crop || isProcessing}
+                disabled={isProcessing}
                 className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white"
               >
                 {isProcessing ? (
@@ -236,24 +236,28 @@ export function ImageCropModal({
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     Processing...
                   </>
-                ) : (
+                ) : crop ? (
                   'Use This Crop'
+                ) : (
+                  'Use Original Image'
                 )}
               </Button>
               <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleUseOriginal}
-                  className="flex-1 h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
-                >
-                  Use Original
-                </Button>
+                {crop && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleUseOriginal}
+                    className="flex-1 h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
+                  >
+                    Use Original
+                  </Button>
+                )}
                 <Button
                   type="button"
                   variant="outline"
                   onClick={onCancel}
-                  className="flex-1 h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
+                  className={crop ? "flex-1 h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700" : "w-full h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700"}
                 >
                   Retake
                 </Button>
