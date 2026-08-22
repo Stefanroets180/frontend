@@ -12,6 +12,7 @@ interface ConversionOptions {
   quality?: number; // 0-100, default 60 for receipts
   maxWidth?: number; // Max width in pixels
   maxHeight?: number; // Max height in pixels
+  preserveOriginalSize?: boolean; // If true, don't resize the image
 }
 
 interface ConversionResult {
@@ -49,7 +50,7 @@ export async function convertToAvif(
   file: File,
   options: ConversionOptions = {}
 ): Promise<ConversionResult> {
-  const { quality = 60, maxWidth = 2000, maxHeight = 2000 } = options;
+  const { quality = 60, maxWidth = 2000, maxHeight = 2000, preserveOriginalSize = false } = options;
   
   // Check if AVIF is supported, fallback to WebP
   const avifSupported = await supportsAvifEncoding();
@@ -64,19 +65,21 @@ export async function convertToAvif(
         // Calculate new dimensions while maintaining aspect ratio
         let { width, height } = img;
         
-        if (width > maxWidth) {
-          height = (height * maxWidth) / width;
-          width = maxWidth;
+        if (!preserveOriginalSize) {
+          if (width > maxWidth) {
+            height = (height * maxWidth) / width;
+            width = maxWidth;
+          }
+          
+          if (height > maxHeight) {
+            width = (width * maxHeight) / height;
+            height = maxHeight;
+          }
+          
+          // Round dimensions
+          width = Math.round(width);
+          height = Math.round(height);
         }
-        
-        if (height > maxHeight) {
-          width = (width * maxHeight) / height;
-          height = maxHeight;
-        }
-        
-        // Round dimensions
-        width = Math.round(width);
-        height = Math.round(height);
         
         // Create canvas and draw resized image
         const canvas = document.createElement("canvas");
@@ -151,13 +154,12 @@ export async function processReceiptImage(file: File): Promise<ConversionResult>
 /**
  * Process an odometer photo for upload
  * Optimized settings for high-resolution odometer readings
- * Uses much higher quality and preserves original resolution
+ * Preserves original resolution and uses high quality
  */
 export async function processOdometerImage(file: File): Promise<ConversionResult> {
   return convertToAvif(file, {
     quality: 95,
-    maxWidth: 8000,
-    maxHeight: 8000,
+    preserveOriginalSize: true,
   });
 }
 
