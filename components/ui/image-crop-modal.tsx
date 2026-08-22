@@ -27,7 +27,13 @@ export function ImageCropModal({
   // Update crop when mode changes
   useEffect(() => {
     if (mode === 'odometer') {
-      setCrop(null) // No initial crop for odometer - show full image
+      setCrop({
+        unit: '%',
+        x: 10,
+        y: 15,
+        width: 80,
+        height: 70,
+      }) // Odometer: looser crop with padding for context
     } else {
       setCrop({
         unit: '%',
@@ -60,53 +66,41 @@ export function ImageCropModal({
 
   const getCroppedImg = (image: HTMLImageElement, crop: any) => {
     const canvas = document.createElement('canvas')
-    
+
     console.log('getCroppedImg - naturalWidth:', image.naturalWidth, 'naturalHeight:', image.naturalHeight)
     console.log('getCroppedImg - displayedWidth:', image.width, 'displayedHeight:', image.height)
     console.log('getCroppedImg - crop:', crop)
 
-    // Always convert to percentage first, then to natural dimensions
-    // This ensures consistency regardless of displayed size
-    let cropX, cropY, cropWidth, cropHeight
-    
-    if (crop.unit === '%') {
-      // Already in percentage, convert directly to natural dimensions
-      cropX = (crop.x / 100) * image.naturalWidth
-      cropY = (crop.y / 100) * image.naturalHeight
-      cropWidth = (crop.width / 100) * image.naturalWidth
-      cropHeight = (crop.height / 100) * image.naturalHeight
-    } else {
-      // Convert pixels to percentage based on displayed size, then to natural dimensions
-      const percentX = (crop.x / image.width) * 100
-      const percentY = (crop.y / image.height) * 100
-      const percentWidth = (crop.width / image.width) * 100
-      const percentHeight = (crop.height / image.height) * 100
-      
-      cropX = (percentX / 100) * image.naturalWidth
-      cropY = (percentY / 100) * image.naturalHeight
-      cropWidth = (percentWidth / 100) * image.naturalWidth
-      cropHeight = (percentHeight / 100) * image.naturalHeight
+    // Convert percentage crop to natural pixels
+    const pixelCrop = {
+      x: (crop.x / 100) * image.naturalWidth,
+      y: (crop.y / 100) * image.naturalHeight,
+      width: (crop.width / 100) * image.naturalWidth,
+      height: (crop.height / 100) * image.naturalHeight,
     }
 
-    console.log('getCroppedImg - final crop dimensions:', { cropX, cropY, cropWidth, cropHeight })
+    console.log('getCroppedImg - pixelCrop:', pixelCrop)
 
-    // Use natural dimensions for canvas to maintain original resolution
-    canvas.width = cropWidth
-    canvas.height = cropHeight
+    canvas.width = pixelCrop.width
+    canvas.height = pixelCrop.height
 
     const ctx = canvas.getContext('2d')
-    if (!ctx) return null
+    if (!ctx) {
+      console.error('getCroppedImg - Failed to get canvas context')
+      return null
+    }
 
+    // Draw using natural pixel coordinates
     ctx.drawImage(
       image,
-      cropX,
-      cropY,
-      cropWidth,
-      cropHeight,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
       0,
       0,
-      cropWidth,
-      cropHeight
+      pixelCrop.width,
+      pixelCrop.height
     )
 
     return canvas
@@ -115,13 +109,6 @@ export function ImageCropModal({
   const handleConfirm = async () => {
     if (!imgRef.current) {
       console.error('Crop modal - Missing imgRef')
-      return
-    }
-
-    // If no crop selection (odometer mode), use full image
-    if (!crop) {
-      console.log('Crop modal - No crop selection, using original image')
-      onConfirm(imageFile, imageFile)
       return
     }
 
@@ -204,8 +191,8 @@ export function ImageCropModal({
                   crop={crop}
                   onChange={handleCropChange}
                   keepSelection={mode !== 'odometer'}
-                  minWidth={mode === 'odometer' ? 50 : 100}
-                  minHeight={mode === 'odometer' ? 50 : 100}
+                  minWidth={mode === 'odometer' ? 20 : 100}
+                  minHeight={mode === 'odometer' ? 15 : 100}
                   className="max-w-full"
                 >
                   <img
@@ -213,8 +200,9 @@ export function ImageCropModal({
                     src={imgSrc}
                     alt="Crop target"
                     style={{
-                      maxHeight: '80vh',
+                      maxHeight: '70vh',
                       maxWidth: '100%',
+                      height: 'auto',
                     }}
                   />
                 </ReactCrop>
@@ -236,28 +224,24 @@ export function ImageCropModal({
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     Processing...
                   </>
-                ) : crop ? (
-                  'Use This Crop'
                 ) : (
-                  'Use Original Image'
+                  'Use This Crop'
                 )}
               </Button>
               <div className="flex gap-2">
-                {crop && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleUseOriginal}
-                    className="flex-1 h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
-                  >
-                    Use Original
-                  </Button>
-                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleUseOriginal}
+                  className="flex-1 h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
+                >
+                  Use Original
+                </Button>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={onCancel}
-                  className={crop ? "flex-1 h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700" : "w-full h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700"}
+                  className="flex-1 h-10 bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
                 >
                   Retake
                 </Button>
