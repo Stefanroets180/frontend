@@ -764,11 +764,11 @@ export function InsuranceForm({
                 </p>
               )}
               {previewUrl && (
-                <div className="mt-2">
+                <div className="mt-2 h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
                   <img
                     src={previewUrl}
                     alt="Receipt preview"
-                    className="max-h-48 rounded-lg border object-contain"
+                    className="max-h-full max-w-full object-contain"
                   />
                 </div>
               )}
