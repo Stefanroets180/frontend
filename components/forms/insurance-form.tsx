@@ -225,19 +225,24 @@ export function InsuranceForm({
   };
 
   const handleOdometerCropConfirm = async (croppedFile: File, originalFile: File) => {
+    console.log('handleOdometerCropConfirm - croppedFile:', croppedFile.name, croppedFile.size);
     setShowOdometerCropModal(false);
     setIsCompressingOdometer(true);
 
     try {
       // Process cropped image with high-quality settings
       const processed = await processOdometerImage(croppedFile);
+      console.log('handleOdometerCropConfirm - processed:', processed);
       const processedFile = new File([processed.blob], croppedFile.name, {
         type: processed.format,
       });
+      console.log('handleOdometerCropConfirm - processedFile:', processedFile.name, processedFile.size);
       setOdometerImage(processedFile);
       setOdometerPreviewUrl(URL.createObjectURL(processed.blob));
       setOdometerImageError(null);
+      console.log('handleOdometerCropConfirm - odometerImage set');
     } catch (err) {
+      console.error('handleOdometerCropConfirm - error:', err);
       setOdometerImageError("Failed to process image. Please try again.");
     } finally {
       setIsCompressingOdometer(false);
