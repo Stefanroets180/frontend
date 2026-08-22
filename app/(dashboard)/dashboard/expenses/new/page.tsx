@@ -381,6 +381,8 @@ function NewExpenseContent() {
         coverageEndDate: coverageEnd,
         monthlyPremiumZar: expenseData.monthlyPremiumZar,
         excessAmountZar: expenseData.excessAmountZar,
+        odometerReading: expenseData.odometerReading,
+        odometerReadingDate: expenseData.odometerReadingDate,
         brokerName: expenseData.brokerName,
         brokerPhone: expenseData.brokerPhone,
         claimPhoneNumber: expenseData.claimPhoneNumber,
@@ -455,6 +457,8 @@ function NewExpenseContent() {
         installationFeeZar: expenseData.installationFeeZar,
         contractDurationMonths: expenseData.contractDurationMonths,
         recoveryIncluded: expenseData.recoveryIncluded,
+        odometerReading: expenseData.odometerReading,
+        odometerReadingDate: expenseData.odometerReadingDate,
         appLoginEmail: expenseData.appLoginEmail,
         supportPhone: expenseData.supportPhone,
         features: expenseData.features,
@@ -579,6 +583,7 @@ function NewExpenseContent() {
         transactionNumber: expenseData.transactionNumber,
         renewalMethod: expenseData.renewalMethod,
         processingDays: expenseData.processingDays,
+        odometerReading: expenseData.odometerReading,
         notes: expenseData.notes,
       }
 

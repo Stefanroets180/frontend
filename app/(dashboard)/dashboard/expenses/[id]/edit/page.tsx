@@ -783,7 +783,7 @@ export default function EditExpensePage({
                 (v) => v.id === expenseData.vehicleId,
               );
               const vehicleReg = vehicle?.registrationNumber || "Unknown";
-              const dataToSend = {
+              const dataToSend: Record<string, unknown> = {
                 vehicleId: expenseData.vehicleId,
                 date: expenseDate,
                 amount: (expenseData.monthlyPremiumZar as number) || 0,
@@ -797,6 +797,8 @@ export default function EditExpensePage({
                 coverageEndDate: coverageEnd,
                 monthlyPremiumZar: expenseData.monthlyPremiumZar,
                 excessAmountZar: expenseData.excessAmountZar,
+                odometerReading: expenseData.odometerReading,
+                odometerReadingDate: expenseData.odometerReadingDate,
                 brokerName: expenseData.brokerName,
                 brokerPhone: expenseData.brokerPhone,
                 claimPhoneNumber: expenseData.claimPhoneNumber,
@@ -867,6 +869,8 @@ export default function EditExpensePage({
                 installationFeeZar: expenseData.installationFeeZar,
                 contractDurationMonths: expenseData.contractDurationMonths,
                 recoveryIncluded: expenseData.recoveryIncluded,
+                odometerReading: expenseData.odometerReading,
+                odometerReadingDate: expenseData.odometerReadingDate,
                 appLoginEmail: expenseData.appLoginEmail,
                 supportPhone: expenseData.supportPhone,
                 features: expenseData.features,
@@ -991,6 +995,7 @@ export default function EditExpensePage({
                 transactionNumber: expenseData.transactionNumber,
                 renewalMethod: expenseData.renewalMethod,
                 processingDays: expenseData.processingDays,
+                odometerReading: expenseData.odometerReading,
                 notes: expenseData.notes,
               };
               const formData = new FormData();
