@@ -166,7 +166,7 @@ export function ImageCropModal({
   return (
     <Dialog open={isOpen} onOpenChange={onCancel}>
       <DialogContent
-        className="max-w-4xl w-full h-[90vh] flex flex-col p-0 overflow-hidden"
+        className={`max-w-4xl w-full flex flex-col p-0 overflow-hidden ${mode === 'odometer' ? 'h-[95vh]' : 'h-[90vh]'}`}
         showCloseButton={false}
       >
         <DialogTitle className="sr-only">
@@ -200,7 +200,7 @@ export function ImageCropModal({
                     src={imgSrc}
                     alt="Crop target"
                     style={{
-                      maxHeight: '70vh',
+                      maxHeight: mode === 'odometer' ? '75vh' : '70vh',
                       maxWidth: '100%',
                       height: 'auto',
                     }}
