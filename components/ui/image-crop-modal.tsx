@@ -29,6 +29,17 @@ export function ImageCropModal({
     x: mode === 'odometer' ? 0 : 2.5,
     y: mode === 'odometer' ? 0 : 2.5,
   })
+
+  // Update crop when mode changes
+  useEffect(() => {
+    setCrop({
+      unit: '%',
+      width: mode === 'odometer' ? 100 : 95,
+      height: mode === 'odometer' ? 100 : 95,
+      x: mode === 'odometer' ? 0 : 2.5,
+      y: mode === 'odometer' ? 0 : 2.5,
+    })
+  }, [mode])
   const [imgSrc, setImgSrc] = useState<string>('')
   const [isProcessing, setIsProcessing] = useState(false)
   const imgRef = useRef<HTMLImageElement>(null)
@@ -46,26 +57,52 @@ export function ImageCropModal({
 
   const getCroppedImg = (image: HTMLImageElement, crop: any) => {
     const canvas = document.createElement('canvas')
+    
+    // Calculate scale factors based on natural image dimensions
     const scaleX = image.naturalWidth / image.width
     const scaleY = image.naturalHeight / image.height
 
-    // Use scaled dimensions for canvas to maintain original resolution
-    canvas.width = crop.width * scaleX
-    canvas.height = crop.height * scaleY
+    console.log('getCroppedImg - naturalWidth:', image.naturalWidth, 'naturalHeight:', image.naturalHeight)
+    console.log('getCroppedImg - displayedWidth:', image.width, 'displayedHeight:', image.height)
+    console.log('getCroppedImg - scaleX:', scaleX, 'scaleY:', scaleY)
+    console.log('getCroppedImg - crop:', crop)
+
+    // Convert crop dimensions to natural image dimensions
+    // If crop is in percentage, convert to pixels first
+    let cropX, cropY, cropWidth, cropHeight
+    
+    if (crop.unit === '%') {
+      cropX = (crop.x / 100) * image.naturalWidth
+      cropY = (crop.y / 100) * image.naturalHeight
+      cropWidth = (crop.width / 100) * image.naturalWidth
+      cropHeight = (crop.height / 100) * image.naturalHeight
+    } else {
+      // Already in pixels, scale to natural dimensions
+      cropX = crop.x * scaleX
+      cropY = crop.y * scaleY
+      cropWidth = crop.width * scaleX
+      cropHeight = crop.height * scaleY
+    }
+
+    console.log('getCroppedImg - final crop dimensions:', { cropX, cropY, cropWidth, cropHeight })
+
+    // Use natural dimensions for canvas to maintain original resolution
+    canvas.width = cropWidth
+    canvas.height = cropHeight
 
     const ctx = canvas.getContext('2d')
     if (!ctx) return null
 
     ctx.drawImage(
       image,
-      crop.x * scaleX,
-      crop.y * scaleY,
-      crop.width * scaleX,
-      crop.height * scaleY,
+      cropX,
+      cropY,
+      cropWidth,
+      cropHeight,
       0,
       0,
-      crop.width * scaleX,
-      crop.height * scaleY
+      cropWidth,
+      cropHeight
     )
 
     return canvas
