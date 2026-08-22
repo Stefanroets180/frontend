@@ -643,11 +643,23 @@ export function InsuranceForm({
             )}
             {odometerPreviewUrl && (
               <div className="mt-2">
-                <img
-                  src={odometerPreviewUrl}
-                  alt="Odometer reading"
-                  className="max-h-48 rounded-lg border object-contain"
-                />
+                <div className="relative">
+                  <img
+                    src={odometerPreviewUrl}
+                    alt="Odometer reading"
+                    className="max-h-48 rounded-lg border object-contain"
+                  />
+                  <div className="absolute top-2 right-2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => document.getElementById('odometer-photo')?.click()}
+                    >
+                      Replace
+                    </Button>
+                  </div>
+                </div>
                 {odometerCaptureTime && (
                   <p className="text-xs text-muted-foreground mt-1">
                     Captured: {odometerCaptureTime.toLocaleString()}
