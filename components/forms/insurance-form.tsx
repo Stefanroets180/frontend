@@ -108,6 +108,7 @@ export function InsuranceForm({
   const [isCompressingOdometer, setIsCompressingOdometer] = useState(false);
   const [showOdometerCropModal, setShowOdometerCropModal] = useState(false);
   const [originalOdometerFile, setOriginalOdometerFile] = useState<File | null>(null);
+  const [odometerCaptureTime, setOdometerCaptureTime] = useState<Date | null>(null);
 
   const {
     register,
@@ -239,6 +240,7 @@ export function InsuranceForm({
       console.log('handleOdometerCropConfirm - processedFile:', processedFile.name, processedFile.size);
       setOdometerImage(processedFile);
       setOdometerPreviewUrl(URL.createObjectURL(processed.blob));
+      setOdometerCaptureTime(new Date());
       setOdometerImageError(null);
       console.log('handleOdometerCropConfirm - odometerImage set');
     } catch (err) {
@@ -646,6 +648,11 @@ export function InsuranceForm({
                   alt="Odometer reading"
                   className="max-h-48 rounded-lg border object-contain"
                 />
+                {odometerCaptureTime && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Captured: {odometerCaptureTime.toLocaleString()}
+                  </p>
+                )}
               </div>
             )}
           </div>
