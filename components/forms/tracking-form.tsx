@@ -54,6 +54,7 @@ const trackingSchema = z.object({
   contractDurationMonths: z.coerce.number().optional(),
   recoveryIncluded: z.boolean().default(false),
   odometerReading: z.coerce.number().positive("Enter odometer reading"),
+  odometerReadingDate: z.date({ required_error: "Select odometer reading date" }),
   appLoginEmail: z.string().email().optional().or(z.literal("")),
   supportPhone: z.string().optional(),
   features: z.string().optional(),
@@ -102,6 +103,7 @@ export function TrackingForm({
   const [subscriptionStartInput, setSubscriptionStartInput] = useState("");
   const [subscriptionEndInput, setSubscriptionEndInput] = useState("");
   const [installDateInput, setInstallDateInput] = useState("");
+  const [odometerDateInput, setOdometerDateInput] = useState("");
 
   const {
     register,
@@ -123,6 +125,7 @@ export function TrackingForm({
   const watchSubscriptionEnd = watch("subscriptionEndDate");
   const watchInstallDate = watch("installationDate");
   const watchOdometerReading = watch("odometerReading");
+  const watchOdometerReadingDate = watch("odometerReadingDate");
 
   // Initialize date inputs from watched values when in edit mode
   useEffect(() => {
@@ -134,6 +137,8 @@ export function TrackingForm({
         setSubscriptionEndInput(format(watchSubscriptionEnd, "yyyy-MM-dd"));
       if (watchInstallDate)
         setInstallDateInput(format(watchInstallDate, "yyyy-MM-dd"));
+      if (watchOdometerReadingDate)
+        setOdometerDateInput(format(watchOdometerReadingDate, "yyyy-MM-dd"));
     }
   }, [
     mode,
@@ -141,6 +146,7 @@ export function TrackingForm({
     watchSubscriptionStart,
     watchSubscriptionEnd,
     watchInstallDate,
+    watchOdometerReadingDate,
   ]);
 
   // Set preview from existing images when in edit mode
@@ -620,6 +626,64 @@ export function TrackingForm({
             />
             {errors.odometerReading && (
               <p className="text-sm text-red-500">{errors.odometerReading.message}</p>
+            )}
+          </div>
+
+          {/* Odometer Reading Date */}
+          <div className="space-y-2">
+            <Label htmlFor="odometerReadingDate">Odometer Reading Date *</Label>
+            <Input
+              id="odometerReadingDate"
+              type="text"
+              inputMode="numeric"
+              pattern="\d{4}-\d{2}-\d{2}"
+              placeholder="YYYY-MM-DD"
+              value={odometerDateInput || (watchOdometerReadingDate ? format(watchOdometerReadingDate, 'yyyy-MM-dd') : '')}
+              onChange={(e) => {
+                let value = e.target.value;
+                value = value.replace(/[^\d-]/g, '');
+                const digits = value.replace(/\D/g, '');
+                if (digits.length > 0) {
+                  let formatted = digits.slice(0, 4);
+                  if (digits.length > 4) {
+                    formatted += '-' + digits.slice(4, 6);
+                  }
+                  if (digits.length > 6) {
+                    formatted += '-' + digits.slice(6, 8);
+                  }
+                  value = formatted;
+                }
+                setOdometerDateInput(value);
+                if (value && value.length >= 4) {
+                  const year = parseInt(value.slice(0, 4));
+                  if (year < 1900 || year > 2099) {
+                    return;
+                  }
+                }
+                if (value.length === 10) {
+                  const year = parseInt(value.slice(0, 4));
+                  const month = parseInt(value.slice(5, 7));
+                  const day = parseInt(value.slice(8, 10));
+
+                  // Validate month
+                  if (month < 1 || month > 12) {
+                    return;
+                  }
+
+                  // Validate day based on month
+                  const daysInMonth = new Date(year, month, 0).getDate();
+                  if (day < 1 || day > daysInMonth) {
+                    return;
+                  }
+
+                  setValue("odometerReadingDate", new Date(value));
+                }
+              }}
+              maxLength={10}
+              className={errors.odometerReadingDate ? "border-red-500" : ""}
+            />
+            {errors.odometerReadingDate && (
+              <p className="text-sm text-red-500">{errors.odometerReadingDate.message}</p>
             )}
           </div>
 
