@@ -9,14 +9,23 @@ import { UserRole } from "@/lib/types/database";
 
 export function AddVehiclePageContent() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
     // Prevent RENTAL_CUSTOMER from accessing add vehicle page
-    if (user?.role === UserRole.RENTAL_CUSTOMER) {
+    if (!isLoading && user?.role === UserRole.RENTAL_CUSTOMER) {
       router.replace("/dashboard");
     }
-  }, [user, router]);
+  }, [user, router, isLoading]);
+
+  // Show loading while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
 
   // Show loading or redirect while checking role
   if (user?.role === UserRole.RENTAL_CUSTOMER) {
