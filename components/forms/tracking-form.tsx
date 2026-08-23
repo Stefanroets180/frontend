@@ -341,13 +341,9 @@ export function TrackingForm({
           ) : (
             <div className="space-y-2">
               <Label htmlFor="vehicle-display">Vehicle</Label>
-              <div
+              <Input
                 id="vehicle-display"
-                className="h-12 px-3 flex items-center rounded-md border border-input bg-muted text-sm"
-                role="textbox"
-                aria-readonly="true"
-              >
-                {(() => {
+                value={(() => {
                   const vehicle = vehicles.find(
                     (v) => v.id === initialData?.vehicleId,
                   );
@@ -355,7 +351,9 @@ export function TrackingForm({
                     ? `${vehicle.registrationNumber} - ${vehicle.make} ${vehicle.model}`
                     : "Unknown";
                 })()}
-              </div>
+                readOnly
+                className="bg-muted"
+              />
             </div>
           )}
 
