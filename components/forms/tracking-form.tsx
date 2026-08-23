@@ -99,6 +99,7 @@ export function TrackingForm({
   } | null>(null);
   const [showCropModal, setShowCropModal] = useState(false);
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
+  const [receiptCaptureTime, setReceiptCaptureTime] = useState<Date | null>(null);
   const [dateInput, setDateInput] = useState("");
   const [subscriptionStartInput, setSubscriptionStartInput] = useState("");
   const [subscriptionEndInput, setSubscriptionEndInput] = useState("");
@@ -193,6 +194,7 @@ export function TrackingForm({
       });
       setReceiptImage(processedFile);
       setPreviewUrl(URL.createObjectURL(processed.blob));
+      setReceiptCaptureTime(new Date());
       setCompressionInfo({
         originalSize: processed.originalSize,
         compressedSize: processed.convertedSize,
@@ -794,11 +796,28 @@ export function TrackingForm({
               )}
               {previewUrl && (
                 <div className="mt-2">
-                  <img
-                    src={previewUrl}
-                    alt="Receipt preview"
-                    className="max-h-48 rounded-lg border object-contain"
-                  />
+                  <div className="relative">
+                    <img
+                      src={previewUrl}
+                      alt="Receipt preview"
+                      className="max-h-48 rounded-lg border object-contain"
+                    />
+                    <div className="absolute top-2 right-2">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => document.getElementById('receipt-image')?.click()}
+                      >
+                        Replace
+                      </Button>
+                    </div>
+                  </div>
+                  {receiptCaptureTime && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Captured: {receiptCaptureTime.toLocaleString()}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
