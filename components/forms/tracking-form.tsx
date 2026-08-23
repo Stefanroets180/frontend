@@ -29,6 +29,7 @@ import { Switch } from "@/components/ui/switch";
 import { TRACKING_SUBSCRIPTION_LABELS } from "@/lib/types/database";
 import {
   processReceiptImage,
+  processOdometerImage,
   validateImageFile,
   formatFileSize,
 } from "@/lib/utils/image-converter";
@@ -100,6 +101,16 @@ export function TrackingForm({
   const [showCropModal, setShowCropModal] = useState(false);
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
   const [receiptCaptureTime, setReceiptCaptureTime] = useState<Date | null>(null);
+
+  // Odometer photo state
+  const [odometerImage, setOdometerImage] = useState<File | null>(null);
+  const [odometerPreviewUrl, setOdometerPreviewUrl] = useState<string | null>(null);
+  const [odometerImageError, setOdometerImageError] = useState<string | null>(null);
+  const [isCompressingOdometer, setIsCompressingOdometer] = useState(false);
+  const [showOdometerCropModal, setShowOdometerCropModal] = useState(false);
+  const [originalOdometerFile, setOriginalOdometerFile] = useState<File | null>(null);
+  const [odometerCaptureTime, setOdometerCaptureTime] = useState<Date | null>(null);
+
   const [dateInput, setDateInput] = useState("");
   const [subscriptionStartInput, setSubscriptionStartInput] = useState("");
   const [subscriptionEndInput, setSubscriptionEndInput] = useState("");
@@ -216,6 +227,52 @@ export function TrackingForm({
     setPreviewUrl(null);
     setCompressionInfo(null);
     setImageError(null);
+  };
+
+  const handleOdometerImageCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validation = validateImageFile(file);
+    if (!validation.valid) {
+      setOdometerImageError(validation.error || "Invalid image file");
+      return;
+    }
+
+    setOriginalOdometerFile(file);
+    setShowOdometerCropModal(true);
+  };
+
+  const handleOdometerCropConfirm = async (croppedFile: File, originalFile: File) => {
+    setShowOdometerCropModal(false);
+    setIsCompressingOdometer(true);
+
+    try {
+      const processed = await processOdometerImage(croppedFile);
+      const processedFile = new File([processed.blob], croppedFile.name, {
+        type: processed.format,
+      });
+      setOdometerImage(processedFile);
+      setOdometerPreviewUrl(URL.createObjectURL(processed.blob));
+      setOdometerCaptureTime(new Date());
+      setOdometerImageError(null);
+    } catch (err) {
+      setOdometerImageError("Failed to process image. Please try again.");
+    } finally {
+      setIsCompressingOdometer(false);
+    }
+  };
+
+  const handleOdometerCropCancel = () => {
+    setShowOdometerCropModal(false);
+    setOriginalOdometerFile(null);
+  };
+
+  const clearOdometerImage = () => {
+    setOdometerImage(null);
+    setOdometerPreviewUrl(null);
+    setOdometerCaptureTime(null);
+    setOdometerImageError(null);
   };
 
   const handleFormSubmit = async (data: TrackingInput) => {
@@ -689,6 +746,76 @@ export function TrackingForm({
             )}
           </div>
 
+          {/* Odometer Photo (Proof of Reading) */}
+          <div className="space-y-2">
+            <Label htmlFor="odometer-photo">Odometer Photo (Proof of Reading) *</Label>
+
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleOdometerImageCapture}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  id="odometer-photo"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isCompressingOdometer}
+                  className={odometerImageError ? "border-red-500" : ""}
+                >
+                  <Camera className="mr-2 h-4 w-4" />
+                  {isCompressingOdometer
+                    ? "Processing..."
+                    : odometerImage
+                      ? "Change Photo"
+                      : "Capture Odometer"}
+                </Button>
+              </div>
+              {odometerImage && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearOdometerImage}
+                >
+                  Remove
+                </Button>
+              )}
+            </div>
+            {odometerImageError && (
+              <p className="text-sm text-red-500">{odometerImageError}</p>
+            )}
+            {odometerPreviewUrl && (
+              <div className="mt-2">
+                <div className="relative">
+                  <img
+                    src={odometerPreviewUrl}
+                    alt="Odometer reading"
+                    className="max-h-48 rounded-lg border object-contain"
+                  />
+                  <div className="absolute top-2 right-2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => document.getElementById('odometer-photo')?.click()}
+                    >
+                      Replace
+                    </Button>
+                  </div>
+                </div>
+                {odometerCaptureTime && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Captured: {odometerCaptureTime.toLocaleString()}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* Recovery Service */}
           <div className="flex items-center space-x-2">
             <Switch
@@ -869,6 +996,17 @@ export function TrackingForm({
         onConfirm={handleCropConfirm}
         onCancel={handleCropCancel}
         isOpen={showCropModal}
+      />
+    )}
+
+    {/* Odometer Crop Modal */}
+    {originalOdometerFile && (
+      <ImageCropModal
+        imageFile={originalOdometerFile}
+        mode="odometer"
+        onConfirm={handleOdometerCropConfirm}
+        onCancel={handleOdometerCropCancel}
+        isOpen={showOdometerCropModal}
       />
     )}
     </>
