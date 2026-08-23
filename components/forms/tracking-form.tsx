@@ -73,7 +73,7 @@ interface Vehicle {
 
 interface TrackingFormProps extends ReceiptSupportProps {
   vehicles: Vehicle[];
-  onSubmit: (data: TrackingInput, receiptImage: File | null) => Promise<void>;
+  onSubmit: (data: TrackingInput, receiptImage: File | null, odometerImage: File | null) => Promise<void>;
   initialData?: Partial<TrackingInput>;
 }
 
@@ -282,7 +282,7 @@ export function TrackingForm({
     }
     setIsSubmitting(true);
     try {
-      await onSubmit(data, receiptImage);
+      await onSubmit(data, receiptImage, odometerImage);
     } finally {
       setIsSubmitting(false);
     }

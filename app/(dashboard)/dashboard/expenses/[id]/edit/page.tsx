@@ -830,7 +830,7 @@ export default function EditExpensePage({
             onImageDelete={handleReceiptDelete}
             onImageReupload={handleReceiptReupload}
             onImageLock={handleReceiptLock}
-            onSubmit={async (data, receiptImage) => {
+            onSubmit={async (data, receiptImage, odometerImage) => {
               const expenseData = data as Record<string, unknown>;
               const expenseDate =
                 expenseData.date instanceof Date
@@ -880,6 +880,7 @@ export default function EditExpensePage({
               const formData = new FormData();
               formData.append("data", JSON.stringify({ ...dataToSend, id }));
               if (receiptImage) formData.append("receipt", receiptImage);
+              if (odometerImage) formData.append("odometerPhoto", odometerImage);
               await apiPostMultipart(
                 `/expenses/tracking/${id}`,
                 formData,

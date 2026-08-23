@@ -429,7 +429,7 @@ function NewExpenseContent() {
     }
   }
 
-  const handleTrackingSubmit = async (data: unknown, receiptImage: File | null) => {
+  const handleTrackingSubmit = async (data: unknown, receiptImage: File | null, odometerImage: File | null) => {
     try {
       const expenseData = data as Record<string, unknown>
 
@@ -485,6 +485,7 @@ function NewExpenseContent() {
       const formData = new FormData()
       formData.append('data', JSON.stringify(dataToSend))
       formData.append('receipt', receiptImage)
+      if (odometerImage) formData.append('odometerPhoto', odometerImage)
 
       const response = await apiPostMultipart('/expenses/tracking', formData)
 
