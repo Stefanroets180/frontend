@@ -43,6 +43,12 @@ export function AddVehicleForm() {
     insurancePolicyNumber: "",
     trackerSerial: "",
     notes: "",
+    minorServiceIntervalKm: "",
+    majorServiceIntervalKm: "",
+    brakeOverhaulIntervalKm: "",
+    minorServiceIntervalMonths: "",
+    majorServiceIntervalMonths: "",
+    brakeOverhaulIntervalMonths: "",
   })
 
   // Fetch vehicle data if in edit mode
@@ -89,6 +95,12 @@ export function AddVehicleForm() {
         insurancePolicyNumber: data.insurancePolicyNumber || "",
         trackerSerial: data.trackerSerial || "",
         notes: data.notes || "",
+        minorServiceIntervalKm: data.minorServiceIntervalKm?.toString() || "",
+        majorServiceIntervalKm: data.majorServiceIntervalKm?.toString() || "",
+        brakeOverhaulIntervalKm: data.brakeOverhaulIntervalKm?.toString() || "",
+        minorServiceIntervalMonths: data.minorServiceIntervalMonths?.toString() || "",
+        majorServiceIntervalMonths: data.majorServiceIntervalMonths?.toString() || "",
+        brakeOverhaulIntervalMonths: data.brakeOverhaulIntervalMonths?.toString() || "",
       })
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load vehicle data")
@@ -124,6 +136,12 @@ export function AddVehicleForm() {
         insurancePolicyNumber: form.insurancePolicyNumber || null,
         trackerSerial: form.trackerSerial || null,
         notes: form.notes || null,
+        minorServiceIntervalKm: form.minorServiceIntervalKm ? parseInt(form.minorServiceIntervalKm) : null,
+        majorServiceIntervalKm: form.majorServiceIntervalKm ? parseInt(form.majorServiceIntervalKm) : null,
+        brakeOverhaulIntervalKm: form.brakeOverhaulIntervalKm ? parseInt(form.brakeOverhaulIntervalKm) : null,
+        minorServiceIntervalMonths: form.minorServiceIntervalMonths ? parseInt(form.minorServiceIntervalMonths) : null,
+        majorServiceIntervalMonths: form.majorServiceIntervalMonths ? parseInt(form.majorServiceIntervalMonths) : null,
+        brakeOverhaulIntervalMonths: form.brakeOverhaulIntervalMonths ? parseInt(form.brakeOverhaulIntervalMonths) : null,
       }
 
       let response
@@ -404,6 +422,86 @@ export function AddVehicleForm() {
                 onChange={e => set("notes", e.target.value)}
                 className="h-12"
               />
+            </div>
+
+            {/* Service Intervals */}
+            <div className="space-y-4 pt-2 border-t border-border/50">
+              <p className="text-xs font-medium text-muted-foreground">Service Intervals (Optional)</p>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="minorServiceIntervalKm">Minor Service (km)</Label>
+                  <Input
+                    id="minorServiceIntervalKm"
+                    type="number"
+                    placeholder="e.g., 15000"
+                    value={form.minorServiceIntervalKm}
+                    onChange={e => set("minorServiceIntervalKm", e.target.value)}
+                    className="h-12"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="majorServiceIntervalKm">Major Service (km)</Label>
+                  <Input
+                    id="majorServiceIntervalKm"
+                    type="number"
+                    placeholder="e.g., 60000"
+                    value={form.majorServiceIntervalKm}
+                    onChange={e => set("majorServiceIntervalKm", e.target.value)}
+                    className="h-12"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="brakeOverhaulIntervalKm">Brake Overhaul (km)</Label>
+                  <Input
+                    id="brakeOverhaulIntervalKm"
+                    type="number"
+                    placeholder="e.g., 120000"
+                    value={form.brakeOverhaulIntervalKm}
+                    onChange={e => set("brakeOverhaulIntervalKm", e.target.value)}
+                    className="h-12"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="minorServiceIntervalMonths">Minor (months)</Label>
+                  <Input
+                    id="minorServiceIntervalMonths"
+                    type="number"
+                    placeholder="e.g., 12"
+                    value={form.minorServiceIntervalMonths}
+                    onChange={e => set("minorServiceIntervalMonths", e.target.value)}
+                    className="h-12"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="majorServiceIntervalMonths">Major (months)</Label>
+                  <Input
+                    id="majorServiceIntervalMonths"
+                    type="number"
+                    placeholder="e.g., 48"
+                    value={form.majorServiceIntervalMonths}
+                    onChange={e => set("majorServiceIntervalMonths", e.target.value)}
+                    className="h-12"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="brakeOverhaulIntervalMonths">Brake (months)</Label>
+                  <Input
+                    id="brakeOverhaulIntervalMonths"
+                    type="number"
+                    placeholder="e.g., 60"
+                    value={form.brakeOverhaulIntervalMonths}
+                    onChange={e => set("brakeOverhaulIntervalMonths", e.target.value)}
+                    className="h-12"
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Set custom service intervals for this vehicle. Used to calculate service due alerts.
+              </p>
             </div>
           </div>
 
