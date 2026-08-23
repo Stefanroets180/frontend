@@ -175,6 +175,16 @@ export function TrackingForm({
     }
   }, [mode, existingImages, previewUrl]);
 
+  // Set odometer preview from existing images when in edit mode (look for ODOMETER type)
+  useEffect(() => {
+    if (mode === "edit" && existingImages.length > 0 && !odometerPreviewUrl) {
+      const odometerImage = existingImages.find(img => img.imageType === 'ODOMETER');
+      if (odometerImage) {
+        setOdometerPreviewUrl(odometerImage.imageUrl);
+      }
+    }
+  }, [mode, existingImages, odometerPreviewUrl]);
+
   const watchSubscriptionType = watch("subscriptionType");
   const watchRecovery = watch("recoveryIncluded");
   const requiresNewReceipt = mode === "create";
