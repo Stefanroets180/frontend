@@ -340,8 +340,13 @@ export function TrackingForm({
             </div>
           ) : (
             <div className="space-y-2">
-              <Label>Vehicle</Label>
-              <div className="h-12 px-3 flex items-center rounded-md border border-input bg-muted text-sm">
+              <Label htmlFor="vehicle-display">Vehicle</Label>
+              <div
+                id="vehicle-display"
+                className="h-12 px-3 flex items-center rounded-md border border-input bg-muted text-sm"
+                role="textbox"
+                aria-readonly="true"
+              >
                 {(() => {
                   const vehicle = vehicles.find(
                     (v) => v.id === initialData?.vehicleId,
