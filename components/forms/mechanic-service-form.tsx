@@ -119,6 +119,8 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
 
   const selectedVehicleId = watch('vehicleId')
   const totalCost = watch('totalCostZar')
+  const laborCost = watch('laborCostZar')
+  const partsCost = watch('partsCostZar')
   const selectedVehicle = vehicles.find(v => v.id === selectedVehicleId)
 
   const handleVehicleChange = (vehicleId: string) => {
@@ -126,6 +128,28 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
     if (vehicle) {
       setValue('vehicleId', vehicleId)
       setValue('odometerReading', vehicle.currentOdometer)
+    }
+  }
+
+  const handleLaborChange = (value: string) => {
+    const labor = parseFloat(value) || 0
+    setValue('laborCostZar', labor)
+    
+    // Auto-calculate parts as difference
+    if (totalCost && totalCost > 0) {
+      const calculatedParts = Math.max(0, Math.min(totalCost - labor, totalCost))
+      setValue('partsCostZar', calculatedParts)
+    }
+  }
+
+  const handlePartsChange = (value: string) => {
+    const parts = parseFloat(value) || 0
+    setValue('partsCostZar', parts)
+    
+    // Auto-calculate labor as difference
+    if (totalCost && totalCost > 0) {
+      const calculatedLabor = Math.max(0, Math.min(totalCost - parts, totalCost))
+      setValue('laborCostZar', calculatedLabor)
     }
   }
 
@@ -397,6 +421,8 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
                 step="0.01"
                 placeholder="0.00"
                 className="h-12 touch-target"
+                onChange={(e) => handleLaborChange(e.target.value)}
+                max={totalCost || undefined}
               />
             </div>
             <div className="space-y-2">
@@ -409,6 +435,8 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
                 step="0.01"
                 placeholder="0.00"
                 className="h-12 touch-target"
+                onChange={(e) => handlePartsChange(e.target.value)}
+                max={totalCost || undefined}
               />
             </div>
           </div>
