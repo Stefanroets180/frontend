@@ -385,28 +385,31 @@ export function OtherExpenseForm({
               When creating recurring expenses, the system uses this field to generate recurring instances. */}
           <div className="space-y-2">
             <Label htmlFor="categoryLabel">Category Label (Optional - Used for Recurring Expenses)</Label>
-            <Select
-              value={watchCategoryLabel || ""}
-              onValueChange={(val) => setValue("categoryLabel", val)}
-              name="categoryLabel"
-            >
-              <SelectTrigger id="categoryLabel">
-                <SelectValue placeholder="Select from previously used labels..." />
-              </SelectTrigger>
-              <SelectContent>
-                {categoryLabels.length > 0 ? (
-                  categoryLabels.map((label) => (
+            {categoryLabels.length > 0 ? (
+              <Select
+                value={watchCategoryLabel || ""}
+                onValueChange={(val) => setValue("categoryLabel", val)}
+                name="categoryLabel"
+              >
+                <SelectTrigger id="categoryLabel">
+                  <SelectValue placeholder="Select from previously used labels..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {categoryLabels.map((label) => (
                     <SelectItem key={label} value={label}>
                       {label}
                     </SelectItem>
-                  ))
-                ) : (
-                  <SelectItem value="" disabled>
-                    No previous labels found
-                  </SelectItem>
-                )}
-              </SelectContent>
-            </Select>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <p className="text-sm text-muted-foreground">No previous labels found. Type a custom value below.</p>
+            )}
+            <Input
+              placeholder="Or type custom value..."
+              {...register("categoryLabel")}
+              className="mt-2"
+            />
           </div>
 
           {/* Provider */}
