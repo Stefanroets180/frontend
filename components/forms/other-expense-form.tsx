@@ -406,7 +406,8 @@ export function OtherExpenseForm({
             <Input
               id="categoryLabelInput"
               placeholder="Or type custom value..."
-              {...register("categoryLabel")}
+              value={watchCategoryLabel || ""}
+              onChange={(e) => setValue("categoryLabel", e.target.value)}
               className={categoryLabels.length > 0 ? "mt-2" : ""}
             />
           </div>
