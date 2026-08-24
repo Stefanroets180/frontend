@@ -38,6 +38,7 @@ import { API_URL } from "@/lib/api/client";
 import { ImageCropModal } from "@/components/ui/image-crop-modal";
 import RecurringExpensesList from "./recurring-expenses-list";
 import { VehicleLogo } from "@/components/vehicles/vehicle-logo";
+import { getExpenseCategoryLabels } from "@/lib/api/client";
 
 const otherExpenseSchema = z.object({
   vehicleId: z.string().optional(),
@@ -104,6 +105,8 @@ export function OtherExpenseForm({
   const [periodStartInput, setPeriodStartInput] = useState("");
   const [periodEndInput, setPeriodEndInput] = useState("");
   const [dateInput, setDateInput] = useState("");
+  const [categoryLabels, setCategoryLabels] = useState<string[]>([]);
+  const [isLoadingLabels, setIsLoadingLabels] = useState(false);
 
   const {
     register,
@@ -125,6 +128,7 @@ export function OtherExpenseForm({
   const watchDate = watch('date');
   const watchPeriodStart = watch('periodStartDate');
   const watchPeriodEnd = watch('periodEndDate');
+  const watchCategoryLabel = watch('categoryLabel');
 
   // Initialize date inputs from watched values when in edit mode
   useEffect(() => {
@@ -134,6 +138,26 @@ export function OtherExpenseForm({
       if (watchPeriodEnd) setPeriodEndInput(format(watchPeriodEnd, "yyyy-MM-dd"));
     }
   }, [mode, watchDate, watchPeriodStart, watchPeriodEnd]);
+
+  // Fetch previously used category labels for dropdown
+  useEffect(() => {
+    const fetchCategoryLabels = async () => {
+      setIsLoadingLabels(true);
+      try {
+        const response = await getExpenseCategoryLabels();
+        const labels = (response as any).data || response;
+        if (Array.isArray(labels)) {
+          setCategoryLabels(labels);
+        }
+      } catch (error) {
+        console.error('Failed to fetch category labels:', error);
+      } finally {
+        setIsLoadingLabels(false);
+      }
+    };
+
+    fetchCategoryLabels();
+  }, []);
 
   // Set preview from existing images when in edit mode
   useEffect(() => {
@@ -357,13 +381,32 @@ export function OtherExpenseForm({
           </div>
 
           {/* Category Label */}
+          {/* IMPORTANT: categoryLabel is used by the recurring expense system to identify expense types (e.g., "Parking", "Tolls", "Fines").
+              When creating recurring expenses, the system uses this field to generate recurring instances. */}
           <div className="space-y-2">
-            <Label htmlFor="categoryLabel">Category Label (Optional)</Label>
-            <Input
-              id="categoryLabel"
-              placeholder="e.g., Parking, Tolls, Fines"
-              {...register("categoryLabel")}
-            />
+            <Label htmlFor="categoryLabel">Category Label (Optional - Used for Recurring Expenses)</Label>
+            <Select
+              value={watchCategoryLabel || ""}
+              onValueChange={(val) => setValue("categoryLabel", val)}
+              name="categoryLabel"
+            >
+              <SelectTrigger id="categoryLabel">
+                <SelectValue placeholder="Select from previously used labels..." />
+              </SelectTrigger>
+              <SelectContent>
+                {categoryLabels.length > 0 ? (
+                  categoryLabels.map((label) => (
+                    <SelectItem key={label} value={label}>
+                      {label}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="" disabled>
+                    No previous labels found
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Provider */}

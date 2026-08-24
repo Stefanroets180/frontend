@@ -547,6 +547,11 @@ export const getVehicleConditionReportByVehicleId = async (vehicleId: string) =>
   return api.get(`/vehicle-condition-reports/vehicle/${vehicleId}`);
 };
 
+// Expense Category Labels (for Other Expense dropdown)
+export const getExpenseCategoryLabels = async () => {
+  return api.get('/expenses/category-labels');
+};
+
 export const addConditionSection = async (reportId: string, data: {
   sectionType: string;
   condition: 'GOOD' | 'FAIR' | 'POOR' | 'DAMAGED';
