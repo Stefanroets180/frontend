@@ -1,13 +1,15 @@
 import { Check, X, ChevronDown } from 'lucide-react';
 import { useUpdatePermission } from '@/hooks/usePermissions';
 
+import { LucideIcon } from 'lucide-react';
+
 interface Props {
   title: string;
   description: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: LucideIcon;
   type: string;
   keys: { key: string; label: string }[];
-  roles: { name: string; tone: string; icon: React.ComponentType<{ className?: string }> }[];
+  roles: { name: string; tone: string; icon: LucideIcon }[];
   overrides: Record<string, Record<string, boolean>>;
   orgId: string;
   isOpen: boolean;
