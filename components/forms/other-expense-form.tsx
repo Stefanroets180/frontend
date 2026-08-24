@@ -403,13 +403,15 @@ export function OtherExpenseForm({
                 </SelectContent>
               </Select>
             ) : (
-              <p className="text-sm text-muted-foreground">No previous labels found. Type a custom value below.</p>
+              <Input
+                id="categoryLabel"
+                placeholder="Type custom value..."
+                {...register("categoryLabel")}
+              />
             )}
-            <Input
-              placeholder="Or type custom value..."
-              {...register("categoryLabel")}
-              className="mt-2"
-            />
+            {categoryLabels.length > 0 && (
+              <p className="text-xs text-muted-foreground mt-1">Or select from dropdown above</p>
+            )}
           </div>
 
           {/* Provider */}
