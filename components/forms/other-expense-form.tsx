@@ -385,31 +385,21 @@ export function OtherExpenseForm({
               When creating recurring expenses, the system uses this field to generate recurring instances. */}
           <div className="space-y-2">
             <Label htmlFor="categoryLabel">Category Label (Optional - Used for Recurring Expenses)</Label>
-            {categoryLabels.length > 0 && (
-              <Select
-                value={watchCategoryLabel || ""}
-                onValueChange={(val) => setValue("categoryLabel", val)}
-                name="categoryLabel"
-              >
-                <SelectTrigger id="categoryLabel">
-                  <SelectValue placeholder="Select from previously used labels..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoryLabels.map((label) => (
-                    <SelectItem key={label} value={label}>
-                      {label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
             <Input
-              id="categoryLabelInput"
-              placeholder="Or type custom value..."
-              value={watchCategoryLabel || ""}
-              onChange={(e) => setValue("categoryLabel", e.target.value)}
-              className={categoryLabels.length > 0 ? "mt-2" : ""}
+              id="categoryLabel"
+              placeholder="Type custom value or select from suggestions..."
+              list="categoryLabelSuggestions"
+              {...register("categoryLabel")}
             />
+            {categoryLabels.length > 0 && (
+              <datalist id="categoryLabelSuggestions">
+                {categoryLabels.map((label) => (
+                  <option key={label} value={label}>
+                    {label}
+                  </option>
+                ))}
+              </datalist>
+            )}
           </div>
 
           {/* Provider */}
