@@ -49,6 +49,14 @@ import {
   BookOpen,
   FileDown,
   Scale,
+  ReceiptText,
+  MapPin,
+  ClipboardList,
+  Download,
+  KeyRound,
+  Crown,
+  Check,
+  SlidersHorizontal,
 } from "lucide-react";
 import { VehicleLogo } from "@/components/vehicles/vehicle-logo";
 import { cn } from "@/lib/utils";
@@ -94,6 +102,15 @@ function SettingsContent() {
   // Permissions state (SUPER_ADMIN only) - using React Query
   const { data: permissionOverrides = [], isLoading: isLoadingPermissions } = usePermissions(user?.organizationId || "");
   const resetPermissions = useResetPermissions();
+  const [openSection, setOpenSection] = useState<string>("EXPENSE_CATEGORY");
+  const [saved, setSaved] = useState(false);
+
+  const roles = [
+    { name: 'DRIVER', tone: 'blue', icon: User },
+    { name: 'MANAGER', tone: 'violet', icon: Users },
+    { name: 'ADMIN', tone: 'amber', icon: Shield },
+    { name: 'RENTAL_CUSTOMER', tone: 'green', icon: KeyRound },
+  ] as const;
 
   // Convert permission overrides array to matrix format for PermissionSection
   const permissionMatrix = permissionOverrides.reduce((acc: Record<string, Record<string, Record<string, boolean>>>, p: any) => {
@@ -256,15 +273,15 @@ function SettingsContent() {
     if (!confirm("Are you sure you want to reset all permissions to their default values?")) {
       return;
     }
-
     if (!user?.organizationId) {
       toast.error("Organization ID not found");
       return;
     }
-
     try {
       await resetPermissions.mutateAsync(user.organizationId);
       toast.success("All permissions reset to defaults");
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2200);
     } catch (error) {
       console.error("Failed to reset permissions:", error);
       toast.error("Failed to reset permissions. Please try again.");
@@ -695,113 +712,174 @@ function SettingsContent() {
         {user?.role === "SUPER_ADMIN" && (
           <Card>
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Scale className="h-5 w-5" />
-                  Permissions
-                </CardTitle>
+              <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                    <SlidersHorizontal size={14} />
+                    Organization settings
+                  </div>
+                  <CardTitle className="flex items-center gap-2 text-3xl font-bold tracking-tight">
+                    <Scale className="h-8 w-8" />
+                    Permissions
+                  </CardTitle>
+                  <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
+                    Manage what each role can access and do in your organization.
+                  </p>
+                </div>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleResetPermissions}
-                  className="gap-2"
+                  className="gap-2 shrink-0"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
                   Reset to Defaults
                 </Button>
               </div>
-              <p className="text-sm text-muted-foreground">
-                Manage what each role can access and do in your organization
-              </p>
             </CardHeader>
             <CardContent className="space-y-6">
+              {saved && (
+                <div role="status" className="mb-5 flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-400">
+                  <Check size={16} />
+                  Permissions reset to defaults.
+                </div>
+              )}
               {isLoadingPermissions ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                 </div>
               ) : (
                 <>
-                  {/* Expense Categories */}
-                  <PermissionSection
-                    title="Expense Categories"
-                    type="EXPENSE_CATEGORY"
-                    keys={[
-                      { key: 'FUEL_LOG', label: 'Fuel Purchase' },
-                      { key: 'MECHANIC_SERVICE', label: 'Mechanic Service' },
-                      { key: 'MAINTENANCE_TOPUP', label: 'Maintenance Top-up' },
-                      { key: 'TIRES', label: 'Tyre Purchase' },
-                      { key: 'CAR_WASH', label: 'Car Wash' },
-                      { key: 'INSURANCE_PREMIUM', label: 'Insurance Premium' },
-                      { key: 'VEHICLE_TRACKING', label: 'Vehicle Tracking' },
-                      { key: 'ETOLL_SANRAL', label: 'E-Toll (SANRAL)' },
-                      { key: 'LICENSE_RENEWAL', label: 'License Renewal' },
-                      { key: 'PERSONAL_LICENSE', label: 'Personal License' },
-                      { key: 'ROADWORTHY', label: 'Roadworthy' },
-                      { key: 'OTHER_FIXED', label: 'Other Fixed' },
-                      { key: 'PARKING', label: 'Parking' },
-                    ]}
-                    roles={['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER']}
-                    overrides={permissionMatrix['EXPENSE_CATEGORY'] ?? {}}
-                    orgId={user?.organizationId || ""}
-                  />
-                  
-                  {/* Vehicle Assignments */}
-                  <PermissionSection
-                    title="Vehicle Assignments"
-                    type="VEHICLE_ASSIGNMENT"
-                    keys={[
-                      { key: 'ASSIGN_TO_DRIVER', label: 'Assign to Driver' },
-                      { key: 'ASSIGN_TO_MANAGER', label: 'Assign to Manager' },
-                      { key: 'RECLAIM_VEHICLE', label: 'Reclaim Vehicle' },
-                    ]}
-                    roles={['DRIVER', 'MANAGER', 'ADMIN']}
-                    overrides={permissionMatrix['VEHICLE_ASSIGNMENT'] ?? {}}
-                    orgId={user?.organizationId || ""}
-                  />
+                  <div className="rounded-xl border border-border bg-card shadow-sm">
+                    {/* Role header */}
+                    <div className="hidden items-center border-b border-border px-5 py-4 lg:flex">
+                      <div className="min-w-0 flex-1 pr-4 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                        Permission
+                      </div>
+                      <div className="grid w-[470px] shrink-0 grid-cols-4 gap-1">
+                        {roles.map((role) => (
+                          <div key={role.name} className="flex min-w-0 flex-col items-center gap-2 px-0.5 text-center">
+                            <div className={`rounded-full p-1.5 ${
+                              role.tone === 'blue' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
+                              role.tone === 'violet' ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400' :
+                              role.tone === 'amber' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
+                              'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                            }`}>
+                              <role.icon size={16} strokeWidth={2.2} className="text-current" />
+                            </div>
+                            <span className="w-full break-words text-[9px] font-bold leading-3 tracking-[0.04em] text-muted-foreground">
+                              {role.name}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
-                  {/* Logbook */}
-                  <PermissionSection
-                    title="Logbook"
-                    type="LOGBOOK"
-                    keys={[
-                      { key: 'VIEW_LOGBOOK', label: 'View Logbook' },
-                      { key: 'ADD_TRIP', label: 'Add Trip' },
-                      { key: 'EDIT_TRIP', label: 'Edit Trip' },
-                      { key: 'DELETE_TRIP', label: 'Delete Trip' },
-                    ]}
-                    roles={['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER']}
-                    overrides={permissionMatrix['LOGBOOK'] ?? {}}
-                    orgId={user?.organizationId || ""}
-                  />
+                    {/* Expense Categories */}
+                    <PermissionSection
+                      title="Expense Categories"
+                      description="Control who can view and manage expense categories."
+                      icon={ReceiptText}
+                      type="EXPENSE_CATEGORY"
+                      keys={[
+                        { key: 'FUEL_LOG', label: 'Fuel Purchase' },
+                        { key: 'MECHANIC_SERVICE', label: 'Mechanic Service' },
+                        { key: 'MAINTENANCE_TOPUP', label: 'Maintenance Top-up' },
+                        { key: 'TIRES', label: 'Tyre Purchase' },
+                        { key: 'CAR_WASH', label: 'Car Wash' },
+                        { key: 'INSURANCE_PREMIUM', label: 'Insurance Premium' },
+                        { key: 'VEHICLE_TRACKING', label: 'Vehicle Tracking' },
+                        { key: 'ETOLL_SANRAL', label: 'E-Toll (SANRAL)' },
+                        { key: 'LICENSE_RENEWAL', label: 'License Renewal' },
+                        { key: 'PERSONAL_LICENSE', label: 'Personal License' },
+                        { key: 'ROADWORTHY', label: 'Roadworthy' },
+                        { key: 'OTHER_FIXED', label: 'Other Fixed' },
+                        { key: 'PARKING', label: 'Parking' },
+                      ]}
+                      roles={roles.filter(r => ['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER'].includes(r.name))}
+                      overrides={permissionMatrix['EXPENSE_CATEGORY'] ?? {}}
+                      orgId={user?.organizationId || ""}
+                      isOpen={openSection === "EXPENSE_CATEGORY"}
+                      onToggle={() => setOpenSection(openSection === "EXPENSE_CATEGORY" ? "" : "EXPENSE_CATEGORY")}
+                    />
+                    
+                    {/* Vehicle Assignments */}
+                    <PermissionSection
+                      title="Vehicle Assignments"
+                      description="Decide who can assign and manage fleet vehicles."
+                      icon={Car}
+                      type="VEHICLE_ASSIGNMENT"
+                      keys={[
+                        { key: 'ASSIGN_TO_DRIVER', label: 'Assign to Driver' },
+                        { key: 'ASSIGN_TO_MANAGER', label: 'Assign to Manager' },
+                        { key: 'RECLAIM_VEHICLE', label: 'Reclaim Vehicle' },
+                      ]}
+                      roles={roles.filter(r => ['DRIVER', 'MANAGER', 'ADMIN'].includes(r.name))}
+                      overrides={permissionMatrix['VEHICLE_ASSIGNMENT'] ?? {}}
+                      orgId={user?.organizationId || ""}
+                      isOpen={openSection === "VEHICLE_ASSIGNMENT"}
+                      onToggle={() => setOpenSection(openSection === "VEHICLE_ASSIGNMENT" ? "" : "VEHICLE_ASSIGNMENT")}
+                    />
 
-                  {/* Tax Audit */}
-                  <PermissionSection
-                    title="Tax Audit"
-                    type="TAX_AUDIT"
-                    keys={[
-                      { key: 'ADD_OPENING_READING', label: 'Add OPENING Reading' },
-                      { key: 'ADD_CLOSING_READING', label: 'Add CLOSING Reading' },
-                      { key: 'EDIT_READINGS', label: 'Edit Readings' },
-                      { key: 'DELETE_READINGS', label: 'Delete Readings' },
-                    ]}
-                    roles={['MANAGER', 'ADMIN']}
-                    overrides={permissionMatrix['TAX_AUDIT'] ?? {}}
-                    orgId={user?.organizationId || ""}
-                  />
+                    {/* Logbook */}
+                    <PermissionSection
+                      title="Logbook"
+                      description="Set access to digital logbook entries and reviews."
+                      icon={BookOpen}
+                      type="LOGBOOK"
+                      keys={[
+                        { key: 'VIEW_LOGBOOK', label: 'View Logbook' },
+                        { key: 'ADD_TRIP', label: 'Add Trip' },
+                        { key: 'EDIT_TRIP', label: 'Edit Trip' },
+                        { key: 'DELETE_TRIP', label: 'Delete Trip' },
+                      ]}
+                      roles={roles.filter(r => ['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER'].includes(r.name))}
+                      overrides={permissionMatrix['LOGBOOK'] ?? {}}
+                      orgId={user?.organizationId || ""}
+                      isOpen={openSection === "LOGBOOK"}
+                      onToggle={() => setOpenSection(openSection === "LOGBOOK" ? "" : "LOGBOOK")}
+                    />
 
-                  {/* Export */}
-                  <PermissionSection
-                    title="Export"
-                    type="EXPORT"
-                    keys={[
-                      { key: 'EXPORT_SARS_LOGBOOK', label: 'Export SARS Logbook' },
-                      { key: 'EXPORT_TRIPS', label: 'Export Trip Logs' },
-                      { key: 'EXPORT_EMAIL', label: 'Email Export' },
-                    ]}
-                    roles={['MANAGER', 'ADMIN']}
-                    overrides={permissionMatrix['EXPORT'] ?? {}}
-                    orgId={user?.organizationId || ""}
-                  />
+                    {/* Tax Audit */}
+                    <PermissionSection
+                      title="Tax Audit"
+                      description="Control access to tax-ready reports and audit records."
+                      icon={ClipboardList}
+                      type="TAX_AUDIT"
+                      keys={[
+                        { key: 'ADD_OPENING_READING', label: 'Add OPENING Reading' },
+                        { key: 'ADD_CLOSING_READING', label: 'Add CLOSING Reading' },
+                        { key: 'EDIT_READINGS', label: 'Edit Readings' },
+                        { key: 'DELETE_READINGS', label: 'Delete Readings' },
+                      ]}
+                      roles={roles.filter(r => ['MANAGER', 'ADMIN'].includes(r.name))}
+                      overrides={permissionMatrix['TAX_AUDIT'] ?? {}}
+                      orgId={user?.organizationId || ""}
+                      isOpen={openSection === "TAX_AUDIT"}
+                      onToggle={() => setOpenSection(openSection === "TAX_AUDIT" ? "" : "TAX_AUDIT")}
+                    />
+
+                    {/* Export */}
+                    <PermissionSection
+                      title="Export"
+                      description="Choose which roles can export organization data."
+                      icon={Download}
+                      type="EXPORT"
+                      keys={[
+                        { key: 'EXPORT_SARS_LOGBOOK', label: 'Export SARS Logbook' },
+                        { key: 'EXPORT_TRIPS', label: 'Export Trip Logs' },
+                        { key: 'EXPORT_EMAIL', label: 'Email Export' },
+                      ]}
+                      roles={roles.filter(r => ['MANAGER', 'ADMIN'].includes(r.name))}
+                      overrides={permissionMatrix['EXPORT'] ?? {}}
+                      orgId={user?.organizationId || ""}
+                      isOpen={openSection === "EXPORT"}
+                      onToggle={() => setOpenSection(openSection === "EXPORT" ? "" : "EXPORT")}
+                    />
+                  </div>
+                  <p className="mt-4 text-xs leading-5 text-muted-foreground">
+                    Changes are saved automatically. Super admins always retain full access to organization settings.
+                  </p>
                 </>
               )}
             </CardContent>

@@ -1,13 +1,17 @@
-import { Switch } from '@/components/ui/switch';
+import { Check, X, ChevronDown } from 'lucide-react';
 import { useUpdatePermission } from '@/hooks/usePermissions';
 
 interface Props {
   title: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
   type: string;
   keys: { key: string; label: string }[];
-  roles: string[];
+  roles: { name: string; tone: string; icon: React.ComponentType<{ className?: string }> }[];
   overrides: Record<string, Record<string, boolean>>;
   orgId: string;
+  isOpen: boolean;
+  onToggle: () => void;
 }
 
 const DEFAULTS: Record<string, Record<string, Set<string>>> = {
@@ -50,55 +54,104 @@ const DEFAULTS: Record<string, Record<string, Set<string>>> = {
   }
 };
 
+const ROLE_TONES = {
+  blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  violet: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
+  amber: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+  green: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  rose: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
+} as const;
+
 function isDefaultAllowed(type: string, key: string, role: string): boolean {
   return DEFAULTS[type]?.[key]?.has(role) ?? false;
 }
 
-export function PermissionSection({ title, type, keys, roles, overrides, orgId }: Props) {
+function RoleBadge({ role }: { role: Props['roles'][number] }) {
+  const Icon = role.icon;
+  return (
+    <div className="flex min-w-0 flex-col items-center gap-2 px-0.5 text-center">
+      <div className={`rounded-full p-1.5 ${ROLE_TONES[role.tone as keyof typeof ROLE_TONES]}`}>
+        <Icon size={16} strokeWidth={2.2} className="text-current" />
+      </div>
+      <span className="w-full break-words text-[9px] font-bold leading-3 tracking-[0.04em] text-muted-foreground">
+        {role.name}
+      </span>
+    </div>
+  );
+}
+
+export function PermissionSection({ title, description, icon: Icon, type, keys, roles, overrides, orgId, isOpen, onToggle }: Props) {
   const update = useUpdatePermission();
 
   const isOverridden = (key: string, role: string) => overrides[key]?.[role] !== undefined;
   const getValue = (key: string, role: string) => overrides[key]?.[role] ?? isDefaultAllowed(type, key, role);
 
   return (
-    <div className="border rounded-lg p-4 mb-4 bg-card">
-      <h3 className="text-lg font-semibold mb-3">{title}</h3>
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b">
-            <th className="text-left py-2">Permission</th>
-            {roles.map(r => <th key={r} className="text-center py-2 w-24">{r}</th>)}
-          </tr>
-        </thead>
-        <tbody>
-          {keys.map(({ key, label }) => (
-            <tr key={key} className="border-b last:border-0">
-              <td className="py-2">
-                {label}
-                {roles.some(r => isOverridden(key, r)) && (
-                  <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">Custom</span>
-                )}
-              </td>
-              {roles.map(role => {
-                const val = getValue(key, role);
-                const over = isOverridden(key, role);
-                return (
-                  <td key={role} className="text-center py-2">
-                    <div className="flex flex-col items-center gap-1">
-                      <Switch
-                        checked={val}
-                        onCheckedChange={(checked) => update.mutate({ type, key, role, allowed: checked, orgId })}
-                        className={over ? "data-[state=checked]:bg-blue-600" : ""}
-                      />
-                      {over && <span className="text-[10px] text-blue-600">Custom</span>}
-                    </div>
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="border-b border-border last:border-0">
+      <button
+        onClick={onToggle}
+        className="flex w-full items-center justify-between gap-4 bg-muted/35 px-5 py-4 text-left transition hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+      >
+        <div className="flex min-w-0 items-start gap-3">
+          <div className={`rounded-lg p-2 ${ROLE_TONES[roles[0]?.tone as keyof typeof ROLE_TONES] || ROLE_TONES.blue}`}>
+            <Icon size={17} className="text-current" />
+          </div>
+          <div>
+            <h2 className="font-semibold">{title}</h2>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">{description}</p>
+          </div>
+        </div>
+        <ChevronDown
+          size={18}
+          className={`shrink-0 text-muted-foreground transition ${isOpen ? 'rotate-180' : ''}`}
+        />
+      </button>
+      {isOpen && (
+        <div className="divide-y divide-border">
+          {keys.map(({ key, label }) => {
+            const hasOverride = roles.some((r) => isOverridden(key, r.name));
+            return (
+              <div key={key} className="flex flex-col gap-4 px-5 py-4 lg:flex-row lg:items-center">
+                <div className="flex-1 text-sm font-medium">
+                  {label}
+                  {hasOverride && (
+                    <span className="ml-2 text-xs bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 px-1.5 py-0.5 rounded">
+                      Custom
+                    </span>
+                  )}
+                </div>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:w-[470px] lg:shrink-0 lg:grid-cols-5 lg:gap-1">
+                  {roles.map((role) => {
+                    const enabled = getValue(key, role.name);
+                    const over = isOverridden(key, role.name);
+                    const RoleIcon = role.icon;
+                    return (
+                      <button
+                        key={role.name}
+                        aria-label={`${label}: ${role.name} ${enabled ? 'enabled' : 'disabled'}`}
+                        onClick={() => update.mutate({ type, key, role: role.name, allowed: !enabled, orgId })}
+                        className={`flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition ${
+                          enabled
+                            ? 'border-primary bg-primary text-primary-foreground hover:bg-primary/90'
+                            : 'border-border bg-card text-muted-foreground hover:bg-muted'
+                        } ${over ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
+                      >
+                        <span className={`rounded-full p-1 lg:hidden ${ROLE_TONES[role.tone as keyof typeof ROLE_TONES]}`}>
+                          <RoleIcon size={14} className="text-current" />
+                        </span>
+                        <span className="min-w-0 flex-1 text-left text-[10px] font-bold tracking-[0.04em] lg:hidden">
+                          {role.name}
+                        </span>
+                        {enabled ? <Check size={15} /> : <X size={15} />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
