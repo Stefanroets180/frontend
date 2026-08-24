@@ -25,6 +25,7 @@ import {
   getGuideSeenStorageKey,
 } from "@/components/navigation/app-usage-guide-dialog";
 import { DashboardCollapsiblePanel } from "@/components/dashboard/dashboard-collapsible-panel";
+import { PermissionSection } from "@/components/settings/PermissionSection";
 import {
   User,
   Building2,
@@ -43,6 +44,11 @@ import {
   Loader2,
   RotateCcw,
   Lock,
+  Users,
+  Car,
+  BookOpen,
+  FileDown,
+  Scale,
 } from "lucide-react";
 import { VehicleLogo } from "@/components/vehicles/vehicle-logo";
 import { cn } from "@/lib/utils";
@@ -83,6 +89,10 @@ function SettingsContent() {
   const [conditionReportEnabled, setConditionReportEnabled] = useState(true);
   const [odometerConfirmationEnabled, setOdometerConfirmationEnabled] = useState(true);
   const [isUpdatingVisibility, setIsUpdatingVisibility] = useState(false);
+
+  // Permissions state (SUPER_ADMIN only)
+  const [permissionMatrix, setPermissionMatrix] = useState<Record<string, Record<string, Record<string, boolean>>>>({});
+  const [isLoadingPermissions, setIsLoadingPermissions] = useState(false);
 
   const isDark = resolvedTheme === "dark";
   const isFleet = isFleetMode;
@@ -195,6 +205,33 @@ function SettingsContent() {
     }
   }, [user]);
 
+  // Fetch permission overrides (SUPER_ADMIN only)
+  useEffect(() => {
+    if (user?.role === "SUPER_ADMIN") {
+      setIsLoadingPermissions(true);
+      api
+        .get("/permissions")
+        .then(({ data }) => {
+          // Convert list of overrides to matrix format
+          const matrix: Record<string, Record<string, Record<string, boolean>>> = {};
+          if (Array.isArray(data)) {
+            data.forEach((p: any) => {
+              if (!matrix[p.permissionType]) matrix[p.permissionType] = {};
+              if (!matrix[p.permissionType][p.permissionKey]) matrix[p.permissionType][p.permissionKey] = {};
+              matrix[p.permissionType][p.permissionKey][p.userRole] = p.isAllowed;
+            });
+          }
+          setPermissionMatrix(matrix);
+        })
+        .catch(() => {
+          setPermissionMatrix({});
+        })
+        .finally(() => {
+          setIsLoadingPermissions(false);
+        });
+    }
+  }, [user]);
+
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
@@ -229,6 +266,21 @@ function SettingsContent() {
       toast.error("Failed to update settings. Please try again.");
     } finally {
       setIsUpdatingVisibility(false);
+    }
+  };
+
+  const handleResetPermissions = async () => {
+    if (!confirm("Are you sure you want to reset all permissions to their default values?")) {
+      return;
+    }
+    
+    try {
+      await api.post("/permissions/reset");
+      setPermissionMatrix({});
+      toast.success("All permissions reset to defaults");
+    } catch (error) {
+      console.error("Failed to reset permissions:", error);
+      toast.error("Failed to reset permissions. Please try again.");
     }
   };
 
@@ -648,6 +700,118 @@ function SettingsContent() {
               <p className="text-xs text-muted-foreground">
                 When disabled, these buttons will be hidden from all users including admins.
               </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Permissions — SUPER_ADMIN only */}
+        {user?.role === "SUPER_ADMIN" && (
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Scale className="h-5 w-5" />
+                  Permissions
+                </CardTitle>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleResetPermissions}
+                  className="gap-2"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  Reset to Defaults
+                </Button>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Manage what each role can access and do in your organization
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {isLoadingPermissions ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : (
+                <>
+                  {/* Expense Categories */}
+                  <PermissionSection
+                    title="Expense Categories"
+                    type="EXPENSE_CATEGORY"
+                    keys={[
+                      { key: 'FUEL_LOG', label: 'Fuel Purchase' },
+                      { key: 'MECHANIC_SERVICE', label: 'Mechanic Service' },
+                      { key: 'MAINTENANCE_TOPUP', label: 'Maintenance Top-up' },
+                      { key: 'TIRES', label: 'Tyre Purchase' },
+                      { key: 'CAR_WASH', label: 'Car Wash' },
+                      { key: 'INSURANCE_PREMIUM', label: 'Insurance Premium' },
+                      { key: 'VEHICLE_TRACKING', label: 'Vehicle Tracking' },
+                      { key: 'ETOLL_SANRAL', label: 'E-Toll (SANRAL)' },
+                      { key: 'LICENSE_RENEWAL', label: 'License Renewal' },
+                      { key: 'PERSONAL_LICENSE', label: 'Personal License' },
+                      { key: 'ROADWORTHY', label: 'Roadworthy' },
+                      { key: 'OTHER_FIXED', label: 'Other Fixed' },
+                      { key: 'PARKING', label: 'Parking' },
+                    ]}
+                    roles={['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER']}
+                    overrides={permissionMatrix['EXPENSE_CATEGORY'] ?? {}}
+                  />
+                  
+                  {/* Vehicle Assignments */}
+                  <PermissionSection
+                    title="Vehicle Assignments"
+                    type="VEHICLE_ASSIGNMENT"
+                    keys={[
+                      { key: 'ASSIGN_TO_DRIVER', label: 'Assign to Driver' },
+                      { key: 'ASSIGN_TO_MANAGER', label: 'Assign to Manager' },
+                      { key: 'RECLAIM_VEHICLE', label: 'Reclaim Vehicle' },
+                    ]}
+                    roles={['DRIVER', 'MANAGER', 'ADMIN']}
+                    overrides={permissionMatrix['VEHICLE_ASSIGNMENT'] ?? {}}
+                  />
+                  
+                  {/* Logbook */}
+                  <PermissionSection
+                    title="Logbook"
+                    type="LOGBOOK"
+                    keys={[
+                      { key: 'VIEW_LOGBOOK', label: 'View Logbook' },
+                      { key: 'ADD_TRIP', label: 'Add Trip' },
+                      { key: 'EDIT_TRIP', label: 'Edit Trip' },
+                      { key: 'DELETE_TRIP', label: 'Delete Trip' },
+                    ]}
+                    roles={['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER']}
+                    overrides={permissionMatrix['LOGBOOK'] ?? {}}
+                  />
+                  
+                  {/* Tax Audit */}
+                  <PermissionSection
+                    title="Tax Audit"
+                    type="TAX_AUDIT"
+                    keys={[
+                      { key: 'ADD_OPENING_READING', label: 'Add OPENING Reading' },
+                      { key: 'ADD_CLOSING_READING', label: 'Add CLOSING Reading' },
+                      { key: 'EDIT_READINGS', label: 'Edit Readings' },
+                      { key: 'DELETE_READINGS', label: 'Delete Readings' },
+                    ]}
+                    roles={['MANAGER', 'ADMIN']}
+                    overrides={permissionMatrix['TAX_AUDIT'] ?? {}}
+                  />
+                  
+                  {/* Export */}
+                  <PermissionSection
+                    title="Export"
+                    type="EXPORT"
+                    keys={[
+                      { key: 'EXPORT_SARS_LOGBOOK', label: 'Export SARS Logbook' },
+                      { key: 'EXPORT_TRIPS', label: 'Export Trip Logs' },
+                      { key: 'EXPORT_EMAIL', label: 'Email Export' },
+                    ]}
+                    roles={['MANAGER', 'ADMIN']}
+                    overrides={permissionMatrix['EXPORT'] ?? {}}
+                  />
+                </>
+              )}
             </CardContent>
           </Card>
         )}
