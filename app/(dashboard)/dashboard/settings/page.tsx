@@ -275,7 +275,7 @@ function SettingsContent() {
     }
     
     try {
-      await api.post("/permissions/reset");
+      await api.post("/permissions/reset", null);
       setPermissionMatrix({});
       toast.success("All permissions reset to defaults");
     } catch (error) {
