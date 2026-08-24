@@ -141,8 +141,12 @@ export function PermissionSection({ title, description, icon: Icon, type, keys, 
                         <span className={`rounded-full p-1 ${ROLE_TONES[role.tone as keyof typeof ROLE_TONES]}`}>
                           <RoleIcon size={14} className="text-current" />
                         </span>
-                        <span className="min-w-0 flex-1 text-left text-[10px] font-bold tracking-[0.04em]">
-                          {role.name}
+                        <span className="min-w-0 flex-1 text-left text-[10px] font-bold tracking-[0.04em] leading-tight">
+                          {role.name === 'RENTAL_CUSTOMER' ? (
+                            <>
+                              RENTAL<br />CUSTOMER
+                            </>
+                          ) : role.name}
                         </span>
                         {enabled ? <Check size={15} /> : <X size={15} />}
                       </button>
