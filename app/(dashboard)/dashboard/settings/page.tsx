@@ -96,7 +96,7 @@ function SettingsContent() {
   const resetPermissions = useResetPermissions();
 
   // Convert permission overrides array to matrix format for PermissionSection
-  const permissionMatrix = permissionOverrides.reduce((acc, p: any) => {
+  const permissionMatrix = permissionOverrides.reduce((acc: Record<string, Record<string, Record<string, boolean>>>, p: any) => {
     if (!acc[p.permissionType]) acc[p.permissionType] = {};
     if (!acc[p.permissionType][p.permissionKey]) acc[p.permissionType][p.permissionKey] = {};
     acc[p.permissionType][p.permissionKey][p.userRole] = p.isAllowed;
