@@ -37,7 +37,7 @@ export function useUpdatePermission() {
 export function useResetPermissions() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: () => api.post('/permissions/reset'),
+    mutationFn: () => api.post('/permissions/reset', null),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['permissions'] }),
   });
 }
