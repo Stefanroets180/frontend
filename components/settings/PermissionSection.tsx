@@ -7,6 +7,7 @@ interface Props {
   keys: { key: string; label: string }[];
   roles: string[];
   overrides: Record<string, Record<string, boolean>>;
+  orgId: string;
 }
 
 const DEFAULTS: Record<string, Record<string, Set<string>>> = {
@@ -53,7 +54,7 @@ function isDefaultAllowed(type: string, key: string, role: string): boolean {
   return DEFAULTS[type]?.[key]?.has(role) ?? false;
 }
 
-export function PermissionSection({ title, type, keys, roles, overrides }: Props) {
+export function PermissionSection({ title, type, keys, roles, overrides, orgId }: Props) {
   const update = useUpdatePermission();
 
   const isOverridden = (key: string, role: string) => overrides[key]?.[role] !== undefined;
@@ -86,7 +87,7 @@ export function PermissionSection({ title, type, keys, roles, overrides }: Props
                     <div className="flex flex-col items-center gap-1">
                       <Switch
                         checked={val}
-                        onCheckedChange={(checked) => update.mutate({ type, key, role, allowed: checked })}
+                        onCheckedChange={(checked) => update.mutate({ type, key, role, allowed: checked, orgId })}
                         className={over ? "data-[state=checked]:bg-blue-600" : ""}
                       />
                       {over && <span className="text-[10px] text-blue-600">Custom</span>}

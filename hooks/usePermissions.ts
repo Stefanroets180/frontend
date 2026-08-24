@@ -23,21 +23,21 @@ export function usePermissions(orgId: string) {
 export function useUpdatePermission() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (p: { type: string; key: string; role: string; allowed: boolean }) =>
+    mutationFn: (p: { type: string; key: string; role: string; allowed: boolean; orgId: string }) =>
       api.post('/permissions/override', {
         permissionType: p.type,
         permissionKey: p.key,
         userRole: p.role,
         isAllowed: p.allowed
       }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['permissions'] }),
+    onSuccess: (_, variables) => qc.invalidateQueries({ queryKey: ['permissions', variables.orgId] }),
   });
 }
 
 export function useResetPermissions() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: () => api.post('/permissions/reset', null),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['permissions'] }),
+    mutationFn: (orgId: string) => api.post('/permissions/reset', null),
+    onSuccess: (_, orgId) => qc.invalidateQueries({ queryKey: ['permissions', orgId] }),
   });
 }

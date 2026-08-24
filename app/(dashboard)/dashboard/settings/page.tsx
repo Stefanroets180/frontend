@@ -57,6 +57,7 @@ import { useUserPreferences } from "@/lib/hooks/use-user-preferences";
 import { api } from "@/lib/api/client";
 import { getSATaxYear } from "@/lib/types/database";
 import { toast } from "sonner";
+import { usePermissions, useResetPermissions } from "@/hooks/usePermissions";
 
 interface VehicleOption {
   id: string;
@@ -90,9 +91,17 @@ function SettingsContent() {
   const [odometerConfirmationEnabled, setOdometerConfirmationEnabled] = useState(true);
   const [isUpdatingVisibility, setIsUpdatingVisibility] = useState(false);
 
-  // Permissions state (SUPER_ADMIN only)
-  const [permissionMatrix, setPermissionMatrix] = useState<Record<string, Record<string, Record<string, boolean>>>>({});
-  const [isLoadingPermissions, setIsLoadingPermissions] = useState(false);
+  // Permissions state (SUPER_ADMIN only) - using React Query
+  const { data: permissionOverrides = [], isLoading: isLoadingPermissions } = usePermissions(user?.organizationId || "");
+  const resetPermissions = useResetPermissions();
+
+  // Convert permission overrides array to matrix format for PermissionSection
+  const permissionMatrix = permissionOverrides.reduce((acc, p: any) => {
+    if (!acc[p.permissionType]) acc[p.permissionType] = {};
+    if (!acc[p.permissionType][p.permissionKey]) acc[p.permissionType][p.permissionKey] = {};
+    acc[p.permissionType][p.permissionKey][p.userRole] = p.isAllowed;
+    return acc;
+  }, {} as Record<string, Record<string, Record<string, boolean>>>);
 
   const isDark = resolvedTheme === "dark";
   const isFleet = isFleetMode;
@@ -205,32 +214,6 @@ function SettingsContent() {
     }
   }, [user]);
 
-  // Fetch permission overrides (SUPER_ADMIN only)
-  useEffect(() => {
-    if (user?.role === "SUPER_ADMIN") {
-      setIsLoadingPermissions(true);
-      api
-        .get("/permissions")
-        .then(({ data }) => {
-          // Convert list of overrides to matrix format
-          const matrix: Record<string, Record<string, Record<string, boolean>>> = {};
-          if (Array.isArray(data)) {
-            data.forEach((p: any) => {
-              if (!matrix[p.permissionType]) matrix[p.permissionType] = {};
-              if (!matrix[p.permissionType][p.permissionKey]) matrix[p.permissionType][p.permissionKey] = {};
-              matrix[p.permissionType][p.permissionKey][p.userRole] = p.isAllowed;
-            });
-          }
-          setPermissionMatrix(matrix);
-        })
-        .catch(() => {
-          setPermissionMatrix({});
-        })
-        .finally(() => {
-          setIsLoadingPermissions(false);
-        });
-    }
-  }, [user]);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -273,10 +256,14 @@ function SettingsContent() {
     if (!confirm("Are you sure you want to reset all permissions to their default values?")) {
       return;
     }
-    
+
+    if (!user?.organizationId) {
+      toast.error("Organization ID not found");
+      return;
+    }
+
     try {
-      await api.post("/permissions/reset", null);
-      setPermissionMatrix({});
+      await resetPermissions.mutateAsync(user.organizationId);
       toast.success("All permissions reset to defaults");
     } catch (error) {
       console.error("Failed to reset permissions:", error);
@@ -755,6 +742,7 @@ function SettingsContent() {
                     ]}
                     roles={['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER']}
                     overrides={permissionMatrix['EXPENSE_CATEGORY'] ?? {}}
+                    orgId={user?.organizationId || ""}
                   />
                   
                   {/* Vehicle Assignments */}
@@ -768,8 +756,9 @@ function SettingsContent() {
                     ]}
                     roles={['DRIVER', 'MANAGER', 'ADMIN']}
                     overrides={permissionMatrix['VEHICLE_ASSIGNMENT'] ?? {}}
+                    orgId={user?.organizationId || ""}
                   />
-                  
+
                   {/* Logbook */}
                   <PermissionSection
                     title="Logbook"
@@ -782,8 +771,9 @@ function SettingsContent() {
                     ]}
                     roles={['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER']}
                     overrides={permissionMatrix['LOGBOOK'] ?? {}}
+                    orgId={user?.organizationId || ""}
                   />
-                  
+
                   {/* Tax Audit */}
                   <PermissionSection
                     title="Tax Audit"
@@ -796,8 +786,9 @@ function SettingsContent() {
                     ]}
                     roles={['MANAGER', 'ADMIN']}
                     overrides={permissionMatrix['TAX_AUDIT'] ?? {}}
+                    orgId={user?.organizationId || ""}
                   />
-                  
+
                   {/* Export */}
                   <PermissionSection
                     title="Export"
@@ -809,6 +800,7 @@ function SettingsContent() {
                     ]}
                     roles={['MANAGER', 'ADMIN']}
                     overrides={permissionMatrix['EXPORT'] ?? {}}
+                    orgId={user?.organizationId || ""}
                   />
                 </>
               )}
