@@ -25,10 +25,11 @@ import { OdometerConfirmationForm } from "@/components/OdometerConfirmationForm"
 
 export default function VehiclesPage() {
   const router = useRouter();
-  const { user, isFleetMode } = useAuth();
+  const { user, isFleetMode, isSuperAdmin, isAdmin, isManager } = useAuth();
   const currentUserRole = user?.role ?? UserRole.DRIVER;
   const isDriver = currentUserRole === UserRole.DRIVER;
   const isRentalCustomer = currentUserRole === UserRole.RENTAL_CUSTOMER;
+  const isAdminOrManager = isSuperAdmin || isAdmin || isManager;
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [rejectedVehicles, setRejectedVehicles] = useState<Vehicle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,11 +54,11 @@ export default function VehiclesPage() {
   useEffect(() => {
     if (user) {
       fetchVehicles();
-      if (!isDriver) {
+      if (isAdminOrManager) {
         fetchRejectedVehicles();
       }
     }
-  }, [user, isDriver]);
+  }, [user, isAdminOrManager]);
 
   // Fetch organization visibility settings
   useEffect(() => {

@@ -78,9 +78,11 @@ interface AuthContextType {
   isFleetMode: boolean;
   isBusinessFleet: boolean;
   isCompany: boolean;
+  isSuperAdmin: boolean;
   isAdmin: boolean;
   isManager: boolean;
   isDriver: boolean;
+  isRentalCustomer: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -175,9 +177,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isFleetMode: user?.organizationMode === OrganizationMode.FLEET || user?.organizationMode === OrganizationMode.BUSINESS_FLEET || user?.organizationMode === OrganizationMode.COMPANY,
     isBusinessFleet: user?.organizationMode === OrganizationMode.BUSINESS_FLEET,
     isCompany: user?.organizationMode === OrganizationMode.COMPANY,
+    isSuperAdmin: user?.role === UserRole.SUPER_ADMIN,
     isAdmin: user?.role === UserRole.ADMIN,
     isManager: user?.role === UserRole.MANAGER,
     isDriver: user?.role === UserRole.DRIVER,
+    isRentalCustomer: user?.role === UserRole.RENTAL_CUSTOMER,
     login,
     logout,
     refreshUser,

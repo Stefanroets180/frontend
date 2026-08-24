@@ -86,7 +86,7 @@ function SettingsContent() {
 
   const isDark = resolvedTheme === "dark";
   const isFleet = isFleetMode;
-  const isAdminOrManager = user?.role === "ADMIN" || user?.role === "MANAGER";
+  const isAdminOrManager = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN" || user?.role === "MANAGER";
   const isDriver = user?.role === "DRIVER";
   const isRentalCustomer = user?.role === "RENTAL_CUSTOMER";
   const requestedTab = searchParams.get("tab");
