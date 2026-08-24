@@ -60,7 +60,7 @@ export function PermissionSection({ title, type, keys, roles, overrides }: Props
   const getValue = (key: string, role: string) => overrides[key]?.[role] ?? isDefaultAllowed(type, key, role);
 
   return (
-    <div className="border rounded-lg p-4 mb-4 bg-white">
+    <div className="border rounded-lg p-4 mb-4 bg-card">
       <h3 className="text-lg font-semibold mb-3">{title}</h3>
       <table className="w-full text-sm">
         <thead>
