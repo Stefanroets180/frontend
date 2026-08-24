@@ -750,7 +750,7 @@ function ReadingCard({
               >
                 <ExternalLink className="h-4 w-4" />
               </Button>
-              {!isLocked && (
+              {!isLocked && isAdminOrManager && (
                 <Button
                   type="button"
                   variant="secondary"
@@ -762,7 +762,7 @@ function ReadingCard({
                   <Pencil className="h-4 w-4" />
                 </Button>
               )}
-              {!isLocked && (
+              {!isLocked && isAdminOrManager && (
                 <Button
                   type="button"
                   variant="secondary"
@@ -845,7 +845,7 @@ function ReadingCard({
 
           {/* Action buttons below image */}
           <div className="flex flex-col gap-2 pt-2 border-t w-full overflow-hidden">
-            {!isLocked && (
+            {!isLocked && isAdminOrManager && (
               <Button
                 variant="outline"
                 size="sm"
