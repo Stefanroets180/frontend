@@ -122,7 +122,7 @@ export function PermissionSection({ title, description, icon: Icon, type, keys, 
                     </span>
                   )}
                 </div>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:w-[470px] lg:shrink-0 lg:grid-cols-5 lg:gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:w-[600px] lg:shrink-0 lg:grid-cols-4 lg:gap-2">
                   {roles.map((role) => {
                     const enabled = getValue(key, role.name);
                     const over = isOverridden(key, role.name);
@@ -132,16 +132,16 @@ export function PermissionSection({ title, description, icon: Icon, type, keys, 
                         key={role.name}
                         aria-label={`${label}: ${role.name} ${enabled ? 'enabled' : 'disabled'}`}
                         onClick={() => update.mutate({ type, key, role: role.name, allowed: !enabled, orgId })}
-                        className={`flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition ${
+                        className={`flex items-center justify-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-semibold transition ${
                           enabled
                             ? 'border-primary bg-primary text-primary-foreground hover:bg-primary/90'
                             : 'border-border bg-card text-muted-foreground hover:bg-muted'
                         } ${over ? 'ring-2 ring-blue-500' : ''}`}
                       >
-                        <span className={`rounded-full p-1 lg:hidden ${ROLE_TONES[role.tone as keyof typeof ROLE_TONES]}`}>
+                        <span className={`rounded-full p-1 ${ROLE_TONES[role.tone as keyof typeof ROLE_TONES]}`}>
                           <RoleIcon size={14} className="text-current" />
                         </span>
-                        <span className="min-w-0 flex-1 text-left text-[10px] font-bold tracking-[0.04em] lg:hidden">
+                        <span className="min-w-0 flex-1 text-left text-[10px] font-bold tracking-[0.04em]">
                           {role.name}
                         </span>
                         {enabled ? <Check size={15} /> : <X size={15} />}

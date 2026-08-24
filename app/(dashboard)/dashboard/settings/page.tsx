@@ -756,7 +756,7 @@ function SettingsContent() {
                       <div className="min-w-0 flex-1 pr-4 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
                         Permission
                       </div>
-                      <div className="grid w-[470px] shrink-0 grid-cols-4 gap-1">
+                      <div className="grid w-[600px] shrink-0 grid-cols-4 gap-2">
                         {roles.map((role) => (
                           <div key={role.name} className="flex min-w-0 flex-col items-center gap-2 px-0.5 text-center">
                             <div className={`rounded-full p-1.5 ${
