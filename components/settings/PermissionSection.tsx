@@ -122,7 +122,7 @@ export function PermissionSection({ title, description, icon: Icon, type, keys, 
                     </span>
                   )}
                 </div>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:w-[470px] lg:shrink-0 lg:grid-cols-5 lg:gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:w-[470px] lg:shrink-0 lg:grid-cols-5 lg:gap-3">
                   {roles.map((role) => {
                     const enabled = getValue(key, role.name);
                     const over = isOverridden(key, role.name);
@@ -136,7 +136,7 @@ export function PermissionSection({ title, description, icon: Icon, type, keys, 
                           enabled
                             ? 'border-primary bg-primary text-primary-foreground hover:bg-primary/90'
                             : 'border-border bg-card text-muted-foreground hover:bg-muted'
-                        } ${over ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-background' : ''}`}
+                        } ${over ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-background dark:ring-offset-card' : ''}`}
                       >
                         <span className={`rounded-full p-1 lg:hidden ${ROLE_TONES[role.tone as keyof typeof ROLE_TONES]}`}>
                           <RoleIcon size={14} className="text-current" />
