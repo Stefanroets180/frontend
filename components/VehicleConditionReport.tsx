@@ -133,12 +133,12 @@ function OverviewHeader({ sections }: { sections: any[] }) {
           : { label: 'Action required', tone: 'text-red-600', bar: 'bg-red-500' }
 
   return (
-    <div className="rounded-xl border bg-card p-4 sm:p-5">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="rounded-xl border bg-card p-3 sm:p-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <div
             className={cn(
-              'flex h-12 w-12 shrink-0 items-center justify-center rounded-full',
+              'flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-full',
               healthScore === null
                 ? 'bg-muted'
                 : healthScore >= 80
@@ -148,13 +148,13 @@ function OverviewHeader({ sections }: { sections: any[] }) {
                     : 'bg-red-500/10',
             )}
           >
-            <ShieldCheck className={cn('h-6 w-6', health.tone)} />
+            <ShieldCheck className={cn('h-5 w-5 sm:h-6 sm:w-6', health.tone)} />
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="text-[10px] sm:text-xs font-medium uppercase tracking-wide text-muted-foreground">
               Overall condition
             </p>
-            <p className={cn('text-lg font-bold leading-tight', health.tone)}>
+            <p className={cn('text-base sm:text-lg font-bold leading-tight', health.tone)}>
               {health.label}
             </p>
           </div>
@@ -172,17 +172,17 @@ function OverviewHeader({ sections }: { sections: any[] }) {
       </div>
 
       {/* Condition tally */}
-      <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="mt-3 sm:mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
         {CONDITION_ORDER.map((c) => {
           const meta = CONDITION_META[c]
           return (
             <div
               key={c}
-              className="flex items-center gap-2 rounded-lg border bg-background px-3 py-2"
+              className="flex items-center gap-2 rounded-lg border bg-background px-2 sm:px-3 py-2"
             >
-              <span className={cn('h-2.5 w-2.5 rounded-full', meta.dot)} />
-              <span className="text-sm font-semibold tabular-nums">{counts[c]}</span>
-              <span className="text-xs text-muted-foreground">{meta.label}</span>
+              <span className={cn('h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full', meta.dot)} />
+              <span className="text-xs sm:text-sm font-semibold tabular-nums">{counts[c]}</span>
+              <span className="text-[10px] sm:text-xs text-muted-foreground">{meta.label}</span>
             </div>
           )
         })}
@@ -222,67 +222,67 @@ function SectionCard({
   }
 
   return (
-    <div className={cn('rounded-xl border bg-card p-4 ring-1 ring-inset', meta?.ring)}>
+    <div className={cn('rounded-xl border bg-card p-3 sm:p-4 ring-1 ring-inset', meta?.ring)}>
       <div className="flex items-start justify-between gap-2">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-lg', cfg?.tile)}>
+        <div className="flex min-w-0 items-center gap-2 sm:gap-2.5">
+          <div className={cn('flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-lg', cfg?.tile)}>
             {isExterior ? (
               <VehicleSideDiagram
                 sectionType={section.sectionType}
-                className={cn('h-5 w-5', cfg?.iconColor)}
+                className={cn('h-4 w-4 sm:h-5 sm:w-5', cfg?.iconColor)}
               />
             ) : (
-              <Icon className={cn('h-5 w-5', cfg?.iconColor)} />
+              <Icon className={cn('h-4 w-4 sm:h-5 sm:w-5', cfg?.iconColor)} />
             )}
           </div>
           <div className="min-w-0">
-            <p className="font-semibold leading-tight truncate">{cfg?.label ?? section.sectionType}</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm sm:text-base font-semibold leading-tight truncate">{cfg?.label ?? section.sectionType}</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground">
               {images.length} photo{images.length === 1 ? '' : 's'}
             </p>
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-1.5">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
           <ConditionChip condition={section.condition} />
           <div className="flex gap-0.5">
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7 shrink-0"
+              className="h-6 w-6 sm:h-7 sm:w-7 shrink-0"
               onClick={() => onEdit(section)}
               title="Edit section"
             >
-              <Edit2 className="h-3.5 w-3.5" />
+              <Edit2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7 shrink-0"
+              className="h-6 w-6 sm:h-7 sm:w-7 shrink-0"
               onClick={() => isLocked ? onUnlock(section.id) : onLock(section.id)}
               title={isLocked ? "Unlock section" : "Lock section"}
             >
-              {isLocked ? <Unlock className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5" />}
+              {isLocked ? <Unlock className="h-3 w-3 sm:h-3.5 sm:w-3.5" /> : <Lock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />}
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7 shrink-0 text-destructive hover:text-destructive"
+              className="h-6 w-6 sm:h-7 sm:w-7 shrink-0 text-destructive hover:text-destructive"
               onClick={() => onDelete(section.id)}
               title="Delete section"
             >
-              <Trash2 className="h-3.5 w-3.5" />
+              <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             </Button>
           </div>
         </div>
       </div>
 
       {section.notes && (
-        <p className="mt-3 rounded-lg bg-muted/60 px-3 py-2 text-sm text-muted-foreground">
+        <p className="mt-2 sm:mt-3 rounded-lg bg-muted/60 px-2 sm:px-3 py-2 text-xs sm:text-sm text-muted-foreground">
           {section.notes}
         </p>
       )}
 
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="mt-2 sm:mt-3 flex flex-wrap gap-2">
         {images.map((img: any) => {
           const imageUrl = img.imageUrl || '/placeholder.svg'
           const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `https://fleet-expense-app.duckdns.org${imageUrl}`
@@ -290,14 +290,14 @@ function SectionCard({
           return (
             <div key={img.id} className="relative group">
               {hasError ? (
-                <div className="h-16 w-16 rounded-lg border border-dashed border-muted-foreground/30 flex items-center justify-center bg-muted/30">
-                  <span className="text-xs text-muted-foreground">Image not found</span>
+                <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg border border-dashed border-muted-foreground/30 flex items-center justify-center bg-muted/30">
+                  <span className="text-[10px] sm:text-xs text-muted-foreground">Image not found</span>
                 </div>
               ) : (
                 <img
                   src={fullImageUrl}
                   alt={`${cfg?.label ?? section.sectionType} condition`}
-                  className="h-16 w-16 rounded-lg border object-cover cursor-pointer hover:opacity-80"
+                  className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg border object-cover cursor-pointer hover:opacity-80"
                   crossOrigin="anonymous"
                   onClick={() => setViewingImage(fullImageUrl)}
                   onError={() => handleImageError(img.id)}
@@ -313,7 +313,7 @@ function SectionCard({
                     className="p-1 text-white hover:text-blue-300"
                     title="View"
                   >
-                    <svg className="h-5 w-5 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542 7z" />
                     </svg>
@@ -326,7 +326,7 @@ function SectionCard({
                     className="p-1 text-white hover:text-red-300"
                     title="Delete"
                   >
-                    <Trash2 className="h-5 w-5 sm:h-4 sm:w-4" />
+                    <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                   </button>
                 </div>
               )}
@@ -335,10 +335,10 @@ function SectionCard({
         })}
         {!isLocked && (
           <>
-            <label htmlFor={`image-upload-${section.id}`} className="flex h-16 w-16 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-border bg-muted/30 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary cursor-pointer">
+            <label htmlFor={`image-upload-${section.id}`} className="flex h-14 w-14 sm:h-16 sm:w-16 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-border bg-muted/30 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary cursor-pointer">
               <span className="sr-only">Add image for {cfg?.label ?? section.sectionType}</span>
-              <Camera className="h-4 w-4" />
-              <span className="text-[10px] font-medium">Add</span>
+              <Camera className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="text-[9px] sm:text-[10px] font-medium">Add</span>
             </label>
             <input
               id={`image-upload-${section.id}`}
@@ -354,7 +354,7 @@ function SectionCard({
 
       {/* Image viewer modal */}
       {viewingImage && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={() => setViewingImage(null)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-2 sm:p-4" onClick={() => setViewingImage(null)}>
           <img
             src={viewingImage}
             alt="Full size"
@@ -363,9 +363,9 @@ function SectionCard({
           />
           <button
             onClick={() => setViewingImage(null)}
-            className="absolute top-4 right-4 p-2 text-white hover:text-gray-300"
+            className="absolute top-2 right-2 sm:top-4 sm:right-4 p-2 text-white hover:text-gray-300"
           >
-            <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="h-6 w-6 sm:h-8 sm:w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -436,10 +436,10 @@ function AddSectionPanel({
   }
 
   return (
-    <div className="rounded-xl border bg-muted/30 p-4">
+    <div className="rounded-xl border bg-muted/30 p-3 sm:p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="flex items-center gap-2 font-semibold">
-          {editingSection ? <Edit2 className="h-4 w-4 text-primary" /> : <Plus className="h-4 w-4 text-primary" />}
+        <h3 className="flex items-center gap-2 text-sm sm:text-base font-semibold">
+          {editingSection ? <Edit2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" /> : <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />}
           {editingSection ? 'Edit inspection area' : 'Log an inspection area'}
         </h3>
         {editingSection && (
@@ -448,7 +448,7 @@ function AddSectionPanel({
           </Button>
         )}
       </div>
-      <p className="mb-3 text-xs text-muted-foreground">
+      <p className="mb-3 text-[10px] sm:text-xs text-muted-foreground">
         {editingSection ? 'Update the condition and notes for this area.' : 'Pick the area, then tap its condition.'}
       </p>
 
@@ -471,7 +471,7 @@ function AddSectionPanel({
               onClick={() => !isUsed && setSectionType(t.value)}
               disabled={!!editingSection || isUsed}
               className={cn(
-                'flex items-center gap-3 rounded-lg border p-3 text-left transition-all',
+                'flex items-center gap-2 sm:gap-3 rounded-lg border p-2 sm:p-3 text-left transition-all',
                 active
                   ? 'border-primary bg-primary/5 ring-1 ring-primary'
                   : 'bg-background hover:border-primary/40',
@@ -480,30 +480,30 @@ function AddSectionPanel({
             >
               <span
                 className={cn(
-                  'flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors sm:h-14 sm:w-14',
+                  'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors sm:h-12 sm:w-12 lg:h-14 lg:w-14',
                   active ? 'bg-primary/10' : t.tile,
                 )}
               >
                 {isExterior ? (
                   <VehicleSideDiagram
                     sectionType={t.value}
-                    className={cn('h-6 w-6 sm:h-7 sm:w-7', active ? 'text-primary' : t.iconColor)}
+                    className={cn('h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7', active ? 'text-primary' : t.iconColor)}
                   />
                 ) : (
-                  <Icon className={cn('h-5 w-5 sm:h-6 sm:w-6', active ? 'text-primary' : t.iconColor)} />
+                  <Icon className={cn('h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6', active ? 'text-primary' : t.iconColor)} />
                 )}
               </span>
               <span className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className={cn('block text-sm font-semibold leading-tight sm:text-base', active ? 'text-primary' : 'text-foreground')}>
+                  <span className={cn('block text-xs sm:text-sm lg:text-base font-semibold leading-tight', active ? 'text-primary' : 'text-foreground')}>
                     {t.label}
                   </span>
                   {isUsed && (
-                    <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+                    <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-500 shrink-0" />
                   )}
                 </div>
                 {t.desc && (
-                  <span className="mt-0.5 block text-xs leading-snug text-muted-foreground sm:text-sm">{t.desc}</span>
+                  <span className="mt-0.5 block text-[10px] sm:text-xs lg:text-sm leading-snug text-muted-foreground">{t.desc}</span>
                 )}
               </span>
             </button>
@@ -515,7 +515,7 @@ function AddSectionPanel({
       {/* Condition picker */}
       <fieldset>
         <legend className="mb-2 text-xs font-medium text-muted-foreground">Condition</legend>
-        <div role="radiogroup" aria-label="Select condition" className="mb-4 grid grid-cols-4 gap-2">
+        <div role="radiogroup" aria-label="Select condition" className="mb-4 grid grid-cols-4 gap-1.5 sm:gap-2">
         {CONDITION_ORDER.map((c) => {
           const meta = CONDITION_META[c]
           const active = condition === c
@@ -528,14 +528,14 @@ function AddSectionPanel({
               aria-label={meta.label}
               onClick={() => setCondition(c)}
               className={cn(
-                'flex min-w-0 flex-col items-center gap-1.5 rounded-lg border p-2.5 text-center text-xs font-semibold leading-tight transition-all',
+                'flex min-w-0 flex-col items-center gap-1 sm:gap-1.5 rounded-lg border p-1.5 sm:p-2.5 text-center text-[10px] sm:text-xs font-semibold leading-tight transition-all',
                 active
                   ? 'ring-2 ring-offset-1'
                   : 'opacity-70 hover:opacity-100',
                 active && meta.ring,
               )}
             >
-              <span className={cn('h-4 w-4 shrink-0 rounded-full', meta.swatch)} />
+              <span className={cn('h-3 w-3 sm:h-4 shrink-0 rounded-full', meta.swatch)} />
               <span className="w-full break-words">{meta.label}</span>
             </button>
           )
@@ -554,18 +554,18 @@ function AddSectionPanel({
         onChange={(e) => setNotes(e.target.value)}
         placeholder="e.g. Small scratch on rear bumper, otherwise clean."
         rows={2}
-        className="mb-4 bg-background"
+        className="mb-4 bg-background text-sm"
       />
 
-      <Button onClick={submit} disabled={!sectionType} className="w-full">
+      <Button onClick={submit} disabled={!sectionType} className="w-full h-10 sm:h-auto">
         {editingSection ? (
           <>
-            <Edit2 className="mr-1.5 h-4 w-4" />
+            <Edit2 className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4" />
             Update {SECTION_TYPES.find((t) => t.value === sectionType)?.label || 'area'}
           </>
         ) : (
           <>
-            <Plus className="mr-1.5 h-4 w-4" />
+            <Plus className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4" />
             Add {sectionType ? SECTION_TYPES.find((t) => t.value === sectionType)?.label : 'area'}
           </>
         )}

@@ -841,21 +841,23 @@ export default function VehiclesPage() {
 
       {/* Fleet: Vehicle Condition Report Dialog */}
       <Dialog open={conditionReportOpen} onOpenChange={setConditionReportOpen}>
-        <DialogContent className="max-w-[95vw] sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[80vw] xl:max-w-[75vw] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Vehicle Condition Report</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="max-w-[100vw] sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[80vw] xl:max-w-[75vw] max-h-[100vh] sm:max-h-[90vh] overflow-y-auto p-0 sm:p-6">
+          <DialogHeader className="p-4 sm:p-6 border-b">
+            <DialogTitle className="text-lg sm:text-xl">Vehicle Condition Report</DialogTitle>
+            <DialogDescription className="text-sm">
               Document the condition of {selectedVehicleForFleet?.nickname || selectedVehicleForFleet?.make + ' ' + selectedVehicleForFleet?.model}
             </DialogDescription>
           </DialogHeader>
-          {selectedVehicleForFleet && (
-            <VehicleConditionReport
-              assignmentId={isFleetMode ? selectedAssignmentId : null}
-              vehicleId={!isFleetMode ? selectedVehicleForFleet.id : null}
-              vehicleName={selectedVehicleForFleet.nickname || `${selectedVehicleForFleet.make} ${selectedVehicleForFleet.model}`}
-              onComplete={() => setConditionReportOpen(false)}
-            />
-          )}
+          <div className="p-4 sm:p-6">
+            {selectedVehicleForFleet && (
+              <VehicleConditionReport
+                assignmentId={isFleetMode ? selectedAssignmentId : null}
+                vehicleId={!isFleetMode ? selectedVehicleForFleet.id : null}
+                vehicleName={selectedVehicleForFleet?.nickname || `${selectedVehicleForFleet?.make} ${selectedVehicleForFleet?.model}`}
+                onComplete={() => setConditionReportOpen(false)}
+              />
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 
