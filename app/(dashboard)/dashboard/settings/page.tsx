@@ -105,11 +105,14 @@ function SettingsContent() {
   const [openSection, setOpenSection] = useState<string>("EXPENSE_CATEGORY");
   const [saved, setSaved] = useState(false);
 
-  const roles = [
+  const roles = isFleet ? [
     { name: 'DRIVER', tone: 'blue', icon: User },
     { name: 'MANAGER', tone: 'violet', icon: Users },
     { name: 'ADMIN', tone: 'amber', icon: Shield },
     { name: 'RENTAL_CUSTOMER', tone: 'green', icon: KeyRound },
+  ] as const : [
+    { name: 'ASSISTANT_LOW', tone: 'purple', icon: User },
+    { name: 'ASSISTANT_HIGH', tone: 'orange', icon: Users },
   ] as const;
 
   // Convert permission overrides array to matrix format for PermissionSection

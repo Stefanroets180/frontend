@@ -28,22 +28,23 @@ interface NavItem {
 
 function getNavItems(role: UserRole): NavItem[] {
   const isDriver = role === UserRole.DRIVER;
+  const isAssistant = role === UserRole.ASSISTANT;
   const isRentalCustomer = role === UserRole.RENTAL_CUSTOMER;
 
   const items: NavItem[] = [
     { href: "/dashboard", label: "Home", icon: Home, description: "Overview & stats" },
-    { href: "/dashboard/expenses", label: isDriver || isRentalCustomer ? "My Expenses" : "Expenses", icon: Receipt, description: isDriver || isRentalCustomer ? "Your spending" : "Track spending" },
-    { href: "/dashboard/vehicles", label: isDriver || isRentalCustomer ? "My Vehicle" : "Vehicles", icon: Car, description: isDriver || isRentalCustomer ? "Assigned vehicle" : "Fleet management" },
+    { href: "/dashboard/expenses", label: isDriver || isAssistant || isRentalCustomer ? "My Expenses" : "Expenses", icon: Receipt, description: isDriver || isAssistant || isRentalCustomer ? "Your spending" : "Track spending" },
+    { href: "/dashboard/vehicles", label: isDriver || isAssistant || isRentalCustomer ? "My Vehicle" : "Vehicles", icon: Car, description: isDriver || isAssistant || isRentalCustomer ? "Assigned vehicle" : "Fleet management" },
   ];
 
   // RENTAL_CUSTOMER doesn't see Logbook
   if (!isRentalCustomer) {
-    items.push({ href: "/dashboard/logbook", label: isDriver ? "My Logbook" : "Logbook", icon: BookOpen, description: isDriver ? "Your trips" : "Trip records" });
+    items.push({ href: "/dashboard/logbook", label: isDriver || isAssistant ? "My Logbook" : "Logbook", icon: BookOpen, description: isDriver || isAssistant ? "Your trips" : "Trip records" });
   }
 
   items.push({ href: "/dashboard/settings", label: "Settings", icon: Settings, description: "Preferences" });
 
-  if (!isDriver && !isRentalCustomer) {
+  if (!isDriver && !isAssistant && !isRentalCustomer) {
     items.splice(4, 0, {
       href: "/dashboard/organization",
       label: "Organization",
@@ -66,6 +67,8 @@ function roleBadge(role: UserRole) {
       return { label: "Manager", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", icon: User };
     case UserRole.DRIVER:
       return { label: "Driver", color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400", icon: User };
+    case UserRole.ASSISTANT:
+      return { label: "Assistant", color: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400", icon: User };
     case UserRole.RENTAL_CUSTOMER:
       return { label: "Customer", color: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400", icon: User };
     default:

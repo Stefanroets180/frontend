@@ -23,17 +23,18 @@ interface NavItem {
 }
 
 function getNavItems(role: UserRole): NavItem[] {
-  const isDriver = role === UserRole.DRIVER
+  const isDriver = role === UserRole.DRIVER;
+  const isAssistant = role === UserRole.ASSISTANT;
 
   const items: NavItem[] = [
     { href: '/dashboard', label: 'Home', icon: Home },
-    { href: '/dashboard/expenses', label: isDriver ? 'My Expenses' : 'Expenses', icon: Receipt },
-    { href: '/dashboard/vehicles', label: isDriver ? 'My Vehicle' : 'Vehicles', icon: Car },
-    { href: '/dashboard/logbook', label: isDriver ? 'My Logbook' : 'Logbook', icon: BookOpen },
+    { href: '/dashboard/expenses', label: isDriver || isAssistant ? 'My Expenses' : 'Expenses', icon: Receipt },
+    { href: '/dashboard/vehicles', label: isDriver || isAssistant ? 'My Vehicle' : 'Vehicles', icon: Car },
+    { href: '/dashboard/logbook', label: isDriver || isAssistant ? 'My Logbook' : 'Logbook', icon: BookOpen },
     { href: '/dashboard/settings', label: 'Settings', icon: Settings },
   ]
 
-  if (!isDriver) {
+  if (!isDriver && !isAssistant) {
     items.splice(4, 0, { href: '/dashboard/organization', label: 'Org', icon: Building2 })
   }
 
