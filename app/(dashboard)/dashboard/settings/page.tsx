@@ -28,6 +28,7 @@ import { DashboardCollapsiblePanel } from "@/components/dashboard/dashboard-coll
 import { PermissionSection } from "@/components/settings/PermissionSection";
 import {
   User,
+  Users,
   Building2,
   Bell,
   Moon,
