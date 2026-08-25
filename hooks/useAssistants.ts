@@ -18,7 +18,9 @@ export interface UserAssistantDTO {
 }
 
 export interface AddAssistantRequest {
-  assistantId: string;
+  assistantEmail: string;
+  assistantFirstName?: string;
+  assistantLastName?: string;
   assistantRole: 'ASSISTANT_LOW' | 'ASSISTANT_HIGH';
   dateRangeStart?: string;
   dateRangeEnd?: string;
@@ -72,18 +74,12 @@ export function useAssistants() {
     },
   });
 
-  const lookupUser = async (email: string) => {
-    const response = await api.get(`/assistants/lookup?email=${encodeURIComponent(email)}`);
-    return response.data as UserAssistantDTO;
-  };
-
   return {
     assistants,
     isLoading,
     addAssistant: addMutation.mutate,
     updateAssistant: updateMutation.mutate,
     removeAssistant: removeMutation.mutate,
-    lookupUser,
     isAdding: addMutation.isPending,
     isUpdating: updateMutation.isPending,
     isRemoving: removeMutation.isPending,

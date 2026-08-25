@@ -24,46 +24,28 @@ interface AddAssistantDialogProps {
 }
 
 export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogProps) {
-  const { addAssistant, lookupUser, isAdding } = useAssistants();
+  const { addAssistant, isAdding } = useAssistants();
   const { data: vehicles } = useVehicles();
   const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [role, setRole] = useState<"ASSISTANT_LOW" | "ASSISTANT_HIGH">("ASSISTANT_LOW");
   const [dateRangeStart, setDateRangeStart] = useState("");
   const [dateRangeEnd, setDateRangeEnd] = useState("");
   const [assignedVehicleId, setAssignedVehicleId] = useState<string>("all");
-  const [isLookingUp, setIsLookingUp] = useState(false);
-  const [foundUser, setFoundUser] = useState<UserAssistantDTO | null>(null);
-  const [lookupError, setLookupError] = useState("");
 
-  const handleLookup = async () => {
-    if (!email || !email.includes("@")) {
-      setLookupError("Please enter a valid email address");
-      return;
-    }
-
-    setIsLookingUp(true);
-    setLookupError("");
-    setFoundUser(null);
-
-    try {
-      const user = await lookupUser(email);
-      setFoundUser(user);
-    } catch (error: any) {
-      setLookupError(error.response?.data?.message || "User not found or cannot be added as assistant");
-    } finally {
-      setIsLookingUp(false);
-    }
-  };
 
   const handleAdd = () => {
-    if (!foundUser) {
-      toast.error("Please look up a user first");
+    if (!email || !email.includes("@")) {
+      toast.error("Please enter a valid email address");
       return;
     }
 
     addAssistant(
       {
-        assistantId: foundUser.assistantId,
+        assistantEmail: email,
+        assistantFirstName: firstName || undefined,
+        assistantLastName: lastName || undefined,
         assistantRole: role,
         dateRangeStart: dateRangeStart || undefined,
         dateRangeEnd: dateRangeEnd || undefined,
@@ -84,12 +66,12 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
 
   const resetForm = () => {
     setEmail("");
+    setFirstName("");
+    setLastName("");
     setRole("ASSISTANT_LOW");
     setDateRangeStart("");
     setDateRangeEnd("");
     setAssignedVehicleId("all");
-    setFoundUser(null);
-    setLookupError("");
   };
 
   const handleClose = () => {
@@ -106,58 +88,35 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email Address</Label>
-            <div className="flex gap-2">
-              <Input
-                id="email"
-                type="email"
-                placeholder="assistant@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleLookup()}
-                disabled={isLookingUp || !!foundUser}
-              />
-              {!foundUser && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleLookup}
-                  disabled={isLookingUp}
-                >
-                  {isLookingUp ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "Lookup"
-                  )}
-                </Button>
-              )}
-              {foundUser && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setFoundUser(null)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-            {lookupError && (
-              <p className="text-sm text-destructive">{lookupError}</p>
-            )}
+            <Input
+              id="email"
+              type="email"
+              placeholder="assistant@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
 
-          {foundUser && (
-            <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/50 p-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <User className="h-5 w-5" />
-              </div>
-              <div className="flex-1">
-                <p className="font-medium">{foundUser.assistantFirstName} {foundUser.assistantLastName}</p>
-                <p className="text-sm text-muted-foreground">{foundUser.assistantEmail}</p>
-              </div>
-              <Badge variant="secondary">Found</Badge>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="firstName">First Name (Optional)</Label>
+              <Input
+                id="firstName"
+                placeholder="John"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
             </div>
-          )}
+            <div className="space-y-2">
+              <Label htmlFor="lastName">Last Name (Optional)</Label>
+              <Input
+                id="lastName"
+                placeholder="Doe"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+            </div>
+          </div>
 
           <div className="space-y-2">
             <Label htmlFor="role">Access Level</Label>
@@ -239,7 +198,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
           <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
-          <Button onClick={handleAdd} disabled={!foundUser || isAdding}>
+          <Button onClick={handleAdd} disabled={!email || isAdding}>
             {isAdding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Add Assistant
           </Button>
