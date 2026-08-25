@@ -11,6 +11,8 @@ export interface UserAssistantDTO {
   assistantRole: 'ASSISTANT_LOW' | 'ASSISTANT_HIGH';
   assignedDateRangeStart?: string;
   assignedDateRangeEnd?: string;
+  assignedVehicleId?: string;
+  assignedVehicleRegistration?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -20,12 +22,14 @@ export interface AddAssistantRequest {
   assistantRole: 'ASSISTANT_LOW' | 'ASSISTANT_HIGH';
   dateRangeStart?: string;
   dateRangeEnd?: string;
+  assignedVehicleId?: string;
 }
 
 export interface UpdateAssistantRequest {
   assistantRole: 'ASSISTANT_LOW' | 'ASSISTANT_HIGH';
   dateRangeStart?: string;
   dateRangeEnd?: string;
+  assignedVehicleId?: string;
 }
 
 export function useAssistants() {
