@@ -14,23 +14,24 @@ interface Props {
   orgId: string;
   isOpen: boolean;
   onToggle: () => void;
+  isIndividualMode?: boolean;
 }
 
 const DEFAULTS: Record<string, Record<string, Set<string>>> = {
   EXPENSE_CATEGORY: {
-    FUEL_LOG: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER','ASSISTANT_LOW','ASSISTANT_HIGH']),
-    MECHANIC_SERVICE: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
-    MAINTENANCE_TOPUP: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER','ASSISTANT_LOW','ASSISTANT_HIGH']),
-    TIRES: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
-    CAR_WASH: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER','ASSISTANT_LOW','ASSISTANT_HIGH']),
-    INSURANCE_PREMIUM: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
-    VEHICLE_TRACKING: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
-    ETOLL_SANRAL: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
-    LICENSE_RENEWAL: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
-    PERSONAL_LICENSE: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
-    ROADWORTHY: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
-    OTHER_FIXED: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
-    PARKING: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER','ASSISTANT_LOW','ASSISTANT_HIGH']),
+    FUEL_LOG: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER']),
+    MECHANIC_SERVICE: new Set(['MANAGER','ADMIN']),
+    MAINTENANCE_TOPUP: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER']),
+    TIRES: new Set(['MANAGER','ADMIN']),
+    CAR_WASH: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER']),
+    INSURANCE_PREMIUM: new Set(['MANAGER','ADMIN']),
+    VEHICLE_TRACKING: new Set(['MANAGER','ADMIN']),
+    ETOLL_SANRAL: new Set(['MANAGER','ADMIN']),
+    LICENSE_RENEWAL: new Set(['MANAGER','ADMIN']),
+    PERSONAL_LICENSE: new Set(['MANAGER','ADMIN']),
+    ROADWORTHY: new Set(['MANAGER','ADMIN']),
+    OTHER_FIXED: new Set(['MANAGER','ADMIN']),
+    PARKING: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER']),
   },
   VEHICLE_ASSIGNMENT: {
     ASSIGN_TO_DRIVER: new Set(['MANAGER','ADMIN']),
@@ -38,9 +39,9 @@ const DEFAULTS: Record<string, Record<string, Set<string>>> = {
     RECLAIM_VEHICLE: new Set(['MANAGER','ADMIN']),
   },
   LOGBOOK: {
-    VIEW_LOGBOOK: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER','ASSISTANT_LOW','ASSISTANT_HIGH']),
-    ADD_TRIP: new Set(['DRIVER','MANAGER','ADMIN','ASSISTANT_HIGH']),
-    EDIT_TRIP: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
+    VIEW_LOGBOOK: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER']),
+    ADD_TRIP: new Set(['DRIVER','MANAGER','ADMIN']),
+    EDIT_TRIP: new Set(['MANAGER','ADMIN']),
     DELETE_TRIP: new Set(['ADMIN']),
   },
   TAX_AUDIT: {
@@ -56,6 +57,31 @@ const DEFAULTS: Record<string, Record<string, Set<string>>> = {
   }
 };
 
+// Individual account assistant defaults (only used for SOLO mode)
+const INDIVIDUAL_DEFAULTS: Record<string, Record<string, Set<string>>> = {
+  EXPENSE_CATEGORY: {
+    FUEL_LOG: new Set(['ASSISTANT_LOW','ASSISTANT_HIGH']),
+    MECHANIC_SERVICE: new Set(['ASSISTANT_HIGH']),
+    MAINTENANCE_TOPUP: new Set(['ASSISTANT_LOW','ASSISTANT_HIGH']),
+    TIRES: new Set(['ASSISTANT_HIGH']),
+    CAR_WASH: new Set(['ASSISTANT_LOW','ASSISTANT_HIGH']),
+    INSURANCE_PREMIUM: new Set(['ASSISTANT_HIGH']),
+    VEHICLE_TRACKING: new Set(['ASSISTANT_HIGH']),
+    ETOLL_SANRAL: new Set(['ASSISTANT_HIGH']),
+    LICENSE_RENEWAL: new Set(['ASSISTANT_HIGH']),
+    PERSONAL_LICENSE: new Set(['ASSISTANT_HIGH']),
+    ROADWORTHY: new Set(['ASSISTANT_HIGH']),
+    OTHER_FIXED: new Set(['ASSISTANT_HIGH']),
+    PARKING: new Set(['ASSISTANT_LOW','ASSISTANT_HIGH']),
+  },
+  LOGBOOK: {
+    VIEW_LOGBOOK: new Set(['ASSISTANT_LOW','ASSISTANT_HIGH']),
+    ADD_TRIP: new Set(['ASSISTANT_HIGH']),
+    EDIT_TRIP: new Set(['ASSISTANT_HIGH']),
+    DELETE_TRIP: new Set([]),
+  },
+};
+
 const ROLE_TONES = {
   blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
   violet: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
@@ -66,8 +92,9 @@ const ROLE_TONES = {
   orange: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
 } as const;
 
-function isDefaultAllowed(type: string, key: string, role: string): boolean {
-  return DEFAULTS[type]?.[key]?.has(role) ?? false;
+function isDefaultAllowed(type: string, key: string, role: string, isIndividualMode?: boolean): boolean {
+  const defaults = isIndividualMode ? INDIVIDUAL_DEFAULTS : DEFAULTS;
+  return defaults[type]?.[key]?.has(role) ?? false;
 }
 
 function RoleBadge({ role }: { role: Props['roles'][number] }) {
@@ -84,11 +111,11 @@ function RoleBadge({ role }: { role: Props['roles'][number] }) {
   );
 }
 
-export function PermissionSection({ title, description, icon: Icon, type, keys, roles, overrides, orgId, isOpen, onToggle }: Props) {
+export function PermissionSection({ title, description, icon: Icon, type, keys, roles, overrides, orgId, isOpen, onToggle, isIndividualMode }: Props) {
   const update = useUpdatePermission();
 
   const isOverridden = (key: string, role: string) => overrides[key]?.[role] !== undefined;
-  const getValue = (key: string, role: string) => overrides[key]?.[role] ?? isDefaultAllowed(type, key, role);
+  const getValue = (key: string, role: string) => overrides[key]?.[role] ?? isDefaultAllowed(type, key, role, isIndividualMode);
 
   return (
     <div className="border-b border-border last:border-0">

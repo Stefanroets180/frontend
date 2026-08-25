@@ -800,31 +800,37 @@ function SettingsContent() {
                         { key: "OTHER_FIXED", label: "Other Fixed" },
                         { key: "PARKING", label: "Parking" },
                       ]}
-                      roles={roles.filter(r => ['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER'].includes(r.name))}
+                      roles={roles.filter(r => isFleet 
+                        ? ['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER'].includes(r.name)
+                        : ['ASSISTANT_LOW', 'ASSISTANT_HIGH'].includes(r.name)
+                      )}
                       overrides={permissionMatrix['EXPENSE_CATEGORY'] ?? {}}
                       orgId={user?.organizationId || ""}
                       isOpen={openSection === "EXPENSE_CATEGORY"}
                       onToggle={() => setOpenSection(openSection === "EXPENSE_CATEGORY" ? "" : "EXPENSE_CATEGORY")}
+                      isIndividualMode={!isFleet}
                     />
 
-                    {/* Vehicle Assignments */}
-                    <PermissionSection
-                      title="Vehicle Assignments"
-                      description="Control who can assign and reclaim vehicles."
-                      icon={MapPin}
-                      type="VEHICLE_ASSIGNMENT"
-                      keys={[
-                        { key: "ASSIGN_TO_DRIVER", label: "Assign to Driver" },
-                        { key: "ASSIGN_TO_MANAGER", label: "Assign to Manager" },
-                        { key: "RECLAIM_VEHICLE", label: "Reclaim Vehicle" },
-                        { key: "VIEW_ASSIGNMENTS", label: "View Assignments" },
-                      ]}
-                      roles={roles.filter(r => ['MANAGER', 'ADMIN'].includes(r.name))}
-                      overrides={permissionMatrix['VEHICLE_ASSIGNMENT'] ?? {}}
-                      orgId={user?.organizationId || ""}
-                      isOpen={openSection === "VEHICLE_ASSIGNMENT"}
-                      onToggle={() => setOpenSection(openSection === "VEHICLE_ASSIGNMENT" ? "" : "VEHICLE_ASSIGNMENT")}
-                    />
+                    {/* Vehicle Assignments - Fleet only */}
+                    {isFleet && (
+                      <PermissionSection
+                        title="Vehicle Assignments"
+                        description="Control who can assign and reclaim vehicles."
+                        icon={MapPin}
+                        type="VEHICLE_ASSIGNMENT"
+                        keys={[
+                          { key: "ASSIGN_TO_DRIVER", label: "Assign to Driver" },
+                          { key: "ASSIGN_TO_MANAGER", label: "Assign to Manager" },
+                          { key: "RECLAIM_VEHICLE", label: "Reclaim Vehicle" },
+                          { key: "VIEW_ASSIGNMENTS", label: "View Assignments" },
+                        ]}
+                        roles={roles.filter(r => ['MANAGER', 'ADMIN'].includes(r.name))}
+                        overrides={permissionMatrix['VEHICLE_ASSIGNMENT'] ?? {}}
+                        orgId={user?.organizationId || ""}
+                        isOpen={openSection === "VEHICLE_ASSIGNMENT"}
+                        onToggle={() => setOpenSection(openSection === "VEHICLE_ASSIGNMENT" ? "" : "VEHICLE_ASSIGNMENT")}
+                      />
+                    )}
 
                     {/* Logbook */}
                     <PermissionSection
@@ -833,57 +839,63 @@ function SettingsContent() {
                       icon={BookOpen}
                       type="LOGBOOK"
                       keys={[
-                        { key: "VIEW_OWN_LOGBOOK", label: "View Own Logbook" },
-                        { key: "VIEW_ALL_LOGBOOKS", label: "View All Logbooks" },
-                        { key: "EDIT_OWN_ENTRIES", label: "Edit Own Entries" },
-                        { key: "EDIT_ALL_ENTRIES", label: "Edit All Entries" },
-                        { key: "DELETE_OWN_ENTRIES", label: "Delete Own Entries" },
-                        { key: "DELETE_ALL_ENTRIES", label: "Delete All Entries" },
+                        { key: "VIEW_LOGBOOK", label: "View Logbook" },
+                        { key: "ADD_TRIP", label: "Add Trip" },
+                        { key: "EDIT_TRIP", label: "Edit Trip" },
+                        { key: "DELETE_TRIP", label: "Delete Trip" },
                       ]}
-                      roles={roles.filter(r => ['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER'].includes(r.name))}
+                      roles={roles.filter(r => isFleet 
+                        ? ['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER'].includes(r.name)
+                        : ['ASSISTANT_LOW', 'ASSISTANT_HIGH'].includes(r.name)
+                      )}
                       overrides={permissionMatrix['LOGBOOK'] ?? {}}
                       orgId={user?.organizationId || ""}
                       isOpen={openSection === "LOGBOOK"}
                       onToggle={() => setOpenSection(openSection === "LOGBOOK" ? "" : "LOGBOOK")}
+                      isIndividualMode={!isFleet}
                     />
 
-                    {/* Tax Audit */}
-                    <PermissionSection
-                      title="Tax Audit"
-                      description="Control who can manage tax audit readings and reports."
-                      icon={ClipboardList}
-                      type="TAX_AUDIT"
-                      keys={[
-                        { key: "ADD_OPENING_READING", label: "Add Opening Reading" },
-                        { key: "ADD_CLOSING_READING", label: "Add Closing Reading" },
-                        { key: "EDIT_READINGS", label: "Edit Readings" },
-                        { key: "DELETE_READINGS", label: "Delete Readings" },
-                        { key: "VIEW_TAX_REPORTS", label: "View Tax Reports" },
-                      ]}
-                      roles={roles.filter(r => ['MANAGER', 'ADMIN'].includes(r.name))}
-                      overrides={permissionMatrix['TAX_AUDIT'] ?? {}}
-                      orgId={user?.organizationId || ""}
-                      isOpen={openSection === "TAX_AUDIT"}
-                      onToggle={() => setOpenSection(openSection === "TAX_AUDIT" ? "" : "TAX_AUDIT")}
-                    />
+                    {/* Tax Audit - Fleet only */}
+                    {isFleet && (
+                      <PermissionSection
+                        title="Tax Audit"
+                        description="Control who can manage tax audit readings and reports."
+                        icon={ClipboardList}
+                        type="TAX_AUDIT"
+                        keys={[
+                          { key: "ADD_OPENING_READING", label: "Add Opening Reading" },
+                          { key: "ADD_CLOSING_READING", label: "Add Closing Reading" },
+                          { key: "EDIT_READINGS", label: "Edit Readings" },
+                          { key: "DELETE_READINGS", label: "Delete Readings" },
+                          { key: "VIEW_TAX_REPORTS", label: "View Tax Reports" },
+                        ]}
+                        roles={roles.filter(r => ['MANAGER', 'ADMIN'].includes(r.name))}
+                        overrides={permissionMatrix['TAX_AUDIT'] ?? {}}
+                        orgId={user?.organizationId || ""}
+                        isOpen={openSection === "TAX_AUDIT"}
+                        onToggle={() => setOpenSection(openSection === "TAX_AUDIT" ? "" : "TAX_AUDIT")}
+                      />
+                    )}
 
-                    {/* Export */}
-                    <PermissionSection
-                      title="Export"
-                      description="Control who can export data and reports."
-                      icon={Download}
-                      type="EXPORT"
-                      keys={[
-                        { key: "EXPORT_SARS_LOGBOOK", label: "Export SARS Logbook" },
-                        { key: "EXPORT_TRIPS", label: "Export Trips" },
-                        { key: "EXPORT_EMAIL", label: "Export Email" },
-                      ]}
-                      roles={roles.filter(r => ['MANAGER', 'ADMIN'].includes(r.name))}
-                      overrides={permissionMatrix['EXPORT'] ?? {}}
-                      orgId={user?.organizationId || ""}
-                      isOpen={openSection === "EXPORT"}
-                      onToggle={() => setOpenSection(openSection === "EXPORT" ? "" : "EXPORT")}
-                    />
+                    {/* Export - Fleet only */}
+                    {isFleet && (
+                      <PermissionSection
+                        title="Export"
+                        description="Control who can export data and reports."
+                        icon={Download}
+                        type="EXPORT"
+                        keys={[
+                          { key: "EXPORT_SARS_LOGBOOK", label: "Export SARS Logbook" },
+                          { key: "EXPORT_TRIPS", label: "Export Trips" },
+                          { key: "EXPORT_EMAIL", label: "Export Email" },
+                        ]}
+                        roles={roles.filter(r => ['MANAGER', 'ADMIN'].includes(r.name))}
+                        overrides={permissionMatrix['EXPORT'] ?? {}}
+                        orgId={user?.organizationId || ""}
+                        isOpen={openSection === "EXPORT"}
+                        onToggle={() => setOpenSection(openSection === "EXPORT" ? "" : "EXPORT")}
+                      />
+                    )}
                   </div>
                   <p className="mt-4 text-xs leading-5 text-muted-foreground">
                     Changes are saved automatically. Super admins always retain full access to organization settings.
