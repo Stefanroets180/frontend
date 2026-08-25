@@ -58,11 +58,11 @@ interface Vehicle {
 }
 
 export default function OrganizationPage() {
+  const { user, isFleetMode, isSoloMode } = useAuth()
   // Allow both fleet roles (SUPER_ADMIN, ADMIN, MANAGER) and individual account owners (solo mode)
   if (!isSoloMode) {
     useRequireRole(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.MANAGER)
   }
-  const { user, isFleetMode, isSoloMode } = useAuth()
   const currentUserRole = user?.role ?? UserRole.DRIVER
   const isManager = currentUserRole === UserRole.MANAGER
   const isAdmin = currentUserRole === UserRole.ADMIN
