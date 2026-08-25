@@ -57,7 +57,7 @@ function getNavItems(role: UserRole): NavItem[] {
   return items;
 }
 
-function roleBadge(role: UserRole) {
+function roleBadge(role: UserRole, assistantRole?: string) {
   switch (role) {
     case UserRole.SUPER_ADMIN:
       return { label: "Owner", color: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400", icon: Crown };
@@ -68,7 +68,11 @@ function roleBadge(role: UserRole) {
     case UserRole.DRIVER:
       return { label: "Driver", color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400", icon: User };
     case UserRole.ASSISTANT:
-      return { label: "Assistant", color: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400", icon: User };
+      return { 
+        label: assistantRole === "ASSISTANT_HIGH" ? "Assistant (Edit)" : "Assistant (View)", 
+        color: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400", 
+        icon: User 
+      };
     case UserRole.RENTAL_CUSTOMER:
       return { label: "Customer", color: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400", icon: User };
     default:
@@ -82,7 +86,7 @@ export function SidebarNav() {
   const { dateRange } = getSarsTaxYear();
   const role = user?.role ?? UserRole.DRIVER;
   const navItems = getNavItems(role);
-  const badge = roleBadge(role);
+  const badge = roleBadge(role, user?.assistantRole);
 
   return (
     <nav className="hidden md:flex md:flex-col md:w-64 md:border-r md:border-border/50 md:bg-gradient-to-b md:from-card md:to-muted/30 md:h-[calc(100vh-3.5rem)] md:sticky md:top-14">
