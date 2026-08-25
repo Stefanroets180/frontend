@@ -18,19 +18,19 @@ interface Props {
 
 const DEFAULTS: Record<string, Record<string, Set<string>>> = {
   EXPENSE_CATEGORY: {
-    FUEL_LOG: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER']),
-    MECHANIC_SERVICE: new Set(['MANAGER','ADMIN']),
-    MAINTENANCE_TOPUP: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER']),
-    TIRES: new Set(['MANAGER','ADMIN']),
-    CAR_WASH: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER']),
-    INSURANCE_PREMIUM: new Set(['MANAGER','ADMIN']),
-    VEHICLE_TRACKING: new Set(['MANAGER','ADMIN']),
-    ETOLL_SANRAL: new Set(['MANAGER','ADMIN']),
-    LICENSE_RENEWAL: new Set(['MANAGER','ADMIN']),
-    PERSONAL_LICENSE: new Set(['MANAGER','ADMIN']),
-    ROADWORTHY: new Set(['MANAGER','ADMIN']),
-    OTHER_FIXED: new Set(['MANAGER','ADMIN']),
-    PARKING: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER']),
+    FUEL_LOG: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER','ASSISTANT_LOW','ASSISTANT_HIGH']),
+    MECHANIC_SERVICE: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
+    MAINTENANCE_TOPUP: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER','ASSISTANT_LOW','ASSISTANT_HIGH']),
+    TIRES: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
+    CAR_WASH: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER','ASSISTANT_LOW','ASSISTANT_HIGH']),
+    INSURANCE_PREMIUM: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
+    VEHICLE_TRACKING: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
+    ETOLL_SANRAL: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
+    LICENSE_RENEWAL: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
+    PERSONAL_LICENSE: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
+    ROADWORTHY: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
+    OTHER_FIXED: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
+    PARKING: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER','ASSISTANT_LOW','ASSISTANT_HIGH']),
   },
   VEHICLE_ASSIGNMENT: {
     ASSIGN_TO_DRIVER: new Set(['MANAGER','ADMIN']),
@@ -38,9 +38,9 @@ const DEFAULTS: Record<string, Record<string, Set<string>>> = {
     RECLAIM_VEHICLE: new Set(['MANAGER','ADMIN']),
   },
   LOGBOOK: {
-    VIEW_LOGBOOK: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER']),
-    ADD_TRIP: new Set(['DRIVER','MANAGER','ADMIN']),
-    EDIT_TRIP: new Set(['MANAGER','ADMIN']),
+    VIEW_LOGBOOK: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER','ASSISTANT_LOW','ASSISTANT_HIGH']),
+    ADD_TRIP: new Set(['DRIVER','MANAGER','ADMIN','ASSISTANT_HIGH']),
+    EDIT_TRIP: new Set(['MANAGER','ADMIN','ASSISTANT_HIGH']),
     DELETE_TRIP: new Set(['ADMIN']),
   },
   TAX_AUDIT: {
@@ -62,6 +62,8 @@ const ROLE_TONES = {
   amber: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
   green: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
   rose: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
+  purple: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+  orange: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
 } as const;
 
 function isDefaultAllowed(type: string, key: string, role: string): boolean {
@@ -145,6 +147,14 @@ export function PermissionSection({ title, description, icon: Icon, type, keys, 
                           {role.name === 'RENTAL_CUSTOMER' ? (
                             <>
                               RENTAL<br />CUSTOMER
+                            </>
+                          ) : role.name === 'ASSISTANT_LOW' ? (
+                            <>
+                              ASSISTANT<br />LOW
+                            </>
+                          ) : role.name === 'ASSISTANT_HIGH' ? (
+                            <>
+                              ASSISTANT<br />HIGH
                             </>
                           ) : role.name}
                         </span>
