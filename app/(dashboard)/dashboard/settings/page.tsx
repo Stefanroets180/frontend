@@ -26,6 +26,7 @@ import {
 } from "@/components/navigation/app-usage-guide-dialog";
 import { DashboardCollapsiblePanel } from "@/components/dashboard/dashboard-collapsible-panel";
 import { PermissionSection } from "@/components/settings/PermissionSection";
+import { AddAssistantDialog } from "@/components/settings/AddAssistantDialog";
 import {
   User,
   Building2,
@@ -66,6 +67,7 @@ import { api } from "@/lib/api/client";
 import { getSATaxYear } from "@/lib/types/database";
 import { toast } from "sonner";
 import { usePermissions, useResetPermissions } from "@/hooks/usePermissions";
+import { useAssistants } from "@/hooks/useAssistants";
 
 interface VehicleOption {
   id: string;
@@ -104,6 +106,12 @@ function SettingsContent() {
   const resetPermissions = useResetPermissions();
   const [openSection, setOpenSection] = useState<string>("EXPENSE_CATEGORY");
   const [saved, setSaved] = useState(false);
+
+  // Assistants state (individual account owners only)
+  const { assistants, isLoading: isLoadingAssistants, addAssistant, updateAssistant, removeAssistant, isAdding, isUpdating, isRemoving } = useAssistants();
+  const [showAddAssistant, setShowAddAssistant] = useState(false);
+  const [newAssistantEmail, setNewAssistantEmail] = useState("");
+  const [newAssistantRole, setNewAssistantRole] = useState<'ASSISTANT_LOW' | 'ASSISTANT_HIGH'>('ASSISTANT_LOW');
 
   const roles = [
     { name: 'DRIVER', tone: 'blue', icon: User },
@@ -782,19 +790,19 @@ function SettingsContent() {
                       icon={ReceiptText}
                       type="EXPENSE_CATEGORY"
                       keys={[
-                        { key: 'FUEL_LOG', label: 'Fuel Purchase' },
-                        { key: 'MECHANIC_SERVICE', label: 'Mechanic Service' },
-                        { key: 'MAINTENANCE_TOPUP', label: 'Maintenance Top-up' },
-                        { key: 'TIRES', label: 'Tyre Purchase' },
-                        { key: 'CAR_WASH', label: 'Car Wash' },
-                        { key: 'INSURANCE_PREMIUM', label: 'Insurance Premium' },
-                        { key: 'VEHICLE_TRACKING', label: 'Vehicle Tracking' },
-                        { key: 'ETOLL_SANRAL', label: 'E-Toll (SANRAL)' },
-                        { key: 'LICENSE_RENEWAL', label: 'License Renewal' },
-                        { key: 'PERSONAL_LICENSE', label: 'Personal License' },
-                        { key: 'ROADWORTHY', label: 'Roadworthy' },
-                        { key: 'OTHER_FIXED', label: 'Other Fixed' },
-                        { key: 'PARKING', label: 'Parking' },
+                        { key: "FUEL_LOG", label: "Fuel Log" },
+                        { key: "MECHANIC_SERVICE", label: "Mechanic Service" },
+                        { key: "MAINTENANCE_TOPUP", label: "Maintenance Top-up" },
+                        { key: "TIRES", label: "Tires" },
+                        { key: "CAR_WASH", label: "Car Wash" },
+                        { key: "INSURANCE_PREMIUM", label: "Insurance Premium" },
+                        { key: "VEHICLE_TRACKING", label: "Vehicle Tracking" },
+                        { key: "ETOLL_SANRAL", label: "eToll Sanral" },
+                        { key: "LICENSE_RENEWAL", label: "License Renewal" },
+                        { key: "PERSONAL_LICENSE", label: "Personal License" },
+                        { key: "ROADWORTHY", label: "Roadworthy" },
+                        { key: "OTHER_FIXED", label: "Other Fixed" },
+                        { key: "PARKING", label: "Parking" },
                       ]}
                       roles={roles.filter(r => ['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER'].includes(r.name))}
                       overrides={permissionMatrix['EXPENSE_CATEGORY'] ?? {}}
@@ -802,19 +810,20 @@ function SettingsContent() {
                       isOpen={openSection === "EXPENSE_CATEGORY"}
                       onToggle={() => setOpenSection(openSection === "EXPENSE_CATEGORY" ? "" : "EXPENSE_CATEGORY")}
                     />
-                    
+
                     {/* Vehicle Assignments */}
                     <PermissionSection
                       title="Vehicle Assignments"
-                      description="Decide who can assign and manage fleet vehicles."
-                      icon={Car}
+                      description="Control who can assign and reclaim vehicles."
+                      icon={MapPin}
                       type="VEHICLE_ASSIGNMENT"
                       keys={[
-                        { key: 'ASSIGN_TO_DRIVER', label: 'Assign to Driver' },
-                        { key: 'ASSIGN_TO_MANAGER', label: 'Assign to Manager' },
-                        { key: 'RECLAIM_VEHICLE', label: 'Reclaim Vehicle' },
+                        { key: "ASSIGN_TO_DRIVER", label: "Assign to Driver" },
+                        { key: "ASSIGN_TO_MANAGER", label: "Assign to Manager" },
+                        { key: "RECLAIM_VEHICLE", label: "Reclaim Vehicle" },
+                        { key: "VIEW_ASSIGNMENTS", label: "View Assignments" },
                       ]}
-                      roles={roles.filter(r => ['DRIVER', 'MANAGER', 'ADMIN'].includes(r.name))}
+                      roles={roles.filter(r => ['MANAGER', 'ADMIN'].includes(r.name))}
                       overrides={permissionMatrix['VEHICLE_ASSIGNMENT'] ?? {}}
                       orgId={user?.organizationId || ""}
                       isOpen={openSection === "VEHICLE_ASSIGNMENT"}
@@ -824,14 +833,16 @@ function SettingsContent() {
                     {/* Logbook */}
                     <PermissionSection
                       title="Logbook"
-                      description="Set access to digital logbook entries and reviews."
+                      description="Control who can view, edit, and delete logbook entries."
                       icon={BookOpen}
                       type="LOGBOOK"
                       keys={[
-                        { key: 'VIEW_LOGBOOK', label: 'View Logbook' },
-                        { key: 'ADD_TRIP', label: 'Add Trip' },
-                        { key: 'EDIT_TRIP', label: 'Edit Trip' },
-                        { key: 'DELETE_TRIP', label: 'Delete Trip' },
+                        { key: "VIEW_OWN_LOGBOOK", label: "View Own Logbook" },
+                        { key: "VIEW_ALL_LOGBOOKS", label: "View All Logbooks" },
+                        { key: "EDIT_OWN_ENTRIES", label: "Edit Own Entries" },
+                        { key: "EDIT_ALL_ENTRIES", label: "Edit All Entries" },
+                        { key: "DELETE_OWN_ENTRIES", label: "Delete Own Entries" },
+                        { key: "DELETE_ALL_ENTRIES", label: "Delete All Entries" },
                       ]}
                       roles={roles.filter(r => ['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER'].includes(r.name))}
                       overrides={permissionMatrix['LOGBOOK'] ?? {}}
@@ -843,14 +854,15 @@ function SettingsContent() {
                     {/* Tax Audit */}
                     <PermissionSection
                       title="Tax Audit"
-                      description="Control access to tax-ready reports and audit records."
+                      description="Control who can manage tax audit readings and reports."
                       icon={ClipboardList}
                       type="TAX_AUDIT"
                       keys={[
-                        { key: 'ADD_OPENING_READING', label: 'Add OPENING Reading' },
-                        { key: 'ADD_CLOSING_READING', label: 'Add CLOSING Reading' },
-                        { key: 'EDIT_READINGS', label: 'Edit Readings' },
-                        { key: 'DELETE_READINGS', label: 'Delete Readings' },
+                        { key: "ADD_OPENING_READING", label: "Add Opening Reading" },
+                        { key: "ADD_CLOSING_READING", label: "Add Closing Reading" },
+                        { key: "EDIT_READINGS", label: "Edit Readings" },
+                        { key: "DELETE_READINGS", label: "Delete Readings" },
+                        { key: "VIEW_TAX_REPORTS", label: "View Tax Reports" },
                       ]}
                       roles={roles.filter(r => ['MANAGER', 'ADMIN'].includes(r.name))}
                       overrides={permissionMatrix['TAX_AUDIT'] ?? {}}
@@ -862,13 +874,13 @@ function SettingsContent() {
                     {/* Export */}
                     <PermissionSection
                       title="Export"
-                      description="Choose which roles can export organization data."
+                      description="Control who can export data and reports."
                       icon={Download}
                       type="EXPORT"
                       keys={[
-                        { key: 'EXPORT_SARS_LOGBOOK', label: 'Export SARS Logbook' },
-                        { key: 'EXPORT_TRIPS', label: 'Export Trip Logs' },
-                        { key: 'EXPORT_EMAIL', label: 'Email Export' },
+                        { key: "EXPORT_SARS_LOGBOOK", label: "Export SARS Logbook" },
+                        { key: "EXPORT_TRIPS", label: "Export Trips" },
+                        { key: "EXPORT_EMAIL", label: "Export Email" },
                       ]}
                       roles={roles.filter(r => ['MANAGER', 'ADMIN'].includes(r.name))}
                       overrides={permissionMatrix['EXPORT'] ?? {}}
@@ -885,6 +897,81 @@ function SettingsContent() {
             </CardContent>
           </Card>
         )}
+
+        {/* Assistants — Individual account owners only */}
+        {!isFleet && (
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                    <Users size={14} />
+                    Account settings
+                  </div>
+                  <CardTitle className="flex items-center gap-2 text-3xl font-bold tracking-tight">
+                    <Users className="h-8 w-8" />
+                    Assistants
+                  </CardTitle>
+                  <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
+                    Add assistants like secretaries, financial advisors, or tax preparers to help manage your expenses and logbook entries.
+                  </p>
+                </div>
+                <Button
+                  onClick={() => setShowAddAssistant(true)}
+                  className="gap-2 shrink-0"
+                >
+                  <Users className="h-3.5 w-3.5" />
+                  Add Assistant
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {isLoadingAssistants ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : assistants && assistants.length > 0 ? (
+                <div className="space-y-4">
+                  {assistants.map((assistant) => (
+                    <div key={assistant.id} className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                          <User className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <p className="font-medium">{assistant.assistantFirstName} {assistant.assistantLastName}</p>
+                          <p className="text-sm text-muted-foreground">{assistant.assistantEmail}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <Badge variant={assistant.assistantRole === 'ASSISTANT_HIGH' ? 'default' : 'secondary'}>
+                          {assistant.assistantRole === 'ASSISTANT_HIGH' ? 'Edit Access' : 'View Only'}
+                        </Badge>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeAssistant(assistant.assistantId)}
+                          disabled={isRemoving}
+                        >
+                          <XCircle className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-8 text-center">
+                  <Users className="mx-auto h-12 w-12 text-muted-foreground" />
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    No assistants added yet. Add assistants to help manage your account.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        <AddAssistantDialog open={showAddAssistant} onOpenChange={setShowAddAssistant} />
 
         {/* Regional — persisted locally */}
         <Card>
