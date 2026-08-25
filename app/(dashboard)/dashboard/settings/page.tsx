@@ -105,6 +105,12 @@ function SettingsContent() {
   const [openSection, setOpenSection] = useState<string>("EXPENSE_CATEGORY");
   const [saved, setSaved] = useState(false);
 
+  const isDark = resolvedTheme === "dark";
+  const isFleet = isFleetMode;
+  const isAdminOrManager = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN" || user?.role === "MANAGER";
+  const isDriver = user?.role === "DRIVER";
+  const isRentalCustomer = user?.role === "RENTAL_CUSTOMER";
+
   const roles = isFleet ? [
     { name: 'DRIVER', tone: 'blue', icon: User },
     { name: 'MANAGER', tone: 'violet', icon: Users },
@@ -123,11 +129,6 @@ function SettingsContent() {
     return acc;
   }, {} as Record<string, Record<string, Record<string, boolean>>>);
 
-  const isDark = resolvedTheme === "dark";
-  const isFleet = isFleetMode;
-  const isAdminOrManager = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN" || user?.role === "MANAGER";
-  const isDriver = user?.role === "DRIVER";
-  const isRentalCustomer = user?.role === "RENTAL_CUSTOMER";
   const requestedTab = searchParams.get("tab");
   const defaultTab = requestedTab === "tax-readiness"
       ? "tax-readiness"
