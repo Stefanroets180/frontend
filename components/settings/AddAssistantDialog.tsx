@@ -29,6 +29,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [password, setPassword] = useState("");
   const [role, setRole] = useState<"ASSISTANT_LOW" | "ASSISTANT_HIGH">("ASSISTANT_LOW");
   const [dateRangeStart, setDateRangeStart] = useState("");
   const [dateRangeEnd, setDateRangeEnd] = useState("");
@@ -41,6 +42,11 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
       return;
     }
 
+    if (!password) {
+      toast.error("Please enter a password for the assistant");
+      return;
+    }
+
     addAssistant(
       {
         assistantEmail: email,
@@ -50,6 +56,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
         dateRangeStart: dateRangeStart || undefined,
         dateRangeEnd: dateRangeEnd || undefined,
         assignedVehicleId: assignedVehicleId === "all" ? undefined : assignedVehicleId,
+        password,
       },
       {
         onSuccess: () => {
@@ -68,6 +75,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
     setEmail("");
     setFirstName("");
     setLastName("");
+    setPassword("");
     setRole("ASSISTANT_LOW");
     setDateRangeStart("");
     setDateRangeEnd("");
@@ -116,6 +124,20 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
                 onChange={(e) => setLastName(e.target.value)}
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Enter a temporary password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              The assistant will use this password to log in. They can change it later.
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -198,7 +220,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
           <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
-          <Button onClick={handleAdd} disabled={!email || isAdding}>
+          <Button onClick={handleAdd} disabled={!email || !password || isAdding}>
             {isAdding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Add Assistant
           </Button>

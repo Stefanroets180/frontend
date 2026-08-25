@@ -25,6 +25,7 @@ export interface AddAssistantRequest {
   dateRangeStart?: string;
   dateRangeEnd?: string;
   assignedVehicleId?: string;
+  password?: string;
 }
 
 export interface UpdateAssistantRequest {
