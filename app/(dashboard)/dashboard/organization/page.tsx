@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { api, apiForm } from '@/lib/api/client'
-import { ArrowLeft, Building2, Users, User, Mail, Shield, Plus, Crown, UserPlus, Car, Trash2, Edit, MoreVertical, Clock, Check, X, Info, Lock, Camera } from 'lucide-react'
+import { ArrowLeft, Building2, Users, User, Mail, Shield, Plus, Crown, UserPlus, Car, Trash2, Edit, MoreVertical, Clock, Check, X, Info, Lock, Camera, Loader2 } from 'lucide-react'
 import { VehicleLogo } from '@/components/vehicles/vehicle-logo'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -32,6 +32,8 @@ import { ImageCropModal } from '@/components/ui/image-crop-modal'
 import { useAuth, useRequireRole } from '@/lib/contexts/auth-context'
 import { OrganizationMode, UserRole, VehicleStatus } from '@/lib/types/database'
 import { cn } from '@/lib/utils'
+import { useAssistants } from '@/hooks/useAssistants'
+import { AddAssistantDialog } from '@/components/settings/AddAssistantDialog'
 
 interface TeamMember {
   id: string
@@ -56,7 +58,10 @@ interface Vehicle {
 }
 
 export default function OrganizationPage() {
-  useRequireRole(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.MANAGER)
+  // Allow both fleet roles (SUPER_ADMIN, ADMIN, MANAGER) and individual account owners (solo mode)
+  if (!isSoloMode) {
+    useRequireRole(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.MANAGER)
+  }
   const { user, isFleetMode, isSoloMode } = useAuth()
   const currentUserRole = user?.role ?? UserRole.DRIVER
   const isManager = currentUserRole === UserRole.MANAGER
@@ -92,6 +97,10 @@ export default function OrganizationPage() {
   const [showLogoCropModal, setShowLogoCropModal] = useState(false)
   const [isUploadingLogo, setIsUploadingLogo] = useState(false)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
+
+  // Assistant state (for individual account owners)
+  const { assistants, isLoading: isLoadingAssistants, removeAssistant } = useAssistants()
+  const [showAddAssistant, setShowAddAssistant] = useState(false)
 
   useEffect(() => {
     api
@@ -576,6 +585,79 @@ export default function OrganizationPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Assistants Card - Only shown for Individual/Solo mode */}
+        {isSoloMode && (
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                    <Users size={14} />
+                    Account settings
+                  </div>
+                  <CardTitle className="flex items-center gap-2 text-3xl font-bold tracking-tight">
+                    <Users className="h-8 w-8" />
+                    Assistants
+                  </CardTitle>
+                  <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
+                    Add assistants like secretaries, financial advisors, or tax preparers to help manage your expenses and logbook entries.
+                  </p>
+                </div>
+                <Button
+                  onClick={() => setShowAddAssistant(true)}
+                  className="gap-2 shrink-0"
+                >
+                  <Users className="h-3.5 w-3.5" />
+                  Add Assistant
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {isLoadingAssistants ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : assistants && assistants.length > 0 ? (
+                <div className="space-y-4">
+                  {assistants.map((assistant: any) => (
+                    <div key={assistant.id} className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                          <User className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <p className="font-medium">{assistant.assistantFirstName} {assistant.assistantLastName}</p>
+                          <p className="text-sm text-muted-foreground">{assistant.assistantEmail}</p>
+                          <div className="mt-1 flex items-center gap-2">
+                            <Badge variant="outline">{assistant.assistantRole === 'ASSISTANT_LOW' ? 'View Only' : 'Edit Access'}</Badge>
+                            {assistant.assignedVehicleRegistration && (
+                              <Badge variant="secondary" className="text-xs">
+                                {assistant.assignedVehicleRegistration}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive hover:text-destructive"
+                        onClick={() => removeAssistant(assistant.assistantId)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-8 text-center text-muted-foreground">
+                  No assistants added yet. Click "Add Assistant" to get started.
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Team Members Card - Only shown for Fleet mode */}
         {isFleetMode && (
@@ -1124,6 +1206,14 @@ export default function OrganizationPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Add Assistant Dialog - Only for Individual/Solo mode */}
+      {isSoloMode && (
+        <AddAssistantDialog
+          open={showAddAssistant}
+          onOpenChange={setShowAddAssistant}
+        />
+      )}
     </div>
   )
 }

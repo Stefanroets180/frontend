@@ -26,7 +26,6 @@ import {
 } from "@/components/navigation/app-usage-guide-dialog";
 import { DashboardCollapsiblePanel } from "@/components/dashboard/dashboard-collapsible-panel";
 import { PermissionSection } from "@/components/settings/PermissionSection";
-import { AddAssistantDialog } from "@/components/settings/AddAssistantDialog";
 import {
   User,
   Building2,
@@ -45,7 +44,6 @@ import {
   Loader2,
   RotateCcw,
   Lock,
-  Users,
   Car,
   BookOpen,
   FileDown,
@@ -67,7 +65,6 @@ import { api } from "@/lib/api/client";
 import { getSATaxYear } from "@/lib/types/database";
 import { toast } from "sonner";
 import { usePermissions, useResetPermissions } from "@/hooks/usePermissions";
-import { useAssistants } from "@/hooks/useAssistants";
 
 interface VehicleOption {
   id: string;
@@ -106,12 +103,6 @@ function SettingsContent() {
   const resetPermissions = useResetPermissions();
   const [openSection, setOpenSection] = useState<string>("EXPENSE_CATEGORY");
   const [saved, setSaved] = useState(false);
-
-  // Assistants state (individual account owners only)
-  const { assistants, isLoading: isLoadingAssistants, addAssistant, updateAssistant, removeAssistant, isAdding, isUpdating, isRemoving } = useAssistants();
-  const [showAddAssistant, setShowAddAssistant] = useState(false);
-  const [newAssistantEmail, setNewAssistantEmail] = useState("");
-  const [newAssistantRole, setNewAssistantRole] = useState<'ASSISTANT_LOW' | 'ASSISTANT_HIGH'>('ASSISTANT_LOW');
 
   const roles = [
     { name: 'DRIVER', tone: 'blue', icon: User },
@@ -897,81 +888,6 @@ function SettingsContent() {
             </CardContent>
           </Card>
         )}
-
-        {/* Assistants — Individual account owners only */}
-        {!isFleet && (
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-                    <Users size={14} />
-                    Account settings
-                  </div>
-                  <CardTitle className="flex items-center gap-2 text-3xl font-bold tracking-tight">
-                    <Users className="h-8 w-8" />
-                    Assistants
-                  </CardTitle>
-                  <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
-                    Add assistants like secretaries, financial advisors, or tax preparers to help manage your expenses and logbook entries.
-                  </p>
-                </div>
-                <Button
-                  onClick={() => setShowAddAssistant(true)}
-                  className="gap-2 shrink-0"
-                >
-                  <Users className="h-3.5 w-3.5" />
-                  Add Assistant
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {isLoadingAssistants ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                </div>
-              ) : assistants && assistants.length > 0 ? (
-                <div className="space-y-4">
-                  {assistants.map((assistant: any) => (
-                    <div key={assistant.id} className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                          <User className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <p className="font-medium">{assistant.assistantFirstName} {assistant.assistantLastName}</p>
-                          <p className="text-sm text-muted-foreground">{assistant.assistantEmail}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <Badge variant={assistant.assistantRole === 'ASSISTANT_HIGH' ? 'default' : 'secondary'}>
-                          {assistant.assistantRole === 'ASSISTANT_HIGH' ? 'Edit Access' : 'View Only'}
-                        </Badge>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeAssistant(assistant.assistantId)}
-                          disabled={isRemoving}
-                        >
-                          <XCircle className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="py-8 text-center">
-                  <Users className="mx-auto h-12 w-12 text-muted-foreground" />
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    No assistants added yet. Add assistants to help manage your account.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-        <AddAssistantDialog open={showAddAssistant} onOpenChange={setShowAddAssistant} />
 
         {/* Regional — persisted locally */}
         <Card>
