@@ -34,15 +34,15 @@ export function useAssistants() {
   const { data: assistants, isLoading } = useQuery({
     queryKey: ['assistants'],
     queryFn: async () => {
-      const response = await api.get<UserAssistantDTO[]>('/api/v1/assistants');
-      return response.data;
+      const response = await api.get('/api/v1/assistants');
+      return response.data as UserAssistantDTO[];
     },
   });
 
   const addMutation = useMutation({
     mutationFn: async (request: AddAssistantRequest) => {
-      const response = await api.post<UserAssistantDTO>('/api/v1/assistants', request);
-      return response.data;
+      const response = await api.post('/api/v1/assistants', request);
+      return response.data as UserAssistantDTO;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['assistants'] });
@@ -51,8 +51,8 @@ export function useAssistants() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ assistantId, request }: { assistantId: string; request: UpdateAssistantRequest }) => {
-      const response = await api.put<UserAssistantDTO>(`/api/v1/assistants/${assistantId}`, request);
-      return response.data;
+      const response = await api.put(`/api/v1/assistants/${assistantId}`, request);
+      return response.data as UserAssistantDTO;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['assistants'] });
@@ -69,8 +69,8 @@ export function useAssistants() {
   });
 
   const lookupUser = async (email: string) => {
-    const response = await api.get<UserAssistantDTO>(`/api/v1/assistants/lookup?email=${encodeURIComponent(email)}`);
-    return response.data;
+    const response = await api.get(`/api/v1/assistants/lookup?email=${encodeURIComponent(email)}`);
+    return response.data as UserAssistantDTO;
   };
 
   return {
