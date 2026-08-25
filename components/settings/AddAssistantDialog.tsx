@@ -30,7 +30,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
   const [role, setRole] = useState<"ASSISTANT_LOW" | "ASSISTANT_HIGH">("ASSISTANT_LOW");
   const [dateRangeStart, setDateRangeStart] = useState("");
   const [dateRangeEnd, setDateRangeEnd] = useState("");
-  const [assignedVehicleId, setAssignedVehicleId] = useState<string>("");
+  const [assignedVehicleId, setAssignedVehicleId] = useState<string>("all");
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [foundUser, setFoundUser] = useState<UserAssistantDTO | null>(null);
   const [lookupError, setLookupError] = useState("");
@@ -67,7 +67,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
         assistantRole: role,
         dateRangeStart: dateRangeStart || undefined,
         dateRangeEnd: dateRangeEnd || undefined,
-        assignedVehicleId: assignedVehicleId || undefined,
+        assignedVehicleId: assignedVehicleId === "all" ? undefined : assignedVehicleId,
       },
       {
         onSuccess: () => {
@@ -87,7 +87,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
     setRole("ASSISTANT_LOW");
     setDateRangeStart("");
     setDateRangeEnd("");
-    setAssignedVehicleId("");
+    setAssignedVehicleId("all");
     setFoundUser(null);
     setLookupError("");
   };
@@ -214,7 +214,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
                 <SelectValue placeholder="All vehicles" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">
+                <SelectItem value="all">
                   <div className="flex items-center gap-2">
                     <Car className="h-4 w-4" />
                     <span>All vehicles</span>
