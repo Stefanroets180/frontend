@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/lib/auth-service';
+import { api } from '@/lib/api/client';
 
 export interface UserAssistantDTO {
   id: string;
