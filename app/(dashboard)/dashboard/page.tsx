@@ -464,6 +464,11 @@ export default function DashboardPage() {
     return hasDefaultPermission
   }
 
+  // Memoize the permission check result to avoid re-evaluation during render
+  const hasExportSARSLogbookPermission = !isLoadingPermissions && canExportSARSLogbook()
+  const hasExportTripsPermission = !isLoadingPermissions && canExportTrips()
+  const hasExportEmailPermission = !isLoadingPermissions && canExportEmail()
+
   // Check if current user has permission to export trips
   const canExportTrips = () => {
     // SUPER_ADMIN bypasses everything
@@ -1345,7 +1350,7 @@ export default function DashboardPage() {
                 />
               )}
 
-              {canExportSARSLogbook() && (
+              {hasExportSARSLogbookPermission && (
                 <DashboardShortcutCard
                   title="Export complete vehicle data"
                   subtitle="Full export"
@@ -1359,14 +1364,14 @@ export default function DashboardPage() {
                       vehicleLabel={vehicleShortLabel(selectedVehicle)}
                       triggerLabel="Export all data"
                       triggerClassName="w-full gap-2"
-                      canExportSARSLogbook={canExportSARSLogbook()}
-                      canExportEmail={canExportEmail()}
+                      canExportSARSLogbook={hasExportSARSLogbookPermission}
+                      canExportEmail={hasExportEmailPermission}
                     />
                   }
                 />
               )}
 
-              {!isRentalCustomer && canExportTrips() && (
+              {!isRentalCustomer && hasExportTripsPermission && (
                 <DashboardShortcutCard
                   title="Export trip records only"
                   subtitle="Trip log export"
