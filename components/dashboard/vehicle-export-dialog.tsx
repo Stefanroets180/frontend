@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import {
   Download,
   Mail,
@@ -115,6 +116,9 @@ export function VehicleExportDialog({
   canExportSARSLogbook = false,
   canExportEmail = false,
 }: VehicleExportDialogProps) {
+  const { user } = useAuth();
+  const currentUserRole = user?.role;
+
   const [open, setOpen] = useState(false);
   const [format, setFormat] = useState<ExportFormat>("pdf");
   const [taxYear, setTaxYear] = useState(String(getSATaxYear()));
@@ -124,7 +128,8 @@ export function VehicleExportDialog({
   );
 
   const handleDownload = async () => {
-    if (!canExportSARSLogbook) {
+    // SUPER_ADMIN bypass
+    if (currentUserRole !== 'SUPER_ADMIN' && !canExportSARSLogbook) {
       toast.error("You do not have permission to export SARS logbooks");
       return;
     }
@@ -145,7 +150,8 @@ export function VehicleExportDialog({
   };
 
   const handleEmail = async () => {
-    if (!canExportEmail) {
+    // SUPER_ADMIN bypass
+    if (currentUserRole !== 'SUPER_ADMIN' && !canExportEmail) {
       toast.error("You do not have permission to export via email");
       return;
     }
@@ -194,7 +200,8 @@ export function VehicleExportDialog({
   };
 
   const handleShare = async () => {
-    if (!canExportSARSLogbook) {
+    // SUPER_ADMIN bypass
+    if (currentUserRole !== 'SUPER_ADMIN' && !canExportSARSLogbook) {
       toast.error("You do not have permission to export SARS logbooks");
       return;
     }
