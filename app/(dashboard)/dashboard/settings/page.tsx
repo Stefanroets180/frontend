@@ -117,6 +117,9 @@ function SettingsContent() {
 
   // Check if current user has permission to view tax audit
   const canViewTaxAudit = () => {
+    // SUPER_ADMIN bypasses everything
+    if (currentUserRole === 'SUPER_ADMIN') return true
+    
     if (!permissionOverrides || !currentUserRole) return false
 
     // Check for overrides first

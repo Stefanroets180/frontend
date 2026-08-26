@@ -125,6 +125,9 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
 
   // Check if current user has permission to view tax audit
   const canViewTaxAudit = () => {
+    // SUPER_ADMIN bypasses everything
+    if (currentUserRole === 'SUPER_ADMIN') return true
+    
     if (!permissions || !currentUserRole) return false
 
     // Check for overrides first
@@ -178,6 +181,9 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
 
   // Check if current user has permission to add readings
   const canAddReadings = () => {
+    // SUPER_ADMIN bypasses everything
+    if (currentUserRole === 'SUPER_ADMIN') return true
+    
     if (!permissions || !currentUserRole) return false
 
     const addOpeningOverride = permissions.find(
@@ -200,6 +206,9 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
 
   // Check if current user has permission to edit readings
   const canEditReadings = () => {
+    // SUPER_ADMIN bypasses everything
+    if (currentUserRole === 'SUPER_ADMIN') return true
+    
     if (!permissions || !currentUserRole) return false
 
     const editOverride = permissions.find(
@@ -215,6 +224,9 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
 
   // Check if current user has permission to delete readings
   const canDeleteReadings = () => {
+    // SUPER_ADMIN bypasses everything
+    if (currentUserRole === 'SUPER_ADMIN') return true
+    
     if (!permissions || !currentUserRole) return false
 
     const deleteOverride = permissions.find(
