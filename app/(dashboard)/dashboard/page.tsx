@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, useMemo, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -513,9 +513,18 @@ export default function DashboardPage() {
 
   // Memoize the permission check result to avoid re-evaluation during render
   // SUPER_ADMIN bypasses everything regardless of loading state
-  const hasExportSARSLogbookPermission = currentUserRole === 'SUPER_ADMIN' || (!isLoadingPermissions && canExportSARSLogbook())
-  const hasExportTripsPermission = currentUserRole === 'SUPER_ADMIN' || (!isLoadingPermissions && canExportTrips())
-  const hasExportEmailPermission = currentUserRole === 'SUPER_ADMIN' || (!isLoadingPermissions && canExportEmail())
+  const hasExportSARSLogbookPermission = useMemo(
+    () => currentUserRole === 'SUPER_ADMIN' || (!isLoadingPermissions && canExportSARSLogbook()),
+    [currentUserRole, isLoadingPermissions, permissions]
+  )
+  const hasExportTripsPermission = useMemo(
+    () => currentUserRole === 'SUPER_ADMIN' || (!isLoadingPermissions && canExportTrips()),
+    [currentUserRole, isLoadingPermissions, permissions]
+  )
+  const hasExportEmailPermission = useMemo(
+    () => currentUserRole === 'SUPER_ADMIN' || (!isLoadingPermissions && canExportEmail()),
+    [currentUserRole, isLoadingPermissions, permissions]
+  )
 
   // User display name — from localStorage (set during login / register)
   const [firstName, setFirstName] = useState<string | null>(null);
