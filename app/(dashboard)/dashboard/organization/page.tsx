@@ -98,8 +98,8 @@ export default function OrganizationPage() {
   const [isUploadingLogo, setIsUploadingLogo] = useState(false)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
-  // Assistant state (for individual account owners)
-  const { assistants, isLoading: isLoadingAssistants, removeAssistant, reactivateAssistant, isReactivating } = useAssistants()
+  // Assistant state (for individual account owners only)
+  const { assistants, isLoading: isLoadingAssistants, removeAssistant, reactivateAssistant, isReactivating } = useAssistants({ enabled: isSoloMode })
   const [showAddAssistant, setShowAddAssistant] = useState(false)
 
   useEffect(() => {

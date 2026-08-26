@@ -38,7 +38,7 @@ export interface UpdateAssistantRequest {
   assignedVehicleId?: string;
 }
 
-export function useAssistants() {
+export function useAssistants(options?: { enabled?: boolean }) {
   const queryClient = useQueryClient();
 
   const { data: assistants, isLoading } = useQuery({
@@ -47,6 +47,7 @@ export function useAssistants() {
       const response = await api.get('/assistants');
       return response.data as UserAssistantDTO[];
     },
+    enabled: options?.enabled ?? true,
   });
 
   const addMutation = useMutation({
