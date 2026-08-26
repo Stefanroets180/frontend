@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -35,6 +36,7 @@ const changePasswordSchema = z.object({
 type ChangePasswordInput = z.infer<typeof changePasswordSchema>
 
 export default function ProfilePage() {
+  const router = useRouter()
   const { user, refreshUser, isFleetMode } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
@@ -196,10 +198,8 @@ export default function ProfilePage() {
     <div className="container mx-auto space-y-6 p-4">
       {/* Header */}
       <div className="flex items-center gap-2 rounded-xl border border-border/50 bg-muted/30 px-3 py-2 sm:gap-3 sm:px-4 sm:py-3">
-        <Button variant="ghost" size="icon" asChild className="h-8 w-8 sm:h-9 sm:w-9">
-          <Link href="/dashboard/settings">
-            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-          </Link>
+        <Button variant="ghost" size="icon" onClick={() => router.back()} className="h-8 w-8 sm:h-9 sm:w-9">
+          <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
         </Button>
         <div>
           <h1 className="text-sm font-semibold sm:text-base">Profile</h1>
