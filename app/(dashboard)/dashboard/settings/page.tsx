@@ -922,7 +922,7 @@ function SettingsContent() {
                     />
 
                     {/* Tax Audit - Fleet only */}
-                    {isFleet && canViewTaxAudit() && (
+                    {isFleet && !isLoadingPermissions && canViewTaxAudit() && (
                       <PermissionSection
                         title="Tax Audit"
                         description="Control who can manage tax audit readings and reports."
