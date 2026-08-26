@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Download,
   Mail,
@@ -53,8 +53,8 @@ interface VehicleExportDialogProps {
   triggerVariant?: ButtonVariant;
   triggerSize?: ButtonSize;
   triggerClassName?: string;
-  canExportSARSLogbook?: boolean | (() => boolean);
-  canExportEmail?: boolean | (() => boolean);
+  canExportSARSLogbook?: boolean;
+  canExportEmail?: boolean;
 }
 
 async function downloadExport(
@@ -115,23 +115,6 @@ export function VehicleExportDialog({
   canExportSARSLogbook = false,
   canExportEmail = false,
 }: VehicleExportDialogProps) {
-  // Handle both boolean and function props
-  const getCanExportSARSLogbook = typeof canExportSARSLogbook === 'function' ? canExportSARSLogbook : () => canExportSARSLogbook
-  const getCanExportEmail = typeof canExportEmail === 'function' ? canExportEmail : () => canExportEmail
-
-  // Local state to ensure we always have the latest permission values
-  const [localCanExportSARSLogbook, setLocalCanExportSARSLogbook] = useState(getCanExportSARSLogbook())
-  const [localCanExportEmail, setLocalCanExportEmail] = useState(getCanExportEmail())
-
-  // Update local state when permission functions return different values
-  useEffect(() => {
-    setLocalCanExportSARSLogbook(getCanExportSARSLogbook())
-    setLocalCanExportEmail(getCanExportEmail())
-  }, [getCanExportSARSLogbook, getCanExportEmail])
-
-  console.log('[VehicleExportDialog] localCanExportSARSLogbook:', localCanExportSARSLogbook)
-  console.log('[VehicleExportDialog] localCanExportEmail:', localCanExportEmail)
-
   const [open, setOpen] = useState(false);
   const [format, setFormat] = useState<ExportFormat>("pdf");
   const [taxYear, setTaxYear] = useState(String(getSATaxYear()));
@@ -141,7 +124,7 @@ export function VehicleExportDialog({
   );
 
   const handleDownload = async () => {
-    if (!localCanExportSARSLogbook) {
+    if (!canExportSARSLogbook) {
       toast.error("You do not have permission to export SARS logbooks");
       return;
     }
@@ -162,7 +145,7 @@ export function VehicleExportDialog({
   };
 
   const handleEmail = async () => {
-    if (!localCanExportEmail) {
+    if (!canExportEmail) {
       toast.error("You do not have permission to export via email");
       return;
     }
@@ -211,7 +194,7 @@ export function VehicleExportDialog({
   };
 
   const handleShare = async () => {
-    if (!localCanExportSARSLogbook) {
+    if (!canExportSARSLogbook) {
       toast.error("You do not have permission to export SARS logbooks");
       return;
     }
@@ -398,7 +381,7 @@ export function VehicleExportDialog({
           <Button
             className="w-full gap-2"
             onClick={handleDownload}
-            disabled={loading !== null || !localCanExportSARSLogbook}
+            disabled={loading !== null}
           >
             {loading === "download" ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -412,7 +395,7 @@ export function VehicleExportDialog({
               variant="outline"
               className="gap-2"
               onClick={handleEmail}
-              disabled={loading !== null || !email.trim() || !localCanExportEmail}
+              disabled={loading !== null || !email.trim()}
             >
               {loading === "email" ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -425,7 +408,7 @@ export function VehicleExportDialog({
               variant="outline"
               className="gap-2"
               onClick={handleShare}
-              disabled={loading !== null || !localCanExportSARSLogbook}
+              disabled={loading !== null}
             >
               {loading === "share" ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

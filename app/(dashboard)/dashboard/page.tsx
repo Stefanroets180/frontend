@@ -1378,9 +1378,9 @@ export default function DashboardPage() {
                     vehicleLabel={vehicleShortLabel(selectedVehicle)}
                     triggerLabel="Export all data"
                     triggerClassName="w-full gap-2"
-                    disabled={!hasExportSARSLogbookPermission}
-                    canExportSARSLogbook={() => hasExportSARSLogbookPermission}
-                    canExportEmail={() => hasExportEmailPermission}
+                    disabled={false}
+                    canExportSARSLogbook={hasExportSARSLogbookPermission}
+                    canExportEmail={hasExportEmailPermission}
                   />
                 }
               />
