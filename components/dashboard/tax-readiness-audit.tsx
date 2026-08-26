@@ -103,6 +103,7 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
   const { user } = useAuth();
   const { data: permissions } = usePermissions(user?.organizationId || "");
   const currentUserRole = user?.role;
+  const router = useRouter();
   
   const [selectedYear, setSelectedYear] = useState<number>(getSATaxYear());
   const [verifications, setVerifications] = useState<
