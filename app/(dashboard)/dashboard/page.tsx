@@ -450,6 +450,7 @@ export default function DashboardPage() {
 
     console.log('[canExportSARSLogbook] currentUserRole:', currentUserRole)
     console.log('[canExportSARSLogbook] exportOverride:', exportOverride)
+    console.log('[canExportSARSLogbook] exportOverride.isAllowed:', exportOverride?.isAllowed)
     console.log('[canExportSARSLogbook] EXPORT_DEFAULTS.EXPORT_SARS_LOGBOOK:', EXPORT_DEFAULTS.EXPORT_SARS_LOGBOOK)
 
     // If override exists, use it
