@@ -115,6 +115,14 @@ export function VehicleExportDialog({
   canExportSARSLogbook = false,
   canExportEmail = false,
 }: VehicleExportDialogProps) {
+  // Debug logging
+  console.log('[VehicleExportDialog] Props:', {
+    vehicleId,
+    disabled,
+    canExportSARSLogbook,
+    canExportEmail
+  });
+
   const [open, setOpen] = useState(false);
   const [format, setFormat] = useState<ExportFormat>("pdf");
   const [taxYear, setTaxYear] = useState(String(getSATaxYear()));
