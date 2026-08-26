@@ -36,6 +36,25 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
   const [assignedVehicleId, setAssignedVehicleId] = useState<string>("all");
 
 
+  const handleDateInput = (value: string, setter: (val: string) => void) => {
+    // Remove any non-digit characters
+    const digits = value.replace(/\D/g, '');
+    
+    // Format as YYYY-MM-DD
+    let formatted = '';
+    if (digits.length > 0) {
+      formatted += digits.substring(0, 4);
+    }
+    if (digits.length > 4) {
+      formatted += '-' + digits.substring(4, 6);
+    }
+    if (digits.length > 6) {
+      formatted += '-' + digits.substring(6, 8);
+    }
+    
+    setter(formatted);
+  };
+
   const handleAdd = () => {
     if (!email || !email.includes("@")) {
       toast.error("Please enter a valid email address");
@@ -172,18 +191,22 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
               <Label htmlFor="dateRangeStart">Date Range Start (Optional)</Label>
               <Input
                 id="dateRangeStart"
-                type="date"
+                type="text"
+                placeholder="YYYY-MM-DD"
                 value={dateRangeStart}
-                onChange={(e) => setDateRangeStart(e.target.value)}
+                onChange={(e) => handleDateInput(e.target.value, setDateRangeStart)}
+                maxLength={10}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="dateRangeEnd">Date Range End (Optional)</Label>
               <Input
                 id="dateRangeEnd"
-                type="date"
+                type="text"
+                placeholder="YYYY-MM-DD"
                 value={dateRangeEnd}
-                onChange={(e) => setDateRangeEnd(e.target.value)}
+                onChange={(e) => handleDateInput(e.target.value, setDateRangeEnd)}
+                maxLength={10}
               />
             </div>
           </div>
