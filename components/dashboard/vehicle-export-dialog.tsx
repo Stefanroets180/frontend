@@ -107,14 +107,22 @@ async function downloadExport(
 export function VehicleExportDialog({
   vehicleId,
   vehicleLabel,
-  disabled,
-  triggerLabel = "Export all data",
-  triggerVariant = "outline",
-  triggerSize = "sm",
-  triggerClassName = "gap-2",
-  canExportSARSLogbook = true,
-  canExportEmail = true,
+  disabled = false,
+  triggerLabel = "Export",
+  triggerVariant = "default",
+  triggerSize = "default",
+  triggerClassName = "",
+  canExportSARSLogbook = false,
+  canExportEmail = false,
 }: VehicleExportDialogProps) {
+  // Debug logging
+  console.log('[VehicleExportDialog] Props:', {
+    vehicleId,
+    canExportSARSLogbook,
+    canExportEmail,
+    disabled
+  });
+
   const [open, setOpen] = useState(false);
   const [format, setFormat] = useState<ExportFormat>("pdf");
   const [taxYear, setTaxYear] = useState(String(getSATaxYear()));
@@ -291,7 +299,7 @@ export function VehicleExportDialog({
           variant={triggerVariant}
           size={triggerSize}
           className={triggerClassName}
-          disabled={disabled}
+          disabled={disabled || !canExportSARSLogbook}
         >
           <Download className="h-4 w-4" />
           {triggerLabel}
