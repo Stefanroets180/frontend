@@ -514,7 +514,11 @@ export default function DashboardPage() {
   // Memoize the permission check result to avoid re-evaluation during render
   // SUPER_ADMIN bypasses everything regardless of loading state
   const hasExportSARSLogbookPermission = useMemo(
-    () => currentUserRole === 'SUPER_ADMIN' || (!isLoadingPermissions && canExportSARSLogbook()),
+    () => {
+      const result = currentUserRole === 'SUPER_ADMIN' || (!isLoadingPermissions && canExportSARSLogbook())
+      console.log('[Dashboard useMemo] hasExportSARSLogbookPermission:', result, 'currentUserRole:', currentUserRole, 'isLoadingPermissions:', isLoadingPermissions)
+      return result
+    },
     [currentUserRole, isLoadingPermissions, permissions]
   )
   const hasExportTripsPermission = useMemo(
