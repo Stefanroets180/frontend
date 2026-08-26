@@ -121,6 +121,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
               placeholder="assistant@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
             />
           </div>
 
@@ -132,6 +133,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
                 placeholder="John"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
+                autoComplete="given-name"
               />
             </div>
             <div className="space-y-2">
@@ -141,6 +143,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
                 placeholder="Doe"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
+                autoComplete="family-name"
               />
             </div>
           </div>
@@ -153,6 +156,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
               placeholder="Enter a temporary password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
             />
             <p className="text-xs text-muted-foreground">
               The assistant will use this password to log in. They can change it later.
@@ -196,6 +200,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
                 value={dateRangeStart}
                 onChange={(e) => handleDateInput(e.target.value, setDateRangeStart)}
                 maxLength={10}
+                autoComplete="off"
               />
             </div>
             <div className="space-y-2">
@@ -207,6 +212,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
                 value={dateRangeEnd}
                 onChange={(e) => handleDateInput(e.target.value, setDateRangeEnd)}
                 maxLength={10}
+                autoComplete="off"
               />
             </div>
           </div>
