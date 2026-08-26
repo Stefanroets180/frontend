@@ -1351,7 +1351,7 @@ export default function DashboardPage() {
                 />
               )}
 
-              {canExportSARSLogbook() && (
+              {hasExportSARSLogbookPermission && (
                 <DashboardShortcutCard
                   title="Export complete vehicle data"
                   subtitle="Full export"
@@ -1365,7 +1365,7 @@ export default function DashboardPage() {
                       vehicleLabel={vehicleShortLabel(selectedVehicle)}
                       triggerLabel="Export all data"
                       triggerClassName="w-full gap-2"
-                      canExportSARSLogbook={canExportSARSLogbook()}
+                      canExportSARSLogbook={hasExportSARSLogbookPermission}
                       canExportEmail={hasExportEmailPermission}
                     />
                   }
