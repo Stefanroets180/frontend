@@ -89,6 +89,9 @@ export default function LogbookPage() {
 
   // Check if current user has permission to view logbook
   const canViewLogbook = () => {
+    // SUPER_ADMIN bypasses everything
+    if (currentUserRole === 'SUPER_ADMIN') return true
+    
     if (!permissions || !currentUserRole) return false
 
     // Check for override first
@@ -118,6 +121,9 @@ export default function LogbookPage() {
 
   // Check if current user has permission to add trips
   const canAddTrips = () => {
+    // SUPER_ADMIN bypasses everything
+    if (currentUserRole === 'SUPER_ADMIN') return true
+    
     if (!permissions || !currentUserRole) return false
 
     // Check for override first
@@ -138,6 +144,9 @@ export default function LogbookPage() {
 
   // Check if current user has permission to edit trips
   const canEditTrips = () => {
+    // SUPER_ADMIN bypasses everything
+    if (currentUserRole === 'SUPER_ADMIN') return true
+    
     if (!permissions || !currentUserRole) return false
 
     // Check for overrides first
@@ -167,6 +176,9 @@ export default function LogbookPage() {
 
   // Check if current user has permission to delete trips
   const canDeleteTrips = () => {
+    // SUPER_ADMIN bypasses everything
+    if (currentUserRole === 'SUPER_ADMIN') return true
+    
     if (!permissions || !currentUserRole) return false
 
     // Check for overrides first

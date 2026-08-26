@@ -230,6 +230,9 @@ export default function OrganizationPage() {
 
   // Check if current user has permission to assign vehicles
   const canAssignVehicles = () => {
+    // SUPER_ADMIN bypasses everything
+    if (currentUserRole === 'SUPER_ADMIN') return true
+    
     if (!permissions || !currentUserRole) return false
 
     // Find the vehicle assignment permission for the current user's role
