@@ -67,6 +67,7 @@ import type { EntryImage } from "@/lib/types/database";
 import { api, API_URL, apiForm } from "@/lib/api/client";
 import { ImageCropModal } from "@/components/ui/image-crop-modal";
 import { useAuth } from "@/lib/contexts/auth-context";
+import { usePermissions } from "@/hooks/usePermissions";
 
 interface OdometerVerificationRecord {
   id: string;
@@ -100,6 +101,9 @@ interface TaxReadinessAuditProps {
  */
 export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
   const { user } = useAuth();
+  const { data: permissions } = usePermissions(user?.organizationId || "");
+  const currentUserRole = user?.role;
+  
   const [selectedYear, setSelectedYear] = useState<number>(getSATaxYear());
   const [verifications, setVerifications] = useState<
     OdometerVerificationRecord[]
@@ -109,6 +113,120 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
   >([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Default permissions for tax audit (matching backend)
+  const TAX_AUDIT_DEFAULTS = {
+    ADD_OPENING_READING: ['MANAGER', 'ADMIN'],
+    ADD_CLOSING_READING: ['MANAGER', 'ADMIN'],
+    EDIT_READINGS: ['ADMIN'],
+    DELETE_READINGS: ['ADMIN'],
+    VIEW_TAX_REPORTS: ['MANAGER', 'ADMIN']
+  }
+
+  // Check if current user has permission to view tax audit
+  const canViewTaxAudit = () => {
+    if (!permissions || !currentUserRole) return false
+
+    // Check for overrides first
+    const addOpeningOverride = permissions.find(
+      (p: any) => p.permissionType === 'TAX_AUDIT' &&
+                  p.permissionKey === 'ADD_OPENING_READING' &&
+                  p.userRole === currentUserRole
+    )
+    const addClosingOverride = permissions.find(
+      (p: any) => p.permissionType === 'TAX_AUDIT' &&
+                  p.permissionKey === 'ADD_CLOSING_READING' &&
+                  p.userRole === currentUserRole
+    )
+    const editOverride = permissions.find(
+      (p: any) => p.permissionType === 'TAX_AUDIT' &&
+                  p.permissionKey === 'EDIT_READINGS' &&
+                  p.userRole === currentUserRole
+    )
+    const deleteOverride = permissions.find(
+      (p: any) => p.permissionType === 'TAX_AUDIT' &&
+                  p.permissionKey === 'DELETE_READINGS' &&
+                  p.userRole === currentUserRole
+    )
+    const viewOverride = permissions.find(
+      (p: any) => p.permissionType === 'TAX_AUDIT' &&
+                  p.permissionKey === 'VIEW_TAX_REPORTS' &&
+                  p.userRole === currentUserRole
+    )
+
+    // If any override exists and is true, allow access
+    if (addOpeningOverride?.isAllowed) return true
+    if (addClosingOverride?.isAllowed) return true
+    if (editOverride?.isAllowed) return true
+    if (deleteOverride?.isAllowed) return true
+    if (viewOverride?.isAllowed) return true
+
+    // If any override exists and is false, deny access
+    if (addOpeningOverride !== undefined && !addOpeningOverride.isAllowed) return false
+    if (addClosingOverride !== undefined && !addClosingOverride.isAllowed) return false
+    if (editOverride !== undefined && !editOverride.isAllowed) return false
+    if (deleteOverride !== undefined && !deleteOverride.isAllowed) return false
+    if (viewOverride !== undefined && !viewOverride.isAllowed) return false
+
+    // Fall back to default permissions
+    return TAX_AUDIT_DEFAULTS.ADD_OPENING_READING.includes(currentUserRole) ||
+           TAX_AUDIT_DEFAULTS.ADD_CLOSING_READING.includes(currentUserRole) ||
+           TAX_AUDIT_DEFAULTS.EDIT_READINGS.includes(currentUserRole) ||
+           TAX_AUDIT_DEFAULTS.DELETE_READINGS.includes(currentUserRole) ||
+           TAX_AUDIT_DEFAULTS.VIEW_TAX_REPORTS.includes(currentUserRole)
+  }
+
+  // Check if current user has permission to add readings
+  const canAddReadings = () => {
+    if (!permissions || !currentUserRole) return false
+
+    const addOpeningOverride = permissions.find(
+      (p: any) => p.permissionType === 'TAX_AUDIT' &&
+                  p.permissionKey === 'ADD_OPENING_READING' &&
+                  p.userRole === currentUserRole
+    )
+    const addClosingOverride = permissions.find(
+      (p: any) => p.permissionType === 'TAX_AUDIT' &&
+                  p.permissionKey === 'ADD_CLOSING_READING' &&
+                  p.userRole === currentUserRole
+    )
+
+    if (addOpeningOverride !== undefined) return addOpeningOverride.isAllowed
+    if (addClosingOverride !== undefined) return addClosingOverride.isAllowed
+
+    return TAX_AUDIT_DEFAULTS.ADD_OPENING_READING.includes(currentUserRole) ||
+           TAX_AUDIT_DEFAULTS.ADD_CLOSING_READING.includes(currentUserRole)
+  }
+
+  // Check if current user has permission to edit readings
+  const canEditReadings = () => {
+    if (!permissions || !currentUserRole) return false
+
+    const editOverride = permissions.find(
+      (p: any) => p.permissionType === 'TAX_AUDIT' &&
+                  p.permissionKey === 'EDIT_READINGS' &&
+                  p.userRole === currentUserRole
+    )
+
+    if (editOverride !== undefined) return editOverride.isAllowed
+
+    return TAX_AUDIT_DEFAULTS.EDIT_READINGS.includes(currentUserRole)
+  }
+
+  // Check if current user has permission to delete readings
+  const canDeleteReadings = () => {
+    if (!permissions || !currentUserRole) return false
+
+    const deleteOverride = permissions.find(
+      (p: any) => p.permissionType === 'TAX_AUDIT' &&
+                  p.permissionKey === 'DELETE_READINGS' &&
+                  p.userRole === currentUserRole
+    )
+
+    if (deleteOverride !== undefined) return deleteOverride.isAllowed
+
+    return TAX_AUDIT_DEFAULTS.DELETE_READINGS.includes(currentUserRole)
+  }
+
   const isAdminOrManager = user?.role === 'ADMIN' || user?.role === 'MANAGER' || user?.role === 'SUPER_ADMIN';
 
   const { isOpeningWindow, isClosingWindow } = getTaxYearReadingWindow();
@@ -116,6 +234,13 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
   // Generate available tax years (last 5 years)
   const currentYear = getSATaxYear();
   const availableYears = Array.from({ length: 5 }, (_, i) => currentYear - i);
+
+  // Redirect if user doesn't have permission to view tax audit
+  useEffect(() => {
+    if (permissions && currentUserRole && !canViewTaxAudit()) {
+      router.push('/dashboard');
+    }
+  }, [permissions, currentUserRole, router]);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -381,6 +506,9 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
                 onUnlock={handleUnlockVerification}
                 onRefresh={fetchData}
                 isAdminOrManager={isAdminOrManager}
+                canAddReadings={canAddReadings()}
+                canEditReadings={canEditReadings()}
+                canDeleteReadings={canDeleteReadings()}
               />
             ))}
           </div>
@@ -421,6 +549,9 @@ interface VehicleVerificationCardProps {
   onUnlock: (id: string) => Promise<void>;
   onRefresh: () => Promise<void>;
   isAdminOrManager: boolean;
+  canAddReadings: boolean;
+  canEditReadings: boolean;
+  canDeleteReadings: boolean;
 }
 
 function VehicleVerificationCard({
@@ -435,6 +566,9 @@ function VehicleVerificationCard({
   onUnlock,
   onRefresh,
   isAdminOrManager,
+  canAddReadings,
+  canEditReadings,
+  canDeleteReadings,
 }: VehicleVerificationCardProps) {
   return (
     <div className="border rounded-lg overflow-hidden w-full" style={{ maxWidth: '100%', overflow: 'hidden' }}>
@@ -467,6 +601,9 @@ function VehicleVerificationCard({
               onUnlock={onUnlock}
               onRefresh={onRefresh}
               isAdminOrManager={isAdminOrManager}
+              canAddReadings={canAddReadings}
+              canEditReadings={canEditReadings}
+              canDeleteReadings={canDeleteReadings}
             />
           </div>
         </div>
@@ -482,6 +619,9 @@ function VehicleVerificationCard({
               onUnlock={onUnlock}
               onRefresh={onRefresh}
               isAdminOrManager={isAdminOrManager}
+              canAddReadings={canAddReadings}
+              canEditReadings={canEditReadings}
+              canDeleteReadings={canDeleteReadings}
             />
           </div>
         </div>
@@ -500,6 +640,9 @@ interface ReadingCardProps {
   onUnlock: (id: string) => Promise<void>;
   onRefresh: () => Promise<void>;
   isAdminOrManager: boolean;
+  canAddReadings: boolean;
+  canEditReadings: boolean;
+  canDeleteReadings: boolean;
 }
 
 function ReadingCard({
@@ -512,6 +655,9 @@ function ReadingCard({
   onUnlock,
   onRefresh,
   isAdminOrManager,
+  canAddReadings,
+  canEditReadings,
+  canDeleteReadings,
 }: ReadingCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showLockDialog, setShowLockDialog] = useState(false);
@@ -750,7 +896,7 @@ function ReadingCard({
               >
                 <ExternalLink className="h-4 w-4" />
               </Button>
-              {!isLocked && isAdminOrManager && (
+              {!isLocked && canEditReadings && (
                 <Button
                   type="button"
                   variant="secondary"
@@ -762,7 +908,7 @@ function ReadingCard({
                   <Pencil className="h-4 w-4" />
                 </Button>
               )}
-              {!isLocked && isAdminOrManager && (
+              {!isLocked && canDeleteReadings && (
                 <Button
                   type="button"
                   variant="secondary"
@@ -845,7 +991,7 @@ function ReadingCard({
 
           {/* Action buttons below image */}
           <div className="flex flex-col gap-2 pt-2 border-t w-full overflow-hidden">
-            {!isLocked && isAdminOrManager && (
+            {!isLocked && canEditReadings && (
               <Button
                 variant="outline"
                 size="sm"
@@ -892,22 +1038,24 @@ function ReadingCard({
           <span className="text-xs mt-1">
             Expected: {expectedMonth} {expectedYear}
           </span>
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-3"
-            onClick={() => {
-              const readingType = isOpening
-                ? OdometerReadingType.OPENING
-                : OdometerReadingType.CLOSING;
-              router.push(
-                `/dashboard/odometer-verification?vehicleId=${vehicleId}&type=${readingType}`,
-              );
-            }}
-          >
-            <Upload className="h-3 w-3 mr-1" />
-            Take Photo
-          </Button>
+          {canAddReadings && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-3"
+              onClick={() => {
+                const readingType = isOpening
+                  ? OdometerReadingType.OPENING
+                  : OdometerReadingType.CLOSING;
+                router.push(
+                  `/dashboard/odometer-verification?vehicleId=${vehicleId}&type=${readingType}`,
+                );
+              }}
+            >
+              <Upload className="h-3 w-3 mr-1" />
+              Take Photo
+            </Button>
+          )}
         </div>
       )}
 

@@ -104,6 +104,69 @@ function SettingsContent() {
   const resetPermissions = useResetPermissions();
   const [openSection, setOpenSection] = useState<string>("EXPENSE_CATEGORY");
   const [saved, setSaved] = useState(false);
+  const currentUserRole = user?.role;
+
+  // Default permissions for tax audit (matching backend)
+  const TAX_AUDIT_DEFAULTS = {
+    ADD_OPENING_READING: ['MANAGER', 'ADMIN'],
+    ADD_CLOSING_READING: ['MANAGER', 'ADMIN'],
+    EDIT_READINGS: ['ADMIN'],
+    DELETE_READINGS: ['ADMIN'],
+    VIEW_TAX_REPORTS: ['MANAGER', 'ADMIN']
+  }
+
+  // Check if current user has permission to view tax audit
+  const canViewTaxAudit = () => {
+    if (!permissionOverrides || !currentUserRole) return false
+
+    // Check for overrides first
+    const addOpeningOverride = permissionOverrides.find(
+      (p: any) => p.permissionType === 'TAX_AUDIT' &&
+                  p.permissionKey === 'ADD_OPENING_READING' &&
+                  p.userRole === currentUserRole
+    )
+    const addClosingOverride = permissionOverrides.find(
+      (p: any) => p.permissionType === 'TAX_AUDIT' &&
+                  p.permissionKey === 'ADD_CLOSING_READING' &&
+                  p.userRole === currentUserRole
+    )
+    const editOverride = permissionOverrides.find(
+      (p: any) => p.permissionType === 'TAX_AUDIT' &&
+                  p.permissionKey === 'EDIT_READINGS' &&
+                  p.userRole === currentUserRole
+    )
+    const deleteOverride = permissionOverrides.find(
+      (p: any) => p.permissionType === 'TAX_AUDIT' &&
+                  p.permissionKey === 'DELETE_READINGS' &&
+                  p.userRole === currentUserRole
+    )
+    const viewOverride = permissionOverrides.find(
+      (p: any) => p.permissionType === 'TAX_AUDIT' &&
+                  p.permissionKey === 'VIEW_TAX_REPORTS' &&
+                  p.userRole === currentUserRole
+    )
+
+    // If any override exists and is true, allow access
+    if (addOpeningOverride?.isAllowed) return true
+    if (addClosingOverride?.isAllowed) return true
+    if (editOverride?.isAllowed) return true
+    if (deleteOverride?.isAllowed) return true
+    if (viewOverride?.isAllowed) return true
+
+    // If any override exists and is false, deny access
+    if (addOpeningOverride !== undefined && !addOpeningOverride.isAllowed) return false
+    if (addClosingOverride !== undefined && !addClosingOverride.isAllowed) return false
+    if (editOverride !== undefined && !editOverride.isAllowed) return false
+    if (deleteOverride !== undefined && !deleteOverride.isAllowed) return false
+    if (viewOverride !== undefined && !viewOverride.isAllowed) return false
+
+    // Fall back to default permissions
+    return TAX_AUDIT_DEFAULTS.ADD_OPENING_READING.includes(currentUserRole) ||
+           TAX_AUDIT_DEFAULTS.ADD_CLOSING_READING.includes(currentUserRole) ||
+           TAX_AUDIT_DEFAULTS.EDIT_READINGS.includes(currentUserRole) ||
+           TAX_AUDIT_DEFAULTS.DELETE_READINGS.includes(currentUserRole) ||
+           TAX_AUDIT_DEFAULTS.VIEW_TAX_REPORTS.includes(currentUserRole)
+  }
 
   const isDark = resolvedTheme === "dark";
   const isFleet = isFleetMode;
@@ -856,7 +919,7 @@ function SettingsContent() {
                     />
 
                     {/* Tax Audit - Fleet only */}
-                    {isFleet && (
+                    {isFleet && canViewTaxAudit() && (
                       <PermissionSection
                         title="Tax Audit"
                         description="Control who can manage tax audit readings and reports."
