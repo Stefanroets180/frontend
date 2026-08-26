@@ -464,11 +464,6 @@ export default function DashboardPage() {
     return hasDefaultPermission
   }
 
-  // Memoize the permission check result to avoid re-evaluation during render
-  const hasExportSARSLogbookPermission = !isLoadingPermissions && canExportSARSLogbook()
-  const hasExportTripsPermission = !isLoadingPermissions && canExportTrips()
-  const hasExportEmailPermission = !isLoadingPermissions && canExportEmail()
-
   // Check if current user has permission to export trips
   const canExportTrips = () => {
     // SUPER_ADMIN bypasses everything
@@ -514,6 +509,11 @@ export default function DashboardPage() {
     // Fall back to default permissions
     return EXPORT_DEFAULTS.EXPORT_EMAIL.includes(currentUserRole)
   }
+
+  // Memoize the permission check result to avoid re-evaluation during render
+  const hasExportSARSLogbookPermission = !isLoadingPermissions && canExportSARSLogbook()
+  const hasExportTripsPermission = !isLoadingPermissions && canExportTrips()
+  const hasExportEmailPermission = !isLoadingPermissions && canExportEmail()
 
   // User display name — from localStorage (set during login / register)
   const [firstName, setFirstName] = useState<string | null>(null);
