@@ -69,6 +69,7 @@ import Link from "next/link";
 import { useAuth } from "@/lib/contexts/auth-context";
 import { UserRole } from "@/lib/types/database";
 import { useUserPreferences } from "@/lib/hooks/use-user-preferences";
+import { usePermissions } from "@/hooks/usePermissions";
 
 // ─── Icon & Color Mappings for Expense Categories ─────────────────────────────
 const categoryIcons: Record<ExpenseCategory, any> = {
@@ -414,11 +415,92 @@ export default function DashboardPage() {
   const router = useRouter();
   const { user, isFleetMode } = useAuth();
   const role = user?.role ?? UserRole.DRIVER;
+  const currentUserRole = user?.role;
+  const orgId = user?.organizationId;
   const isDriver = role === UserRole.DRIVER;
   const isRentalCustomer = role === UserRole.RENTAL_CUSTOMER;
   const showTaxReadinessShortcut =
     !isFleetMode || (!isDriver && !isRentalCustomer);
   const { preferences } = useUserPreferences();
+
+  // Fetch permissions for the organization
+  const { data: permissions } = usePermissions(orgId || "");
+
+  // Default permissions for export (matching backend)
+  const EXPORT_DEFAULTS = {
+    EXPORT_SARS_LOGBOOK: ['MANAGER', 'ADMIN'],
+    EXPORT_TRIPS: ['MANAGER', 'ADMIN'],
+    EXPORT_EMAIL: ['MANAGER', 'ADMIN']
+  }
+
+  // Check if current user has permission to export SARS logbook
+  const canExportSARSLogbook = () => {
+    // SUPER_ADMIN bypasses everything
+    if (currentUserRole === 'SUPER_ADMIN') return true
+    
+    if (!permissions || !currentUserRole) return false
+
+    // Check for override first
+    const exportOverride = permissions.find(
+      (p: any) => p.permissionType === 'EXPORT' &&
+                  p.permissionKey === 'EXPORT_SARS_LOGBOOK' &&
+                  p.userRole === currentUserRole
+    )
+
+    // If override exists, use it
+    if (exportOverride !== undefined) {
+      return exportOverride.isAllowed
+    }
+
+    // Fall back to default permissions
+    return EXPORT_DEFAULTS.EXPORT_SARS_LOGBOOK.includes(currentUserRole)
+  }
+
+  // Check if current user has permission to export trips
+  const canExportTrips = () => {
+    // SUPER_ADMIN bypasses everything
+    if (currentUserRole === 'SUPER_ADMIN') return true
+    
+    if (!permissions || !currentUserRole) return false
+
+    // Check for override first
+    const exportOverride = permissions.find(
+      (p: any) => p.permissionType === 'EXPORT' &&
+                  p.permissionKey === 'EXPORT_TRIPS' &&
+                  p.userRole === currentUserRole
+    )
+
+    // If override exists, use it
+    if (exportOverride !== undefined) {
+      return exportOverride.isAllowed
+    }
+
+    // Fall back to default permissions
+    return EXPORT_DEFAULTS.EXPORT_TRIPS.includes(currentUserRole)
+  }
+
+  // Check if current user has permission to export via email
+  const canExportEmail = () => {
+    // SUPER_ADMIN bypasses everything
+    if (currentUserRole === 'SUPER_ADMIN') return true
+    
+    if (!permissions || !currentUserRole) return false
+
+    // Check for override first
+    const exportOverride = permissions.find(
+      (p: any) => p.permissionType === 'EXPORT' &&
+                  p.permissionKey === 'EXPORT_EMAIL' &&
+                  p.userRole === currentUserRole
+    )
+
+    // If override exists, use it
+    if (exportOverride !== undefined) {
+      return exportOverride.isAllowed
+    }
+
+    // Fall back to default permissions
+    return EXPORT_DEFAULTS.EXPORT_EMAIL.includes(currentUserRole)
+  }
 
   // User display name — from localStorage (set during login / register)
   const [firstName, setFirstName] = useState<string | null>(null);
@@ -1268,11 +1350,13 @@ export default function DashboardPage() {
                     vehicleLabel={vehicleShortLabel(selectedVehicle)}
                     triggerLabel="Export all data"
                     triggerClassName="w-full gap-2"
+                    canExportSARSLogbook={canExportSARSLogbook()}
+                    canExportEmail={canExportEmail()}
                   />
                 }
               />
 
-              {!isRentalCustomer && (
+              {!isRentalCustomer && canExportTrips() && (
                 <DashboardShortcutCard
                   title="Export trip records only"
                   subtitle="Trip log export"
