@@ -53,6 +53,8 @@ interface EntryActionsProps {
   disabled?: boolean;
   className?: string;
   variant?: "icons" | "dropdown" | "buttons";
+  canEdit?: boolean;
+  canDelete?: boolean;
 }
 
 export function EntryActions({
@@ -69,6 +71,8 @@ export function EntryActions({
   disabled = false,
   className,
   variant = "icons",
+  canEdit = true,
+  canDelete = true,
 }: EntryActionsProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showLockDialog, setShowLockDialog] = useState(false);
@@ -154,31 +158,35 @@ export function EntryActions({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={handleEditClick}
-              disabled={isLocked}
-              className={cn(isLocked && "opacity-50 cursor-not-allowed")}
-            >
-              <Pencil className="mr-2 h-4 w-4" />
-              Edit
-              {isLocked && (
-                <Lock className="ml-auto h-3 w-3 text-muted-foreground" />
-              )}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => setShowDeleteDialog(true)}
-              disabled={isLocked}
-              className={cn(
-                "text-destructive focus:text-destructive",
-                isLocked && "opacity-50 cursor-not-allowed",
-              )}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete
-              {isLocked && (
-                <Lock className="ml-auto h-3 w-3 text-muted-foreground" />
-              )}
-            </DropdownMenuItem>
+            {canEdit && (
+              <DropdownMenuItem
+                onClick={handleEditClick}
+                disabled={isLocked}
+                className={cn(isLocked && "opacity-50 cursor-not-allowed")}
+              >
+                <Pencil className="mr-2 h-4 w-4" />
+                Edit
+                {isLocked && (
+                  <Lock className="ml-auto h-3 w-3 text-muted-foreground" />
+                )}
+              </DropdownMenuItem>
+            )}
+            {canDelete && (
+              <DropdownMenuItem
+                onClick={() => setShowDeleteDialog(true)}
+                disabled={isLocked}
+                className={cn(
+                  "text-destructive focus:text-destructive",
+                  isLocked && "opacity-50 cursor-not-allowed",
+                )}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete
+                {isLocked && (
+                  <Lock className="ml-auto h-3 w-3 text-muted-foreground" />
+                )}
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
             {isLocked ? (
               <DropdownMenuItem onClick={() => setShowUnlockDialog(true)}>
@@ -203,25 +211,29 @@ export function EntryActions({
     return (
       <>
         <div className={cn("flex items-center gap-2", className)}>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleEditClick}
-            disabled={disabled || isLocked}
-          >
-            <Pencil className="mr-2 h-4 w-4" />
-            Edit
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowDeleteDialog(true)}
-            disabled={disabled || isLocked}
-            className="text-destructive hover:text-destructive"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete
-          </Button>
+          {canEdit && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleEditClick}
+              disabled={disabled || isLocked}
+            >
+              <Pencil className="mr-2 h-4 w-4" />
+              Edit
+            </Button>
+          )}
+          {canDelete && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowDeleteDialog(true)}
+              disabled={disabled || isLocked}
+              className="text-destructive hover:text-destructive"
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete
+            </Button>
+          )}
           {isLocked ? (
             <Button
               variant="outline"
@@ -254,26 +266,30 @@ export function EntryActions({
   return (
     <>
       <div className={cn("flex items-center gap-1", className)}>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleEditClick}
-          disabled={disabled || isLocked}
-          title={isLocked ? "Confirmed record cannot be edited" : "Edit"}
-          className="h-8 w-8 sm:h-8 sm:w-8"
-        >
-          <Pencil className="h-5 w-5 sm:h-4 sm:w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setShowDeleteDialog(true)}
-          disabled={disabled || isLocked}
-          title={isLocked ? "Confirmed record cannot be deleted" : "Delete"}
-          className="h-8 w-8 sm:h-8 sm:w-8 text-destructive hover:text-destructive"
-        >
-          <Trash2 className="h-5 w-5 sm:h-4 sm:w-4" />
-        </Button>
+        {canEdit && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleEditClick}
+            disabled={disabled || isLocked}
+            title={isLocked ? "Confirmed record cannot be edited" : "Edit"}
+            className="h-8 w-8 sm:h-8 sm:w-8"
+          >
+            <Pencil className="h-5 w-5 sm:h-4 sm:w-4" />
+          </Button>
+        )}
+        {canDelete && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowDeleteDialog(true)}
+            disabled={disabled || isLocked}
+            title={isLocked ? "Confirmed record cannot be deleted" : "Delete"}
+            className="h-8 w-8 sm:h-8 sm:w-8 text-destructive hover:text-destructive"
+          >
+            <Trash2 className="h-5 w-5 sm:h-4 sm:w-4" />
+          </Button>
+        )}
         {isLocked ? (
           <Button
             variant="ghost"

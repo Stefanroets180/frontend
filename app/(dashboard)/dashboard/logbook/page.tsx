@@ -34,6 +34,8 @@ import { VehicleExportDialog } from "@/components/dashboard/vehicle-export-dialo
 import { TripExportDialog } from "@/components/dashboard/trip-export-dialog";
 import { DashboardCollapsiblePanel } from "@/components/dashboard/dashboard-collapsible-panel";
 import { VehicleLogo } from "@/components/vehicles/vehicle-logo";
+import { usePermissions } from "@/hooks/usePermissions";
+import { useAuth } from "@/lib/contexts/auth-context";
 
 // Helper to format vehicle label same as dashboard
 function vehicleLabel(v: Vehicle): string {
@@ -59,6 +61,13 @@ const emptySummary = {
 export default function LogbookPage() {
   const router = useRouter();
   const { taxYear } = getSarsTaxYear();
+  const { user } = useAuth();
+  const orgId = user?.organizationId;
+  const currentUserRole = user?.role;
+  
+  // Fetch permissions for the organization
+  const { data: permissions } = usePermissions(orgId || "");
+  
   const [selectedMonth, setSelectedMonth] = useState("all");
   const [selectedVehicle, setSelectedVehicle] = useState<string>("");
   const [filterPurpose, setFilterPurpose] = useState<
@@ -67,6 +76,77 @@ export default function LogbookPage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [trips, setTrips] = useState<TripRow[]>([]);
   const [summary, setSummary] = useState(emptySummary);
+
+  // Check if current user has permission to view logbook
+  const canViewLogbook = () => {
+    if (!permissions || !currentUserRole) return false
+
+    const viewPermission = permissions.find(
+      (p: any) => p.permissionType === 'LOGBOOK' &&
+                  (p.permissionKey === 'VIEW_OWN_LOGBOOK' || p.permissionKey === 'VIEW_ALL_LOGBOOKS') &&
+                  p.userRole === currentUserRole
+    )
+
+    return viewPermission?.isAllowed ?? false
+  }
+
+  // Check if current user has permission to add trips
+  const canAddTrips = () => {
+    if (!permissions || !currentUserRole) return false
+
+    const editPermission = permissions.find(
+      (p: any) => p.permissionType === 'LOGBOOK' &&
+                  p.permissionKey === 'EDIT_OWN_ENTRIES' &&
+                  p.userRole === currentUserRole
+    )
+
+    return editPermission?.isAllowed ?? false
+  }
+
+  // Check if current user has permission to edit trips
+  const canEditTrips = () => {
+    if (!permissions || !currentUserRole) return false
+
+    const editOwnPermission = permissions.find(
+      (p: any) => p.permissionType === 'LOGBOOK' &&
+                  p.permissionKey === 'EDIT_OWN_ENTRIES' &&
+                  p.userRole === currentUserRole
+    )
+
+    const editAllPermission = permissions.find(
+      (p: any) => p.permissionType === 'LOGBOOK' &&
+                  p.permissionKey === 'EDIT_ALL_ENTRIES' &&
+                  p.userRole === currentUserRole
+    )
+
+    return (editOwnPermission?.isAllowed ?? false) || (editAllPermission?.isAllowed ?? false)
+  }
+
+  // Check if current user has permission to delete trips
+  const canDeleteTrips = () => {
+    if (!permissions || !currentUserRole) return false
+
+    const deleteOwnPermission = permissions.find(
+      (p: any) => p.permissionType === 'LOGBOOK' &&
+                  p.permissionKey === 'DELETE_OWN_ENTRIES' &&
+                  p.userRole === currentUserRole
+    )
+
+    const deleteAllPermission = permissions.find(
+      (p: any) => p.permissionType === 'LOGBOOK' &&
+                  p.permissionKey === 'DELETE_ALL_ENTRIES' &&
+                  p.userRole === currentUserRole
+    )
+
+    return (deleteOwnPermission?.isAllowed ?? false) || (deleteAllPermission?.isAllowed ?? false)
+  }
+
+  // Redirect if user doesn't have permission to view logbook
+  useEffect(() => {
+    if (permissions && currentUserRole && !canViewLogbook()) {
+      router.push('/dashboard')
+    }
+  }, [permissions, currentUserRole, router])
 
   const loadTrips = async () => {
     try {
@@ -446,17 +526,19 @@ export default function LogbookPage() {
         </DashboardCollapsiblePanel>
 
         {/* Add Trip Button */}
-        <div className="pt-2">
-          <Link 
-            href={selectedVehicle ? `/dashboard/logbook/new?vehicleId=${selectedVehicle}` : "/dashboard/logbook/new"} 
-            className="block w-full"
-          >
-            <Button size="lg" className="w-full gap-2">
-              <Plus className="h-5 w-5" />
-              Add New Trip
-            </Button>
-          </Link>
-        </div>
+        {canAddTrips() && (
+          <div className="pt-2">
+            <Link 
+              href={selectedVehicle ? `/dashboard/logbook/new?vehicleId=${selectedVehicle}` : "/dashboard/logbook/new"} 
+              className="block w-full"
+            >
+              <Button size="lg" className="w-full gap-2">
+                <Plus className="h-5 w-5" />
+                Add New Trip
+              </Button>
+            </Link>
+          </div>
+        )}
 
         {/* Trip List */}
         <div className="space-y-3">
@@ -612,6 +694,8 @@ export default function LogbookPage() {
                     onLock={(reason) => handleLockTrip(trip.id, reason)}
                     onUnlock={() => handleUnlockTrip(trip.id)}
                     variant="icons"
+                    canEdit={canEditTrips()}
+                    canDelete={canDeleteTrips()}
                   />
                 </div>
               </CardContent>
