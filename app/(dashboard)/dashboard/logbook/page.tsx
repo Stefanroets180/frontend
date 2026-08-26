@@ -87,6 +87,13 @@ export default function LogbookPage() {
     DELETE_ALL_ENTRIES: ['ADMIN']
   }
 
+  // Default permissions for export (matching backend)
+  const EXPORT_DEFAULTS = {
+    EXPORT_SARS_LOGBOOK: ['MANAGER', 'ADMIN'],
+    EXPORT_TRIPS: ['MANAGER', 'ADMIN'],
+    EXPORT_EMAIL: ['MANAGER', 'ADMIN']
+  }
+
   // Check if current user has permission to view logbook
   const canViewLogbook = () => {
     // SUPER_ADMIN bypasses everything
@@ -204,6 +211,75 @@ export default function LogbookPage() {
     // Fall back to default permissions
     return LOGBOOK_DEFAULTS.DELETE_OWN_ENTRIES.includes(currentUserRole) ||
            LOGBOOK_DEFAULTS.DELETE_ALL_ENTRIES.includes(currentUserRole)
+  }
+
+  // Check if current user has permission to export SARS logbook
+  const canExportSARSLogbook = () => {
+    // SUPER_ADMIN bypasses everything
+    if (currentUserRole === 'SUPER_ADMIN') return true
+    
+    if (!permissions || !currentUserRole) return false
+
+    // Check for override first
+    const exportOverride = permissions.find(
+      (p: any) => p.permissionType === 'EXPORT' &&
+                  p.permissionKey === 'EXPORT_SARS_LOGBOOK' &&
+                  p.userRole === currentUserRole
+    )
+
+    // If override exists, use it
+    if (exportOverride !== undefined) {
+      return exportOverride.isAllowed
+    }
+
+    // Fall back to default permissions
+    return EXPORT_DEFAULTS.EXPORT_SARS_LOGBOOK.includes(currentUserRole)
+  }
+
+  // Check if current user has permission to export trips
+  const canExportTrips = () => {
+    // SUPER_ADMIN bypasses everything
+    if (currentUserRole === 'SUPER_ADMIN') return true
+    
+    if (!permissions || !currentUserRole) return false
+
+    // Check for override first
+    const exportOverride = permissions.find(
+      (p: any) => p.permissionType === 'EXPORT' &&
+                  p.permissionKey === 'EXPORT_TRIPS' &&
+                  p.userRole === currentUserRole
+    )
+
+    // If override exists, use it
+    if (exportOverride !== undefined) {
+      return exportOverride.isAllowed
+    }
+
+    // Fall back to default permissions
+    return EXPORT_DEFAULTS.EXPORT_TRIPS.includes(currentUserRole)
+  }
+
+  // Check if current user has permission to export via email
+  const canExportEmail = () => {
+    // SUPER_ADMIN bypasses everything
+    if (currentUserRole === 'SUPER_ADMIN') return true
+    
+    if (!permissions || !currentUserRole) return false
+
+    // Check for override first
+    const exportOverride = permissions.find(
+      (p: any) => p.permissionType === 'EXPORT' &&
+                  p.permissionKey === 'EXPORT_EMAIL' &&
+                  p.userRole === currentUserRole
+    )
+
+    // If override exists, use it
+    if (exportOverride !== undefined) {
+      return exportOverride.isAllowed
+    }
+
+    // Fall back to default permissions
+    return EXPORT_DEFAULTS.EXPORT_EMAIL.includes(currentUserRole)
   }
 
   // Redirect if user doesn't have permission to view logbook
@@ -435,21 +511,23 @@ export default function LogbookPage() {
       {/* Content */}
       <div className="space-y-6">
         <div className="flex justify-end">
-          <TripExportDialog
-              vehicleId={selectedVehicle || vehicles[0]?.id || ""}
-              vehicleLabel={
-                selectedVehicle
-                  ? (vehicles.find((v) => v.id === selectedVehicle)?.nickname ??
-                    vehicles.find((v) => v.id === selectedVehicle)
-                      ?.registrationNumber ??
-                    "Vehicle")
-                  : (vehicles[0]?.nickname ??
-                    vehicles[0]?.registrationNumber ??
-                    "Vehicle")
-              }
-              disabled={vehicles.length === 0}
-              triggerClassName="w-full gap-2 sm:w-auto"
-            />
+          {canExportTrips() && (
+            <TripExportDialog
+                vehicleId={selectedVehicle || vehicles[0]?.id || ""}
+                vehicleLabel={
+                  selectedVehicle
+                    ? (vehicles.find((v) => v.id === selectedVehicle)?.nickname ??
+                      vehicles.find((v) => v.id === selectedVehicle)
+                        ?.registrationNumber ??
+                      "Vehicle")
+                    : (vehicles[0]?.nickname ??
+                      vehicles[0]?.registrationNumber ??
+                      "Vehicle")
+                }
+                disabled={vehicles.length === 0}
+                triggerClassName="w-full gap-2 sm:w-auto"
+              />
+          )}
         </div>
 
         <DashboardCollapsiblePanel
