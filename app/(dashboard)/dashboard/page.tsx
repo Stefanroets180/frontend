@@ -424,7 +424,7 @@ export default function DashboardPage() {
   const { preferences } = useUserPreferences();
 
   // Fetch permissions for the organization
-  const { data: permissions } = usePermissions(orgId || "");
+  const { data: permissions, isLoading: isLoadingPermissions } = usePermissions(orgId || "");
 
   // Default permissions for export (matching backend)
   const EXPORT_DEFAULTS = {
@@ -1313,7 +1313,7 @@ export default function DashboardPage() {
             />
           )}
 
-          {isTaxShortcutsOpen && (
+          {isTaxShortcutsOpen && !isLoadingPermissions && (
             <div
               id="dashboard-tax-shortcuts-panel"
               className={`grid gap-3 ${showTaxReadinessShortcut ? "lg:grid-cols-3" : "lg:grid-cols-2"}`}
