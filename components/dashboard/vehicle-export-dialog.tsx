@@ -124,6 +124,10 @@ export function VehicleExportDialog({
   );
 
   const handleDownload = async () => {
+    if (!canExportSARSLogbook) {
+      toast.error("You do not have permission to export SARS logbooks");
+      return;
+    }
     setLoading("download");
     try {
       await downloadExport(vehicleId, format, Number(taxYear));
@@ -141,6 +145,10 @@ export function VehicleExportDialog({
   };
 
   const handleEmail = async () => {
+    if (!canExportEmail) {
+      toast.error("You do not have permission to export via email");
+      return;
+    }
     const recipient = email.trim();
     if (!recipient) {
       toast.error("Enter an email address");
@@ -186,6 +194,10 @@ export function VehicleExportDialog({
   };
 
   const handleShare = async () => {
+    if (!canExportSARSLogbook) {
+      toast.error("You do not have permission to export SARS logbooks");
+      return;
+    }
     if (!navigator.share) {
       toast.message("Use Download, then share the file from your device");
       return;
