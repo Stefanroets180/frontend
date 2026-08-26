@@ -66,7 +66,7 @@ export default function LogbookPage() {
   const currentUserRole = user?.role;
   
   // Fetch permissions for the organization
-  const { data: permissions } = usePermissions(orgId || "");
+  const { data: permissions, isLoading: isLoadingPermissions } = usePermissions(orgId || "");
   
   const [selectedMonth, setSelectedMonth] = useState("all");
   const [selectedVehicle, setSelectedVehicle] = useState<string>("");
@@ -511,7 +511,7 @@ export default function LogbookPage() {
       {/* Content */}
       <div className="space-y-6">
         <div className="flex justify-end">
-          {canExportTrips() && (
+          {!isLoadingPermissions && canExportTrips() && (
             <TripExportDialog
                 vehicleId={selectedVehicle || vehicles[0]?.id || ""}
                 vehicleLabel={
