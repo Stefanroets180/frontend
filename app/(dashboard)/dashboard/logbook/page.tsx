@@ -278,10 +278,8 @@ export default function LogbookPage() {
     <div className="container mx-auto space-y-6 p-4">
       {/* Header */}
       <div className="flex items-center gap-2 rounded-xl border border-border/50 bg-muted/30 px-3 py-2 sm:gap-3 sm:px-4 sm:py-3">
-        <Button variant="ghost" size="icon" asChild className="h-8 w-8 sm:h-9 sm:w-9">
-          <Link href="/dashboard">
-            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-          </Link>
+        <Button variant="ghost" size="icon" onClick={() => router.back()} className="h-8 w-8 sm:h-9 sm:w-9">
+          <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
         </Button>
         <div>
           <h1 className="text-sm font-semibold sm:text-base">SARS Logbook</h1>
