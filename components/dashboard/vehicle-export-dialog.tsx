@@ -53,8 +53,8 @@ interface VehicleExportDialogProps {
   triggerVariant?: ButtonVariant;
   triggerSize?: ButtonSize;
   triggerClassName?: string;
-  canExportSARSLogbook?: boolean;
-  canExportEmail?: boolean;
+  canExportSARSLogbook?: boolean | (() => boolean);
+  canExportEmail?: boolean | (() => boolean);
 }
 
 async function downloadExport(
@@ -115,8 +115,12 @@ export function VehicleExportDialog({
   canExportSARSLogbook = false,
   canExportEmail = false,
 }: VehicleExportDialogProps) {
-  console.log('[VehicleExportDialog] canExportSARSLogbook:', canExportSARSLogbook)
-  console.log('[VehicleExportDialog] canExportEmail:', canExportEmail)
+  // Handle both boolean and function props
+  const getCanExportSARSLogbook = typeof canExportSARSLogbook === 'function' ? canExportSARSLogbook : () => canExportSARSLogbook
+  const getCanExportEmail = typeof canExportEmail === 'function' ? canExportEmail : () => canExportEmail
+
+  console.log('[VehicleExportDialog] canExportSARSLogbook:', getCanExportSARSLogbook())
+  console.log('[VehicleExportDialog] canExportEmail:', getCanExportEmail())
   const [open, setOpen] = useState(false);
   const [format, setFormat] = useState<ExportFormat>("pdf");
   const [taxYear, setTaxYear] = useState(String(getSATaxYear()));
@@ -126,7 +130,7 @@ export function VehicleExportDialog({
   );
 
   const handleDownload = async () => {
-    if (!canExportSARSLogbook) {
+    if (!getCanExportSARSLogbook()) {
       toast.error("You do not have permission to export SARS logbooks");
       return;
     }
@@ -147,7 +151,7 @@ export function VehicleExportDialog({
   };
 
   const handleEmail = async () => {
-    if (!canExportEmail) {
+    if (!getCanExportEmail()) {
       toast.error("You do not have permission to export via email");
       return;
     }
@@ -196,7 +200,7 @@ export function VehicleExportDialog({
   };
 
   const handleShare = async () => {
-    if (!canExportSARSLogbook) {
+    if (!getCanExportSARSLogbook()) {
       toast.error("You do not have permission to export SARS logbooks");
       return;
     }
@@ -383,7 +387,7 @@ export function VehicleExportDialog({
           <Button
             className="w-full gap-2"
             onClick={handleDownload}
-            disabled={loading !== null || !canExportSARSLogbook}
+            disabled={loading !== null || !getCanExportSARSLogbook()}
           >
             {loading === "download" ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -397,7 +401,7 @@ export function VehicleExportDialog({
               variant="outline"
               className="gap-2"
               onClick={handleEmail}
-              disabled={loading !== null || !email.trim() || !canExportEmail}
+              disabled={loading !== null || !email.trim() || !getCanExportEmail()}
             >
               {loading === "email" ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -410,7 +414,7 @@ export function VehicleExportDialog({
               variant="outline"
               className="gap-2"
               onClick={handleShare}
-              disabled={loading !== null || !canExportSARSLogbook}
+              disabled={loading !== null || !getCanExportSARSLogbook()}
             >
               {loading === "share" ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
