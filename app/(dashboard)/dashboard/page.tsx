@@ -418,6 +418,7 @@ export default function DashboardPage() {
   const currentUserRole = user?.role;
   const orgId = user?.organizationId;
   const isDriver = role === UserRole.DRIVER;
+  const isManager = role === UserRole.MANAGER;
   const isRentalCustomer = role === UserRole.RENTAL_CUSTOMER;
   const showTaxReadinessShortcut =
     !isFleetMode || (!isDriver && !isRentalCustomer);
@@ -447,13 +448,20 @@ export default function DashboardPage() {
                   p.userRole === currentUserRole
     )
 
+    console.log('[canExportSARSLogbook] currentUserRole:', currentUserRole)
+    console.log('[canExportSARSLogbook] exportOverride:', exportOverride)
+    console.log('[canExportSARSLogbook] EXPORT_DEFAULTS.EXPORT_SARS_LOGBOOK:', EXPORT_DEFAULTS.EXPORT_SARS_LOGBOOK)
+
     // If override exists, use it
     if (exportOverride !== undefined) {
+      console.log('[canExportSARSLogbook] Using override, isAllowed:', exportOverride.isAllowed)
       return exportOverride.isAllowed
     }
 
     // Fall back to default permissions
-    return EXPORT_DEFAULTS.EXPORT_SARS_LOGBOOK.includes(currentUserRole)
+    const hasDefaultPermission = EXPORT_DEFAULTS.EXPORT_SARS_LOGBOOK.includes(currentUserRole)
+    console.log('[canExportSARSLogbook] Using default, hasDefaultPermission:', hasDefaultPermission)
+    return hasDefaultPermission
   }
 
   // Check if current user has permission to export trips
