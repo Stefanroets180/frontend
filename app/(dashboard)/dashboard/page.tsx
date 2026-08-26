@@ -436,7 +436,6 @@ export default function DashboardPage() {
   // Check if current user has permission to export SARS logbook
   const canExportSARSLogbook = () => {
     // SUPER_ADMIN bypasses everything
-    console.log('[canExportSARSLogbook] currentUserRole:', currentUserRole);
     if (currentUserRole === 'SUPER_ADMIN') return true
     
     if (!permissions || !currentUserRole) return false

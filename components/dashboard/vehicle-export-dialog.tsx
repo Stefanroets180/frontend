@@ -123,14 +123,6 @@ export function VehicleExportDialog({
     null,
   );
 
-  // Debug logging for button state
-  const isButtonDisabled = disabled || !canExportSARSLogbook;
-  console.log('[VehicleExportDialog] Button state:', {
-    disabled,
-    canExportSARSLogbook,
-    isButtonDisabled
-  });
-
   const handleDownload = async () => {
     if (!canExportSARSLogbook) {
       toast.error("You do not have permission to export SARS logbooks");
@@ -299,7 +291,7 @@ export function VehicleExportDialog({
           variant={triggerVariant}
           size={triggerSize}
           className={triggerClassName}
-          disabled={disabled || !canExportSARSLogbook}
+          disabled={disabled}
         >
           <Download className="h-4 w-4" />
           {triggerLabel}
