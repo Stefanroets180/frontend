@@ -286,7 +286,7 @@ export function OdometerCaptureForm({
             Your {readingType.toLowerCase()} odometer reading for {vehicleReg} has been recorded
             for tax year {currentTaxYear}/{currentTaxYear + 1}.
           </p>
-          <Button onClick={() => router.push('/dashboard')}>
+          <Button onClick={() => router.back()}>
             Return to Dashboard
           </Button>
         </CardContent>
