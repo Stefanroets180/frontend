@@ -999,10 +999,8 @@ function NewExpenseContent() {
       {/* Header */}
       <div className="border-b border-border bg-card">
         <div className="flex items-center gap-3 px-4 py-2">
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/dashboard">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
+          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+            <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
             <h1 className="font-semibold text-sm">Add Expense</h1>
