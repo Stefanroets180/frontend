@@ -381,7 +381,7 @@ export function VehicleExportDialog({
           <Button
             className="w-full gap-2"
             onClick={handleDownload}
-            disabled={loading !== null || !canExportSARSLogbook}
+            disabled={loading !== null}
           >
             {loading === "download" ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -395,7 +395,7 @@ export function VehicleExportDialog({
               variant="outline"
               className="gap-2"
               onClick={handleEmail}
-              disabled={loading !== null || !email.trim() || !canExportEmail}
+              disabled={loading !== null || !email.trim()}
             >
               {loading === "email" ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -408,7 +408,7 @@ export function VehicleExportDialog({
               variant="outline"
               className="gap-2"
               onClick={handleShare}
-              disabled={loading !== null || !canExportSARSLogbook}
+              disabled={loading !== null}
             >
               {loading === "share" ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
