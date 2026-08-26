@@ -1337,24 +1337,26 @@ export default function DashboardPage() {
                 />
               )}
 
-              <DashboardShortcutCard
-                title="Export complete vehicle data"
-                subtitle="Full export"
-                description="Use this when you want the full vehicle export for the selected tax year, including trips, expenses, fuel logs, summaries and compliance records."
-                tip="PDF and HTML are best when you want a readable report with captured invoices. Excel is better when you want to sort and filter the raw data."
-                icon={Download}
-                accent="export"
-                cta={
-                  <VehicleExportDialog
-                    vehicleId={selectedVehicle.id}
-                    vehicleLabel={vehicleShortLabel(selectedVehicle)}
-                    triggerLabel="Export all data"
-                    triggerClassName="w-full gap-2"
-                    canExportSARSLogbook={canExportSARSLogbook()}
-                    canExportEmail={canExportEmail()}
-                  />
-                }
-              />
+              {canExportSARSLogbook() && (
+                <DashboardShortcutCard
+                  title="Export complete vehicle data"
+                  subtitle="Full export"
+                  description="Use this when you want the full vehicle export for the selected tax year, including trips, expenses, fuel logs, summaries and compliance records."
+                  tip="PDF and HTML are best when you want a readable report with captured invoices. Excel is better when you want to sort and filter the raw data."
+                  icon={Download}
+                  accent="export"
+                  cta={
+                    <VehicleExportDialog
+                      vehicleId={selectedVehicle.id}
+                      vehicleLabel={vehicleShortLabel(selectedVehicle)}
+                      triggerLabel="Export all data"
+                      triggerClassName="w-full gap-2"
+                      canExportSARSLogbook={canExportSARSLogbook()}
+                      canExportEmail={canExportEmail()}
+                    />
+                  }
+                />
+              )}
 
               {!isRentalCustomer && canExportTrips() && (
                 <DashboardShortcutCard
