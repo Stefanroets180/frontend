@@ -115,14 +115,6 @@ export function VehicleExportDialog({
   canExportSARSLogbook = false,
   canExportEmail = false,
 }: VehicleExportDialogProps) {
-  // Debug logging
-  console.log('[VehicleExportDialog] Props:', {
-    vehicleId,
-    disabled,
-    canExportSARSLogbook,
-    canExportEmail
-  });
-
   const [open, setOpen] = useState(false);
   const [format, setFormat] = useState<ExportFormat>("pdf");
   const [taxYear, setTaxYear] = useState(String(getSATaxYear()));
@@ -130,6 +122,14 @@ export function VehicleExportDialog({
   const [loading, setLoading] = useState<"download" | "email" | "share" | null>(
     null,
   );
+
+  // Debug logging for button state
+  const isButtonDisabled = disabled || !canExportSARSLogbook;
+  console.log('[VehicleExportDialog] Button state:', {
+    disabled,
+    canExportSARSLogbook,
+    isButtonDisabled
+  });
 
   const handleDownload = async () => {
     if (!canExportSARSLogbook) {
