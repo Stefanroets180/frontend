@@ -108,7 +108,7 @@ export default function EditTripPage() {
       };
 
       await api.put(`/trips/${tripId}`, updateData);
-      router.back();
+      router.push("/dashboard/logbook");
     } catch (error) {
       console.error("Error updating trip:", error);
       alert("Failed to update trip. Please try again.");
