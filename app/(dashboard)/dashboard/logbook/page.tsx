@@ -77,68 +77,121 @@ export default function LogbookPage() {
   const [trips, setTrips] = useState<TripRow[]>([]);
   const [summary, setSummary] = useState(emptySummary);
 
+  // Default permissions for logbook (matching backend)
+  const LOGBOOK_DEFAULTS = {
+    VIEW_OWN_LOGBOOK: ['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER'],
+    VIEW_ALL_LOGBOOKS: ['MANAGER', 'ADMIN'],
+    EDIT_OWN_ENTRIES: ['DRIVER', 'MANAGER', 'ADMIN'],
+    EDIT_ALL_ENTRIES: ['ADMIN'],
+    DELETE_OWN_ENTRIES: ['DRIVER', 'MANAGER', 'ADMIN'],
+    DELETE_ALL_ENTRIES: ['ADMIN']
+  }
+
   // Check if current user has permission to view logbook
   const canViewLogbook = () => {
     if (!permissions || !currentUserRole) return false
 
-    const viewPermission = permissions.find(
+    // Check for override first
+    const viewOwnOverride = permissions.find(
       (p: any) => p.permissionType === 'LOGBOOK' &&
-                  (p.permissionKey === 'VIEW_OWN_LOGBOOK' || p.permissionKey === 'VIEW_ALL_LOGBOOKS') &&
+                  p.permissionKey === 'VIEW_OWN_LOGBOOK' &&
+                  p.userRole === currentUserRole
+    )
+    const viewAllOverride = permissions.find(
+      (p: any) => p.permissionType === 'LOGBOOK' &&
+                  p.permissionKey === 'VIEW_ALL_LOGBOOKS' &&
                   p.userRole === currentUserRole
     )
 
-    return viewPermission?.isAllowed ?? false
+    // If override exists, use it
+    if (viewOwnOverride !== undefined) {
+      return viewOwnOverride.isAllowed
+    }
+    if (viewAllOverride !== undefined) {
+      return viewAllOverride.isAllowed
+    }
+
+    // Fall back to default permissions
+    return LOGBOOK_DEFAULTS.VIEW_OWN_LOGBOOK.includes(currentUserRole) ||
+           LOGBOOK_DEFAULTS.VIEW_ALL_LOGBOOKS.includes(currentUserRole)
   }
 
   // Check if current user has permission to add trips
   const canAddTrips = () => {
     if (!permissions || !currentUserRole) return false
 
-    const editPermission = permissions.find(
+    // Check for override first
+    const editOverride = permissions.find(
       (p: any) => p.permissionType === 'LOGBOOK' &&
                   p.permissionKey === 'EDIT_OWN_ENTRIES' &&
                   p.userRole === currentUserRole
     )
 
-    return editPermission?.isAllowed ?? false
+    // If override exists, use it
+    if (editOverride !== undefined) {
+      return editOverride.isAllowed
+    }
+
+    // Fall back to default permissions
+    return LOGBOOK_DEFAULTS.EDIT_OWN_ENTRIES.includes(currentUserRole)
   }
 
   // Check if current user has permission to edit trips
   const canEditTrips = () => {
     if (!permissions || !currentUserRole) return false
 
-    const editOwnPermission = permissions.find(
+    // Check for overrides first
+    const editOwnOverride = permissions.find(
       (p: any) => p.permissionType === 'LOGBOOK' &&
                   p.permissionKey === 'EDIT_OWN_ENTRIES' &&
                   p.userRole === currentUserRole
     )
-
-    const editAllPermission = permissions.find(
+    const editAllOverride = permissions.find(
       (p: any) => p.permissionType === 'LOGBOOK' &&
                   p.permissionKey === 'EDIT_ALL_ENTRIES' &&
                   p.userRole === currentUserRole
     )
 
-    return (editOwnPermission?.isAllowed ?? false) || (editAllPermission?.isAllowed ?? false)
+    // If override exists, use it
+    if (editOwnOverride !== undefined) {
+      return editOwnOverride.isAllowed
+    }
+    if (editAllOverride !== undefined) {
+      return editAllOverride.isAllowed
+    }
+
+    // Fall back to default permissions
+    return LOGBOOK_DEFAULTS.EDIT_OWN_ENTRIES.includes(currentUserRole) ||
+           LOGBOOK_DEFAULTS.EDIT_ALL_ENTRIES.includes(currentUserRole)
   }
 
   // Check if current user has permission to delete trips
   const canDeleteTrips = () => {
     if (!permissions || !currentUserRole) return false
 
-    const deleteOwnPermission = permissions.find(
+    // Check for overrides first
+    const deleteOwnOverride = permissions.find(
       (p: any) => p.permissionType === 'LOGBOOK' &&
                   p.permissionKey === 'DELETE_OWN_ENTRIES' &&
                   p.userRole === currentUserRole
     )
-
-    const deleteAllPermission = permissions.find(
+    const deleteAllOverride = permissions.find(
       (p: any) => p.permissionType === 'LOGBOOK' &&
                   p.permissionKey === 'DELETE_ALL_ENTRIES' &&
                   p.userRole === currentUserRole
     )
 
-    return (deleteOwnPermission?.isAllowed ?? false) || (deleteAllPermission?.isAllowed ?? false)
+    // If override exists, use it
+    if (deleteOwnOverride !== undefined) {
+      return deleteOwnOverride.isAllowed
+    }
+    if (deleteAllOverride !== undefined) {
+      return deleteAllOverride.isAllowed
+    }
+
+    // Fall back to default permissions
+    return LOGBOOK_DEFAULTS.DELETE_OWN_ENTRIES.includes(currentUserRole) ||
+           LOGBOOK_DEFAULTS.DELETE_ALL_ENTRIES.includes(currentUserRole)
   }
 
   // Redirect if user doesn't have permission to view logbook
