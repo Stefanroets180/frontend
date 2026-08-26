@@ -89,9 +89,9 @@ export default function LogbookPage() {
 
   // Default permissions for export (matching backend)
   const EXPORT_DEFAULTS = {
-    EXPORT_SARS_LOGBOOK: ['MANAGER', 'ADMIN'],
-    EXPORT_TRIPS: ['MANAGER', 'ADMIN'],
-    EXPORT_EMAIL: ['MANAGER', 'ADMIN']
+    EXPORT_SARS_LOGBOOK: ['ADMIN'],
+    EXPORT_TRIPS: ['ADMIN'],
+    EXPORT_EMAIL: ['ADMIN']
   }
 
   // Check if current user has permission to view logbook
