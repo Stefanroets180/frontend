@@ -99,7 +99,7 @@ export default function OrganizationPage() {
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
   // Assistant state (for individual account owners)
-  const { assistants, isLoading: isLoadingAssistants, removeAssistant } = useAssistants()
+  const { assistants, isLoading: isLoadingAssistants, removeAssistant, reactivateAssistant, isReactivating } = useAssistants()
   const [showAddAssistant, setShowAddAssistant] = useState(false)
 
   useEffect(() => {
@@ -619,36 +619,84 @@ export default function OrganizationPage() {
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                 </div>
               ) : assistants && assistants.length > 0 ? (
-                <div className="space-y-4">
-                  {assistants.map((assistant: any) => (
-                    <div key={assistant.id} className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                          <User className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <p className="font-medium">{assistant.assistantFirstName} {assistant.assistantLastName}</p>
-                          <p className="text-sm text-muted-foreground">{assistant.assistantEmail}</p>
-                          <div className="mt-1 flex items-center gap-2">
-                            <Badge variant="outline">{assistant.assistantRole === 'ASSISTANT_LOW' ? 'View Only' : 'Edit Access'}</Badge>
-                            {assistant.assignedVehicleRegistration && (
-                              <Badge variant="secondary" className="text-xs">
-                                {assistant.assignedVehicleRegistration}
-                              </Badge>
-                            )}
+                <div className="space-y-6">
+                  {/* Active Assistants */}
+                  <div>
+                    <h3 className="mb-3 text-sm font-semibold text-muted-foreground">Active Assistants</h3>
+                    <div className="space-y-4">
+                      {assistants.filter((a: any) => a.isActive !== false).map((assistant: any) => (
+                        <div key={assistant.id} className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
+                          <div className="flex items-center gap-4">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                              <User className="h-5 w-5" />
+                            </div>
+                            <div>
+                              <p className="font-medium">{assistant.assistantFirstName} {assistant.assistantLastName}</p>
+                              <p className="text-sm text-muted-foreground">{assistant.assistantEmail}</p>
+                              <div className="mt-1 flex items-center gap-2">
+                                <Badge variant="outline">{assistant.assistantRole === 'ASSISTANT_LOW' ? 'View Only' : 'Edit Access'}</Badge>
+                                {assistant.assignedVehicleRegistration && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    {assistant.assignedVehicleRegistration}
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
                           </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive hover:text-destructive"
+                            onClick={() => removeAssistant(assistant.assistantId)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive hover:text-destructive"
-                        onClick={() => removeAssistant(assistant.assistantId)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      ))}
+                      {assistants.filter((a: any) => a.isActive !== false).length === 0 && (
+                        <div className="py-4 text-center text-muted-foreground text-sm">
+                          No active assistants
+                        </div>
+                      )}
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Removed Assistants History */}
+                  {assistants.filter((a: any) => a.isActive === false).length > 0 && (
+                    <div>
+                      <h3 className="mb-3 text-sm font-semibold text-muted-foreground">Removed Assistants</h3>
+                      <div className="space-y-3">
+                        {assistants.filter((a: any) => a.isActive === false).map((assistant: any) => (
+                          <div key={assistant.id} className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 p-3 opacity-70">
+                            <div className="flex items-center gap-3">
+                              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                                <User className="h-4 w-4" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">{assistant.assistantFirstName} {assistant.assistantLastName}</p>
+                                <p className="text-xs text-muted-foreground">{assistant.assistantEmail}</p>
+                                {assistant.removedAt && (
+                                  <p className="text-xs text-muted-foreground">
+                                    Removed {new Date(assistant.removedAt).toLocaleDateString()}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 text-xs"
+                              onClick={() => reactivateAssistant(assistant.assistantId)}
+                              disabled={isReactivating}
+                            >
+                              <Clock className="h-3 w-3 mr-1" />
+                              Reactivate
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="py-8 text-center text-muted-foreground">

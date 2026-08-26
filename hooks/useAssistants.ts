@@ -13,6 +13,9 @@ export interface UserAssistantDTO {
   assignedDateRangeEnd?: string;
   assignedVehicleId?: string;
   assignedVehicleRegistration?: string;
+  isActive?: boolean;
+  removedAt?: string;
+  removedBy?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -75,14 +78,28 @@ export function useAssistants() {
     },
   });
 
+  const reactivateMutation = useMutation({
+    mutationFn: async (assistantId: string) => {
+      const response = await api.put(`/assistants/${assistantId}`, {
+        isActive: true,
+      });
+      return response.data as UserAssistantDTO;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['assistants'] });
+    },
+  });
+
   return {
     assistants,
     isLoading,
     addAssistant: addMutation.mutate,
     updateAssistant: updateMutation.mutate,
     removeAssistant: removeMutation.mutate,
+    reactivateAssistant: reactivateMutation.mutate,
     isAdding: addMutation.isPending,
     isUpdating: updateMutation.isPending,
     isRemoving: removeMutation.isPending,
+    isReactivating: reactivateMutation.isPending,
   };
 }
