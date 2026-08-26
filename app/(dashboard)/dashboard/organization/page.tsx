@@ -33,6 +33,7 @@ import { useAuth, useRequireRole } from '@/lib/contexts/auth-context'
 import { OrganizationMode, UserRole, VehicleStatus } from '@/lib/types/database'
 import { cn } from '@/lib/utils'
 import { useAssistants } from '@/hooks/useAssistants'
+import { usePermissions } from '@/hooks/usePermissions'
 import { AddAssistantDialog } from '@/components/settings/AddAssistantDialog'
 
 interface TeamMember {
@@ -101,6 +102,9 @@ export default function OrganizationPage() {
   // Assistant state (for individual account owners only)
   const { assistants, isLoading: isLoadingAssistants, removeAssistant, reactivateAssistant, isReactivating } = useAssistants({ enabled: isSoloMode })
   const [showAddAssistant, setShowAddAssistant] = useState(false)
+
+  // Permissions state
+  const { data: permissions } = usePermissions(organization?.id || '')
 
   useEffect(() => {
     api
@@ -222,6 +226,20 @@ export default function OrganizationPage() {
 
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
+  }
+
+  // Check if current user has permission to assign vehicles
+  const canAssignVehicles = () => {
+    if (!permissions || !currentUserRole) return false
+
+    // Find the vehicle assignment permission for the current user's role
+    const assignPermission = permissions.find(
+      (p: any) => p.permissionType === 'VEHICLE_ASSIGNMENT' &&
+                  p.permissionKey === 'ASSIGN_TO_DRIVER' &&
+                  p.userRole === currentUserRole
+    )
+
+    return assignPermission?.isAllowed ?? false
   }
   
   const handleEditUser = (member: TeamMember) => {
@@ -1053,14 +1071,16 @@ export default function OrganizationPage() {
                           {vehicle.assignedDriverName}
                         </Badge>
                       )}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => handleAssignVehicle(vehicle)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
+                      {canAssignVehicles() && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleAssignVehicle(vehicle)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      )}
                       {canDeleteVehicle() && (
                         <Button
                           variant="ghost"
