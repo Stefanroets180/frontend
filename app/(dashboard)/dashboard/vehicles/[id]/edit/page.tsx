@@ -140,7 +140,7 @@ export default function EditVehiclePage() {
       };
 
       await api.put(`/vehicles/${vehicleId}`, updateData);
-      window.location.href = "/dashboard/vehicles";
+      router.back();
     } catch (error) {
       console.error("Error updating vehicle:", error);
       alert("Failed to update vehicle. Please try again.");

@@ -569,8 +569,7 @@ export default function EditExpensePage({
               formData.append("data", JSON.stringify({ ...dataToSend, id }));
               if (receiptImage) formData.append("receipt", receiptImage);
               await apiPostMultipart(`/expenses/fuel/${id}`, formData, "PUT");
-              router.push(`/dashboard/expenses/${id}`);
-              router.refresh();
+              router.push('/dashboard/expenses');
             }}
           />
         );
@@ -614,7 +613,7 @@ export default function EditExpensePage({
                 formData,
                 "PUT",
               );
-              router.push(`/dashboard/expenses/${id}`);
+              router.push('/dashboard/expenses');
             }}
           />
         );
@@ -658,7 +657,7 @@ export default function EditExpensePage({
                 formData,
                 "PUT",
               );
-              router.push(`/dashboard/expenses/${id}`);
+              router.push('/dashboard/expenses');
             }}
           />
         );
@@ -705,7 +704,7 @@ export default function EditExpensePage({
                 formData,
                 "PUT",
               );
-              router.push(`/dashboard/expenses/${id}`);
+              router.push('/dashboard/expenses');
             }}
           />
         );
@@ -748,7 +747,7 @@ export default function EditExpensePage({
               formData.append("data", JSON.stringify({ ...dataToSend, id }));
               if (receiptImage) formData.append("receipt", receiptImage);
               await apiPostMultipart(`/expenses/tyres/${id}`, formData, "PUT");
-              router.push(`/dashboard/expenses/${id}`);
+              router.push('/dashboard/expenses');
             }}
           />
         );
@@ -813,7 +812,7 @@ export default function EditExpensePage({
                 formData,
                 "PUT",
               );
-              router.push(`/dashboard/expenses/${id}`);
+              router.push('/dashboard/expenses');
             }}
           />
         );
@@ -886,7 +885,7 @@ export default function EditExpensePage({
                 formData,
                 "PUT",
               );
-              router.push(`/dashboard/expenses/${id}`);
+              router.push('/dashboard/expenses');
             }}
           />
         );
@@ -945,7 +944,7 @@ export default function EditExpensePage({
               formData.append("data", JSON.stringify({ ...dataToSend, id }));
               if (receiptImage) formData.append("receipt", receiptImage);
               await apiPostMultipart(`/expenses/etoll/${id}`, formData, "PUT");
-              router.push(`/dashboard/expenses/${id}`);
+              router.push('/dashboard/expenses');
             }}
           />
         );
@@ -1008,7 +1007,7 @@ export default function EditExpensePage({
                 formData,
                 "PUT",
               );
-              router.push(`/dashboard/expenses/${id}`);
+              router.push('/dashboard/expenses');
             }}
           />
         );
@@ -1073,7 +1072,7 @@ export default function EditExpensePage({
                 formData,
                 "PUT",
               );
-              router.push(`/dashboard/expenses/${id}`);
+              router.push('/dashboard/expenses');
             }}
           />
         );
@@ -1126,7 +1125,7 @@ export default function EditExpensePage({
                 formData,
                 "PUT",
               );
-              router.push(`/dashboard/expenses/${id}`);
+              router.push('/dashboard/expenses');
             }}
           />
         );
@@ -1191,7 +1190,7 @@ export default function EditExpensePage({
                 formData,
                 "PUT",
               );
-              router.push(`/dashboard/expenses/${id}`);
+              router.push('/dashboard/expenses');
             }}
           />
         );
