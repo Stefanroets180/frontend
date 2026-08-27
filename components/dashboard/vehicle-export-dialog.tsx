@@ -118,11 +118,6 @@ export function VehicleExportDialog({
   const orgId = user?.organizationId;
   const { data: permissions } = usePermissions(orgId || "");
 
-  console.log('[VehicleExportDialog] permissions:', permissions)
-  console.log('[VehicleExportDialog] user.role:', user?.role)
-  console.log('[VehicleExportDialog] role:', role)
-  console.log('[VehicleExportDialog] orgId:', orgId)
-
   // Default permissions for export (matching backend)
   const EXPORT_DEFAULTS = {
     EXPORT_SARS_LOGBOOK: ['ADMIN'],
@@ -144,20 +139,13 @@ export function VehicleExportDialog({
                   p.userRole === role
     )
 
-    console.log('[VehicleExportDialog canExportSARSLogbook] role:', role)
-    console.log('[VehicleExportDialog canExportSARSLogbook] exportOverride:', exportOverride)
-    console.log('[VehicleExportDialog canExportSARSLogbook] exportOverride.isAllowed:', exportOverride?.isAllowed)
-
     // If override exists, use it
     if (exportOverride !== undefined) {
-      console.log('[VehicleExportDialog canExportSARSLogbook] Using override, isAllowed:', exportOverride.isAllowed)
       return exportOverride.isAllowed
     }
 
     // Fall back to default permissions
-    const hasDefaultPermission = EXPORT_DEFAULTS.EXPORT_SARS_LOGBOOK.includes(role)
-    console.log('[VehicleExportDialog canExportSARSLogbook] Using default, hasDefaultPermission:', hasDefaultPermission)
-    return hasDefaultPermission
+    return EXPORT_DEFAULTS.EXPORT_SARS_LOGBOOK.includes(role)
   }
 
   // Check if current user has permission to export via email
@@ -192,8 +180,6 @@ export function VehicleExportDialog({
   );
 
   const handleDownload = async () => {
-    console.log('[VehicleExportDialog handleDownload] role:', role)
-    console.log('[VehicleExportDialog handleDownload] canExportSARSLogbook():', canExportSARSLogbook())
     // SUPER_ADMIN bypass
     if (role !== 'SUPER_ADMIN' && !canExportSARSLogbook()) {
       toast.error("You do not have permission to export SARS logbooks");

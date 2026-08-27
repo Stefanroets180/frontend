@@ -448,21 +448,13 @@ export default function DashboardPage() {
                   p.userRole === currentUserRole
     )
 
-    console.log('[canExportSARSLogbook] currentUserRole:', currentUserRole)
-    console.log('[canExportSARSLogbook] exportOverride:', exportOverride)
-    console.log('[canExportSARSLogbook] exportOverride.isAllowed:', exportOverride?.isAllowed)
-    console.log('[canExportSARSLogbook] EXPORT_DEFAULTS.EXPORT_SARS_LOGBOOK:', EXPORT_DEFAULTS.EXPORT_SARS_LOGBOOK)
-
     // If override exists, use it
     if (exportOverride !== undefined) {
-      console.log('[canExportSARSLogbook] Using override, isAllowed:', exportOverride.isAllowed)
       return exportOverride.isAllowed
     }
 
     // Fall back to default permissions
-    const hasDefaultPermission = EXPORT_DEFAULTS.EXPORT_SARS_LOGBOOK.includes(currentUserRole)
-    console.log('[canExportSARSLogbook] Using default, hasDefaultPermission:', hasDefaultPermission)
-    return hasDefaultPermission
+    return EXPORT_DEFAULTS.EXPORT_SARS_LOGBOOK.includes(currentUserRole)
   }
 
   // Check if current user has permission to export trips
@@ -514,11 +506,7 @@ export default function DashboardPage() {
   // Memoize the permission check result to avoid re-evaluation during render
   // SUPER_ADMIN bypasses everything regardless of loading state
   const hasExportSARSLogbookPermission = useMemo(
-    () => {
-      const result = currentUserRole === 'SUPER_ADMIN' || (!isLoadingPermissions && canExportSARSLogbook())
-      console.log('[Dashboard useMemo] hasExportSARSLogbookPermission:', result, 'currentUserRole:', currentUserRole, 'isLoadingPermissions:', isLoadingPermissions)
-      return result
-    },
+    () => currentUserRole === 'SUPER_ADMIN' || (!isLoadingPermissions && canExportSARSLogbook()),
     [currentUserRole, isLoadingPermissions, permissions]
   )
   const hasExportTripsPermission = useMemo(
