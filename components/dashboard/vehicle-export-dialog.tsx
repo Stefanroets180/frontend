@@ -119,6 +119,11 @@ export function VehicleExportDialog({
   const { user } = useAuth();
   const role = currentUserRole || user?.role;
 
+  console.log('[VehicleExportDialog] permissions:', permissions)
+  console.log('[VehicleExportDialog] currentUserRole prop:', currentUserRole)
+  console.log('[VehicleExportDialog] user.role:', user?.role)
+  console.log('[VehicleExportDialog] role:', role)
+
   // Default permissions for export (matching backend)
   const EXPORT_DEFAULTS = {
     EXPORT_SARS_LOGBOOK: ['ADMIN'],
