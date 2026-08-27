@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/lib/contexts/auth-context";
+import { usePermissions } from "@/hooks/usePermissions";
 import {
   Download,
   Mail,
@@ -54,8 +55,6 @@ interface VehicleExportDialogProps {
   triggerVariant?: ButtonVariant;
   triggerSize?: ButtonSize;
   triggerClassName?: string;
-  permissions?: any[];
-  currentUserRole?: string;
 }
 
 async function downloadExport(
@@ -113,16 +112,16 @@ export function VehicleExportDialog({
   triggerVariant = "default",
   triggerSize = "default",
   triggerClassName = "",
-  permissions,
-  currentUserRole,
 }: VehicleExportDialogProps) {
   const { user } = useAuth();
-  const role = currentUserRole || user?.role;
+  const role = user?.role;
+  const orgId = user?.organizationId;
+  const { data: permissions } = usePermissions(orgId || "");
 
   console.log('[VehicleExportDialog] permissions:', permissions)
-  console.log('[VehicleExportDialog] currentUserRole prop:', currentUserRole)
   console.log('[VehicleExportDialog] user.role:', user?.role)
   console.log('[VehicleExportDialog] role:', role)
+  console.log('[VehicleExportDialog] orgId:', orgId)
 
   // Default permissions for export (matching backend)
   const EXPORT_DEFAULTS = {

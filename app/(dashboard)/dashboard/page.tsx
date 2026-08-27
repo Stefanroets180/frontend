@@ -1379,8 +1379,6 @@ export default function DashboardPage() {
                     triggerLabel="Export all data"
                     triggerClassName="w-full gap-2"
                     disabled={false}
-                    permissions={permissions}
-                    currentUserRole={currentUserRole}
                   />
                 }
               />
