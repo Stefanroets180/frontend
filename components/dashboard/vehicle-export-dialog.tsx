@@ -54,8 +54,8 @@ interface VehicleExportDialogProps {
   triggerVariant?: ButtonVariant;
   triggerSize?: ButtonSize;
   triggerClassName?: string;
-  canExportSARSLogbook?: boolean;
-  canExportEmail?: boolean;
+  canExportSARSLogbook?: boolean | (() => boolean);
+  canExportEmail?: boolean | (() => boolean);
 }
 
 async function downloadExport(
@@ -119,6 +119,10 @@ export function VehicleExportDialog({
   const { user } = useAuth();
   const currentUserRole = user?.role;
 
+  // Handle both boolean and function props
+  const getCanExportSARSLogbook = typeof canExportSARSLogbook === 'function' ? canExportSARSLogbook : () => canExportSARSLogbook
+  const getCanExportEmail = typeof canExportEmail === 'function' ? canExportEmail : () => canExportEmail
+
   const [open, setOpen] = useState(false);
   const [format, setFormat] = useState<ExportFormat>("pdf");
   const [taxYear, setTaxYear] = useState(String(getSATaxYear()));
@@ -129,7 +133,7 @@ export function VehicleExportDialog({
 
   const handleDownload = async () => {
     // SUPER_ADMIN bypass
-    if (currentUserRole !== 'SUPER_ADMIN' && !canExportSARSLogbook) {
+    if (currentUserRole !== 'SUPER_ADMIN' && !getCanExportSARSLogbook()) {
       toast.error("You do not have permission to export SARS logbooks");
       return;
     }
@@ -151,7 +155,7 @@ export function VehicleExportDialog({
 
   const handleEmail = async () => {
     // SUPER_ADMIN bypass
-    if (currentUserRole !== 'SUPER_ADMIN' && !canExportEmail) {
+    if (currentUserRole !== 'SUPER_ADMIN' && !getCanExportEmail()) {
       toast.error("You do not have permission to export via email");
       return;
     }
@@ -201,7 +205,7 @@ export function VehicleExportDialog({
 
   const handleShare = async () => {
     // SUPER_ADMIN bypass
-    if (currentUserRole !== 'SUPER_ADMIN' && !canExportSARSLogbook) {
+    if (currentUserRole !== 'SUPER_ADMIN' && !getCanExportSARSLogbook()) {
       toast.error("You do not have permission to export SARS logbooks");
       return;
     }

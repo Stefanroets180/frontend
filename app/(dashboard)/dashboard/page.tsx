@@ -1379,8 +1379,8 @@ export default function DashboardPage() {
                     triggerLabel="Export all data"
                     triggerClassName="w-full gap-2"
                     disabled={false}
-                    canExportSARSLogbook={hasExportSARSLogbookPermission}
-                    canExportEmail={hasExportEmailPermission}
+                    canExportSARSLogbook={canExportSARSLogbook}
+                    canExportEmail={canExportEmail}
                   />
                 }
               />
