@@ -132,6 +132,8 @@ export function VehicleExportDialog({
   );
 
   const handleDownload = async () => {
+    console.log('[VehicleExportDialog handleDownload] currentUserRole:', currentUserRole)
+    console.log('[VehicleExportDialog handleDownload] getCanExportSARSLogbook():', getCanExportSARSLogbook())
     // SUPER_ADMIN bypass
     if (currentUserRole !== 'SUPER_ADMIN' && !getCanExportSARSLogbook()) {
       toast.error("You do not have permission to export SARS logbooks");
