@@ -129,6 +129,14 @@ function SettingsContent() {
     return () => window.removeEventListener('popstate', handleRouteChange);
   }, []);
 
+  // Track component mount/unmount
+  useEffect(() => {
+    console.log('[Settings] Component mounted');
+    return () => {
+      console.log('[Settings] Component unmounted');
+    };
+  }, []);
+
   // Default permissions for tax audit (matching backend)
   const TAX_AUDIT_DEFAULTS = {
     ADD_OPENING_READING: ['MANAGER', 'ADMIN'],
