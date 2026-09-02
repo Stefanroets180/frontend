@@ -283,13 +283,7 @@ export default function LogbookPage() {
     return EXPORT_DEFAULTS.EXPORT_EMAIL.includes(currentUserRole)
   }
 
-  // Redirect if user doesn't have permission to view logbook
-  useEffect(() => {
-    // Only redirect if user is on the logbook page
-    if (pathname === '/dashboard/logbook' && permissions && currentUserRole && !canViewLogbook()) {
-      router.push('/dashboard')
-    }
-  }, [pathname, permissions, currentUserRole, router])
+  // Redirect removed - ASSISTANT users now have permission via LOGBOOK_DEFAULTS
 
   const loadTrips = async () => {
     try {
