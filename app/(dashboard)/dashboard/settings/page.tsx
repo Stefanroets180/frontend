@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -77,6 +77,7 @@ interface VehicleOption {
 
 function SettingsContent() {
   const { user, logout, refreshUser, isLoading: authLoading, isFleetMode } = useAuth();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const {
@@ -117,6 +118,16 @@ function SettingsContent() {
     console.log('[Settings] shouldFetchPermissions:', shouldFetchPermissions);
     console.log('[Settings] isLoadingPermissions:', isLoadingPermissions);
   }, [user, isFleetMode, shouldFetchPermissions, isLoadingPermissions]);
+
+  // Track router changes
+  useEffect(() => {
+    console.log('[Settings] Current pathname:', window.location.pathname);
+    const handleRouteChange = () => {
+      console.log('[Settings] Route changed to:', window.location.pathname);
+    };
+    window.addEventListener('popstate', handleRouteChange);
+    return () => window.removeEventListener('popstate', handleRouteChange);
+  }, []);
 
   // Default permissions for tax audit (matching backend)
   const TAX_AUDIT_DEFAULTS = {
