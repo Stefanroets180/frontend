@@ -158,7 +158,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('[AuthContext] refreshUser user data:', data);
       const authUser = mapMeToAuthUser(data, readStoredProfile());
       setUser(authUser);
-      setIsAuthenticated(!!authUser);
       localStorage.setItem("user_profile", JSON.stringify(authUser));
     } catch (error: any) {
       console.error('[AuthContext] refreshUser error:', error);
@@ -166,7 +165,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('[AuthContext] refreshUser got 401, logging out');
       }
       setUser(null);
-      setIsAuthenticated(false);
       localStorage.removeItem('jwt_token'); // Safety clear
     }
   }, []);
