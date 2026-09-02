@@ -91,6 +91,13 @@ function SettingsContent() {
     window.addEventListener('error', handleError);
     return () => window.removeEventListener('error', handleError);
   }, []);
+
+  // Debug: log when component unmounts
+  useEffect(() => {
+    return () => {
+      console.log('[Settings] Component unmounting');
+    };
+  }, []);
   const {
     preferences,
     loaded: prefsLoaded,
