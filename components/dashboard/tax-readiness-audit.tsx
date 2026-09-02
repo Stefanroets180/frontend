@@ -103,6 +103,8 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
   const { user } = useAuth();
   const { data: permissions } = usePermissions(user?.organizationId || "");
   const currentUserRole = user?.role;
+  const assistantRole = user?.assistantRole;
+  const effectiveRole = currentUserRole === 'ASSISTANT' ? assistantRole : currentUserRole;
   const router = useRouter();
   
   const [selectedYear, setSelectedYear] = useState<number>(getSATaxYear());
@@ -128,33 +130,33 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
     // SUPER_ADMIN bypasses everything
     if (currentUserRole === 'SUPER_ADMIN') return true
     
-    if (!permissions || !currentUserRole) return false
+    if (!permissions || !effectiveRole) return false
 
     // Check for overrides first
     const addOpeningOverride = permissions.find(
       (p: any) => p.permissionType === 'TAX_AUDIT' &&
                   p.permissionKey === 'ADD_OPENING_READING' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
     const addClosingOverride = permissions.find(
       (p: any) => p.permissionType === 'TAX_AUDIT' &&
                   p.permissionKey === 'ADD_CLOSING_READING' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
     const editOverride = permissions.find(
       (p: any) => p.permissionType === 'TAX_AUDIT' &&
                   p.permissionKey === 'EDIT_READINGS' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
     const deleteOverride = permissions.find(
       (p: any) => p.permissionType === 'TAX_AUDIT' &&
                   p.permissionKey === 'DELETE_READINGS' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
     const viewOverride = permissions.find(
       (p: any) => p.permissionType === 'TAX_AUDIT' &&
                   p.permissionKey === 'VIEW_TAX_REPORTS' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
 
     // If any override exists and is true, allow access
@@ -172,11 +174,11 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
     if (viewOverride !== undefined && !viewOverride.isAllowed) return false
 
     // Fall back to default permissions
-    return TAX_AUDIT_DEFAULTS.ADD_OPENING_READING.includes(currentUserRole) ||
-           TAX_AUDIT_DEFAULTS.ADD_CLOSING_READING.includes(currentUserRole) ||
-           TAX_AUDIT_DEFAULTS.EDIT_READINGS.includes(currentUserRole) ||
-           TAX_AUDIT_DEFAULTS.DELETE_READINGS.includes(currentUserRole) ||
-           TAX_AUDIT_DEFAULTS.VIEW_TAX_REPORTS.includes(currentUserRole)
+    return TAX_AUDIT_DEFAULTS.ADD_OPENING_READING.includes(effectiveRole) ||
+           TAX_AUDIT_DEFAULTS.ADD_CLOSING_READING.includes(effectiveRole) ||
+           TAX_AUDIT_DEFAULTS.EDIT_READINGS.includes(effectiveRole) ||
+           TAX_AUDIT_DEFAULTS.DELETE_READINGS.includes(effectiveRole) ||
+           TAX_AUDIT_DEFAULTS.VIEW_TAX_REPORTS.includes(effectiveRole)
   }
 
   // Check if current user has permission to add readings
@@ -184,24 +186,24 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
     // SUPER_ADMIN bypasses everything
     if (currentUserRole === 'SUPER_ADMIN') return true
     
-    if (!permissions || !currentUserRole) return false
+    if (!permissions || !effectiveRole) return false
 
     const addOpeningOverride = permissions.find(
       (p: any) => p.permissionType === 'TAX_AUDIT' &&
                   p.permissionKey === 'ADD_OPENING_READING' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
     const addClosingOverride = permissions.find(
       (p: any) => p.permissionType === 'TAX_AUDIT' &&
                   p.permissionKey === 'ADD_CLOSING_READING' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
 
     if (addOpeningOverride !== undefined) return addOpeningOverride.isAllowed
     if (addClosingOverride !== undefined) return addClosingOverride.isAllowed
 
-    return TAX_AUDIT_DEFAULTS.ADD_OPENING_READING.includes(currentUserRole) ||
-           TAX_AUDIT_DEFAULTS.ADD_CLOSING_READING.includes(currentUserRole)
+    return TAX_AUDIT_DEFAULTS.ADD_OPENING_READING.includes(effectiveRole) ||
+           TAX_AUDIT_DEFAULTS.ADD_CLOSING_READING.includes(effectiveRole)
   }
 
   // Check if current user has permission to edit readings
@@ -209,17 +211,17 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
     // SUPER_ADMIN bypasses everything
     if (currentUserRole === 'SUPER_ADMIN') return true
     
-    if (!permissions || !currentUserRole) return false
+    if (!permissions || !effectiveRole) return false
 
     const editOverride = permissions.find(
       (p: any) => p.permissionType === 'TAX_AUDIT' &&
                   p.permissionKey === 'EDIT_READINGS' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
 
     if (editOverride !== undefined) return editOverride.isAllowed
 
-    return TAX_AUDIT_DEFAULTS.EDIT_READINGS.includes(currentUserRole)
+    return TAX_AUDIT_DEFAULTS.EDIT_READINGS.includes(effectiveRole)
   }
 
   // Check if current user has permission to delete readings
@@ -227,17 +229,17 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
     // SUPER_ADMIN bypasses everything
     if (currentUserRole === 'SUPER_ADMIN') return true
     
-    if (!permissions || !currentUserRole) return false
+    if (!permissions || !effectiveRole) return false
 
     const deleteOverride = permissions.find(
       (p: any) => p.permissionType === 'TAX_AUDIT' &&
                   p.permissionKey === 'DELETE_READINGS' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
 
     if (deleteOverride !== undefined) return deleteOverride.isAllowed
 
-    return TAX_AUDIT_DEFAULTS.DELETE_READINGS.includes(currentUserRole)
+    return TAX_AUDIT_DEFAULTS.DELETE_READINGS.includes(effectiveRole)
   }
 
   const isAdminOrManager = user?.role === 'ADMIN' || user?.role === 'MANAGER' || user?.role === 'SUPER_ADMIN';
@@ -250,10 +252,10 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
 
   // Redirect if user doesn't have permission to view tax audit
   useEffect(() => {
-    if (permissions && currentUserRole && !canViewTaxAudit()) {
+    if (permissions && effectiveRole && !canViewTaxAudit()) {
       router.push('/dashboard');
     }
-  }, [permissions, currentUserRole, router]);
+  }, [permissions, effectiveRole, router]);
 
   const fetchData = async () => {
     setIsLoading(true);
