@@ -19,6 +19,44 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
     }
   }, [user, isFleetMode])
 
+  // Workaround to prevent redirect from settings page to /dashboard for ASSISTANT users
+  useEffect(() => {
+    const checkAndFixRedirect = () => {
+      if (window.location.pathname === '/dashboard' && user?.assistantRole) {
+        // If we're on /dashboard but should be on settings, redirect back
+        // This is a workaround for Next.js internal routing issue
+        const wasOnSettings = sessionStorage.getItem('wasOnSettings') === 'true'
+        if (wasOnSettings) {
+          window.history.pushState({}, '', '/dashboard/settings')
+        }
+      }
+    }
+    
+    // Check immediately
+    checkAndFixRedirect()
+    
+    // Check periodically (every 100ms) to catch redirects
+    const interval = setInterval(checkAndFixRedirect, 100)
+    
+    return () => clearInterval(interval)
+  }, [user?.assistantRole])
+
+  // Track when user navigates to settings page
+  useEffect(() => {
+    const handleRouteChange = () => {
+      if (window.location.pathname === '/dashboard/settings') {
+        sessionStorage.setItem('wasOnSettings', 'true')
+      } else if (window.location.pathname === '/dashboard') {
+        sessionStorage.removeItem('wasOnSettings')
+      }
+    }
+    
+    window.addEventListener('popstate', handleRouteChange)
+    handleRouteChange() // Check on mount
+    
+    return () => window.removeEventListener('popstate', handleRouteChange)
+  }, [])
+
   return (
     <>
       <div className="flex min-h-screen flex-col bg-background">
