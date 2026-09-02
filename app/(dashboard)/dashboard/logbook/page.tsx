@@ -79,9 +79,9 @@ export default function LogbookPage() {
 
   // Default permissions for logbook (matching backend)
   const LOGBOOK_DEFAULTS = {
-    VIEW_OWN_LOGBOOK: ['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER'],
+    VIEW_OWN_LOGBOOK: ['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER', 'ASSISTANT'],
     VIEW_ALL_LOGBOOKS: ['MANAGER', 'ADMIN'],
-    EDIT_OWN_ENTRIES: ['DRIVER', 'MANAGER', 'ADMIN'],
+    EDIT_OWN_ENTRIES: ['DRIVER', 'MANAGER', 'ADMIN', 'ASSISTANT'],
     EDIT_ALL_ENTRIES: ['ADMIN'],
     DELETE_OWN_ENTRIES: ['DRIVER', 'MANAGER', 'ADMIN'],
     DELETE_ALL_ENTRIES: ['ADMIN']
