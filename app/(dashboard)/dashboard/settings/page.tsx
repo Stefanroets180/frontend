@@ -290,12 +290,13 @@ function SettingsContent() {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    console.log('[Settings] Calling refreshUser...');
-    refreshUser().catch((error) => {
-      console.error('[Settings] refreshUser failed:', error);
-    });
-  }, [refreshUser]);
+  // Temporarily disable refreshUser to prevent redirect
+  // useEffect(() => {
+  //   console.log('[Settings] Calling refreshUser...');
+  //   refreshUser().catch((error) => {
+  //     console.error('[Settings] refreshUser failed:', error);
+  //   });
+  // }, [refreshUser]);
 
   useEffect(() => {
     api
