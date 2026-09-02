@@ -645,7 +645,7 @@ export default function OrganizationPage() {
                   <div>
                     <h3 className="mb-3 text-sm font-semibold text-muted-foreground">Active Assistants</h3>
                     <div className="space-y-4">
-                      {assistants.filter((a: any) => a.isActive !== false).map((assistant: any) => (
+                      {(assistants || []).filter((a: any) => a.isActive !== false).map((assistant: any) => (
                         <div key={assistant.id} className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
                           <div className="flex items-center gap-4">
                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -674,7 +674,7 @@ export default function OrganizationPage() {
                           </Button>
                         </div>
                       ))}
-                      {assistants.filter((a: any) => a.isActive !== false).length === 0 && (
+                      {(assistants || []).filter((a: any) => a.isActive !== false).length === 0 && (
                         <div className="py-4 text-center text-muted-foreground text-sm">
                           No active assistants
                         </div>
@@ -683,11 +683,11 @@ export default function OrganizationPage() {
                   </div>
 
                   {/* Removed Assistants History */}
-                  {assistants.filter((a: any) => a.isActive === false).length > 0 && (
+                  {(assistants || []).filter((a: any) => a.isActive === false).length > 0 && (
                     <div>
                       <h3 className="mb-3 text-sm font-semibold text-muted-foreground">Removed Assistants</h3>
                       <div className="space-y-3">
-                        {assistants.filter((a: any) => a.isActive === false).map((assistant: any) => (
+                        {(assistants || []).filter((a: any) => a.isActive === false).map((assistant: any) => (
                           <div key={assistant.id} className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 p-3 opacity-70">
                             <div className="flex items-center gap-3">
                               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-muted-foreground">
