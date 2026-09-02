@@ -92,7 +92,7 @@ const INDIVIDUAL_DEFAULTS: Record<string, Record<string, Set<string>>> = {
     VIEW_TAX_REPORTS: new Set(['ASSISTANT_HIGH']),
   },
   EXPORT: {
-    EXPORT_SARS_LOGBOOK: new Set([]),
+    EXPORT_SARS_LOGBOOK: new Set(['ASSISTANT_HIGH']),
     EXPORT_TRIPS: new Set(['ASSISTANT_HIGH']),
     EXPORT_EMAIL: new Set([]),
   }

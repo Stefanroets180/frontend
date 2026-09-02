@@ -151,22 +151,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [router]);
 
   const refreshUser = useCallback(async () => {
-    const token = localStorage.getItem('jwt_token');
-    if (!token) {
-      setUser(null);
-      return;
-    }
-
+    console.log('[AuthContext] refreshUser called');
     try {
       const response = await api.get('/auth/me');
-      const me = (response.data.user ?? response.data) as Record<string, unknown>;
-      const authUser = mapMeToAuthUser(me, readStoredProfile());
+      console.log('[AuthContext] refreshUser response status:', response.status);
+      const data = response.data;
+      console.log('[AuthContext] refreshUser user data:', data);
+      const authUser = mapMeToAuthUser(data, readStoredProfile());
       setUser(authUser);
+      setIsAuthenticated(!!authUser);
       localStorage.setItem("user_profile", JSON.stringify(authUser));
-    } catch (error) {
-      console.error("Refresh user failed:", error);
-      // The api client already handles 401/403 token clearing
+    } catch (error: any) {
+      console.error('[AuthContext] refreshUser error:', error);
+      if (error?.response?.status === 401) {
+        console.log('[AuthContext] refreshUser got 401, logging out');
+      }
       setUser(null);
+      setIsAuthenticated(false);
       localStorage.removeItem('jwt_token'); // Safety clear
     }
   }, []);
@@ -225,7 +226,9 @@ export function useRequireRole(...roles: UserRole[]) {
   const router = useRouter();
 
   useEffect(() => {
+    console.log('[useRequireRole] Checking role:', { userRole: user?.role, requiredRoles: roles, isLoading });
     if (!isLoading && user && !roles.includes(user.role)) {
+      console.log('[useRequireRole] Role mismatch, redirecting to dashboard');
       router.push("/dashboard"); // Redirect to dashboard if wrong role
     }
   }, [isLoading, user, roles, router]);
