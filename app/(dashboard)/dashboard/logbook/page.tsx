@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { api } from "@/lib/api/client";
 import type { Vehicle, Trip } from "@/lib/types/database";
 import { Button } from "@/components/ui/button";
@@ -60,6 +60,7 @@ const emptySummary = {
 
 export default function LogbookPage() {
   const router = useRouter();
+  const pathname = usePathname();
   const { taxYear } = getSarsTaxYear();
   const { user } = useAuth();
   const orgId = user?.organizationId;
@@ -285,10 +286,10 @@ export default function LogbookPage() {
   // Redirect if user doesn't have permission to view logbook
   useEffect(() => {
     // Only redirect if user is on the logbook page
-    if (window.location.pathname === '/dashboard/logbook' && permissions && currentUserRole && !canViewLogbook()) {
+    if (pathname === '/dashboard/logbook' && permissions && currentUserRole && !canViewLogbook()) {
       router.push('/dashboard')
     }
-  }, [permissions, currentUserRole, router])
+  }, [pathname, permissions, currentUserRole, router])
 
   const loadTrips = async () => {
     try {
