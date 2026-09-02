@@ -143,6 +143,11 @@ function SettingsContent() {
     history.pushState = function(...args) {
       console.log('[Settings] pushState called with:', args);
       console.log('[Settings] pushState stack trace:', new Error().stack);
+      // Prevent redirect to /dashboard when on settings page
+      if (args[2] === '/dashboard' && window.location.pathname === '/dashboard/settings') {
+        console.log('[Settings] Blocking redirect to /dashboard from settings page');
+        return;
+      }
       originalPushState.apply(history, args);
       setTimeout(() => console.log('[Settings] After pushState, pathname:', window.location.pathname), 0);
     };
