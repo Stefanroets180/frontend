@@ -263,7 +263,10 @@ function SettingsContent() {
   }, []);
 
   useEffect(() => {
-    refreshUser().catch(() => {});
+    console.log('[Settings] Calling refreshUser...');
+    refreshUser().catch((error) => {
+      console.error('[Settings] refreshUser failed:', error);
+    });
   }, [refreshUser]);
 
   useEffect(() => {
@@ -396,12 +399,15 @@ function SettingsContent() {
   };
 
   if (authLoading || !mounted || (shouldFetchPermissions && isLoadingPermissions)) {
+    console.log('[Settings] Showing loading spinner:', { authLoading, mounted, shouldFetchPermissions, isLoadingPermissions });
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
+
+  console.log('[Settings] Rendering settings page content');
 
   return (
     <div className="container mx-auto max-w-full space-y-6 p-4 overflow-x-hidden">
