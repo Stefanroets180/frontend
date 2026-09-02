@@ -154,7 +154,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     console.log('[AuthContext] refreshUser called');
     try {
       const response = await api.get('/auth/me');
-      console.log('[AuthContext] refreshUser response status:', response.status);
       const data = response.data;
       console.log('[AuthContext] refreshUser user data:', data);
       const authUser = mapMeToAuthUser(data, readStoredProfile());
