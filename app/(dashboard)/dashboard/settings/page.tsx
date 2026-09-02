@@ -63,7 +63,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/contexts/auth-context";
 import { useUserPreferences } from "@/lib/hooks/use-user-preferences";
 import { api } from "@/lib/api/client";
-import { getSATaxYear } from "@/lib/types/database";
+import { getSATaxYear, OrganizationMode } from "@/lib/types/database";
 import { toast } from "sonner";
 import { usePermissions, useResetPermissions } from "@/hooks/usePermissions";
 
@@ -101,7 +101,7 @@ function SettingsContent() {
 
   // Permissions state (SUPER_ADMIN only) - using React Query
   // Only fetch permissions for fleet mode or SOLO owners (not assistants)
-  const shouldFetchPermissions = isFleetMode || (user?.role === 'SOLO');
+  const shouldFetchPermissions = isFleetMode || (user?.organizationMode === OrganizationMode.SOLO && !user?.assistantRole);
   const { data: permissionOverrides = [], isLoading: isLoadingPermissions } = usePermissions(shouldFetchPermissions ? (user?.organizationId || "") : "");
   const resetPermissions = useResetPermissions();
   const [openSection, setOpenSection] = useState<string>("EXPENSE_CATEGORY");
