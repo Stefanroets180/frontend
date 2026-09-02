@@ -146,6 +146,7 @@ function SettingsContent() {
       // Prevent redirect to /dashboard when on settings page
       if (args[2] === '/dashboard' && window.location.pathname === '/dashboard/settings') {
         console.log('[Settings] Blocking redirect to /dashboard from settings page');
+        // Return early to prevent the pushState call
         return;
       }
       originalPushState.apply(history, args);
@@ -163,6 +164,14 @@ function SettingsContent() {
       history.pushState = originalPushState;
       history.replaceState = originalReplaceState;
     };
+  }, []);
+
+  // Prevent unmount by forcing re-render if pathname changes to /dashboard
+  useEffect(() => {
+    if (window.location.pathname === '/dashboard') {
+      console.log('[Settings] Detected redirect to /dashboard, forcing navigation back to settings');
+      window.history.pushState({}, '', '/dashboard/settings');
+    }
   }, []);
 
   // Track component mount/unmount
