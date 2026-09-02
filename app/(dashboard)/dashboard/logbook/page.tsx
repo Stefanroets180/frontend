@@ -65,6 +65,7 @@ export default function LogbookPage() {
   const { user } = useAuth();
   const orgId = user?.organizationId;
   const currentUserRole = user?.role;
+  const assistantRole = user?.assistantRole;
   
   // Fetch permissions for the organization
   const { data: permissions, isLoading: isLoadingPermissions } = usePermissions(orgId || "");
