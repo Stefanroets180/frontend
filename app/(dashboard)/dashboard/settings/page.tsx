@@ -969,8 +969,8 @@ function SettingsContent() {
                       isIndividualMode={!isFleet}
                     />
 
-                    {/* Tax Audit - Fleet only */}
-                    {isFleet && !isLoadingPermissions && canViewTaxAudit() && (
+                    {/* Tax Audit */}
+                    {!isLoadingPermissions && canViewTaxAudit() && (
                       <PermissionSection
                         title="Tax Audit"
                         description="Control who can manage tax audit readings and reports."
@@ -983,33 +983,39 @@ function SettingsContent() {
                           { key: "DELETE_READINGS", label: "Delete Readings" },
                           { key: "VIEW_TAX_REPORTS", label: "View Tax Reports" },
                         ]}
-                        roles={roles.filter(r => ['MANAGER', 'ADMIN'].includes(r.name))}
+                        roles={roles.filter(r => isFleet
+                          ? ['MANAGER', 'ADMIN'].includes(r.name)
+                          : ['ASSISTANT_LOW', 'ASSISTANT_HIGH'].includes(r.name)
+                        )}
                         overrides={permissionMatrix['TAX_AUDIT'] ?? {}}
                         orgId={user?.organizationId || ""}
                         isOpen={openSection === "TAX_AUDIT"}
                         onToggle={() => setOpenSection(openSection === "TAX_AUDIT" ? "" : "TAX_AUDIT")}
+                        isIndividualMode={!isFleet}
                       />
                     )}
 
-                    {/* Export - Fleet only */}
-                    {isFleet && (
-                      <PermissionSection
-                        title="Export"
-                        description="Control who can export data and reports."
-                        icon={Download}
-                        type="EXPORT"
-                        keys={[
-                          { key: "EXPORT_SARS_LOGBOOK", label: "Export SARS Logbook" },
-                          { key: "EXPORT_TRIPS", label: "Export Trips" },
-                          { key: "EXPORT_EMAIL", label: "Export Email" },
-                        ]}
-                        roles={roles.filter(r => ['MANAGER', 'ADMIN'].includes(r.name))}
-                        overrides={permissionMatrix['EXPORT'] ?? {}}
-                        orgId={user?.organizationId || ""}
-                        isOpen={openSection === "EXPORT"}
-                        onToggle={() => setOpenSection(openSection === "EXPORT" ? "" : "EXPORT")}
-                      />
-                    )}
+                    {/* Export */}
+                    <PermissionSection
+                      title="Export"
+                      description="Control who can export data and reports."
+                      icon={Download}
+                      type="EXPORT"
+                      keys={[
+                        { key: "EXPORT_SARS_LOGBOOK", label: "Export SARS Logbook" },
+                        { key: "EXPORT_TRIPS", label: "Export Trips" },
+                        { key: "EXPORT_EMAIL", label: "Export Email" },
+                      ]}
+                      roles={roles.filter(r => isFleet
+                        ? ['MANAGER', 'ADMIN'].includes(r.name)
+                        : ['ASSISTANT_LOW', 'ASSISTANT_HIGH'].includes(r.name)
+                      )}
+                      overrides={permissionMatrix['EXPORT'] ?? {}}
+                      orgId={user?.organizationId || ""}
+                      isOpen={openSection === "EXPORT"}
+                      onToggle={() => setOpenSection(openSection === "EXPORT" ? "" : "EXPORT")}
+                      isIndividualMode={!isFleet}
+                    />
                   </div>
                   <p className="mt-4 text-xs leading-5 text-muted-foreground">
                     Changes are saved automatically. Super admins always retain full access to organization settings.

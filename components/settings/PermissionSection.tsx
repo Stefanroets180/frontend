@@ -84,6 +84,18 @@ const INDIVIDUAL_DEFAULTS: Record<string, Record<string, Set<string>>> = {
     DELETE_OWN_ENTRIES: new Set(['ASSISTANT_HIGH']),
     DELETE_ALL_ENTRIES: new Set([]),
   },
+  TAX_AUDIT: {
+    ADD_OPENING_READING: new Set(['ASSISTANT_HIGH']),
+    ADD_CLOSING_READING: new Set(['ASSISTANT_HIGH']),
+    EDIT_READINGS: new Set(['ASSISTANT_HIGH']),
+    DELETE_READINGS: new Set(['ASSISTANT_HIGH']),
+    VIEW_TAX_REPORTS: new Set(['ASSISTANT_HIGH']),
+  },
+  EXPORT: {
+    EXPORT_SARS_LOGBOOK: new Set([]),
+    EXPORT_TRIPS: new Set(['ASSISTANT_HIGH']),
+    EXPORT_EMAIL: new Set([]),
+  }
 };
 
 const ROLE_TONES = {
