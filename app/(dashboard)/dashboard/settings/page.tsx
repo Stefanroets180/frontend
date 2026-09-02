@@ -951,12 +951,14 @@ function SettingsContent() {
                       icon={BookOpen}
                       type="LOGBOOK"
                       keys={[
-                        { key: "VIEW_LOGBOOK", label: "View Logbook" },
-                        { key: "ADD_TRIP", label: "Add Trip" },
-                        { key: "EDIT_TRIP", label: "Edit Trip" },
-                        { key: "DELETE_TRIP", label: "Delete Trip" },
+                        { key: "VIEW_OWN_LOGBOOK", label: "View Own Logbook" },
+                        { key: "VIEW_ALL_LOGBOOKS", label: "View All Logbooks" },
+                        { key: "EDIT_OWN_ENTRIES", label: "Edit Own Entries" },
+                        { key: "EDIT_ALL_ENTRIES", label: "Edit All Entries" },
+                        { key: "DELETE_OWN_ENTRIES", label: "Delete Own Entries" },
+                        { key: "DELETE_ALL_ENTRIES", label: "Delete All Entries" },
                       ]}
-                      roles={roles.filter(r => isFleet 
+                      roles={roles.filter(r => isFleet
                         ? ['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER'].includes(r.name)
                         : ['ASSISTANT_LOW', 'ASSISTANT_HIGH'].includes(r.name)
                       )}

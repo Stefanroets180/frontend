@@ -39,10 +39,12 @@ const DEFAULTS: Record<string, Record<string, Set<string>>> = {
     RECLAIM_VEHICLE: new Set(['MANAGER','ADMIN']),
   },
   LOGBOOK: {
-    VIEW_LOGBOOK: new Set(['DRIVER','MANAGER','ADMIN','RENTAL_CUSTOMER']),
-    ADD_TRIP: new Set(['DRIVER','MANAGER','ADMIN']),
-    EDIT_TRIP: new Set(['MANAGER','ADMIN']),
-    DELETE_TRIP: new Set(['ADMIN']),
+    VIEW_OWN_LOGBOOK: new Set(['DRIVER','ASSISTANT_HIGH','MANAGER','ADMIN','RENTAL_CUSTOMER']),
+    VIEW_ALL_LOGBOOKS: new Set(['MANAGER','ADMIN']),
+    EDIT_OWN_ENTRIES: new Set(['DRIVER','ASSISTANT_HIGH','MANAGER','ADMIN']),
+    EDIT_ALL_ENTRIES: new Set(['ADMIN']),
+    DELETE_OWN_ENTRIES: new Set(['DRIVER','ASSISTANT_HIGH','MANAGER','ADMIN']),
+    DELETE_ALL_ENTRIES: new Set(['ADMIN']),
   },
   TAX_AUDIT: {
     ADD_OPENING_READING: new Set(['MANAGER','ADMIN']),
@@ -75,10 +77,12 @@ const INDIVIDUAL_DEFAULTS: Record<string, Record<string, Set<string>>> = {
     PARKING: new Set(['ASSISTANT_LOW','ASSISTANT_HIGH']),
   },
   LOGBOOK: {
-    VIEW_LOGBOOK: new Set(['ASSISTANT_LOW','ASSISTANT_HIGH']),
-    ADD_TRIP: new Set(['ASSISTANT_HIGH']),
-    EDIT_TRIP: new Set(['ASSISTANT_HIGH']),
-    DELETE_TRIP: new Set([]),
+    VIEW_OWN_LOGBOOK: new Set(['ASSISTANT_LOW','ASSISTANT_HIGH']),
+    VIEW_ALL_LOGBOOKS: new Set([]),
+    EDIT_OWN_ENTRIES: new Set(['ASSISTANT_HIGH']),
+    EDIT_ALL_ENTRIES: new Set([]),
+    DELETE_OWN_ENTRIES: new Set(['ASSISTANT_HIGH']),
+    DELETE_ALL_ENTRIES: new Set([]),
   },
 };
 
