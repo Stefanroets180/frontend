@@ -100,7 +100,9 @@ function SettingsContent() {
   const [isUpdatingVisibility, setIsUpdatingVisibility] = useState(false);
 
   // Permissions state (SUPER_ADMIN only) - using React Query
-  const { data: permissionOverrides = [], isLoading: isLoadingPermissions } = usePermissions(user?.organizationId || "");
+  // Only fetch permissions for fleet mode or SOLO owners (not assistants)
+  const shouldFetchPermissions = isFleetMode || (user?.role === 'SOLO');
+  const { data: permissionOverrides = [], isLoading: isLoadingPermissions } = usePermissions(shouldFetchPermissions ? (user?.organizationId || "") : "");
   const resetPermissions = useResetPermissions();
   const [openSection, setOpenSection] = useState<string>("EXPENSE_CATEGORY");
   const [saved, setSaved] = useState(false);
@@ -383,7 +385,7 @@ function SettingsContent() {
     }
   };
 
-  if (authLoading || !mounted || isLoadingPermissions) {
+  if (authLoading || !mounted || (shouldFetchPermissions && isLoadingPermissions)) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
