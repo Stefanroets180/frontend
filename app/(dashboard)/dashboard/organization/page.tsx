@@ -655,7 +655,9 @@ export default function OrganizationPage() {
                               <p className="font-medium">{assistant.assistantFirstName} {assistant.assistantLastName}</p>
                               <p className="text-sm text-muted-foreground">{assistant.assistantEmail}</p>
                               <div className="mt-1 flex items-center gap-2">
-                                <Badge variant="outline">{assistant.assistantRole === 'ASSISTANT_LOW' ? 'View Only' : 'Edit Access'}</Badge>
+                                <Badge variant="outline" className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">
+                                  {assistant.assistantRole === 'ASSISTANT_LOW' ? 'Assistant (View)' : 'Assistant (Edit)'}
+                                </Badge>
                                 {assistant.assignedVehicleRegistration && (
                                   <Badge variant="secondary" className="text-xs">
                                     {assistant.assignedVehicleRegistration}
