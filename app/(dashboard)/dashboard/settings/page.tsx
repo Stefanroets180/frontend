@@ -123,6 +123,23 @@ function SettingsContent() {
     setMounted(true);
   }, []);
 
+  // Persistent workaround to prevent redirect to /dashboard
+  useEffect(() => {
+    const checkAndFixRedirect = () => {
+      if (window.location.pathname === '/dashboard') {
+        window.history.pushState({}, '', '/dashboard/settings');
+      }
+    };
+    
+    // Check immediately
+    checkAndFixRedirect();
+    
+    // Check periodically (every 100ms) to catch redirects
+    const interval = setInterval(checkAndFixRedirect, 100);
+    
+    return () => clearInterval(interval);
+  }, []);
+
   // Default permissions for tax audit (matching backend)
   const TAX_AUDIT_DEFAULTS = {
     ADD_OPENING_READING: ['MANAGER', 'ADMIN'],

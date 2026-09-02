@@ -80,11 +80,11 @@ export default function LogbookPage() {
 
   // Default permissions for logbook (matching backend)
   const LOGBOOK_DEFAULTS = {
-    VIEW_OWN_LOGBOOK: ['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER', 'ASSISTANT'],
+    VIEW_OWN_LOGBOOK: ['DRIVER', 'MANAGER', 'ADMIN', 'RENTAL_CUSTOMER', 'ASSISTANT_HIGH'],
     VIEW_ALL_LOGBOOKS: ['MANAGER', 'ADMIN'],
-    EDIT_OWN_ENTRIES: ['DRIVER', 'MANAGER', 'ADMIN', 'ASSISTANT'],
+    EDIT_OWN_ENTRIES: ['DRIVER', 'MANAGER', 'ADMIN', 'ASSISTANT_HIGH'],
     EDIT_ALL_ENTRIES: ['ADMIN'],
-    DELETE_OWN_ENTRIES: ['DRIVER', 'MANAGER', 'ADMIN'],
+    DELETE_OWN_ENTRIES: ['DRIVER', 'MANAGER', 'ADMIN', 'ASSISTANT_HIGH'],
     DELETE_ALL_ENTRIES: ['ADMIN']
   }
 
@@ -102,16 +102,19 @@ export default function LogbookPage() {
     
     if (!permissions || !currentUserRole) return false
 
+    // For ASSISTANT users, check their assistantRole
+    const effectiveRole = currentUserRole === 'ASSISTANT' && assistantRole ? assistantRole : currentUserRole
+
     // Check for override first
     const viewOwnOverride = permissions.find(
       (p: any) => p.permissionType === 'LOGBOOK' &&
                   p.permissionKey === 'VIEW_OWN_LOGBOOK' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
     const viewAllOverride = permissions.find(
       (p: any) => p.permissionType === 'LOGBOOK' &&
                   p.permissionKey === 'VIEW_ALL_LOGBOOKS' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
 
     // If override exists, use it
@@ -123,8 +126,8 @@ export default function LogbookPage() {
     }
 
     // Fall back to default permissions
-    return LOGBOOK_DEFAULTS.VIEW_OWN_LOGBOOK.includes(currentUserRole) ||
-           LOGBOOK_DEFAULTS.VIEW_ALL_LOGBOOKS.includes(currentUserRole)
+    return LOGBOOK_DEFAULTS.VIEW_OWN_LOGBOOK.includes(effectiveRole) ||
+           LOGBOOK_DEFAULTS.VIEW_ALL_LOGBOOKS.includes(effectiveRole)
   }
 
   // Check if current user has permission to add trips
@@ -134,11 +137,14 @@ export default function LogbookPage() {
     
     if (!permissions || !currentUserRole) return false
 
+    // For ASSISTANT users, check their assistantRole
+    const effectiveRole = currentUserRole === 'ASSISTANT' && assistantRole ? assistantRole : currentUserRole
+
     // Check for override first
     const editOverride = permissions.find(
       (p: any) => p.permissionType === 'LOGBOOK' &&
                   p.permissionKey === 'EDIT_OWN_ENTRIES' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
 
     // If override exists, use it
@@ -147,7 +153,7 @@ export default function LogbookPage() {
     }
 
     // Fall back to default permissions
-    return LOGBOOK_DEFAULTS.EDIT_OWN_ENTRIES.includes(currentUserRole)
+    return LOGBOOK_DEFAULTS.EDIT_OWN_ENTRIES.includes(effectiveRole)
   }
 
   // Check if current user has permission to edit trips
@@ -157,16 +163,19 @@ export default function LogbookPage() {
     
     if (!permissions || !currentUserRole) return false
 
+    // For ASSISTANT users, check their assistantRole
+    const effectiveRole = currentUserRole === 'ASSISTANT' && assistantRole ? assistantRole : currentUserRole
+
     // Check for overrides first
     const editOwnOverride = permissions.find(
       (p: any) => p.permissionType === 'LOGBOOK' &&
                   p.permissionKey === 'EDIT_OWN_ENTRIES' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
     const editAllOverride = permissions.find(
       (p: any) => p.permissionType === 'LOGBOOK' &&
                   p.permissionKey === 'EDIT_ALL_ENTRIES' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
 
     // If override exists, use it
@@ -178,8 +187,8 @@ export default function LogbookPage() {
     }
 
     // Fall back to default permissions
-    return LOGBOOK_DEFAULTS.EDIT_OWN_ENTRIES.includes(currentUserRole) ||
-           LOGBOOK_DEFAULTS.EDIT_ALL_ENTRIES.includes(currentUserRole)
+    return LOGBOOK_DEFAULTS.EDIT_OWN_ENTRIES.includes(effectiveRole) ||
+           LOGBOOK_DEFAULTS.EDIT_ALL_ENTRIES.includes(effectiveRole)
   }
 
   // Check if current user has permission to delete trips
@@ -189,16 +198,19 @@ export default function LogbookPage() {
     
     if (!permissions || !currentUserRole) return false
 
+    // For ASSISTANT users, check their assistantRole
+    const effectiveRole = currentUserRole === 'ASSISTANT' && assistantRole ? assistantRole : currentUserRole
+
     // Check for overrides first
     const deleteOwnOverride = permissions.find(
       (p: any) => p.permissionType === 'LOGBOOK' &&
                   p.permissionKey === 'DELETE_OWN_ENTRIES' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
     const deleteAllOverride = permissions.find(
       (p: any) => p.permissionType === 'LOGBOOK' &&
                   p.permissionKey === 'DELETE_ALL_ENTRIES' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
 
     // If override exists, use it
@@ -210,8 +222,8 @@ export default function LogbookPage() {
     }
 
     // Fall back to default permissions
-    return LOGBOOK_DEFAULTS.DELETE_OWN_ENTRIES.includes(currentUserRole) ||
-           LOGBOOK_DEFAULTS.DELETE_ALL_ENTRIES.includes(currentUserRole)
+    return LOGBOOK_DEFAULTS.DELETE_OWN_ENTRIES.includes(effectiveRole) ||
+           LOGBOOK_DEFAULTS.DELETE_ALL_ENTRIES.includes(effectiveRole)
   }
 
   // Check if current user has permission to export SARS logbook
@@ -221,11 +233,14 @@ export default function LogbookPage() {
     
     if (!permissions || !currentUserRole) return false
 
+    // For ASSISTANT users, check their assistantRole
+    const effectiveRole = currentUserRole === 'ASSISTANT' && assistantRole ? assistantRole : currentUserRole
+
     // Check for override first
     const exportOverride = permissions.find(
       (p: any) => p.permissionType === 'EXPORT' &&
                   p.permissionKey === 'EXPORT_SARS_LOGBOOK' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
 
     // If override exists, use it
@@ -234,7 +249,7 @@ export default function LogbookPage() {
     }
 
     // Fall back to default permissions
-    return EXPORT_DEFAULTS.EXPORT_SARS_LOGBOOK.includes(currentUserRole)
+    return EXPORT_DEFAULTS.EXPORT_SARS_LOGBOOK.includes(effectiveRole)
   }
 
   // Check if current user has permission to export trips
@@ -244,11 +259,14 @@ export default function LogbookPage() {
     
     if (!permissions || !currentUserRole) return false
 
+    // For ASSISTANT users, check their assistantRole
+    const effectiveRole = currentUserRole === 'ASSISTANT' && assistantRole ? assistantRole : currentUserRole
+
     // Check for override first
     const exportOverride = permissions.find(
       (p: any) => p.permissionType === 'EXPORT' &&
                   p.permissionKey === 'EXPORT_TRIPS' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
 
     // If override exists, use it
@@ -257,7 +275,7 @@ export default function LogbookPage() {
     }
 
     // Fall back to default permissions
-    return EXPORT_DEFAULTS.EXPORT_TRIPS.includes(currentUserRole)
+    return EXPORT_DEFAULTS.EXPORT_TRIPS.includes(effectiveRole)
   }
 
   // Check if current user has permission to export via email
@@ -267,11 +285,14 @@ export default function LogbookPage() {
     
     if (!permissions || !currentUserRole) return false
 
+    // For ASSISTANT users, check their assistantRole
+    const effectiveRole = currentUserRole === 'ASSISTANT' && assistantRole ? assistantRole : currentUserRole
+
     // Check for override first
     const exportOverride = permissions.find(
       (p: any) => p.permissionType === 'EXPORT' &&
                   p.permissionKey === 'EXPORT_EMAIL' &&
-                  p.userRole === currentUserRole
+                  p.userRole === effectiveRole
     )
 
     // If override exists, use it
@@ -280,7 +301,7 @@ export default function LogbookPage() {
     }
 
     // Fall back to default permissions
-    return EXPORT_DEFAULTS.EXPORT_EMAIL.includes(currentUserRole)
+    return EXPORT_DEFAULTS.EXPORT_EMAIL.includes(effectiveRole)
   }
 
   // Redirect removed - ASSISTANT users now have permission via LOGBOOK_DEFAULTS
