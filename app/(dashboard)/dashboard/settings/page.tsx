@@ -135,7 +135,28 @@ function SettingsContent() {
       console.log('[Settings] Route changed to:', window.location.pathname);
     };
     window.addEventListener('popstate', handleRouteChange);
-    return () => window.removeEventListener('popstate', handleRouteChange);
+    
+    // Also check for hash changes and pushState
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+    
+    history.pushState = function(...args) {
+      console.log('[Settings] pushState called with:', args);
+      originalPushState.apply(history, args);
+      setTimeout(() => console.log('[Settings] After pushState, pathname:', window.location.pathname), 0);
+    };
+    
+    history.replaceState = function(...args) {
+      console.log('[Settings] replaceState called with:', args);
+      originalReplaceState.apply(history, args);
+      setTimeout(() => console.log('[Settings] After replaceState, pathname:', window.location.pathname), 0);
+    };
+    
+    return () => {
+      window.removeEventListener('popstate', handleRouteChange);
+      history.pushState = originalPushState;
+      history.replaceState = originalReplaceState;
+    };
   }, []);
 
   // Track component mount/unmount
