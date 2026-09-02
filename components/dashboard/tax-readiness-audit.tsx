@@ -116,11 +116,11 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
 
   // Default permissions for tax audit (matching backend)
   const TAX_AUDIT_DEFAULTS = {
-    ADD_OPENING_READING: ['MANAGER', 'ADMIN'],
-    ADD_CLOSING_READING: ['MANAGER', 'ADMIN'],
-    EDIT_READINGS: ['ADMIN'],
-    DELETE_READINGS: ['ADMIN'],
-    VIEW_TAX_REPORTS: ['MANAGER', 'ADMIN']
+    ADD_OPENING_READING: ['SOLO', 'ASSISTANT_HIGH', 'MANAGER', 'ADMIN'],
+    ADD_CLOSING_READING: ['SOLO', 'ASSISTANT_HIGH', 'MANAGER', 'ADMIN'],
+    EDIT_READINGS: ['SOLO', 'ASSISTANT_HIGH', 'ADMIN'],
+    DELETE_READINGS: ['SOLO', 'ASSISTANT_HIGH', 'ADMIN'],
+    VIEW_TAX_REPORTS: ['SOLO', 'ASSISTANT_HIGH', 'MANAGER', 'ADMIN']
   }
 
   // Check if current user has permission to view tax audit
