@@ -118,68 +118,9 @@ function SettingsContent() {
   const [saved, setSaved] = useState(false);
   const currentUserRole = user?.role;
 
-  // Debug logging
-  useEffect(() => {
-    console.log('[Settings] User:', user);
-    console.log('[Settings] isFleetMode:', isFleetMode);
-    console.log('[Settings] organizationMode:', user?.organizationMode);
-    console.log('[Settings] assistantRole:', user?.assistantRole);
-    console.log('[Settings] shouldFetchPermissions:', shouldFetchPermissions);
-    console.log('[Settings] isLoadingPermissions:', isLoadingPermissions);
-  }, [user, isFleetMode, shouldFetchPermissions, isLoadingPermissions]);
-
-  // Track router changes
-  useEffect(() => {
-    console.log('[Settings] Current pathname:', window.location.pathname);
-    const handleRouteChange = () => {
-      console.log('[Settings] Route changed to:', window.location.pathname);
-    };
-    window.addEventListener('popstate', handleRouteChange);
-    
-    // Also check for hash changes and pushState
-    const originalPushState = history.pushState;
-    const originalReplaceState = history.replaceState;
-    
-    history.pushState = function(...args) {
-      console.log('[Settings] pushState called with:', args);
-      console.log('[Settings] pushState stack trace:', new Error().stack);
-      // Prevent redirect to /dashboard when on settings page
-      if (args[2] === '/dashboard' && window.location.pathname === '/dashboard/settings') {
-        console.log('[Settings] Blocking redirect to /dashboard from settings page');
-        // Return early to prevent the pushState call
-        return;
-      }
-      originalPushState.apply(history, args);
-      setTimeout(() => console.log('[Settings] After pushState, pathname:', window.location.pathname), 0);
-    };
-    
-    history.replaceState = function(...args) {
-      console.log('[Settings] replaceState called with:', args);
-      originalReplaceState.apply(history, args);
-      setTimeout(() => console.log('[Settings] After replaceState, pathname:', window.location.pathname), 0);
-    };
-    
-    return () => {
-      window.removeEventListener('popstate', handleRouteChange);
-      history.pushState = originalPushState;
-      history.replaceState = originalReplaceState;
-    };
-  }, []);
-
-  // Prevent unmount by forcing re-render if pathname changes to /dashboard
-  useEffect(() => {
-    if (window.location.pathname === '/dashboard') {
-      console.log('[Settings] Detected redirect to /dashboard, forcing navigation back to settings');
-      window.history.pushState({}, '', '/dashboard/settings');
-    }
-  }, []);
-
   // Track component mount/unmount
   useEffect(() => {
-    console.log('[Settings] Component mounted');
-    return () => {
-      console.log('[Settings] Component unmounted');
-    };
+    setMounted(true);
   }, []);
 
   // Default permissions for tax audit (matching backend)
@@ -464,15 +405,12 @@ function SettingsContent() {
   };
 
   if (authLoading || !mounted || (shouldFetchPermissions && isLoadingPermissions)) {
-    console.log('[Settings] Showing loading spinner:', { authLoading, mounted, shouldFetchPermissions, isLoadingPermissions });
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
-
-  console.log('[Settings] Rendering settings page content');
 
   return (
     <div className="container mx-auto max-w-full space-y-6 p-4 overflow-x-hidden">
