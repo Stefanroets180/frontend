@@ -656,7 +656,7 @@ export default function OrganizationPage() {
                               <p className="text-sm text-muted-foreground">{assistant.assistantEmail}</p>
                               <div className="mt-1 flex items-center gap-2">
                                 <Badge variant="outline" className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">
-                                  {assistant.assistantRole === 'ASSISTANT_LOW' ? 'Assistant (View)' : 'Assistant (Edit)'}
+                                  {assistant.assistantRole || 'ASSISTANT'}
                                 </Badge>
                                 {assistant.assignedVehicleRegistration && (
                                   <Badge variant="secondary" className="text-xs">
