@@ -80,6 +80,15 @@ function SettingsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { theme, setTheme, resolvedTheme } = useTheme();
+
+  // Error boundary
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      console.error('[Settings] Error caught:', event.error);
+    };
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
+  }, []);
   const {
     preferences,
     loaded: prefsLoaded,
