@@ -284,7 +284,8 @@ export default function LogbookPage() {
 
   // Redirect if user doesn't have permission to view logbook
   useEffect(() => {
-    if (permissions && currentUserRole && !canViewLogbook()) {
+    // Only redirect if user is on the logbook page
+    if (window.location.pathname === '/dashboard/logbook' && permissions && currentUserRole && !canViewLogbook()) {
       router.push('/dashboard')
     }
   }, [permissions, currentUserRole, router])
