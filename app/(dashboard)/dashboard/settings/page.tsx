@@ -81,6 +81,8 @@ function SettingsContent() {
   const searchParams = useSearchParams();
   const { theme, setTheme, resolvedTheme } = useTheme();
 
+  console.log('[Settings] SettingsContent mounted, user:', user?.role, 'assistantRole:', user?.assistantRole);
+
   // Error boundary
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
