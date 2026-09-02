@@ -111,6 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const response = await api.get('/auth/me');
         const me = (response.data.user ?? response.data) as Record<string, unknown>;
         const authUser = mapMeToAuthUser(me, readStoredProfile());
+        console.log('[AuthContext] User loaded:', authUser.role, authUser.assistantRole);
         setUser(authUser);
         localStorage.setItem("user_profile", JSON.stringify(authUser));
       } catch (error) {
@@ -134,6 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const auth = normalizeAuthResponse(raw);
       persistAuthSession(auth);
       setUser(auth.user as AuthUser);
+      console.log('[AuthContext] login, pushing to /dashboard');
       router.push("/dashboard");
     },
     [router],
