@@ -207,7 +207,9 @@ export function useRequireAuth() {
   const router = useRouter();
 
   useEffect(() => {
+    console.log('[useRequireAuth] Checking auth:', { isLoading, isAuthenticated, user });
     if (!isLoading && !isAuthenticated) {
+      console.log('[useRequireAuth] Not authenticated, redirecting to login');
       router.push("/login");
     }
   }, [isLoading, isAuthenticated, router]);
