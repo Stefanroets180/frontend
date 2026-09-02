@@ -108,6 +108,16 @@ function SettingsContent() {
   const [saved, setSaved] = useState(false);
   const currentUserRole = user?.role;
 
+  // Debug logging
+  useEffect(() => {
+    console.log('[Settings] User:', user);
+    console.log('[Settings] isFleetMode:', isFleetMode);
+    console.log('[Settings] organizationMode:', user?.organizationMode);
+    console.log('[Settings] assistantRole:', user?.assistantRole);
+    console.log('[Settings] shouldFetchPermissions:', shouldFetchPermissions);
+    console.log('[Settings] isLoadingPermissions:', isLoadingPermissions);
+  }, [user, isFleetMode, shouldFetchPermissions, isLoadingPermissions]);
+
   // Default permissions for tax audit (matching backend)
   const TAX_AUDIT_DEFAULTS = {
     ADD_OPENING_READING: ['MANAGER', 'ADMIN'],
