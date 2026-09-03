@@ -40,7 +40,6 @@ export default function VehiclesPage() {
                          user?.role === "SUPER_ADMIN" ||
                          user?.role === "ADMIN" ||
                          user?.role === "MANAGER" ||
-                         user?.role === "SOLO" ||
                          (user?.role === "ASSISTANT" && user?.assistantRole === "ASSISTANT_HIGH") ||
                          (user?.role === "DRIVER");
 
@@ -49,7 +48,6 @@ export default function VehiclesPage() {
                        user?.role === "SUPER_ADMIN" ||
                        user?.role === "ADMIN" ||
                        user?.role === "MANAGER" ||
-                       user?.role === "SOLO" ||
                        (user?.role === "ASSISTANT" && user?.assistantRole === "ASSISTANT_HIGH");
 
   // Show loading state while checking permissions
