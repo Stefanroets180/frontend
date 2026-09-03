@@ -111,13 +111,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const response = await api.get('/auth/me');
         const me = (response.data.user ?? response.data) as Record<string, unknown>;
         const authUser = mapMeToAuthUser(me, readStoredProfile());
-        console.log('[AuthContext] User loaded:', authUser.role, authUser.assistantRole);
         setUser(authUser);
         localStorage.setItem("user_profile", JSON.stringify(authUser));
-      } catch (error) {
-        console.error("Auth check failed:", error);
-        // The api client helper already handles 401/403 token clearing,
-        // so we just set user to null here.
+      } catch {
         setUser(null);
         localStorage.removeItem('jwt_token'); // Safety clear
       } finally {
@@ -135,7 +131,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const auth = normalizeAuthResponse(raw);
       persistAuthSession(auth);
       setUser(auth.user as AuthUser);
-      console.log('[AuthContext] login, pushing to /dashboard');
       router.push("/dashboard");
     },
     [router],
@@ -153,18 +148,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [router]);
 
   const refreshUser = useCallback(async () => {
-    console.log('[AuthContext] refreshUser called');
     try {
       const response = await api.get('/auth/me');
       const data = response.data;
-      console.log('[AuthContext] refreshUser user data:', data);
       const authUser = mapMeToAuthUser(data, readStoredProfile());
       setUser(authUser);
       localStorage.setItem("user_profile", JSON.stringify(authUser));
     } catch (error: any) {
-      console.error('[AuthContext] refreshUser error:', error);
       if (error?.response?.status === 401) {
-        console.log('[AuthContext] refreshUser got 401, logging out');
+        // Session expired
       }
       setUser(null);
       localStorage.removeItem('jwt_token'); // Safety clear

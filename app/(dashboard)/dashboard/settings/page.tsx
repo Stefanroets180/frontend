@@ -81,23 +81,6 @@ function SettingsContent() {
   const searchParams = useSearchParams();
   const { theme, setTheme, resolvedTheme } = useTheme();
 
-  console.log('[Settings] SettingsContent mounted, user:', user?.role, 'assistantRole:', user?.assistantRole);
-
-  // Error boundary
-  useEffect(() => {
-    const handleError = (event: ErrorEvent) => {
-      console.error('[Settings] Error caught:', event.error);
-    };
-    window.addEventListener('error', handleError);
-    return () => window.removeEventListener('error', handleError);
-  }, []);
-
-  // Debug: log when component unmounts
-  useEffect(() => {
-    return () => {
-      console.log('[Settings] Component unmounting');
-    };
-  }, []);
   const {
     preferences,
     loaded: prefsLoaded,
@@ -418,15 +401,12 @@ function SettingsContent() {
   };
 
   if (authLoading || !mounted || (shouldFetchPermissions && isLoadingPermissions)) {
-    console.log('[Settings] Returning loading spinner:', { authLoading, mounted, shouldFetchPermissions, isLoadingPermissions });
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
-
-  console.log('[Settings] Rendering content');
 
   return (
     <div className="container mx-auto max-w-full space-y-6 p-4 overflow-x-hidden">
