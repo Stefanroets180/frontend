@@ -27,7 +27,7 @@ import { OdometerConfirmationForm } from "@/components/OdometerConfirmationForm"
 export default function VehiclesPage() {
   const router = useRouter();
   const { user, isFleetMode, isSuperAdmin, isAdmin, isManager } = useAuth();
-  const { data: permissions, isLoading: isLoadingPermissions } = usePermissions();
+  const { data: permissions, isLoading: isLoadingPermissions } = usePermissions(user?.organizationId || '');
   const currentUserRole = user?.role ?? UserRole.DRIVER;
   const isDriver = currentUserRole === UserRole.DRIVER;
   const isRentalCustomer = currentUserRole === UserRole.RENTAL_CUSTOMER;

@@ -47,7 +47,7 @@ interface VehicleOption {
 
 export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps) {
   const { user } = useAuth();
-  const { data: permissions, isLoading: isLoadingPermissions } = usePermissions();
+  const { data: permissions, isLoading: isLoadingPermissions } = usePermissions(user?.organizationId || '');
   const [vehicles, setVehicles] = useState<VehicleOption[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tripPurpose, setTripPurpose] = useState<"BUSINESS" | "PRIVATE">("BUSINESS");

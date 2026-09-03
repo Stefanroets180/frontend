@@ -89,7 +89,7 @@ export function SimpleExpenseForm({
   showVehicle = true,
 }: SimpleExpenseFormProps) {
   const { user } = useAuth()
-  const { data: permissions, isLoading: isLoadingPermissions } = usePermissions()
+  const { data: permissions, isLoading: isLoadingPermissions } = usePermissions(user?.organizationId || '')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [receiptImage, setReceiptImage] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
