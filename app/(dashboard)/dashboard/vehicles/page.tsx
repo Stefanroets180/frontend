@@ -23,6 +23,11 @@ import { usePermissions } from "@/hooks/usePermissions";
 import { UserRole, VehicleStatus } from "@/lib/types/database";
 import { VehicleConditionReport } from "@/components/VehicleConditionReport";
 import { OdometerConfirmationForm } from "@/components/OdometerConfirmationForm";
+import { HandoffDialog } from "@/components/vehicles/handoff-dialog";
+import { HandoffStatusCard } from "@/components/vehicles/handoff-status-card";
+import { handoffApi } from "@/lib/api/handoff";
+import type { VehicleHandoffDTO } from "@/lib/types/handoff";
+import { FleetOdometerStatusTable } from "@/components/vehicles/fleet-odometer-status-table";
 
 export default function VehiclesPage() {
   const router = useRouter();
@@ -94,6 +99,15 @@ export default function VehiclesPage() {
   const [selectedVehicleForFleet, setSelectedVehicleForFleet] = useState<Vehicle | null>(null);
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(null);
   
+  // Handoff state
+  const [handoffDialogOpen, setHandoffDialogOpen] = useState(false);
+  const [selectedVehicleForHandoff, setSelectedVehicleForHandoff] = useState<Vehicle | null>(null);
+  const [activeHandoffs, setActiveHandoffs] = useState<Record<string, VehicleHandoffDTO>>({});
+  
+  // Fleet odometer status state
+  const [fleetOdometerStatus, setFleetOdometerStatus] = useState<any[]>([]);
+  const [isLoadingFleetStatus, setIsLoadingFleetStatus] = useState(false);
+  
   // Organization visibility settings
   const [conditionReportEnabled, setConditionReportEnabled] = useState(true);
   const [odometerConfirmationEnabled, setOdometerConfirmationEnabled] = useState(true);
@@ -104,8 +118,14 @@ export default function VehiclesPage() {
       if (isAdminOrManager) {
         fetchRejectedVehicles();
       }
+      if (isFleetMode) {
+        fetchActiveHandoffs();
+        if (permissions?.['FLEET_STATUS']?.['VIEW_FLEET_STATUS']) {
+          fetchFleetOdometerStatus();
+        }
+      }
     }
-  }, [user, isAdminOrManager]);
+  }, [user, isAdminOrManager, isFleetMode, permissions]);
 
   // Fetch organization visibility settings
   useEffect(() => {
@@ -171,6 +191,34 @@ export default function VehiclesPage() {
       setRejectedVehicles(rejectedArray);
     } catch (err) {
       console.error("Failed to fetch rejected vehicles:", err);
+    }
+  };
+
+  const fetchActiveHandoffs = async () => {
+    try {
+      const handoffs = await handoffApi.getActiveHandoffs();
+      const handoffMap: Record<string, VehicleHandoffDTO> = {};
+      handoffs.forEach(handoff => {
+        if (handoff.state !== 'HANDOFF_COMPLETE' && handoff.state !== 'CANCELLED') {
+          handoffMap[handoff.vehicleId] = handoff;
+        }
+      });
+      setActiveHandoffs(handoffMap);
+    } catch (err) {
+      console.error("Failed to fetch active handoffs:", err);
+    }
+  };
+
+  const fetchFleetOdometerStatus = async () => {
+    try {
+      setIsLoadingFleetStatus(true);
+      const { data } = await api.get('/vehicles/fleet/odometer-status');
+      setFleetOdometerStatus(data || []);
+    } catch (err) {
+      console.error("Failed to fetch fleet odometer status:", err);
+      setFleetOdometerStatus([]);
+    } finally {
+      setIsLoadingFleetStatus(false);
     }
   };
 
@@ -410,14 +458,22 @@ export default function VehiclesPage() {
           </Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {vehicles.map((vehicle) => (
-              <Card
-                key={vehicle.id}
-                className={cn(
-                  "relative",
-                  vehicle.isLocked && "border-amber-500/50",
-                )}
-              >
+            {vehicles.map((vehicle) => {
+              const activeHandoff = activeHandoffs[vehicle.id];
+              return (
+                <div key={vehicle.id}>
+                  {activeHandoff && (
+                    <HandoffStatusCard 
+                      handoff={activeHandoff} 
+                      onRefresh={fetchActiveHandoffs}
+                    />
+                  )}
+                  <Card
+                    className={cn(
+                      "relative",
+                      vehicle.isLocked && "border-amber-500/50",
+                    )}
+                  >
                 {/* Status indicator */}
                 {(vehicle.status === VehicleStatus.PENDING_CREATION || vehicle.status === VehicleStatus.PENDING_DELETION) && (
                   <div className="absolute top-3 right-3">
@@ -517,6 +573,18 @@ export default function VehiclesPage() {
                     </div>
                   )}
 
+                  {/* Handoff Status Card - fleet mode only */}
+                  {isFleetMode && activeHandoffs[vehicle.id] && (
+                    <HandoffStatusCard
+                      handoff={activeHandoffs[vehicle.id]}
+                      vehicleRegistration={vehicle.registrationNumber}
+                      vehicleName={vehicle.nickname || `${vehicle.make} ${vehicle.model}`}
+                      permissions={permissions}
+                      userId={user?.id}
+                      onRefresh={fetchActiveHandoffs}
+                    />
+                  )}
+
                   {/* Action buttons */}
                   <div className="border-t border-border/50 pt-2">
                     {/* Condition Report - available for both Fleet and Solo modes */}
@@ -594,6 +662,20 @@ export default function VehiclesPage() {
                           </Button>
                         )}
                       </div>
+                    )}
+                    
+                    {/* Handoff button - fleet mode only, no active handoff */}
+                    {isFleetMode && !activeHandoffs[vehicle.id] && !isDriver && permissions?.["VEHICLE_ASSIGNMENT"]?.["ASSIGN_VEHICLES"] && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedVehicleForHandoff(vehicle);
+                          setHandoffDialogOpen(true);
+                        }}
+                      >
+                        Handoff Vehicle
+                      </Button>
                     )}
                     
                     {!isDriver && (
@@ -676,10 +758,36 @@ export default function VehiclesPage() {
                   </div>
                 </CardContent>
               </Card>
-            ))}
+                </div>
+              );
+            })}
           </div>
         )}
       </DashboardCollapsiblePanel>
+
+      {/* Fleet Odometer Status - Fleet mode only, with VIEW_FLEET_STATUS permission */}
+      {isFleetMode && permissions?.['FLEET_STATUS']?.['VIEW_FLEET_STATUS'] && (
+        <DashboardCollapsiblePanel
+          panelId="fleet-odometer-status"
+          title="Fleet Odometer Status"
+          description="View current odometer readings and assignment status for all vehicles in your fleet."
+          tone="info"
+          openLabel="Hide fleet status"
+          closedLabel="Show fleet status"
+          summaryItems={[
+            {
+              label: `${fleetOdometerStatus.length} vehicle${fleetOdometerStatus.length === 1 ? '' : 's'}`,
+              tone: "info" as const,
+            },
+          ]}
+          defaultOpen={false}
+        >
+          <FleetOdometerStatusTable
+            data={fleetOdometerStatus}
+            permissions={permissions}
+          />
+        </DashboardCollapsiblePanel>
+      )}
 
       {/* Rejected Vehicles Section - Only for Admins and Managers */}
       {!isDriver && rejectedVehicles.length > 0 && (
@@ -940,6 +1048,19 @@ export default function VehiclesPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Fleet: Handoff Dialog */}
+      <HandoffDialog
+        open={handoffDialogOpen}
+        onOpenChange={setHandoffDialogOpen}
+        vehicleId={selectedVehicleForHandoff?.id || ''}
+        vehicleRegistration={selectedVehicleForHandoff?.registrationNumber || ''}
+        permissions={permissions}
+        onSuccess={() => {
+          setHandoffDialogOpen(false);
+          fetchActiveHandoffs();
+        }}
+      />
     </div>
   );
 }

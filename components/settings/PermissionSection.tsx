@@ -56,6 +56,9 @@ const DEFAULTS: Record<string, Record<string, Set<string>>> = {
     EXPORT_SARS_LOGBOOK: new Set(['ADMIN']),
     EXPORT_TRIPS: new Set(['MANAGER','ADMIN']),
     EXPORT_EMAIL: new Set(['ADMIN']),
+  },
+  FLEET_STATUS: {
+    VIEW_FLEET_STATUS: new Set(['MANAGER','ADMIN']),
   }
 };
 
