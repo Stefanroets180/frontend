@@ -196,7 +196,7 @@ export default function VehiclesPage() {
 
   const fetchActiveHandoffs = async () => {
     try {
-      const handoffs = await handoffApi.getActiveHandoffs();
+      const handoffs = await handoffApi.list();
       const handoffMap: Record<string, VehicleHandoffDTO> = {};
       handoffs.forEach(handoff => {
         if (handoff.state !== 'HANDOFF_COMPLETE' && handoff.state !== 'CANCELLED') {
