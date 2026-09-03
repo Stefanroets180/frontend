@@ -58,7 +58,7 @@ interface VehicleExportDialogProps {
 }
 
 async function downloadExport(
-  vehicleId: string,
+  vehicleId: string | null,
   format: ExportFormat,
   taxYear: number,
 ): Promise<void> {
