@@ -19,6 +19,7 @@ import { EntryActions } from "@/components/entries";
 import { cn } from "@/lib/utils";
 import { DashboardCollapsiblePanel } from "@/components/dashboard/dashboard-collapsible-panel";
 import { useAuth } from "@/lib/contexts/auth-context";
+import { usePermissions } from "@/hooks/usePermissions";
 import { UserRole, VehicleStatus } from "@/lib/types/database";
 import { VehicleConditionReport } from "@/components/VehicleConditionReport";
 import { OdometerConfirmationForm } from "@/components/OdometerConfirmationForm";
@@ -26,10 +27,58 @@ import { OdometerConfirmationForm } from "@/components/OdometerConfirmationForm"
 export default function VehiclesPage() {
   const router = useRouter();
   const { user, isFleetMode, isSuperAdmin, isAdmin, isManager } = useAuth();
+  const { data: permissions, isLoading: isLoadingPermissions } = usePermissions();
   const currentUserRole = user?.role ?? UserRole.DRIVER;
   const isDriver = currentUserRole === UserRole.DRIVER;
   const isRentalCustomer = currentUserRole === UserRole.RENTAL_CUSTOMER;
   const isAdminOrManager = isSuperAdmin || isAdmin || isManager;
+
+  // Check if user has permission to view vehicles
+  const canViewVehicles = permissions?.["VEHICLE_ASSIGNMENT"]?.["VIEW_VEHICLES"] ||
+                         permissions?.["VEHICLE_ASSIGNMENT"]?.["ASSIGN_VEHICLES"] ||
+                         permissions?.["VEHICLE_ASSIGNMENT"]?.["UNASSIGN_VEHICLES"] ||
+                         user?.role === "SUPER_ADMIN" ||
+                         user?.role === "ADMIN" ||
+                         user?.role === "MANAGER" ||
+                         user?.role === "SOLO" ||
+                         (user?.role === "ASSISTANT" && user?.assistantRole === "ASSISTANT_HIGH") ||
+                         (user?.role === "DRIVER");
+
+  // Check if user has permission to add vehicles
+  const canAddVehicle = permissions?.["VEHICLE_ASSIGNMENT"]?.["ADD_VEHICLE"] ||
+                       user?.role === "SUPER_ADMIN" ||
+                       user?.role === "ADMIN" ||
+                       user?.role === "MANAGER" ||
+                       user?.role === "SOLO" ||
+                       (user?.role === "ASSISTANT" && user?.assistantRole === "ASSISTANT_HIGH");
+
+  // Show loading state while checking permissions
+  if (isLoadingPermissions) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-muted-foreground">Loading permissions...</div>
+      </div>
+    );
+  }
+
+  // Show locked message if user doesn't have permission
+  if (!canViewVehicles) {
+    return (
+      <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
+        <CardContent className="flex items-center gap-4 p-6">
+          <Lock className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+          <div>
+            <p className="font-semibold text-amber-900 dark:text-amber-100">
+              Permission Required
+            </p>
+            <p className="text-sm text-amber-700 dark:text-amber-300">
+              You don't have permission to view vehicles. Please contact your organization administrator.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [rejectedVehicles, setRejectedVehicles] = useState<Vehicle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -354,7 +403,7 @@ export default function VehiclesPage() {
                     ? "Contact your manager to assign a vehicle to you"
                     : "Add your first vehicle to start tracking expenses")}
               </p>
-              {!isDriver && !isRentalCustomer && (
+              {!isDriver && !isRentalCustomer && canAddVehicle && (
                 <Button asChild className="mt-6">
                   <Link href="/onboarding/add-vehicle">Add Vehicle</Link>
                 </Button>

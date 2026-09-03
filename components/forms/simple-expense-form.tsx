@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { format } from 'date-fns'
-import { Camera, AlertCircle, CheckCircle2, CalendarIcon, Receipt } from 'lucide-react'
+import { Camera, AlertCircle, CheckCircle2, CalendarIcon, Receipt, Lock } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
@@ -29,6 +29,8 @@ import {
 } from '@/lib/utils/image-converter'
 import { ImageCropModal } from '@/components/ui/image-crop-modal'
 import { VehicleLogo } from '@/components/vehicles/vehicle-logo'
+import { useAuth } from '@/lib/contexts/auth-context'
+import { usePermissions } from '@/hooks/usePermissions'
 
 const simpleExpenseSchema = z.object({
   vehicleId: z.string().min(1, 'Select a vehicle'),
@@ -86,6 +88,8 @@ export function SimpleExpenseForm({
   onSubmit,
   showVehicle = true,
 }: SimpleExpenseFormProps) {
+  const { user } = useAuth()
+  const { data: permissions, isLoading: isLoadingPermissions } = usePermissions()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [receiptImage, setReceiptImage] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -98,6 +102,45 @@ export function SimpleExpenseForm({
   const [showCropModal, setShowCropModal] = useState(false)
   const [originalImageFile, setOriginalImageFile] = useState<File | null>(null)
   const [dateInput, setDateInput] = useState("")
+
+  // Check if user has permission to add expenses for this category
+  const categoryPermissionKey = category as string
+  const canAddExpense = permissions?.["EXPENSE_CATEGORY"]?.[categoryPermissionKey] ||
+                       user?.role === "SUPER_ADMIN" ||
+                       user?.role === "ADMIN" ||
+                       user?.role === "MANAGER" ||
+                       user?.role === "SOLO" ||
+                       (user?.role === "ASSISTANT" && user?.assistantRole === "ASSISTANT_HIGH") ||
+                       (user?.role === "ASSISTANT" && user?.assistantRole === "ASSISTANT_LOW" && 
+                        ["FUEL_LOG", "MAINTENANCE_TOPUP", "CAR_WASH", "PARKING"].includes(categoryPermissionKey))
+
+  // Show loading state while checking permissions
+  if (isLoadingPermissions) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-muted-foreground">Loading permissions...</div>
+      </div>
+    )
+  }
+
+  // Show locked message if user doesn't have permission
+  if (!canAddExpense) {
+    return (
+      <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
+        <CardContent className="flex items-center gap-4 p-6">
+          <Lock className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+          <div>
+            <p className="font-semibold text-amber-900 dark:text-amber-100">
+              Permission Required
+            </p>
+            <p className="text-sm text-amber-700 dark:text-amber-300">
+              You don't have permission to add {categoryLabel.toLowerCase()} expenses. Please contact your organization administrator.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   const {
     register,

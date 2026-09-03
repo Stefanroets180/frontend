@@ -14,8 +14,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Briefcase, Palmtree, MapPin, Navigation, Car } from "lucide-react";
+import { Briefcase, Palmtree, MapPin, Navigation, Car, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/contexts/auth-context";
+import { usePermissions } from "@/hooks/usePermissions";
 
 interface TripLogFormProps {
   vehicleId?: string;
@@ -44,10 +46,50 @@ interface VehicleOption {
 }
 
 export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps) {
+  const { user } = useAuth();
+  const { data: permissions, isLoading: isLoadingPermissions } = usePermissions();
   const [vehicles, setVehicles] = useState<VehicleOption[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tripPurpose, setTripPurpose] = useState<"BUSINESS" | "PRIVATE">("BUSINESS");
   const [dateInput, setDateInput] = useState("")
+
+  // Check if user has permission to add/edit trips
+  const canAddTrip = permissions?.["LOGBOOK"]?.["ADD_TRIP"] || 
+                     permissions?.["LOGBOOK"]?.["EDIT_OWN_ENTRIES"] ||
+                     permissions?.["LOGBOOK"]?.["EDIT_ALL_ENTRIES"] ||
+                     user?.role === "SUPER_ADMIN" ||
+                     user?.role === "ADMIN" ||
+                     user?.role === "MANAGER" ||
+                     user?.role === "SOLO" ||
+                     (user?.role === "ASSISTANT" && user?.assistantRole === "ASSISTANT_HIGH");
+
+  // Show loading state while checking permissions
+  if (isLoadingPermissions) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-muted-foreground">Loading permissions...</div>
+      </div>
+    );
+  }
+
+  // Show locked message if user doesn't have permission
+  if (!canAddTrip) {
+    return (
+      <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
+        <CardContent className="flex items-center gap-4 p-6">
+          <Lock className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+          <div>
+            <p className="font-semibold text-amber-900 dark:text-amber-100">
+              Permission Required
+            </p>
+            <p className="text-sm text-amber-700 dark:text-amber-300">
+              You don't have permission to add or edit trips. Please contact your organization administrator.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const [formData, setFormData] = useState({
     vehicleId: vehicleId || "",
