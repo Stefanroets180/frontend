@@ -42,10 +42,7 @@ export function FleetOdometerStatusTable({ data, permissions }: Props) {
       item.handoffState || 'N/A'
     ]);
 
-    const csvContent: string[] = []
-      .concat([headers.join(',')])
-      .concat(rows.map(row => row.join(',')))
-      .join('\n');
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
