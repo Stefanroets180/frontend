@@ -3,28 +3,28 @@ import type { VehicleHandoffDTO, VehicleHandoffInitiateRequest } from '@/lib/typ
 
 export const handoffApi = {
   initiate: async (request: VehicleHandoffInitiateRequest): Promise<VehicleHandoffDTO> => {
-    const response = await api.post('/vehicle-handoffs', request);
+    const response = await api.post('/handoffs/initiate', request);
     return response.data;
   },
 
   advance: async (handoffId: string): Promise<VehicleHandoffDTO> => {
-    const response = await api.post(`/vehicle-handoffs/${handoffId}/advance`, {});
+    const response = await api.post(`/handoffs/${handoffId}/advance`, {});
     return response.data;
   },
 
   cancel: async (handoffId: string, reason: string): Promise<VehicleHandoffDTO> => {
-    const response = await api.post(`/vehicle-handoffs/${handoffId}/cancel`, { reason });
+    const response = await api.post(`/handoffs/${handoffId}/cancel`, { reason });
     return response.data;
   },
 
   forceComplete: async (handoffId: string, reason: string): Promise<VehicleHandoffDTO> => {
-    const response = await api.post(`/vehicle-handoffs/${handoffId}/force-complete`, { reason });
+    const response = await api.post(`/handoffs/${handoffId}/force-complete`, { reason });
     return response.data;
   },
 
   getActiveByVehicle: async (vehicleId: string): Promise<VehicleHandoffDTO | null> => {
     try {
-      const response = await api.get(`/vehicle-handoffs/vehicle/${vehicleId}/active`);
+      const response = await api.get(`/handoffs/vehicle/${vehicleId}`);
       return response.data;
     } catch (error) {
       if ((error as any).response?.status === 404) {
@@ -35,7 +35,7 @@ export const handoffApi = {
   },
 
   list: async (): Promise<VehicleHandoffDTO[]> => {
-    const response = await api.get('/vehicle-handoffs');
+    const response = await api.get('/handoffs');
     return response.data;
   },
 };
