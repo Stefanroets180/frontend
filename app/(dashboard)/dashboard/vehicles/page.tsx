@@ -28,6 +28,7 @@ import { HandoffStatusCard } from "@/components/vehicles/handoff-status-card";
 import { handoffApi } from "@/lib/api/handoff";
 import type { VehicleHandoffDTO } from "@/lib/types/handoff";
 import { FleetOdometerStatusTable } from "@/components/vehicles/fleet-odometer-status-table";
+import { VehicleExportDialog } from "@/components/dashboard/vehicle-export-dialog";
 
 export default function VehiclesPage() {
   const router = useRouter();
@@ -120,7 +121,8 @@ export default function VehiclesPage() {
       }
       if (isFleetMode) {
         fetchActiveHandoffs();
-        if (permissions?.['FLEET_STATUS']?.['VIEW_FLEET_STATUS']) {
+        // SUPER_ADMIN bypasses permission check for fleet odometer status
+        if (isSuperAdmin || permissions?.['FLEET_STATUS']?.['VIEW_FLEET_STATUS']) {
           fetchFleetOdometerStatus();
         }
       }
@@ -663,6 +665,20 @@ export default function VehiclesPage() {
                         )}
                       </div>
                     )}
+
+                    {/* Export - SUPER_ADMIN or with EXPORT permission */}
+                    {(isSuperAdmin || permissions?.['EXPORT']?.['EXPORT_SARS_LOGBOOK']) && (
+                      <div className="mt-2">
+                        <VehicleExportDialog
+                          vehicleId={vehicle.id}
+                          vehicleLabel={vehicle.nickname || `${vehicle.make} ${vehicle.model}`}
+                          triggerLabel="Export Data"
+                          triggerVariant="outline"
+                          triggerSize="sm"
+                          triggerClassName="w-full"
+                        />
+                      </div>
+                    )}
                     
                     {/* Handoff button - fleet mode only, no active handoff */}
                     {isFleetMode && !activeHandoffs[vehicle.id] && !isDriver && permissions?.["VEHICLE_ASSIGNMENT"]?.["ASSIGN_VEHICLES"] && (
@@ -765,8 +781,8 @@ export default function VehiclesPage() {
         )}
       </DashboardCollapsiblePanel>
 
-      {/* Fleet Odometer Status - Fleet mode only, with VIEW_FLEET_STATUS permission */}
-      {isFleetMode && permissions?.['FLEET_STATUS']?.['VIEW_FLEET_STATUS'] && (
+      {/* Fleet Odometer Status - Fleet mode only, SUPER_ADMIN or with VIEW_FLEET_STATUS permission */}
+      {isFleetMode && (isSuperAdmin || permissions?.['FLEET_STATUS']?.['VIEW_FLEET_STATUS']) && (
         <DashboardCollapsiblePanel
           panelId="fleet-odometer-status"
           title="Fleet Odometer Status"
