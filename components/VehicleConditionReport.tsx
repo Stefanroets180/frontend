@@ -285,7 +285,7 @@ function SectionCard({
       <div className="mt-2 sm:mt-3 flex flex-wrap gap-2">
         {images.map((img: any) => {
           const imageUrl = img.imageUrl || '/placeholder.svg'
-          const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `https://fleet-expense-app.duckdns.org${imageUrl}`
+          const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `${process.env.NEXT_PUBLIC_API_URL || 'https://fleet-expense-app.duckdns.org'}${imageUrl}`
           const hasError = imageErrors.has(img.id)
           return (
             <div key={img.id} className="relative group">
