@@ -109,7 +109,6 @@ export function SimpleExpenseForm({
                        user?.role === "SUPER_ADMIN" ||
                        user?.role === "ADMIN" ||
                        user?.role === "MANAGER" ||
-                       user?.role === "SOLO" ||
                        (user?.role === "ASSISTANT" && user?.assistantRole === "ASSISTANT_HIGH") ||
                        (user?.role === "ASSISTANT" && user?.assistantRole === "ASSISTANT_LOW" && 
                         ["FUEL_LOG", "MAINTENANCE_TOPUP", "CAR_WASH", "PARKING"].includes(categoryPermissionKey))

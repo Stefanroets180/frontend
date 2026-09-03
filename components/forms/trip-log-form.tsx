@@ -54,13 +54,12 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
   const [dateInput, setDateInput] = useState("")
 
   // Check if user has permission to add/edit trips
-  const canAddTrip = permissions?.["LOGBOOK"]?.["ADD_TRIP"] || 
+  const canAddTrip = permissions?.["LOGBOOK"]?.["ADD_TRIP"] ||
                      permissions?.["LOGBOOK"]?.["EDIT_OWN_ENTRIES"] ||
                      permissions?.["LOGBOOK"]?.["EDIT_ALL_ENTRIES"] ||
                      user?.role === "SUPER_ADMIN" ||
                      user?.role === "ADMIN" ||
                      user?.role === "MANAGER" ||
-                     user?.role === "SOLO" ||
                      (user?.role === "ASSISTANT" && user?.assistantRole === "ASSISTANT_HIGH");
 
   // Show loading state while checking permissions
