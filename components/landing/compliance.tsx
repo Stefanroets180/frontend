@@ -36,6 +36,7 @@ export function Compliance() {
                 alt="A smartphone capturing a time-stamped photo of a car odometer reading for a verified audit record"
                 width={1200}
                 height={1200}
+                priority
                 className="h-auto w-full"
               />
             </div>
