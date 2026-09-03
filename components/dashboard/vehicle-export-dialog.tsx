@@ -48,7 +48,7 @@ type ButtonVariant =
 type ButtonSize = "default" | "sm" | "lg" | "icon" | "icon-sm" | "icon-lg";
 
 interface VehicleExportDialogProps {
-  vehicleId: string;
+  vehicleId: string | null;
   vehicleLabel: string;
   disabled?: boolean;
   triggerLabel?: string;

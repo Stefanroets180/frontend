@@ -418,14 +418,25 @@ export default function VehiclesPage() {
     <div className="container mx-auto space-y-6 p-4 pb-24 md:pb-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">My Vehicles</h1>
-        {!isDriver && !isRentalCustomer && (
-          <Button asChild className="w-full sm:w-auto">
-            <Link href="/onboarding/add-vehicle">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Vehicle
-            </Link>
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {/* Export All - SUPER_ADMIN or with EXPORT permission */}
+          {(isSuperAdmin || permissions?.['EXPORT']?.['EXPORT_SARS_LOGBOOK']) && (
+            <VehicleExportDialog
+              vehicleId={null}
+              vehicleLabel="All Vehicles"
+              triggerLabel="Export All"
+              triggerVariant="outline"
+            />
+          )}
+          {!isDriver && !isRentalCustomer && (
+            <Button asChild className="w-full sm:w-auto">
+              <Link href="/onboarding/add-vehicle">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Vehicle
+              </Link>
+            </Button>
+          )}
+        </div>
       </div>
 
       <DashboardCollapsiblePanel
@@ -666,19 +677,6 @@ export default function VehiclesPage() {
                       </div>
                     )}
 
-                    {/* Export - SUPER_ADMIN or with EXPORT permission */}
-                    {(isSuperAdmin || permissions?.['EXPORT']?.['EXPORT_SARS_LOGBOOK']) && (
-                      <div className="mt-2">
-                        <VehicleExportDialog
-                          vehicleId={vehicle.id}
-                          vehicleLabel={vehicle.nickname || `${vehicle.make} ${vehicle.model}`}
-                          triggerLabel="Export Data"
-                          triggerVariant="outline"
-                          triggerSize="sm"
-                          triggerClassName="w-full"
-                        />
-                      </div>
-                    )}
                     
                     {/* Handoff button - fleet mode only, no active handoff */}
                     {isFleetMode && !activeHandoffs[vehicle.id] && !isDriver && permissions?.["VEHICLE_ASSIGNMENT"]?.["ASSIGN_VEHICLES"] && (
