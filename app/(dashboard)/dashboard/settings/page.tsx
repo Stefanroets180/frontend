@@ -795,8 +795,8 @@ function SettingsContent() {
           </Card>
         )}
 
-        {/* Permissions — SUPER_ADMIN only */}
-        {user?.role === "SUPER_ADMIN" && (
+        {/* Permissions — SUPER_ADMIN and Organization Owner only */}
+        {(user?.role === "SUPER_ADMIN" || user?.id === user?.organizationOwnerId) && (
           <Card>
             <CardHeader className="pb-3">
               <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-start sm:justify-between">

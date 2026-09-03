@@ -22,6 +22,7 @@ import { API_URL } from "@/lib/api/client";
 type AuthUser = NormalizedAuthUser & {
   role: UserRole;
   organizationMode: OrganizationMode;
+  organizationOwnerId?: string;
   passwordChanged?: boolean;
   profilePhotoUrl?: string;
   assistantRole?: string;
@@ -56,6 +57,7 @@ function mapMeToAuthUser(
     organizationMode: (me.organizationMode ??
       profile?.organizationMode ??
       OrganizationMode.SOLO) as OrganizationMode,
+    organizationOwnerId: me.organizationOwnerId ? String(me.organizationOwnerId) : (profile?.organizationOwnerId ? String(profile.organizationOwnerId) : undefined),
     passwordChanged: me.passwordChanged !== undefined ? Boolean(me.passwordChanged) : true,
     profilePhotoUrl: absoluteProfilePhotoUrl,
     assistantRole: me.assistantRole ? String(me.assistantRole) : undefined,

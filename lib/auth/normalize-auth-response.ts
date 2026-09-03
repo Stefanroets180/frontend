@@ -27,6 +27,7 @@ export interface NormalizedAuthUser {
   organizationId: string
   organizationName: string
   organizationMode: string
+  organizationOwnerId?: string
   profilePhotoUrl?: string
   passwordChanged?: boolean
 }
@@ -77,6 +78,7 @@ export function normalizeAuthResponse(raw: unknown): NormalizedAuthResponse {
         organizationId: String(u.organizationId),
         organizationName: String(u.organizationName ?? ''),
         organizationMode: String(u.organizationMode),
+        organizationOwnerId: u.organizationOwnerId ? String(u.organizationOwnerId) : undefined,
         profilePhotoUrl: convertProfilePhotoUrl(u.profilePhotoUrl ? String(u.profilePhotoUrl) : undefined),
         passwordChanged: u.passwordChanged !== undefined ? Boolean(u.passwordChanged) : true,
       },
@@ -101,6 +103,7 @@ export function normalizeAuthResponse(raw: unknown): NormalizedAuthResponse {
       organizationId: String(data.organizationId),
       organizationName: data.organizationName,
       organizationMode: data.organizationMode,
+      organizationOwnerId: data.organizationOwnerId ? String(data.organizationOwnerId) : undefined,
       profilePhotoUrl: convertProfilePhotoUrl(data.profilePhotoUrl ? String(data.profilePhotoUrl) : undefined),
       passwordChanged: data.passwordChanged !== undefined ? Boolean(data.passwordChanged) : true,
     },

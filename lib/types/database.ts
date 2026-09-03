@@ -257,6 +257,7 @@ export interface Organization {
   postalCode?: string
   country: string
   phone?: string
+  ownerId?: string
   createdAt: Date
   updatedAt: Date
   isActive: boolean
