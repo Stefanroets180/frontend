@@ -20,6 +20,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TaxReadinessAudit } from "@/components/dashboard/tax-readiness-audit";
 import { VehicleExportDialog } from "@/components/dashboard/vehicle-export-dialog";
+import ReportExportManager from "@/components/settings/ReportExportManager";
 import {
   AppUsageGuideDialog,
   getGuideSeenStorageKey,
@@ -1184,6 +1185,17 @@ function SettingsContent() {
           <TaxReadinessAudit />
         </DashboardCollapsiblePanel>
       )}
+
+      <DashboardCollapsiblePanel
+        panelId="settings-report-exports"
+        title="Report Exports"
+        description="Generate and download fleet reports asynchronously."
+        tone="info"
+        openLabel="Hide exports"
+        closedLabel="Show exports"
+      >
+        <ReportExportManager />
+      </DashboardCollapsiblePanel>
     </div>
   );
 }
