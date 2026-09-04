@@ -8,6 +8,7 @@ import {
   Loader2,
   FileSpreadsheet,
   FileText,
+  FileCode,
 } from "lucide-react";
 import {
   Dialog,
@@ -67,8 +68,11 @@ interface FleetAssignmentHistory {
   previousDriver: AssignmentInfo | null;
 }
 
+type ExportFormat = "csv" | "html" | "pdf";
+
 async function downloadAssignmentHistory(
   includeConditionReports: boolean,
+  format: ExportFormat,
 ): Promise<void> {
   const res = await apiFetch(
     `/vehicles/fleet/assignment-history?includeConditionReports=${includeConditionReports}`,
@@ -83,72 +87,181 @@ async function downloadAssignmentHistory(
 
   const data: FleetAssignmentHistory[] = await res.json();
 
-  // Generate CSV
-  const headers = [
-    "Vehicle Registration",
-    "Make",
-    "Model",
-    "Current Odometer",
-    "Current Driver Name",
-    "Current Driver Email",
-    "Current Driver Assigned At",
-    "Current Driver Assigned By",
-    "Current Driver Odometer at Assignment",
-    "Previous Driver Name",
-    "Previous Driver Email",
-    "Previous Driver Assigned At",
-    "Previous Driver Assigned By",
-    "Previous Driver Odometer at Assignment",
-  ];
+  if (format === "csv") {
+    // Generate CSV
+    const headers = [
+      "Vehicle Registration",
+      "Make",
+      "Model",
+      "Current Odometer",
+      "Current Driver Name",
+      "Current Driver Email",
+      "Current Driver Assigned At",
+      "Current Driver Assigned By",
+      "Current Driver Odometer at Assignment",
+      "Previous Driver Name",
+      "Previous Driver Email",
+      "Previous Driver Assigned At",
+      "Previous Driver Assigned By",
+      "Previous Driver Odometer at Assignment",
+    ];
 
-  if (includeConditionReports) {
-    headers.push(
-      "Current Vehicle Condition",
-      "Current Condition Notes",
-      "Previous Vehicle Condition",
-      "Previous Condition Notes",
-    );
+    if (includeConditionReports) {
+      headers.push(
+        "Current Vehicle Condition",
+        "Current Condition Notes",
+        "Previous Vehicle Condition",
+        "Previous Condition Notes",
+      );
+    }
+
+    const rows = data.map((vehicle) => [
+      vehicle.vehicleRegistration,
+      vehicle.vehicleMake,
+      vehicle.vehicleModel,
+      vehicle.currentOdometer?.toString() || "",
+      vehicle.currentDriver?.driverName || "",
+      vehicle.currentDriver?.driverEmail || "",
+      vehicle.currentDriver?.assignedAt || "",
+      vehicle.currentDriver?.assignedByName || "",
+      vehicle.currentDriver?.odometerAtAssignment?.toString() || "",
+      vehicle.previousDriver?.driverName || "",
+      vehicle.previousDriver?.driverEmail || "",
+      vehicle.previousDriver?.assignedAt || "",
+      vehicle.previousDriver?.assignedByName || "",
+      vehicle.previousDriver?.odometerAtAssignment?.toString() || "",
+      ...(includeConditionReports
+        ? [
+            vehicle.currentDriver?.vehicleCondition || "",
+            vehicle.currentDriver?.conditionNotes || "",
+            vehicle.previousDriver?.vehicleCondition || "",
+            vehicle.previousDriver?.conditionNotes || "",
+          ]
+        : []),
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) =>
+        row.map((cell) => `"${(cell || "").replace(/"/g, '""')}"`).join(","),
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `fleet-assignment-history-${new Date().toISOString().split("T")[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } else if (format === "html" || format === "pdf") {
+    // Generate HTML
+    const headers = [
+      "Vehicle Registration",
+      "Make",
+      "Model",
+      "Current Odometer",
+      "Current Driver Name",
+      "Current Driver Email",
+      "Current Driver Assigned At",
+      "Current Driver Assigned By",
+      "Current Driver Odometer at Assignment",
+      "Previous Driver Name",
+      "Previous Driver Email",
+      "Previous Driver Assigned At",
+      "Previous Driver Assigned By",
+      "Previous Driver Odometer at Assignment",
+    ];
+
+    if (includeConditionReports) {
+      headers.push(
+        "Current Vehicle Condition",
+        "Current Condition Notes",
+        "Previous Vehicle Condition",
+        "Previous Condition Notes",
+      );
+    }
+
+    const rows = data.map((vehicle) => [
+      vehicle.vehicleRegistration,
+      vehicle.vehicleMake,
+      vehicle.vehicleModel,
+      vehicle.currentOdometer?.toString() || "",
+      vehicle.currentDriver?.driverName || "",
+      vehicle.currentDriver?.driverEmail || "",
+      vehicle.currentDriver?.assignedAt || "",
+      vehicle.currentDriver?.assignedByName || "",
+      vehicle.currentDriver?.odometerAtAssignment?.toString() || "",
+      vehicle.previousDriver?.driverName || "",
+      vehicle.previousDriver?.driverEmail || "",
+      vehicle.previousDriver?.assignedAt || "",
+      vehicle.previousDriver?.assignedByName || "",
+      vehicle.previousDriver?.odometerAtAssignment?.toString() || "",
+      ...(includeConditionReports
+        ? [
+            vehicle.currentDriver?.vehicleCondition || "",
+            vehicle.currentDriver?.conditionNotes || "",
+            vehicle.previousDriver?.vehicleCondition || "",
+            vehicle.previousDriver?.conditionNotes || "",
+          ]
+        : []),
+    ]);
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Fleet Assignment History</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { color: #333; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #4CAF50; color: white; }
+    tr:nth-child(even) { background-color: #f2f2f2; }
+    .date { font-size: 12px; color: #666; }
+  </style>
+</head>
+<body>
+  <h1>Fleet Assignment History</h1>
+  <p class="date">Generated: ${new Date().toLocaleString()}</p>
+  <table>
+    <thead>
+      <tr>
+        ${headers.map(h => `<th>${h}</th>`).join("")}
+      </tr>
+    </thead>
+    <tbody>
+      ${rows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join("")}</tr>`).join("")}
+    </tbody>
+  </table>
+</body>
+</html>`;
+
+    if (format === "html") {
+      const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `fleet-assignment-history-${new Date().toISOString().split("T")[0]}.html`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } else if (format === "pdf") {
+      // For PDF, we'll use the browser's print functionality with the HTML
+      const printWindow = window.open("", "_blank");
+      if (printWindow) {
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => {
+          printWindow.print();
+        }, 250);
+      } else {
+        throw new Error("Failed to open print window. Please allow popups for this site.");
+      }
+    }
   }
-
-  const rows = data.map((vehicle) => [
-    vehicle.vehicleRegistration,
-    vehicle.vehicleMake,
-    vehicle.vehicleModel,
-    vehicle.currentOdometer?.toString() || "",
-    vehicle.currentDriver?.driverName || "",
-    vehicle.currentDriver?.driverEmail || "",
-    vehicle.currentDriver?.assignedAt || "",
-    vehicle.currentDriver?.assignedByName || "",
-    vehicle.currentDriver?.odometerAtAssignment?.toString() || "",
-    vehicle.previousDriver?.driverName || "",
-    vehicle.previousDriver?.driverEmail || "",
-    vehicle.previousDriver?.assignedAt || "",
-    vehicle.previousDriver?.assignedByName || "",
-    vehicle.previousDriver?.odometerAtAssignment?.toString() || "",
-    ...(includeConditionReports
-      ? [
-          vehicle.currentDriver?.vehicleCondition || "",
-          vehicle.currentDriver?.conditionNotes || "",
-          vehicle.previousDriver?.vehicleCondition || "",
-          vehicle.previousDriver?.conditionNotes || "",
-        ]
-      : []),
-  ]);
-
-  const csvContent = [
-    headers.join(","),
-    ...rows.map((row) =>
-      row.map((cell) => `"${(cell || "").replace(/"/g, '""')}"`).join(","),
-    ),
-  ].join("\n");
-
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `fleet-assignment-history-${new Date().toISOString().split("T")[0]}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
 }
 
 export function FleetAssignmentHistoryExportDialog({
@@ -163,6 +276,7 @@ export function FleetAssignmentHistoryExportDialog({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [includeConditionReports, setIncludeConditionReports] = useState(false);
+  const [format, setFormat] = useState<ExportFormat>("csv");
 
   const isSuperAdmin = user?.role === "SUPER_ADMIN";
   const hasPermission =
@@ -175,7 +289,7 @@ export function FleetAssignmentHistoryExportDialog({
   const handleExport = async () => {
     setLoading(true);
     try {
-      await downloadAssignmentHistory(includeConditionReports);
+      await downloadAssignmentHistory(includeConditionReports, format);
       toast.success("Fleet assignment history exported successfully");
       setOpen(false);
     } catch (error) {
@@ -210,6 +324,41 @@ export function FleetAssignmentHistoryExportDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="py-4 space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Export Format</label>
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                type="button"
+                variant={format === "csv" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFormat("csv")}
+                className="w-full"
+              >
+                <FileSpreadsheet className="mr-2 h-4 w-4" />
+                CSV
+              </Button>
+              <Button
+                type="button"
+                variant={format === "html" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFormat("html")}
+                className="w-full"
+              >
+                <FileCode className="mr-2 h-4 w-4" />
+                HTML
+              </Button>
+              <Button
+                type="button"
+                variant={format === "pdf" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFormat("pdf")}
+                className="w-full"
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                PDF
+              </Button>
+            </div>
+          </div>
           <div className="flex items-center space-x-2">
             <Checkbox
               id="includeConditionReports"
@@ -220,7 +369,7 @@ export function FleetAssignmentHistoryExportDialog({
             />
             <label
               htmlFor="includeConditionReports"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
             >
               Include vehicle condition reports
             </label>
@@ -252,8 +401,8 @@ export function FleetAssignmentHistoryExportDialog({
               </>
             ) : (
               <>
-                <FileSpreadsheet className="mr-2 h-4 w-4" />
-                Export CSV
+                <Download className="mr-2 h-4 w-4" />
+                Export {format.toUpperCase()}
               </>
             )}
           </Button>
