@@ -14,7 +14,6 @@ interface FleetOdometerStatus {
   assignmentId: string | null;
   assignedDriverName: string | null;
   assignedAt: string | null;
-  handoffState: string | null;
 }
 
 interface Props {
@@ -30,7 +29,7 @@ export function FleetOdometerStatusTable({ data, permissions }: Props) {
   }
 
   const downloadCSV = () => {
-    const headers = ['Registration', 'Make', 'Model', 'Current Odometer', 'Last Odometer Date', 'Assigned Driver', 'Assigned Since', 'Handoff State'];
+    const headers = ['Registration', 'Make', 'Model', 'Current Odometer', 'Last Odometer Date', 'Assigned Driver', 'Assigned Since'];
     const rows = data.map(item => [
       item.registration,
       item.make,
@@ -38,8 +37,7 @@ export function FleetOdometerStatusTable({ data, permissions }: Props) {
       item.currentOdometer?.toString() || 'N/A',
       item.lastOdometerDate || 'N/A',
       item.assignedDriverName || 'Unassigned',
-      item.assignedAt ? new Date(item.assignedAt).toLocaleDateString() : 'N/A',
-      item.handoffState || 'N/A'
+      item.assignedAt ? new Date(item.assignedAt).toLocaleDateString() : 'N/A'
     ]);
 
     const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
@@ -50,27 +48,6 @@ export function FleetOdometerStatusTable({ data, permissions }: Props) {
     link.download = `fleet-odometer-status-${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     URL.revokeObjectURL(link.href);
-  };
-
-  const getHandoffStateBadge = (state: string | null) => {
-    if (!state) return null;
-    
-    const stateStyles: Record<string, string> = {
-      PENDING_HANDOFF_INITIATED: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-      AWAITING_OLD_DRIVER_CONDITION: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-      AWAITING_NEW_DRIVER_CONDITION: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
-      AWAITING_MANAGER_APPROVAL: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
-      COMPLETE: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-      CANCELLED: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-    };
-
-    const style = stateStyles[state] || 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400';
-    
-    return (
-      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${style}`}>
-        {state.replace(/_/g, ' ')}
-      </span>
-    );
   };
 
   return (
@@ -106,7 +83,6 @@ export function FleetOdometerStatusTable({ data, permissions }: Props) {
                   <th className="text-left font-medium py-3 px-2">Last Updated</th>
                   <th className="text-left font-medium py-3 px-2">Assigned Driver</th>
                   <th className="text-left font-medium py-3 px-2">Assigned Since</th>
-                  <th className="text-left font-medium py-3 px-2">Handoff State</th>
                 </tr>
               </thead>
               <tbody>
@@ -144,9 +120,6 @@ export function FleetOdometerStatusTable({ data, permissions }: Props) {
                     </td>
                     <td className="py-3 px-2 text-muted-foreground">
                       {item.assignedAt ? new Date(item.assignedAt).toLocaleDateString() : 'N/A'}
-                    </td>
-                    <td className="py-3 px-2">
-                      {getHandoffStateBadge(item.handoffState)}
                     </td>
                   </tr>
                 ))}
