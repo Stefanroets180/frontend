@@ -29,6 +29,7 @@ import { handoffApi } from "@/lib/api/handoff";
 import type { VehicleHandoffDTO } from "@/lib/types/handoff";
 import { FleetOdometerStatusTable } from "@/components/vehicles/fleet-odometer-status-table";
 import { VehicleExportDialog } from "@/components/dashboard/vehicle-export-dialog";
+import { FleetAssignmentHistoryExportDialog } from "@/components/vehicles/fleet-assignment-history-export-dialog";
 
 export default function VehiclesPage() {
   const router = useRouter();
@@ -419,15 +420,11 @@ export default function VehiclesPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">My Vehicles</h1>
         <div className="flex gap-2">
-          {/* Export All - SUPER_ADMIN or with EXPORT permission */}
-          {(isSuperAdmin || permissions?.['EXPORT']?.['EXPORT_SARS_LOGBOOK']) && (
-            <VehicleExportDialog
-              vehicleId={null}
-              vehicleLabel="All Vehicles"
-              triggerLabel="Export All"
-              triggerVariant="outline"
-            />
-          )}
+          {/* Export All - Fleet Assignment History */}
+          <FleetAssignmentHistoryExportDialog
+            triggerLabel="Export All"
+            triggerVariant="outline"
+          />
           {!isDriver && !isRentalCustomer && (
             <Button asChild className="w-full sm:w-auto">
               <Link href="/onboarding/add-vehicle">
