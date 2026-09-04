@@ -966,6 +966,24 @@ function SettingsContent() {
                       />
                     )}
 
+                    {/* Fleet Status - Fleet only */}
+                    {isFleet && (
+                      <PermissionSection
+                        title="Fleet Status"
+                        description="Control who can view fleet-wide odometer status and vehicle assignments."
+                        icon={ClipboardList}
+                        type="FLEET_STATUS"
+                        keys={[
+                          { key: "VIEW_FLEET_STATUS", label: "View Fleet Status" },
+                        ]}
+                        roles={roles.filter(r => ['MANAGER', 'ADMIN'].includes(r.name))}
+                        overrides={permissionMatrix['FLEET_STATUS'] ?? {}}
+                        orgId={user?.organizationId || ""}
+                        isOpen={openSection === "FLEET_STATUS"}
+                        onToggle={() => setOpenSection(openSection === "FLEET_STATUS" ? "" : "FLEET_STATUS")}
+                      />
+                    )}
+
                     {/* Export */}
                     <PermissionSection
                       title="Export"
