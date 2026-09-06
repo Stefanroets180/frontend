@@ -42,6 +42,29 @@ interface FleetAssignmentHistoryExportDialogProps {
   triggerClassName?: string;
 }
 
+interface ConditionSectionDTO {
+  sectionType: string;
+  condition: string;
+  description: string;
+  locked: boolean;
+  inspectedAt: string;
+  imageUrls: string[];
+}
+
+interface ManagerNoteDTO {
+  note: string;
+  createdByName: string;
+  createdAt: string;
+}
+
+interface VehicleConditionReportDTO {
+  purpose: string;
+  createdAt: string;
+  completedByName: string;
+  sections: ConditionSectionDTO[];
+  managerNotes: ManagerNoteDTO[];
+}
+
 interface AssignmentInfo {
   driverName: string;
   driverEmail: string;
@@ -52,11 +75,7 @@ interface AssignmentInfo {
   status: string;
   odometerAtAssignment: number | null;
   odometerConfirmationImageUrl: string | null;
-  vehicleCondition?: string | null;
-  conditionNotes?: string | null;
-  conditionReportImageUrl?: string | null;
-  conditionReportCompletedByName?: string | null;
-  conditionReportCompletedAt?: string | null;
+  conditionReport?: VehicleConditionReportDTO | null;
 }
 
 interface FleetAssignmentHistory {
@@ -108,10 +127,14 @@ async function downloadAssignmentHistory(
 
     if (includeConditionReports) {
       headers.push(
-        "Current Vehicle Condition",
-        "Current Condition Notes",
-        "Previous Vehicle Condition",
-        "Previous Condition Notes",
+        "Current Condition Report Purpose",
+        "Current Condition Report Completed By",
+        "Current Condition Report Sections Count",
+        "Current Condition Report Images Count",
+        "Previous Condition Report Purpose",
+        "Previous Condition Report Completed By",
+        "Previous Condition Report Sections Count",
+        "Previous Condition Report Images Count",
       );
     }
 
@@ -132,10 +155,14 @@ async function downloadAssignmentHistory(
       vehicle.previousDriver?.odometerAtAssignment?.toString() || "",
       ...(includeConditionReports
         ? [
-            vehicle.currentDriver?.vehicleCondition || "",
-            vehicle.currentDriver?.conditionNotes || "",
-            vehicle.previousDriver?.vehicleCondition || "",
-            vehicle.previousDriver?.conditionNotes || "",
+            vehicle.currentDriver?.conditionReport?.purpose || "",
+            vehicle.currentDriver?.conditionReport?.completedByName || "",
+            vehicle.currentDriver?.conditionReport?.sections?.length?.toString() || "0",
+            vehicle.currentDriver?.conditionReport?.sections?.reduce((acc, s) => acc + s.imageUrls.length, 0)?.toString() || "0",
+            vehicle.previousDriver?.conditionReport?.purpose || "",
+            vehicle.previousDriver?.conditionReport?.completedByName || "",
+            vehicle.previousDriver?.conditionReport?.sections?.length?.toString() || "0",
+            vehicle.previousDriver?.conditionReport?.sections?.reduce((acc, s) => acc + s.imageUrls.length, 0)?.toString() || "0",
           ]
         : []),
     ]);
@@ -155,7 +182,7 @@ async function downloadAssignmentHistory(
     a.click();
     URL.revokeObjectURL(url);
   } else if (format === "html" || format === "pdf") {
-    // Generate HTML
+    // Generate HTML with condition reports
     const headers = [
       "Vehicle Registration",
       "Make",
@@ -173,15 +200,6 @@ async function downloadAssignmentHistory(
       "Previous Driver Odometer at Assignment",
     ];
 
-    if (includeConditionReports) {
-      headers.push(
-        "Current Vehicle Condition",
-        "Current Condition Notes",
-        "Previous Vehicle Condition",
-        "Previous Condition Notes",
-      );
-    }
-
     const rows = data.map((vehicle) => [
       vehicle.vehicleRegistration,
       vehicle.vehicleMake,
@@ -197,15 +215,113 @@ async function downloadAssignmentHistory(
       vehicle.previousDriver?.assignedAt || "",
       vehicle.previousDriver?.assignedByName || "",
       vehicle.previousDriver?.odometerAtAssignment?.toString() || "",
-      ...(includeConditionReports
-        ? [
-            vehicle.currentDriver?.vehicleCondition || "",
-            vehicle.currentDriver?.conditionNotes || "",
-            vehicle.previousDriver?.vehicleCondition || "",
-            vehicle.previousDriver?.conditionNotes || "",
-          ]
-        : []),
     ]);
+
+    // Generate condition report HTML sections
+    const conditionReportsHtml = includeConditionReports ? data.map((vehicle) => {
+      const currentReport = vehicle.currentDriver?.conditionReport;
+      const previousReport = vehicle.previousDriver?.conditionReport;
+
+      let reportHtml = `<div class="vehicle-section" style="margin-top: 40px; page-break-before: auto;">
+        <h2 style="color: #333; border-bottom: 2px solid #4CAF50; padding-bottom: 10px;">
+          ${vehicle.vehicleRegistration} - ${vehicle.vehicleMake} ${vehicle.vehicleModel}
+        </h2>`;
+
+      if (currentReport) {
+        reportHtml += `
+          <h3 style="color: #666; margin-top: 20px;">Current Driver Condition Report</h3>
+          <p><strong>Purpose:</strong> ${currentReport.purpose}</p>
+          <p><strong>Completed By:</strong> ${currentReport.completedByName}</p>
+          <p><strong>Completed At:</strong> ${new Date(currentReport.createdAt).toLocaleString()}</p>
+          
+          <table style="border-collapse: collapse; width: 100%; margin-top: 10px;">
+            <thead>
+              <tr>
+                <th style="background-color: #2196F3; color: white; border: 1px solid #ddd; padding: 8px;">Section</th>
+                <th style="background-color: #2196F3; color: white; border: 1px solid #ddd; padding: 8px;">Condition</th>
+                <th style="background-color: #2196F3; color: white; border: 1px solid #ddd; padding: 8px;">Description</th>
+                <th style="background-color: #2196F3; color: white; border: 1px solid #ddd; padding: 8px;">Images</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${currentReport.sections.map(section => `
+                <tr>
+                  <td style="border: 1px solid #ddd; padding: 8px;">${section.sectionType}</td>
+                  <td style="border: 1px solid #ddd; padding: 8px;">${section.condition}</td>
+                  <td style="border: 1px solid #ddd; padding: 8px;">${section.description || ''}</td>
+                  <td style="border: 1px solid #ddd; padding: 8px;">
+                    ${section.imageUrls.length > 0 
+                      ? section.imageUrls.map(url => `<img src="${url}" style="max-width: 100px; max-height: 100px; margin: 2px; border: 1px solid #ddd;" />`).join('')
+                      : 'No images'
+                    }
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+
+          ${currentReport.managerNotes && currentReport.managerNotes.length > 0 ? `
+            <h4 style="margin-top: 15px;">Manager Notes</h4>
+            <ul style="margin-top: 5px;">
+              ${currentReport.managerNotes.map(note => `
+                <li style="margin-bottom: 5px;">
+                  <strong>${note.createdByName}</strong> (${new Date(note.createdAt).toLocaleString()}): ${note.note}
+                </li>
+              `).join('')}
+            </ul>
+          ` : ''}
+        `;
+      }
+
+      if (previousReport) {
+        reportHtml += `
+          <h3 style="color: #666; margin-top: 30px;">Previous Driver Condition Report</h3>
+          <p><strong>Purpose:</strong> ${previousReport.purpose}</p>
+          <p><strong>Completed By:</strong> ${previousReport.completedByName}</p>
+          <p><strong>Completed At:</strong> ${new Date(previousReport.createdAt).toLocaleString()}</p>
+          
+          <table style="border-collapse: collapse; width: 100%; margin-top: 10px;">
+            <thead>
+              <tr>
+                <th style="background-color: #FF9800; color: white; border: 1px solid #ddd; padding: 8px;">Section</th>
+                <th style="background-color: #FF9800; color: white; border: 1px solid #ddd; padding: 8px;">Condition</th>
+                <th style="background-color: #FF9800; color: white; border: 1px solid #ddd; padding: 8px;">Description</th>
+                <th style="background-color: #FF9800; color: white; border: 1px solid #ddd; padding: 8px;">Images</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${previousReport.sections.map(section => `
+                <tr>
+                  <td style="border: 1px solid #ddd; padding: 8px;">${section.sectionType}</td>
+                  <td style="border: 1px solid #ddd; padding: 8px;">${section.condition}</td>
+                  <td style="border: 1px solid #ddd; padding: 8px;">${section.description || ''}</td>
+                  <td style="border: 1px solid #ddd; padding: 8px;">
+                    ${section.imageUrls.length > 0 
+                      ? section.imageUrls.map(url => `<img src="${url}" style="max-width: 100px; max-height: 100px; margin: 2px; border: 1px solid #ddd;" />`).join('')
+                      : 'No images'
+                    }
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+
+          ${previousReport.managerNotes && previousReport.managerNotes.length > 0 ? `
+            <h4 style="margin-top: 15px;">Manager Notes</h4>
+            <ul style="margin-top: 5px;">
+              ${previousReport.managerNotes.map(note => `
+                <li style="margin-bottom: 5px;">
+                  <strong>${note.createdByName}</strong> (${new Date(note.createdAt).toLocaleString()}): ${note.note}
+                </li>
+              `).join('')}
+            </ul>
+          ` : ''}
+        `;
+      }
+
+      reportHtml += `</div>`;
+      return reportHtml;
+    }).join('') : '';
 
     const htmlContent = `
 <!DOCTYPE html>
@@ -221,11 +337,13 @@ async function downloadAssignmentHistory(
     th { background-color: #4CAF50; color: white; }
     tr:nth-child(even) { background-color: #f2f2f2; }
     .date { font-size: 12px; color: #666; }
+    img { object-fit: cover; }
   </style>
 </head>
 <body>
   <h1>Fleet Assignment History</h1>
   <p class="date">Generated: ${new Date().toLocaleString()}</p>
+  
   <table>
     <thead>
       <tr>
@@ -236,6 +354,8 @@ async function downloadAssignmentHistory(
       ${rows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join("")}</tr>`).join("")}
     </tbody>
   </table>
+
+  ${conditionReportsHtml}
 </body>
 </html>`;
 
