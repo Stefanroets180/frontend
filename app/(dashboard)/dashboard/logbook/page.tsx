@@ -320,7 +320,9 @@ export default function LogbookPage() {
       const tripsRes = await api.get(`/trips/vehicle/${selectedVehicle}`);
       const tripData = Array.isArray(tripsRes.data) ? tripsRes.data : [];
       setTrips(
-        tripData.map((t: Record<string, unknown>) => ({
+        tripData
+          .filter((t: Record<string, unknown>) => t != null)
+          .map((t: Record<string, unknown>) => ({
           id: String(t.id),
           organizationId: "",
           vehicleId: String(t.vehicleId),
