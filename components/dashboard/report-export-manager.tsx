@@ -60,7 +60,7 @@ export function ReportExportManager() {
   const fetchExports = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/report-exports`,
+        `${process.env.NEXT_PUBLIC_API_URL}/report-exports`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -88,7 +88,7 @@ export function ReportExportManager() {
     setRequesting(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/report-exports/request`,
+        `${process.env.NEXT_PUBLIC_API_URL}/report-exports/request`,
         {
           method: "POST",
           headers: {
@@ -127,7 +127,7 @@ export function ReportExportManager() {
   const deleteExport = async (exportId: string) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/report-exports/${exportId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/report-exports/${exportId}`,
         {
           method: "DELETE",
           headers: {
