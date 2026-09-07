@@ -426,7 +426,7 @@ export default function VehiclesPage() {
             triggerVariant="outline"
           />
           {!isDriver && !isRentalCustomer && (
-            <Button asChild className="w-full sm:w-auto">
+            <Button asChild>
               <Link href="/onboarding/add-vehicle">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Vehicle
