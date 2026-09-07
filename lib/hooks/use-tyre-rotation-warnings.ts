@@ -54,6 +54,7 @@ export function useTyreRotationWarnings(): UseTyreRotationWarningsResult {
       const { data } = await api.getOptional('/alerts/tyre-rotation')
       const rows = Array.isArray(data) ? data : []
       const mapped = rows
+        .filter((r: Record<string, unknown>) => r != null)
         .map((r: Record<string, unknown>) => mapWarning(r))
         .filter((w) => ['WARNING', 'CRITICAL'].includes(w.rotationStatus))
       setWarnings(mapped)

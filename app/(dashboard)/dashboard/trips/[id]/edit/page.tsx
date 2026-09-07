@@ -45,7 +45,7 @@ export default function EditTripPage() {
     const fetchTrip = async () => {
       try {
         const { data } = await api.get(`/trips/${tripId}`);
-        if (data) {
+        if (data && typeof data === 'object') {
           setTrip(data);
           setFormData({
             vehicleId: data.vehicleId || "",

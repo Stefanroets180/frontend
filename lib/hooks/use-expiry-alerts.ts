@@ -67,6 +67,7 @@ export function useExpiryAlerts(): UseExpiryAlertsResult {
       const { data } = await api.getOptional('/alerts/expiry?includeDismissed=true')
       const rows = Array.isArray(data) ? data : []
       const mapped = rows
+        .filter((r: Record<string, unknown>) => r != null)
         .map((r: Record<string, unknown>) => mapApiAlert(r))
         .filter((alert): alert is ExpiryAlert => alert !== null)
       mapped.sort((a, b) => a.daysUntilExpiry - b.daysUntilExpiry)
