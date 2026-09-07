@@ -250,8 +250,11 @@ async function downloadAssignmentHistory(
                   <td style="border: 1px solid #ddd; padding: 8px;">${section.condition}</td>
                   <td style="border: 1px solid #ddd; padding: 8px;">${section.description || ''}</td>
                   <td style="border: 1px solid #ddd; padding: 8px;">
-                    ${section.imageUrls.length > 0 
-                      ? section.imageUrls.map(url => `<img src="${url}" style="max-width: 100px; max-height: 100px; margin: 2px; border: 1px solid #ddd;" />`).join('')
+                    ${section.imageUrls.length > 0
+                      ? section.imageUrls.map(url => {
+                          const fullUrl = url.startsWith('http') ? url : `${process.env.NEXT_PUBLIC_API_URL || 'https://fleet-expense-app.duckdns.org'}${url}`;
+                          return `<img src="${fullUrl}" style="max-width: 100px; max-height: 100px; margin: 2px; border: 1px solid #ddd;" />`;
+                        }).join('')
                       : 'No images'
                     }
                   </td>
@@ -296,8 +299,11 @@ async function downloadAssignmentHistory(
                   <td style="border: 1px solid #ddd; padding: 8px;">${section.condition}</td>
                   <td style="border: 1px solid #ddd; padding: 8px;">${section.description || ''}</td>
                   <td style="border: 1px solid #ddd; padding: 8px;">
-                    ${section.imageUrls.length > 0 
-                      ? section.imageUrls.map(url => `<img src="${url}" style="max-width: 100px; max-height: 100px; margin: 2px; border: 1px solid #ddd;" />`).join('')
+                    ${section.imageUrls.length > 0
+                      ? section.imageUrls.map(url => {
+                          const fullUrl = url.startsWith('http') ? url : `${process.env.NEXT_PUBLIC_API_URL || 'https://fleet-expense-app.duckdns.org'}${url}`;
+                          return `<img src="${fullUrl}" style="max-width: 100px; max-height: 100px; margin: 2px; border: 1px solid #ddd;" />`;
+                        }).join('')
                       : 'No images'
                     }
                   </td>
