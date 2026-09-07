@@ -63,12 +63,16 @@ export function ReportExportManager() {
         `${process.env.NEXT_PUBLIC_API_URL}/report-exports`,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("jwt_token")}`,
           },
         }
       );
 
-      if (!response.ok) throw new Error("Failed to fetch exports");
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Failed to fetch exports:", response.status, errorText);
+        throw new Error("Failed to fetch exports");
+      }
 
       const data = await response.json();
       setExports(data);
@@ -93,7 +97,7 @@ export function ReportExportManager() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("jwt_token")}`,
           },
           body: JSON.stringify({
             reportType,
@@ -131,7 +135,7 @@ export function ReportExportManager() {
         {
           method: "DELETE",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("jwt_token")}`,
           },
         }
       );
