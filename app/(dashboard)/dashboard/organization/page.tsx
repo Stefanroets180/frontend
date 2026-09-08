@@ -60,6 +60,10 @@ interface Vehicle {
 
 export default function OrganizationPage() {
   const { user, isFleetMode, isSoloMode } = useAuth()
+  // Prevent RENTAL_CUSTOMER from accessing organization page
+  if (user?.role === UserRole.RENTAL_CUSTOMER) {
+    return null
+  }
   // Allow both fleet roles (SUPER_ADMIN, ADMIN, MANAGER) and individual account owners (solo mode)
   if (!isSoloMode) {
     useRequireRole(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.MANAGER)
@@ -730,8 +734,8 @@ export default function OrganizationPage() {
           </Card>
         )}
 
-        {/* Team Members Card - Only shown for Fleet mode */}
-        {isFleetMode && (
+        {/* Team Members Card - Only shown for SUPER_ADMIN, ADMIN, MANAGER */}
+        {isFleetMode && (isSuperAdmin || isAdmin || isManager) && (
           <Card>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
