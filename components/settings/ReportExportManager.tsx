@@ -17,12 +17,15 @@ export default function ReportExportManager() {
 
   useEffect(() => {
     loadExports();
+  }, []);
+
+  useEffect(() => {
     // Poll for updates every 5 seconds if there are pending exports
+    const hasPending = exports.some(e => e.status === ReportExportStatus.PENDING);
+    if (!hasPending) return;
+
     const interval = setInterval(() => {
-      const hasPending = exports.some(e => e.status === ReportExportStatus.PENDING);
-      if (hasPending) {
-        loadExports();
-      }
+      loadExports();
     }, 5000);
 
     return () => clearInterval(interval);
