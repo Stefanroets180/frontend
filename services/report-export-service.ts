@@ -4,7 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 export const reportExportService = {
   async requestExport(request: ReportExportRequest): Promise<ReportExport> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('jwt_token');
     const response = await fetch(`${API_URL}/report-exports`, {
       method: 'POST',
       headers: {
@@ -23,7 +23,7 @@ export const reportExportService = {
   },
 
   async getExports(): Promise<ReportExport[]> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('jwt_token');
     const response = await fetch(`${API_URL}/report-exports`, {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -38,7 +38,7 @@ export const reportExportService = {
   },
 
   async getExport(exportId: string): Promise<ReportExport> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('jwt_token');
     const response = await fetch(`${API_URL}/report-exports/${exportId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -53,7 +53,7 @@ export const reportExportService = {
   },
 
   async deleteExport(exportId: string): Promise<void> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('jwt_token');
     const response = await fetch(`${API_URL}/report-exports/${exportId}`, {
       method: 'DELETE',
       headers: {
