@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Download, FileText, Trash2, RefreshCw, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/lib/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
+import { api } from "@/lib/api/client";
 
 interface ReportExport {
   id: string;
@@ -59,22 +60,7 @@ export function ReportExportManager() {
 
   const fetchExports = async () => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/report-exports`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwt_token")}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Failed to fetch exports:", response.status, errorText);
-        throw new Error("Failed to fetch exports");
-      }
-
-      const data = await response.json();
+      const { data } = await api.get('/report-exports');
       setExports(data);
     } catch (error) {
       console.error("Error fetching exports:", error);
@@ -91,24 +77,12 @@ export function ReportExportManager() {
   const requestExport = async (reportType: string, format: string) => {
     setRequesting(true);
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/report-exports/request`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("jwt_token")}`,
-          },
-          body: JSON.stringify({
-            reportType,
-            format,
-            dateFrom: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-            dateTo: new Date().toISOString(),
-          }),
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to request export");
+      await api.post('/report-exports/request', {
+        reportType,
+        format,
+        dateFrom: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+        dateTo: new Date().toISOString(),
+      });
 
       toast({
         title: "Export requested",
@@ -130,17 +104,7 @@ export function ReportExportManager() {
 
   const deleteExport = async (exportId: string) => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/report-exports/${exportId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwt_token")}`,
-          },
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to delete export");
+      await api.delete(`/report-exports/${exportId}`);
 
       toast({
         title: "Export deleted",
