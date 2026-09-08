@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Download, FileText, Trash2, RefreshCw, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/lib/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
-import { api } from "@/lib/api/client";
+import { api } from "@/lib/api/client"; // Uses centralized JWT handling
 
 interface ReportExport {
   id: string;
