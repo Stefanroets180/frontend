@@ -854,25 +854,6 @@ export default function OrganizationPage() {
               </div>
             </CardHeader>
             <CardContent>
-              {/* Password Change Instructions for Invited Team Members */}
-              {currentUserRole === UserRole.DRIVER && (
-                <Alert className="mb-4 bg-blue-50 border-blue-200">
-                  <Info className="h-4 w-4 text-blue-600" />
-                  <AlertDescription className="text-sm">
-                    <div className="space-y-2">
-                      <p className="font-medium text-blue-900">Welcome to the team!</p>
-                      <p className="text-blue-800">As an invited team member, you should change your temporary password for security.</p>
-                      <Link 
-                        href="/dashboard/profile"
-                        className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium underline"
-                      >
-                        <Lock className="h-3 w-3" />
-                        Go to Profile to change your password
-                      </Link>
-                    </div>
-                  </AlertDescription>
-                </Alert>
-              )}
               <div className="space-y-3">
                 {teamMembers.map((member) => (
                   <div
