@@ -734,8 +734,8 @@ export default function OrganizationPage() {
           </Card>
         )}
 
-        {/* Team Members Card - Only shown for fleet users (not RENTAL_CUSTOMER) */}
-        {isFleetMode && user?.role !== UserRole.RENTAL_CUSTOMER && (
+        {/* Team Members Card - Only shown for fleet mode */}
+        {isFleetMode && (
           <Card>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
