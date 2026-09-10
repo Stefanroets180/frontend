@@ -1018,8 +1018,8 @@ export default function VehiclesPage() {
           <div className="p-4 sm:p-6">
             {selectedVehicleForFleet && (
               <VehicleConditionReport
-                assignmentId={isFleetMode ? selectedAssignmentId : null}
-                vehicleId={!isFleetMode ? selectedVehicleForFleet.id : null}
+                assignmentId={isFleetMode && selectedAssignmentId ? selectedAssignmentId : null}
+                vehicleId={!isFleetMode || !selectedAssignmentId ? selectedVehicleForFleet.id : null}
                 vehicleName={selectedVehicleForFleet?.nickname || `${selectedVehicleForFleet?.make} ${selectedVehicleForFleet?.model}`}
                 onComplete={() => setConditionReportOpen(false)}
               />
