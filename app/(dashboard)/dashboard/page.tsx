@@ -85,7 +85,6 @@ const categoryIcons: Record<ExpenseCategory, any> = {
   [ExpenseCategory.PERSONAL_LICENSE]: IdCard,
   [ExpenseCategory.ROADWORTHY]: Car,
   [ExpenseCategory.OTHER_FIXED]: MoreHorizontal,
-  [ExpenseCategory.PARKING]: MoreHorizontal,
 };
 
 const categoryColors: Record<
@@ -140,10 +139,6 @@ const categoryColors: Record<
     iconBgColor: "bg-chart-4/10",
     iconColor: "text-chart-4",
   },
-  [ExpenseCategory.PARKING]: {
-    iconBgColor: "bg-orange-500/10",
-    iconColor: "text-orange-500",
-  },
 };
 
 const categoryDescriptions: Record<ExpenseCategory, string> = {
@@ -159,7 +154,6 @@ const categoryDescriptions: Record<ExpenseCategory, string> = {
   [ExpenseCategory.PERSONAL_LICENSE]: "Driver's license & ID card renewal",
   [ExpenseCategory.ROADWORTHY]: "Roadworthy certificate testing",
   [ExpenseCategory.OTHER_FIXED]: "Parking, tolls, other vehicle costs",
-  [ExpenseCategory.PARKING]: "Parking fees",
 };
 
 type DashboardShortcutAccent = "compliance" | "export" | "logbook";

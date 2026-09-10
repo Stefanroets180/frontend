@@ -45,7 +45,6 @@ const categoryIcons: Record<ExpenseCategory, LucideIcon> = {
   [ExpenseCategory.PERSONAL_LICENSE]: IdCard,
   [ExpenseCategory.ROADWORTHY]: Car,
   [ExpenseCategory.OTHER_FIXED]: MoreHorizontal,
-  [ExpenseCategory.PARKING]: MoreHorizontal,
 }
 
 // Color mapping for expense categories
@@ -62,7 +61,6 @@ const categoryColors: Record<ExpenseCategory, { bgColor: string; iconColor: stri
   [ExpenseCategory.PERSONAL_LICENSE]: { bgColor: 'bg-rose-500/10 hover:bg-rose-500/20', iconColor: 'text-rose-500' },
   [ExpenseCategory.ROADWORTHY]: { bgColor: 'bg-indigo-500/10 hover:bg-indigo-500/20', iconColor: 'text-indigo-500' },
   [ExpenseCategory.OTHER_FIXED]: { bgColor: 'bg-chart-4/10 hover:bg-chart-4/20', iconColor: 'text-chart-4' },
-  [ExpenseCategory.PARKING]: { bgColor: 'bg-orange-500/10 hover:bg-orange-500/20', iconColor: 'text-orange-500' },
 }
 
 // Description mapping for expense categories
@@ -79,7 +77,6 @@ const categoryDescriptions: Record<ExpenseCategory, string> = {
   [ExpenseCategory.PERSONAL_LICENSE]: "Driver's license & ID card renewal",
   [ExpenseCategory.ROADWORTHY]: 'Roadworthy certificate testing',
   [ExpenseCategory.OTHER_FIXED]: 'Parking, tolls, other vehicle costs',
-  [ExpenseCategory.PARKING]: 'Parking fees',
 }
 
 interface ExpenseTypeSelectorProps {

@@ -45,7 +45,6 @@ const categoryMap: Record<string, ExpenseCategory> = {
   personal: ExpenseCategory.PERSONAL_LICENSE,
   roadworthy: ExpenseCategory.ROADWORTHY,
   other: ExpenseCategory.OTHER_FIXED,
-  parking: ExpenseCategory.PARKING,
 }
 
 function NewExpenseContent() {
@@ -976,7 +975,6 @@ function NewExpenseContent() {
           />
         )
       case ExpenseCategory.OTHER_FIXED:
-      case ExpenseCategory.PARKING:
         return (
           <OtherExpenseForm
             vehicles={vehicles}

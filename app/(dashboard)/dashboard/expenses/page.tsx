@@ -61,7 +61,6 @@ const categoryIcons: Record<ExpenseCategory, LucideIcon> = {
   [ExpenseCategory.PERSONAL_LICENSE]: FileText,
   [ExpenseCategory.ROADWORTHY]: Car,
   [ExpenseCategory.OTHER_FIXED]: FileText,
-  [ExpenseCategory.PARKING]: FileText,
 };
 
 // Helper to format vehicle label same as dashboard
@@ -108,7 +107,6 @@ const categoryColors: Record<ExpenseCategory, { bg: string; text: string }> = {
     text: "text-indigo-500",
   },
   [ExpenseCategory.OTHER_FIXED]: { bg: "bg-chart-4/10", text: "text-chart-4" },
-  [ExpenseCategory.PARKING]: { bg: "bg-orange-500/10", text: "text-orange-500" },
 };
 
 interface ExpenseItem {

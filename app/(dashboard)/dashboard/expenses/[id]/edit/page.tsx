@@ -466,16 +466,15 @@ export default function EditExpensePage({
             break;
 
           case ExpenseCategory.OTHER_FIXED:
-          case ExpenseCategory.PARKING:
             setInitialData({
               ...baseData,
-              vehicleId: data.vehicle?.id || (data.category === ExpenseCategory.PARKING ? undefined : ""),
+              vehicleId: data.vehicle?.id || undefined,
               date: data.expenseDate ? new Date(data.expenseDate) : new Date(),
               expenseDescription:
                 data.otherFixedExpense?.expenseDescription ||
                 data.description ||
                 "",
-              categoryLabel: data.otherFixedExpense?.categoryLabel || (data.category === ExpenseCategory.PARKING ? "Parking" : undefined),
+              categoryLabel: data.otherFixedExpense?.categoryLabel || undefined,
               providerName: data.otherFixedExpense?.providerName || data.supplierName,
               referenceNumber: data.otherFixedExpense?.referenceNumber,
               amountZar: data.amountZar || 0,
@@ -1131,7 +1130,6 @@ export default function EditExpensePage({
         );
 
       case ExpenseCategory.OTHER_FIXED:
-      case ExpenseCategory.PARKING:
         return (
           <OtherExpenseForm
             vehicles={vehicles}
@@ -1181,10 +1179,7 @@ export default function EditExpensePage({
               const formData = new FormData();
               formData.append("data", JSON.stringify({ ...dataToSend, id }));
               if (receiptImage) formData.append("receipt", receiptImage);
-              // Use parking endpoint for PARKING category, other-fixed for OTHER_FIXED
-              const endpoint = expense.category === ExpenseCategory.PARKING 
-                ? `/expenses/parking/${id}` 
-                : `/expenses/other-fixed/${id}`;
+              const endpoint = `/expenses/other-fixed/${id}`;
               await apiPostMultipart(
                 endpoint,
                 formData,
