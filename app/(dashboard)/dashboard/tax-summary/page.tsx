@@ -262,6 +262,7 @@ export default function TaxSummaryPage() {
     capitalOrAllowanceReviewCents: allTaxSummaries.reduce((sum, s) => sum + (s.capitalOrAllowanceReviewCents || 0), 0),
     uncategorizedExpenseCents: allTaxSummaries.reduce((sum, s) => sum + (s.uncategorizedExpenseCents || 0), 0),
     dataQualityWarnings: allTaxSummaries.flatMap(s => s.dataQualityWarnings || []),
+    distanceSource: "Combined",
   } : null;
 
   const formatZAR = (value: number) => {
