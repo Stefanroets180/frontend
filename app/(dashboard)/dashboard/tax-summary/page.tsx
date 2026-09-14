@@ -296,9 +296,9 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total KM</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{taxSummary.totalKm.toLocaleString()}</div>
+                <div className="text-2xl font-bold">{taxSummary.totalKm?.toLocaleString() ?? 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Source: {taxSummary.distanceSource}
+                  Source: {taxSummary.distanceSource ?? 'N/A'}
                 </p>
               </CardContent>
             </Card>
@@ -308,9 +308,9 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Business KM</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{taxSummary.businessKm.toLocaleString()}</div>
+                <div className="text-2xl font-bold">{taxSummary.businessKm?.toLocaleString() ?? 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {taxSummary.businessPercentage.toFixed(1)}% of total
+                  {taxSummary.businessPercentage?.toFixed(1) ?? 'N/A'}% of total
                 </p>
               </CardContent>
             </Card>
@@ -320,7 +320,7 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Private KM</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{taxSummary.privateKm.toLocaleString()}</div>
+                <div className="text-2xl font-bold">{taxSummary.privateKm?.toLocaleString() ?? 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Personal use
                 </p>
@@ -332,7 +332,7 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Unclassified KM</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{taxSummary.unclassifiedKm.toLocaleString()}</div>
+                <div className="text-2xl font-bold">{taxSummary.unclassifiedLoggedKm?.toLocaleString() ?? 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Needs review
                 </p>
@@ -344,7 +344,7 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Qualifying Expenses</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{formatZAR(taxSummary.qualifyingCurrentExpenseCents / 100)}</div>
+                <div className="text-2xl font-bold">{taxSummary.qualifyingCurrentExpenseCents ? formatZAR(taxSummary.qualifyingCurrentExpenseCents / 100) : 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Tax-deductible
                 </p>
@@ -356,7 +356,7 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Capital/Review</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{formatZAR(taxSummary.capitalOrAllowanceReviewCents / 100)}</div>
+                <div className="text-2xl font-bold">{taxSummary.capitalOrAllowanceReviewCents ? formatZAR(taxSummary.capitalOrAllowanceReviewCents / 100) : 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Requires review
                 </p>
@@ -368,7 +368,7 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Uncategorized</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{formatZAR(taxSummary.uncategorizedExpenseCents / 100)}</div>
+                <div className="text-2xl font-bold">{taxSummary.uncategorizedExpenseCents ? formatZAR(taxSummary.uncategorizedExpenseCents / 100) : 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Needs classification
                 </p>
