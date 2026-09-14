@@ -114,7 +114,7 @@ export default function TaxSummaryPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await apiFetch(`/tax-year-summary/vehicle/${selectedVehicleId}/year/${selectedTaxYear}`);
+      const response = await apiFetch(`/tax-year-summaries/vehicle/${selectedVehicleId}/tax-year/${selectedTaxYear}`);
       if (response.ok) {
         const data = await response.json();
         setTaxSummary(data);
