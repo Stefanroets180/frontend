@@ -61,6 +61,8 @@ export default function TaxSummaryPage() {
   const [selectedVehicleId, setSelectedVehicleId] = useState<string>("");
   const [selectedTaxYear, setSelectedTaxYear] = useState<number>(2026);
   const [taxSummary, setTaxSummary] = useState<TaxYearSummary | null>(null);
+  const [allTaxSummaries, setAllTaxSummaries] = useState<TaxYearSummary[]>([]);
+  const [viewMode, setViewMode] = useState<'individual' | 'combined'>('individual');
   const [comparisonResults, setComparisonResults] = useState<TaxCalculationResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [comparisonLoading, setComparisonLoading] = useState(false);
@@ -76,10 +78,12 @@ export default function TaxSummaryPage() {
   }, []);
 
   useEffect(() => {
-    if (selectedVehicleId) {
+    if (viewMode === 'combined') {
+      fetchAllTaxSummaries();
+    } else if (selectedVehicleId) {
       fetchTaxSummary();
     }
-  }, [selectedVehicleId, selectedTaxYear]);
+  }, [selectedVehicleId, selectedTaxYear, viewMode]);
 
   const fetchVehicles = async () => {
     setLoading(true);
@@ -104,6 +108,30 @@ export default function TaxSummaryPage() {
     } catch (err) {
       console.error("Tax Summary - Vehicles fetch error:", err);
       setError("Failed to fetch vehicles");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAllTaxSummaries = async () => {
+    if (!selectedTaxYear) return;
+
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await apiFetch(`/tax-year-summaries/tax-year/${selectedTaxYear}`);
+      if (response.ok) {
+        const data = await response.json();
+        setAllTaxSummaries(data);
+      } else if (response.status === 404) {
+        // No tax summaries exist for this tax year
+        setAllTaxSummaries([]);
+        setError(null);
+      } else {
+        setError("Failed to fetch tax summaries");
+      }
+    } catch (err) {
+      setError("Failed to fetch tax summaries");
     } finally {
       setLoading(false);
     }
@@ -224,6 +252,18 @@ export default function TaxSummaryPage() {
 
   const selectedVehicle = vehicles.find((v) => v.id === selectedVehicleId);
 
+  const combinedSummary = allTaxSummaries.length > 0 ? {
+    totalKm: allTaxSummaries.reduce((sum, s) => sum + (s.totalKm || 0), 0),
+    businessKm: allTaxSummaries.reduce((sum, s) => sum + (s.businessKm || 0), 0),
+    privateKm: allTaxSummaries.reduce((sum, s) => sum + (s.privateKm || 0), 0),
+    unclassifiedKm: allTaxSummaries.reduce((sum, s) => sum + (s.unclassifiedKm || 0), 0),
+    businessPercentage: allTaxSummaries.reduce((sum, s) => sum + (s.businessPercentage || 0), 0) / allTaxSummaries.length,
+    qualifyingCurrentExpenseCents: allTaxSummaries.reduce((sum, s) => sum + (s.qualifyingCurrentExpenseCents || 0), 0),
+    capitalOrAllowanceReviewCents: allTaxSummaries.reduce((sum, s) => sum + (s.capitalOrAllowanceReviewCents || 0), 0),
+    uncategorizedExpenseCents: allTaxSummaries.reduce((sum, s) => sum + (s.uncategorizedExpenseCents || 0), 0),
+    dataQualityWarnings: allTaxSummaries.flatMap(s => s.dataQualityWarnings || []),
+  } : null;
+
   const formatZAR = (value: number) => {
     return new Intl.NumberFormat("en-ZA", {
       style: "currency",
@@ -251,14 +291,32 @@ export default function TaxSummaryPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-end">
             <div className="flex-1">
-              <label className="text-sm font-medium mb-2 block">Vehicle</label>
-              <Select value={selectedVehicleId} onValueChange={setSelectedVehicleId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a vehicle" />
-                </SelectTrigger>
-                <SelectContent>
+              <label className="text-sm font-medium mb-2 block">View Mode</label>
+              <div className="flex gap-2">
+                <Button
+                  variant={viewMode === 'individual' ? 'default' : 'outline'}
+                  onClick={() => setViewMode('individual')}
+                >
+                  Individual Vehicle
+                </Button>
+                <Button
+                  variant={viewMode === 'combined' ? 'default' : 'outline'}
+                  onClick={() => setViewMode('combined')}
+                >
+                  Combined Total
+                </Button>
+              </div>
+            </div>
+            {viewMode === 'individual' && (
+              <div className="flex-1">
+                <label className="text-sm font-medium mb-2 block">Vehicle</label>
+                <Select value={selectedVehicleId} onValueChange={setSelectedVehicleId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a vehicle" />
+                  </SelectTrigger>
+                  <SelectContent>
                   {vehicles.map((vehicle) => (
                     <SelectItem key={vehicle.id} value={vehicle.id}>
                       {vehicle.registrationNumber} - {vehicle.make} {vehicle.model}
@@ -287,7 +345,8 @@ export default function TaxSummaryPage() {
       </Card>
 
       {/* Data Quality Banner */}
-      {taxSummary && taxSummary.dataQualityWarnings && taxSummary.dataQualityWarnings.length > 0 && (
+      {((viewMode === 'individual' && taxSummary) || (viewMode === 'combined' && combinedSummary)) &&
+       ((viewMode === 'individual' ? taxSummary : combinedSummary)?.dataQualityWarnings?.length || 0) > 0 && (
         <Card className="border-orange-200 bg-orange-50">
           <CardContent className="pt-6">
             <div className="flex items-start gap-3">
@@ -295,7 +354,7 @@ export default function TaxSummaryPage() {
               <div className="flex-1">
                 <h3 className="font-semibold text-orange-900">Data Quality Warnings</h3>
                 <ul className="mt-2 space-y-1 text-sm text-orange-800">
-                  {taxSummary.dataQualityWarnings.map((warning, index) => (
+                  {(viewMode === 'individual' ? taxSummary : combinedSummary)?.dataQualityWarnings?.map((warning, index) => (
                     <li key={index}>• {warning}</li>
                   ))}
                 </ul>
@@ -306,7 +365,7 @@ export default function TaxSummaryPage() {
       )}
 
       {/* No Tax Summary State */}
-      {!taxSummary && !loading && (
+      {((viewMode === 'individual' && !taxSummary) || (viewMode === 'combined' && !combinedSummary)) && !loading && (
         <Card>
           <CardContent className="pt-6">
             <div className="flex flex-col items-center justify-center py-8 space-y-4">
@@ -314,35 +373,44 @@ export default function TaxSummaryPage() {
               <div className="text-center">
                 <h3 className="text-lg font-semibold">No Tax Summary Available</h3>
                 <p className="text-muted-foreground mt-2">
-                  Calculate a tax summary for this vehicle and tax year to view tax calculations and data quality information.
+                  {viewMode === 'individual'
+                    ? "Calculate a tax summary for this vehicle and tax year to view tax calculations and data quality information."
+                    : "Calculate tax summaries for your vehicles to view combined totals across all vehicles."
+                  }
                 </p>
               </div>
-              <Button
-                onClick={handleCalculate}
-                disabled={calculateLoading}
-                className="flex items-center gap-2"
-              >
-                <Calculator className="h-4 w-4" />
-                {calculateLoading ? "Calculating..." : "Calculate Tax Summary"}
-              </Button>
+              {viewMode === 'individual' && (
+                <Button
+                  onClick={handleCalculate}
+                  disabled={calculateLoading}
+                  className="flex items-center gap-2"
+                >
+                  <Calculator className="h-4 w-4" />
+                  {calculateLoading ? "Calculating..." : "Calculate Tax Summary"}
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
       )}
 
       {/* Summary Cards */}
-      {taxSummary && (
+      {((viewMode === 'individual' && taxSummary) || (viewMode === 'combined' && combinedSummary)) && (
         <>
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">Tax Year Summary</h2>
-            <Button
-              onClick={fetchComparisonResults}
-              disabled={comparisonLoading}
-              className="flex items-center gap-2"
-            >
-              <Calculator className="h-4 w-4" />
-              {comparisonLoading ? "Calculating..." : "Compare Methods"}
-            </Button>
+            <h2 className="text-xl font-semibold">
+              {viewMode === 'combined' ? 'Combined Tax Year Summary (All Vehicles)' : 'Tax Year Summary'}
+            </h2>
+            {viewMode === 'individual' && (
+              <Button
+                onClick={fetchComparisonResults}
+                disabled={comparisonLoading}
+                className="flex items-center gap-2"
+              >
+                <Calculator className="h-4 w-4" />
+                {comparisonLoading ? "Calculating..." : "Compare Methods"}
+              </Button>
+            )}
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <Card>
@@ -350,9 +418,9 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total KM</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{taxSummary.totalKm?.toLocaleString() ?? 'N/A'}</div>
+                <div className="text-2xl font-bold">{(viewMode === 'individual' ? taxSummary : combinedSummary)?.totalKm?.toLocaleString() ?? 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Source: {taxSummary.distanceSource ?? 'N/A'}
+                  Source: {(viewMode === 'individual' ? taxSummary : combinedSummary)?.distanceSource ?? 'N/A'}
                 </p>
               </CardContent>
             </Card>
@@ -362,9 +430,9 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Business KM</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{taxSummary.businessKm?.toLocaleString() ?? 'N/A'}</div>
+                <div className="text-2xl font-bold">{(viewMode === 'individual' ? taxSummary : combinedSummary)?.businessKm?.toLocaleString() ?? 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {taxSummary.businessPercentage?.toFixed(1) ?? 'N/A'}% of total
+                  {(viewMode === 'individual' ? taxSummary : combinedSummary)?.businessPercentage?.toFixed(1) ?? 'N/A'}% of total
                 </p>
               </CardContent>
             </Card>
@@ -374,7 +442,7 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Private KM</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{taxSummary.privateKm?.toLocaleString() ?? 'N/A'}</div>
+                <div className="text-2xl font-bold">{(viewMode === 'individual' ? taxSummary : combinedSummary)?.privateKm?.toLocaleString() ?? 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Personal use
                 </p>
@@ -386,7 +454,7 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Unclassified KM</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{taxSummary.unclassifiedKm?.toLocaleString() ?? 'N/A'}</div>
+                <div className="text-2xl font-bold">{(viewMode === 'individual' ? taxSummary : combinedSummary)?.unclassifiedKm?.toLocaleString() ?? 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Needs review
                 </p>
@@ -398,7 +466,7 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Qualifying Expenses</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{taxSummary.qualifyingCurrentExpenseCents ? formatZAR(taxSummary.qualifyingCurrentExpenseCents / 100) : 'N/A'}</div>
+                <div className="text-2xl font-bold">{(viewMode === 'individual' ? taxSummary : combinedSummary)?.qualifyingCurrentExpenseCents ? formatZAR((viewMode === 'individual' ? taxSummary : combinedSummary).qualifyingCurrentExpenseCents / 100) : 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Tax-deductible
                 </p>
@@ -410,7 +478,7 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Capital/Review</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{taxSummary.capitalOrAllowanceReviewCents ? formatZAR(taxSummary.capitalOrAllowanceReviewCents / 100) : 'N/A'}</div>
+                <div className="text-2xl font-bold">{(viewMode === 'individual' ? taxSummary : combinedSummary)?.capitalOrAllowanceReviewCents ? formatZAR((viewMode === 'individual' ? taxSummary : combinedSummary).capitalOrAllowanceReviewCents / 100) : 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Requires review
                 </p>
@@ -422,7 +490,7 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Uncategorized</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{taxSummary.uncategorizedExpenseCents ? formatZAR(taxSummary.uncategorizedExpenseCents / 100) : 'N/A'}</div>
+                <div className="text-2xl font-bold">{(viewMode === 'individual' ? taxSummary : combinedSummary)?.uncategorizedExpenseCents ? formatZAR((viewMode === 'individual' ? taxSummary : combinedSummary).uncategorizedExpenseCents / 100) : 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Needs classification
                 </p>
@@ -434,7 +502,7 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Business Percentage</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{taxSummary.businessPercentage.toFixed(1)}%</div>
+                <div className="text-2xl font-bold">{(viewMode === 'individual' ? taxSummary : combinedSummary)?.businessPercentage?.toFixed(1) ?? 'N/A'}%</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Business use ratio
                 </p>
@@ -445,7 +513,7 @@ export default function TaxSummaryPage() {
       )}
 
       {/* Method Comparison Cards */}
-      {comparisonResults.length > 0 && (
+      {comparisonResults.length > 0 && viewMode === 'individual' && (
         <>
           <h2 className="text-xl font-semibold">Tax Calculation Method Comparison</h2>
           <div className="grid gap-6 md:grid-cols-3">
