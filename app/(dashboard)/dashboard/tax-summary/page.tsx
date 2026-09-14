@@ -325,6 +325,7 @@ export default function TaxSummaryPage() {
                 </SelectContent>
               </Select>
             </div>
+            )}
             <div className="w-48">
               <label className="text-sm font-medium mb-2 block">Tax Year</label>
               <Select value={selectedTaxYear.toString()} onValueChange={(v) => setSelectedTaxYear(parseInt(v))}>
