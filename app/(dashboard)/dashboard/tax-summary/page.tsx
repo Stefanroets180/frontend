@@ -65,6 +65,7 @@ export default function TaxSummaryPage() {
   const [loading, setLoading] = useState(false);
   const [comparisonLoading, setComparisonLoading] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
+  const [calculateLoading, setCalculateLoading] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
@@ -158,6 +159,31 @@ export default function TaxSummaryPage() {
       setError("Failed to fetch tax comparison results");
     } finally {
       setComparisonLoading(false);
+    }
+  };
+
+  const handleCalculate = async () => {
+    if (!selectedVehicleId || !selectedTaxYear) return;
+
+    setCalculateLoading(true);
+    setError(null);
+    try {
+      const response = await apiFetch(
+        `/tax-year-summaries/calculate/vehicle/${selectedVehicleId}/tax-year/${selectedTaxYear}`,
+        {
+          method: "POST",
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setTaxSummary(data);
+      } else {
+        setError("Failed to calculate tax summary");
+      }
+    } catch (err) {
+      setError("Failed to calculate tax summary");
+    } finally {
+      setCalculateLoading(false);
     }
   };
 
@@ -271,6 +297,31 @@ export default function TaxSummaryPage() {
                   ))}
                 </ul>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* No Tax Summary State */}
+      {!taxSummary && !loading && (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center justify-center py-8 space-y-4">
+              <CheckCircle className="h-12 w-12 text-muted-foreground" />
+              <div className="text-center">
+                <h3 className="text-lg font-semibold">No Tax Summary Available</h3>
+                <p className="text-muted-foreground mt-2">
+                  Calculate a tax summary for this vehicle and tax year to view tax calculations and data quality information.
+                </p>
+              </div>
+              <Button
+                onClick={handleCalculate}
+                disabled={calculateLoading}
+                className="flex items-center gap-2"
+              >
+                <Calculator className="h-4 w-4" />
+                {calculateLoading ? "Calculating..." : "Calculate Tax Summary"}
+              </Button>
             </div>
           </CardContent>
         </Card>
