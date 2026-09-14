@@ -1,6 +1,5 @@
 import { ReportExport, ReportExportRequest } from '@/types/report-export';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+import { API_URL } from '@/lib/api/client';
 
 export const reportExportService = {
   async requestExport(request: ReportExportRequest): Promise<ReportExport> {
