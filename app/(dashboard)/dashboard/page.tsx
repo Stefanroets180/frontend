@@ -1389,7 +1389,7 @@ export default function DashboardPage() {
       )}
 
       {/* ── Stats Grid ────────────────────────────────────────────────────── */}
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-5">
         {/* Fleet size — real count from API */}
         <StatsCard
           title={isDriver ? "Vehicle" : "Vehicles"}
@@ -1434,6 +1434,16 @@ export default function DashboardPage() {
           icon={Fuel}
           variant="default"
         />
+        {/* Tax Summary — links to tax summary page */}
+        <Link href="/dashboard/tax-summary" className="block">
+          <StatsCard
+            title="Tax Summary"
+            value="View"
+            subtitle="Tax year summaries"
+            icon={FileText}
+            variant="default"
+          />
+        </Link>
       </div>
 
       {/* ── Charts Section ─────────────────────────────────────────────────── */}

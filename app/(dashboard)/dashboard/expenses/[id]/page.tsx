@@ -21,11 +21,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ExpenseCategory, FUEL_TYPE_LABELS, FuelType, EXPENSE_CATEGORY_LABELS } from "@/lib/types/database";
+import { ExpenseCategory, FUEL_TYPE_LABELS, FuelType, EXPENSE_CATEGORY_LABELS, TaxExpenseClassification } from "@/lib/types/database";
 import { formatZAR } from "@/lib/utils/currency";
 import { api } from "@/lib/api/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Expense {
   id: string;
@@ -41,6 +48,7 @@ interface Expense {
   gpsLatitude?: number | null;
   gpsLongitude?: number | null;
   gpsAccuracy?: number | null;
+  taxExpenseClassification?: TaxExpenseClassification;
 }
 
 export default function ExpenseDetailPage() {
@@ -52,6 +60,8 @@ export default function ExpenseDetailPage() {
   const [loading, setLoading] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [receiptImageUrl, setReceiptImageUrl] = useState<string | null>(null);
+  const [editingClassification, setEditingClassification] = useState(false);
+  const [classificationSaving, setClassificationSaving] = useState(false);
 
   // GPS retroactive entry state
   const [gpsEditing, setGpsEditing] = useState(false);
@@ -80,6 +90,7 @@ export default function ExpenseDetailPage() {
             gpsLatitude: expenseData.fuelLog?.gpsLatitude ?? null,
             gpsLongitude: expenseData.fuelLog?.gpsLongitude ?? null,
             gpsAccuracy: expenseData.fuelLog?.gpsAccuracyMeters ?? null,
+            taxExpenseClassification: expenseData.taxExpenseClassification,
           });
           // Set receipt image URL if available
           if (expenseData.receiptImageUrl) {
@@ -200,6 +211,27 @@ export default function ExpenseDetailPage() {
     setGpsEditing(true);
   };
 
+  const handleClassificationUpdate = async (newClassification: TaxExpenseClassification) => {
+    if (!expense) return;
+    setClassificationSaving(true);
+    try {
+      await api.put(`/expenses/${expenseId}`, {
+        taxExpenseClassification: newClassification,
+      });
+      setExpense((prev) =>
+        prev
+          ? { ...prev, taxExpenseClassification: newClassification }
+          : prev
+      );
+      setEditingClassification(false);
+    } catch (err) {
+      console.error("Failed to update classification:", err);
+      alert("Failed to update tax classification.");
+    } finally {
+      setClassificationSaving(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto p-4">
@@ -268,6 +300,48 @@ export default function ExpenseDetailPage() {
             <div className="flex items-center justify-between py-2 border-b">
               <span className="text-muted-foreground">Category</span>
               <span>{EXPENSE_CATEGORY_LABELS[expense.category]}</span>
+            </div>
+            <div className="flex items-center justify-between py-2 border-b">
+              <span className="text-muted-foreground">Tax Classification</span>
+              {!editingClassification ? (
+                <div className="flex items-center gap-2">
+                  <span className={expense.taxExpenseClassification === TaxExpenseClassification.UNCATEGORIZED ? "text-orange-600 font-medium" : ""}>
+                    {expense.taxExpenseClassification || "Uncategorized"}
+                  </span>
+                  <Button variant="ghost" size="sm" onClick={() => setEditingClassification(true)} className="h-8">
+                    Edit
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Select
+                    value={expense.taxExpenseClassification || ""}
+                    onValueChange={(value) => handleClassificationUpdate(value as TaxExpenseClassification)}
+                    disabled={classificationSaving}
+                  >
+                    <SelectTrigger className="w-48 h-8">
+                      <SelectValue placeholder="Select classification" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={TaxExpenseClassification.QUALIFYING_CURRENT_EXPENSE}>
+                        Qualifying Current Expense
+                      </SelectItem>
+                      <SelectItem value={TaxExpenseClassification.CAPITAL_OR_ALLOWANCE_REVIEW}>
+                        Capital/Allowance Review
+                      </SelectItem>
+                      <SelectItem value={TaxExpenseClassification.PERSONAL_OR_NON_QUALIFYING}>
+                        Personal/Non-Qualifying
+                      </SelectItem>
+                      <SelectItem value={TaxExpenseClassification.UNCATEGORIZED}>
+                        Uncategorized
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button variant="ghost" size="sm" onClick={() => setEditingClassification(false)} disabled={classificationSaving} className="h-8">
+                    Cancel
+                  </Button>
+                </div>
+              )}
             </div>
             <div className="flex items-center justify-between py-2 border-b">
               <span className="text-muted-foreground">Vehicle</span>

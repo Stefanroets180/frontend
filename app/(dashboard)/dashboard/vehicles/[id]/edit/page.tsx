@@ -12,6 +12,20 @@ import { format } from "date-fns";
 import { api } from "@/lib/api/client";
 import { Vehicle, FuelType } from "@/lib/types/database";
 
+interface TaxProfile {
+  id?: string;
+  vehicleCostCents: number;
+  datePlacedInBusinessUse: string;
+  taxpayerVatRegistered: boolean;
+  taxpayerType: string;
+  compensationType: string;
+  fuelBorneBy: string;
+  maintenanceBorneBy: string;
+  coveredByMaintenancePlan: boolean;
+  effectiveFrom: string;
+  effectiveTo?: string | null;
+}
+
 export default function EditVehiclePage() {
   const router = useRouter();
   const params = useParams();
@@ -24,6 +38,9 @@ export default function EditVehiclePage() {
   const [saving, setSaving] = useState(false);
   const [recalculating, setRecalculating] = useState(false);
   const [showDriftWarning, setShowDriftWarning] = useState(fromOdometerDrift);
+  const [taxProfile, setTaxProfile] = useState<TaxProfile | null>(null);
+  const [savingTaxProfile, setSavingTaxProfile] = useState(false);
+  const [showTaxProfileSection, setShowTaxProfileSection] = useState(false);
   
   const [formData, setFormData] = useState({
     make: "",
@@ -93,6 +110,9 @@ export default function EditVehiclePage() {
           majorServiceIntervalMonths: data.majorServiceIntervalMonths?.toString() || "",
           brakeOverhaulIntervalMonths: data.brakeOverhaulIntervalMonths?.toString() || "",
         });
+
+        // Fetch tax profile
+        fetchTaxProfile();
       } catch (error) {
         console.error("Error fetching vehicle:", error);
         router.push("/dashboard/vehicles");
@@ -103,6 +123,61 @@ export default function EditVehiclePage() {
 
     fetchVehicle();
   }, [vehicleId, router]);
+
+  const fetchTaxProfile = async () => {
+    try {
+      const response = await api.get(`/vehicles/${vehicleId}/tax-profiles`);
+      if (response.data && response.data.length > 0) {
+        const profile = response.data[0];
+        setTaxProfile({
+          id: profile.id,
+          vehicleCostCents: profile.vehicleCostCents || 0,
+          datePlacedInBusinessUse: profile.datePlacedInBusinessUse || "",
+          taxpayerVatRegistered: profile.taxpayerVatRegistered || false,
+          taxpayerType: profile.taxpayerType || "",
+          compensationType: profile.compensationType || "",
+          fuelBorneBy: profile.fuelBorneBy || "",
+          maintenanceBorneBy: profile.maintenanceBorneBy || "",
+          coveredByMaintenancePlan: profile.coveredByMaintenancePlan || false,
+          effectiveFrom: profile.effectiveFrom || "",
+          effectiveTo: profile.effectiveTo || null,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching tax profile:", error);
+    }
+  };
+
+  const handleTaxProfileSave = async () => {
+    if (!taxProfile) return;
+    setSavingTaxProfile(true);
+    try {
+      const payload = {
+        vehicleCostCents: taxProfile.vehicleCostCents,
+        datePlacedInBusinessUse: taxProfile.datePlacedInBusinessUse,
+        taxpayerVatRegistered: taxProfile.taxpayerVatRegistered,
+        taxpayerType: taxProfile.taxpayerType,
+        compensationType: taxProfile.compensationType,
+        fuelBorneBy: taxProfile.fuelBorneBy,
+        maintenanceBorneBy: taxProfile.maintenanceBorneBy,
+        coveredByMaintenancePlan: taxProfile.coveredByMaintenancePlan,
+        effectiveFrom: taxProfile.effectiveFrom,
+      };
+
+      if (taxProfile.id) {
+        await api.put(`/vehicles/${vehicleId}/tax-profiles/${taxProfile.id}`, payload);
+      } else {
+        await api.post(`/vehicles/${vehicleId}/tax-profiles`, payload);
+      }
+      await fetchTaxProfile();
+      alert("Tax profile saved successfully");
+    } catch (error) {
+      console.error("Error saving tax profile:", error);
+      alert("Failed to save tax profile");
+    } finally {
+      setSavingTaxProfile(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -519,6 +594,191 @@ export default function EditVehiclePage() {
               Set custom service intervals for this vehicle. Used to calculate service due alerts.
             </p>
           </CardContent>
+        </Card>
+
+        {/* Tax Profile Section */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                Tax Profile
+              </CardTitle>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowTaxProfileSection(!showTaxProfileSection)}
+              >
+                {showTaxProfileSection ? "Hide" : "Show"}
+              </Button>
+            </div>
+          </CardHeader>
+          {showTaxProfileSection && (
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="vehicleCost">Vehicle Cost (R)</Label>
+                  <Input
+                    id="vehicleCost"
+                    type="number"
+                    value={taxProfile?.vehicleCostCents ? (taxProfile.vehicleCostCents / 100).toString() : ""}
+                    onChange={(e) =>
+                      setTaxProfile((prev) =>
+                        prev ? { ...prev, vehicleCostCents: parseFloat(e.target.value) * 100 } : null
+                      )
+                    }
+                    placeholder="e.g., 350000"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="datePlacedInBusinessUse">Date Placed in Business Use</Label>
+                  <Input
+                    id="datePlacedInBusinessUse"
+                    type="date"
+                    value={taxProfile?.datePlacedInBusinessUse || ""}
+                    onChange={(e) =>
+                      setTaxProfile((prev) =>
+                        prev ? { ...prev, datePlacedInBusinessUse: e.target.value } : null
+                      )
+                    }
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="taxpayerType">Taxpayer Type</Label>
+                  <Select
+                    value={taxProfile?.taxpayerType || ""}
+                    onValueChange={(value) =>
+                      setTaxProfile((prev) =>
+                        prev ? { ...prev, taxpayerType: value } : null
+                      )
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="EMPLOYEE">Employee</SelectItem>
+                      <SelectItem value="SOLE_PROPRIETOR">Sole Proprietor</SelectItem>
+                      <SelectItem value="COMPANY">Company</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="compensationType">Compensation Type</Label>
+                  <Select
+                    value={taxProfile?.compensationType || ""}
+                    onValueChange={(value) =>
+                      setTaxProfile((prev) =>
+                        prev ? { ...prev, compensationType: value } : null
+                      )
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="TRAVEL_ALLOWANCE">Travel Allowance</SelectItem>
+                      <SelectItem value="REIMBURSIVE_ACTUAL_DISTANCE">Reimbursive (Actual Distance)</SelectItem>
+                      <SelectItem value="NO_VEHICLE_COMPENSATION">No Vehicle Compensation</SelectItem>
+                      <SelectItem value="COMPANY_VEHICLE">Company Vehicle</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="fuelBorneBy">Fuel Borne By</Label>
+                  <Select
+                    value={taxProfile?.fuelBorneBy || ""}
+                    onValueChange={(value) =>
+                      setTaxProfile((prev) =>
+                        prev ? { ...prev, fuelBorneBy: value } : null
+                      )
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="EMPLOYER">Employer</SelectItem>
+                      <SelectItem value="EMPLOYEE">Employee</SelectItem>
+                      <SelectItem value="SHARED">Shared</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="maintenanceBorneBy">Maintenance Borne By</Label>
+                  <Select
+                    value={taxProfile?.maintenanceBorneBy || ""}
+                    onValueChange={(value) =>
+                      setTaxProfile((prev) =>
+                        prev ? { ...prev, maintenanceBorneBy: value } : null
+                      )
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="EMPLOYER">Employer</SelectItem>
+                      <SelectItem value="EMPLOYEE">Employee</SelectItem>
+                      <SelectItem value="SHARED">Shared</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="taxpayerVatRegistered"
+                    checked={taxProfile?.taxpayerVatRegistered || false}
+                    onChange={(e) =>
+                      setTaxProfile((prev) =>
+                        prev ? { ...prev, taxpayerVatRegistered: e.target.checked } : null
+                      )
+                    }
+                  />
+                  <Label htmlFor="taxpayerVatRegistered">Taxpayer VAT Registered</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="coveredByMaintenancePlan"
+                    checked={taxProfile?.coveredByMaintenancePlan || false}
+                    onChange={(e) =>
+                      setTaxProfile((prev) =>
+                        prev ? { ...prev, coveredByMaintenancePlan: e.target.checked } : null
+                      )
+                    }
+                  />
+                  <Label htmlFor="coveredByMaintenancePlan">Covered by Maintenance Plan</Label>
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="effectiveFrom">Effective From</Label>
+                <Input
+                  id="effectiveFrom"
+                  type="date"
+                  value={taxProfile?.effectiveFrom || ""}
+                  onChange={(e) =>
+                    setTaxProfile((prev) =>
+                      prev ? { ...prev, effectiveFrom: e.target.value } : null
+                    )
+                  }
+                />
+              </div>
+              <Button
+                type="button"
+                onClick={handleTaxProfileSave}
+                disabled={savingTaxProfile}
+              >
+                {savingTaxProfile ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving...</>
+                ) : (
+                  <><Save className="mr-2 h-4 w-4" />Save Tax Profile</>
+                )}
+              </Button>
+            </CardContent>
+          )}
         </Card>
 
         <div className="flex justify-end space-x-2 pt-4">

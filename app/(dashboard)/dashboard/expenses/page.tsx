@@ -492,10 +492,10 @@ export default function ExpensesPage() {
         {availableCategories.length > 0 && (
           <>
             <Tabs
-              value={activeCategory === "ALL" ? "all" : activeCategory}
+              value={activeCategory === "ALL" ? "all" : activeCategory === "UNCATEGORIZED" ? "uncategorized" : activeCategory}
               onValueChange={(v) =>
                 setActiveCategory(
-                  v === "all" ? "ALL" : (v as ExpenseCategory),
+                  v === "all" ? "ALL" : v === "uncategorized" ? "UNCATEGORIZED" : (v as ExpenseCategory),
                 )
               }
             >
@@ -503,7 +503,10 @@ export default function ExpensesPage() {
                 <TabsTrigger value="all" className="text-xs whitespace-nowrap">
                   All
                 </TabsTrigger>
-                {availableCategories.slice(0, 5).map((category) => (
+                <TabsTrigger value="uncategorized" className="text-xs whitespace-nowrap">
+                  Needs Review
+                </TabsTrigger>
+                {availableCategories.slice(0, 4).map((category) => (
                   <TabsTrigger
                     key={category}
                     value={category}
@@ -517,15 +520,15 @@ export default function ExpensesPage() {
             </Tabs>
 
             {/* Second row for remaining categories */}
-            {availableCategories.length > 5 && (
+            {availableCategories.length > 4 && (
               <Tabs
-                value={activeCategory === "ALL" ? "" : activeCategory}
+                value={activeCategory === "ALL" ? "" : activeCategory === "UNCATEGORIZED" ? "" : activeCategory}
                 onValueChange={(v) =>
                   setActiveCategory(v as ExpenseCategory)
                 }
               >
                 <TabsList className="grid h-auto w-full grid-cols-3 p-1 sm:grid-cols-6 overflow-x-auto">
-                  {availableCategories.slice(5).map((category) => (
+                  {availableCategories.slice(4).map((category) => (
                     <TabsTrigger
                       key={category}
                       value={category}
