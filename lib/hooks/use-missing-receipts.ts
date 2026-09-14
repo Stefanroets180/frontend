@@ -21,18 +21,15 @@ export interface UseMissingReceiptsResult {
 }
 
 export function useMissingReceipts(): UseMissingReceiptsResult {
-  console.log('useMissingReceipts hook called')
   const [expenses, setExpenses] = useState<ExpenseWithoutReceipt[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   const loadReceipts = useCallback(async () => {
-    console.log('Loading expenses without receipts...')
     setIsLoading(true)
     setError(null)
     try {
       const { data } = await getExpensesWithoutReceipts()
-      console.log('Received expenses without receipts:', data)
       const list = Array.isArray(data) ? data : []
       setExpenses(list)
     } catch (err) {
