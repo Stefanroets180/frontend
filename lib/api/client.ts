@@ -64,7 +64,7 @@ async function handleAuthError(res: Response, url: string): Promise<never> {
     // Don't log - this is expected when no confirmation exists
   } else if (res.status === 404 && url.includes('/api/v1/')) {
     console.warn(
-      `[API] 404 for ${url}. Restart Spring Boot (mvn spring-boot:run -Dspring-boot.run.profiles=dev) so new controllers load.`
+      `[API] 404 for ${url}. Backend endpoint may not exist or backend needs restart.`
     );
   }
   if (res.status === 401 || res.status === 403) {
