@@ -286,7 +286,9 @@ export default function ExpensesPage() {
   const selectedCategoryLabel =
     activeCategory === "ALL"
       ? "All categories"
-      : (EXPENSE_CATEGORY_LABELS[activeCategory] ?? activeCategory);
+      : activeCategory === "UNCATEGORIZED"
+        ? "Needs Review"
+        : (EXPENSE_CATEGORY_LABELS[activeCategory] ?? activeCategory);
 
   const expenseFiltersSummaryItems = [
     {
