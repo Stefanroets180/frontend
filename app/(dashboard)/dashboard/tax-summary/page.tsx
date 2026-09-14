@@ -468,7 +468,7 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Qualifying Expenses</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{(viewMode === 'individual' ? taxSummary : combinedSummary)?.qualifyingCurrentExpenseCents ? formatZAR((viewMode === 'individual' ? taxSummary : combinedSummary).qualifyingCurrentExpenseCents / 100) : 'N/A'}</div>
+                <div className="text-2xl font-bold">{(viewMode === 'individual' ? taxSummary : combinedSummary)?.qualifyingCurrentExpenseCents ? formatZAR(((viewMode === 'individual' ? taxSummary : combinedSummary)?.qualifyingCurrentExpenseCents || 0) / 100) : 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Tax-deductible
                 </p>
@@ -480,7 +480,7 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Capital/Review</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{(viewMode === 'individual' ? taxSummary : combinedSummary)?.capitalOrAllowanceReviewCents ? formatZAR((viewMode === 'individual' ? taxSummary : combinedSummary).capitalOrAllowanceReviewCents / 100) : 'N/A'}</div>
+                <div className="text-2xl font-bold">{(viewMode === 'individual' ? taxSummary : combinedSummary)?.capitalOrAllowanceReviewCents ? formatZAR(((viewMode === 'individual' ? taxSummary : combinedSummary)?.capitalOrAllowanceReviewCents || 0) / 100) : 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Requires review
                 </p>
@@ -492,7 +492,7 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Uncategorized</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{(viewMode === 'individual' ? taxSummary : combinedSummary)?.uncategorizedExpenseCents ? formatZAR((viewMode === 'individual' ? taxSummary : combinedSummary).uncategorizedExpenseCents / 100) : 'N/A'}</div>
+                <div className="text-2xl font-bold">{(viewMode === 'individual' ? taxSummary : combinedSummary)?.uncategorizedExpenseCents ? formatZAR(((viewMode === 'individual' ? taxSummary : combinedSummary)?.uncategorizedExpenseCents || 0) / 100) : 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Needs classification
                 </p>
