@@ -118,6 +118,10 @@ export default function TaxSummaryPage() {
       if (response.ok) {
         const data = await response.json();
         setTaxSummary(data);
+      } else if (response.status === 404) {
+        // No tax summary exists for this vehicle and tax year
+        setTaxSummary(null);
+        setError(null); // Clear error, this is expected
       } else {
         setError("Failed to fetch tax summary");
       }
