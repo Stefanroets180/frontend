@@ -82,13 +82,15 @@ export default function TaxSummaryPage() {
 
   const fetchVehicles = async () => {
     try {
-      const response = await apiFetch("/api/v1/admin/vehicles");
+      const response = await apiFetch("/api/v1/vehicles");
       if (response.ok) {
         const data = await response.json();
         setVehicles(data);
         if (data.length > 0) {
           setSelectedVehicleId(data[0].id);
         }
+      } else {
+        setError("Failed to fetch vehicles");
       }
     } catch (err) {
       setError("Failed to fetch vehicles");
