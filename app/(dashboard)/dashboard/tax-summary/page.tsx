@@ -84,7 +84,7 @@ export default function TaxSummaryPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await apiFetch("/api/v1/vehicles");
+      const response = await apiFetch("/vehicles");
       console.log("Tax Summary - Vehicles response:", response);
       if (response.ok) {
         const data = await response.json();
@@ -114,7 +114,7 @@ export default function TaxSummaryPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await apiFetch(`/api/v1/tax-year-summary/vehicle/${selectedVehicleId}/year/${selectedTaxYear}`);
+      const response = await apiFetch(`/tax-year-summary/vehicle/${selectedVehicleId}/year/${selectedTaxYear}`);
       if (response.ok) {
         const data = await response.json();
         setTaxSummary(data);
@@ -134,7 +134,7 @@ export default function TaxSummaryPage() {
     setComparisonLoading(true);
     setError(null);
     try {
-      const response = await apiFetch(`/api/v1/vehicles/${selectedVehicleId}/tax-profiles/tax-calculations?taxYear=${selectedTaxYear}`);
+      const response = await apiFetch(`/vehicles/${selectedVehicleId}/tax-profiles/tax-calculations?taxYear=${selectedTaxYear}`);
       if (response.ok) {
         const data: TaxComparisonResponse = await response.json();
         const results = Object.entries(data.results || {}).map(([key, result]) => ({
@@ -164,7 +164,7 @@ export default function TaxSummaryPage() {
     setError(null);
     try {
       const response = await apiFetch(
-        `/api/v1/exports/export?vehicleId=${selectedVehicleId}&taxYear=${selectedTaxYear}&calculationMethod=${selectedMethod}`,
+        `/exports/export?vehicleId=${selectedVehicleId}&taxYear=${selectedTaxYear}&calculationMethod=${selectedMethod}`,
         {
           method: "POST",
         }
