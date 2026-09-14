@@ -152,6 +152,9 @@ export default function TaxSummaryPage() {
         if (firstEligible) {
           setSelectedMethod(firstEligible.method);
         }
+      } else if (response.status === 404) {
+        // No tax profile exists for this vehicle
+        setError("A tax profile is required to compare tax calculation methods. Please set up a tax profile for this vehicle first.");
       } else {
         setError("Failed to fetch tax comparison results");
       }
