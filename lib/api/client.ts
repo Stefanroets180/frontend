@@ -64,6 +64,8 @@ async function handleAuthError(res: Response, url: string): Promise<never> {
     // Don't log - this is expected when no confirmation exists
   } else if (res.status === 404 && url.includes('/tax-year-summaries')) {
     // Don't log - this is expected when no tax summary exists yet
+  } else if (res.status === 404 && url.includes('/tax-calculations')) {
+    // Don't log - this is expected when no tax profile exists yet
   } else if (res.status === 404 && url.includes('/api/v1/')) {
     console.warn(
       `[API] 404 for ${url}. Backend endpoint may not exist or backend needs restart.`
