@@ -332,7 +332,7 @@ export default function TaxSummaryPage() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Unclassified KM</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{taxSummary.unclassifiedLoggedKm?.toLocaleString() ?? 'N/A'}</div>
+                <div className="text-2xl font-bold">{taxSummary.unclassifiedKm?.toLocaleString() ?? 'N/A'}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Needs review
                 </p>
