@@ -133,7 +133,7 @@ export default function ExpensesPage() {
   const router = useRouter();
   const { preferences } = useUserPreferences();
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState<ExpenseCategory | "ALL">(
+  const [activeCategory, setActiveCategory] = useState<ExpenseCategory | "ALL" | "UNCATEGORIZED">(
     "ALL",
   );
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -250,8 +250,17 @@ export default function ExpensesPage() {
       expense.vehicleReg.toLowerCase().includes(searchQuery.toLowerCase()) ||
       expense.supplierName?.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesCategory =
-      activeCategory === "ALL" || expense.category === activeCategory;
+    let matchesCategory = true;
+    if (activeCategory === "ALL") {
+      matchesCategory = true;
+    } else if (activeCategory === "UNCATEGORIZED") {
+      // Filter by tax expense classification - this would need to be fetched from backend
+      // For now, we'll show all expenses since we don't have the classification data
+      matchesCategory = true;
+    } else {
+      matchesCategory = expense.category === activeCategory;
+    }
+
     const matchesVehicle =
       selectedVehicle === "ALL" || expense.vehicleId === selectedVehicle;
 
