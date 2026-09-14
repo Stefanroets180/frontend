@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   User,
   Crown,
+  Calculator,
 } from "lucide-react";
 import { cn, getSarsTaxYear } from "@/lib/utils";
 import { useAuth } from "@/lib/contexts/auth-context";
@@ -41,6 +42,9 @@ function getNavItems(role: UserRole): NavItem[] {
   if (!isRentalCustomer) {
     items.push({ href: "/dashboard/logbook", label: isDriver || isAssistant ? "My Logbook" : "Logbook", icon: BookOpen, description: isDriver || isAssistant ? "Your trips" : "Trip records" });
   }
+
+  // Tax Summary - visible to all roles
+  items.push({ href: "/dashboard/tax-summary", label: "Tax Summary", icon: Calculator, description: "Tax year summaries" });
 
   items.push({ href: "/dashboard/settings", label: "Settings", icon: Settings, description: "Preferences" });
 
