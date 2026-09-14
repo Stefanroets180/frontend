@@ -81,19 +81,30 @@ export default function TaxSummaryPage() {
   }, [selectedVehicleId, selectedTaxYear]);
 
   const fetchVehicles = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const response = await apiFetch("/api/v1/vehicles");
+      console.log("Tax Summary - Vehicles response:", response);
       if (response.ok) {
         const data = await response.json();
+        console.log("Tax Summary - Vehicles data:", data);
         setVehicles(data);
         if (data.length > 0) {
           setSelectedVehicleId(data[0].id);
+        } else {
+          setError("No vehicles found. Please add a vehicle first.");
         }
       } else {
-        setError("Failed to fetch vehicles");
+        const errorText = await response.text();
+        console.error("Tax Summary - Vehicles error:", errorText);
+        setError(`Failed to fetch vehicles: ${response.status}`);
       }
     } catch (err) {
+      console.error("Tax Summary - Vehicles fetch error:", err);
       setError("Failed to fetch vehicles");
+    } finally {
+      setLoading(false);
     }
   };
 
