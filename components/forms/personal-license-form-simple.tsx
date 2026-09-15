@@ -242,6 +242,7 @@ export function PersonalLicenseForm({
             <Label htmlFor="date">Entry Date</Label>
             <Input
               id="date"
+              name="date"
               type="text"
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
@@ -371,6 +372,7 @@ export function PersonalLicenseForm({
               <Label htmlFor="issueDate">Issue Date *</Label>
               <Input
                 id="issueDate"
+                name="issueDate"
                 type="text"
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
@@ -427,6 +429,7 @@ export function PersonalLicenseForm({
               <Label htmlFor="expiryDate">Expiry Date *</Label>
               <Input
                 id="expiryDate"
+                name="expiryDate"
                 type="text"
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"

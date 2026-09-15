@@ -337,6 +337,7 @@ export function RoadworthyForm({
             <Label htmlFor="testDate">Test Date *</Label>
             <Input
               id="testDate"
+              name="testDate"
               type="text"
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
@@ -430,6 +431,7 @@ export function RoadworthyForm({
             <Label htmlFor="expiryDate">Certificate Expiry (Optional)</Label>
             <Input
               id="expiryDate"
+              name="expiryDate"
               type="text"
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"

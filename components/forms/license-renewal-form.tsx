@@ -371,6 +371,7 @@ export function LicenseRenewalForm({
               </Label>
               <Input
                 id="previousExpiryDate"
+                name="previousExpiryDate"
                 type="text"
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
@@ -423,6 +424,7 @@ export function LicenseRenewalForm({
               <Label htmlFor="newExpiryDate">New Expiry *</Label>
               <Input
                 id="newExpiryDate"
+                name="newExpiryDate"
                 type="text"
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"

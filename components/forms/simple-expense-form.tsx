@@ -270,6 +270,7 @@ export function SimpleExpenseForm({
             <Label htmlFor="date">Date <span className="text-destructive">*</span></Label>
             <Input
               id="date"
+              name="date"
               type="text"
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
