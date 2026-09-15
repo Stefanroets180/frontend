@@ -297,6 +297,7 @@ export default function EditTripPage() {
               </Label>
               <Input
                 id="startLocation"
+                name="startLocation"
                 type="text"
                 value={formData.startLocation}
                 onChange={(e) => handleInputChange("startLocation", e.target.value)}
@@ -313,6 +314,7 @@ export default function EditTripPage() {
               </Label>
               <Input
                 id="endLocation"
+                name="endLocation"
                 type="text"
                 value={formData.endLocation}
                 onChange={(e) => handleInputChange("endLocation", e.target.value)}
@@ -332,6 +334,7 @@ export default function EditTripPage() {
             </Label>
             <Input
               id="tripDate"
+              name="tripDate"
               type="date"
               value={formData.tripDate}
               onChange={(e) => handleInputChange("tripDate", e.target.value)}
@@ -349,6 +352,7 @@ export default function EditTripPage() {
               </Label>
               <Input
                 id="startTime"
+                name="startTime"
                 type="time"
                 value={formData.startTime}
                 onChange={(e) => handleInputChange("startTime", e.target.value)}
@@ -362,6 +366,7 @@ export default function EditTripPage() {
               </Label>
               <Input
                 id="endTime"
+                name="endTime"
                 type="time"
                 value={formData.endTime}
                 onChange={(e) => handleInputChange("endTime", e.target.value)}
@@ -382,6 +387,7 @@ export default function EditTripPage() {
                   <Label htmlFor="customerClientName">Client / Company Name</Label>
                   <Input
                     id="customerClientName"
+                    name="customerClientName"
                     type="text"
                     value={formData.customerClientName}
                     onChange={(e) => handleInputChange("customerClientName", e.target.value)}
@@ -394,6 +400,7 @@ export default function EditTripPage() {
                   <Label htmlFor="reasonForTrip">Reason for Trip</Label>
                   <Input
                     id="reasonForTrip"
+                    name="reasonForTrip"
                     type="text"
                     value={formData.reasonForTrip}
                     onChange={(e) => handleInputChange("reasonForTrip", e.target.value)}
@@ -416,6 +423,7 @@ export default function EditTripPage() {
                 <Label htmlFor="tollCostsZar">Toll Costs (R)</Label>
                 <Input
                   id="tollCostsZar"
+                  name="tollCostsZar"
                   type="number"
                   inputMode="decimal"
                   placeholder="0.00"
@@ -429,6 +437,7 @@ export default function EditTripPage() {
                 <Label htmlFor="parkingCostsZar">Parking Costs (R)</Label>
                 <Input
                   id="parkingCostsZar"
+                  name="parkingCostsZar"
                   type="number"
                   inputMode="decimal"
                   placeholder="0.00"
