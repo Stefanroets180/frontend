@@ -117,6 +117,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
             <Label htmlFor="email">Email Address</Label>
             <Input
               id="email"
+              name="email"
               type="email"
               placeholder="assistant@example.com"
               value={email}
