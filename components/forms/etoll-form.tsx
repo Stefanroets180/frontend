@@ -371,6 +371,7 @@ export function ETollForm({
               <Label htmlFor="periodStartDate">Period Start (Optional)</Label>
               <Input
                 id="periodStartDate"
+                name="periodStartDate"
                 type="text"
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
@@ -423,6 +424,7 @@ export function ETollForm({
               <Label htmlFor="periodEndDate">Period End (Optional)</Label>
               <Input
                 id="periodEndDate"
+                name="periodEndDate"
                 type="text"
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
