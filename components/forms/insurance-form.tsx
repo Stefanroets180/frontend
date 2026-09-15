@@ -544,7 +544,6 @@ export function InsuranceForm({
                   }
                 }}
                 maxLength={10}
-                name="coverageEndDate"
                 className={errors.coverageEndDate ? "border-red-500" : ""}
               />
               {errors.coverageEndDate && (
