@@ -727,12 +727,12 @@ function InsurancePremiumForm({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="monthlyPremiumZar">Monthly Premium (R) <span className="text-destructive">*</span></Label>
-              <Input id="monthlyPremiumZar" {...register('monthlyPremiumZar')} type="number" step="0.01" placeholder="850.00" className="h-12 text-lg font-semibold" />
+              <Input id="monthlyPremiumZar" name="monthlyPremiumZar" {...register('monthlyPremiumZar')} type="number" step="0.01" placeholder="850.00" className="h-12 text-lg font-semibold" />
               {errors.monthlyPremiumZar && <p className="text-sm text-destructive">{errors.monthlyPremiumZar.message}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="excessAmountZar">Excess Amount (R)</Label>
-              <Input id="excessAmountZar" {...register('excessAmountZar')} type="number" step="0.01" placeholder="2500.00" className="h-12" />
+              <Input id="excessAmountZar" name="excessAmountZar" {...register('excessAmountZar')} type="number" step="0.01" placeholder="2500.00" className="h-12" />
             </div>
           </div>
 
@@ -904,7 +904,7 @@ function VehicleTrackingForm({
           {/* Monthly Fee */}
           <div className="space-y-2">
             <Label htmlFor="monthlyFeeZar">Monthly Fee (R) <span className="text-destructive">*</span></Label>
-            <Input id="monthlyFeeZar" {...register('monthlyFeeZar')} type="number" step="0.01" placeholder="199.00" className="h-12 text-lg font-semibold" />
+            <Input id="monthlyFeeZar" name="monthlyFeeZar" {...register('monthlyFeeZar')} type="number" step="0.01" placeholder="199.00" className="h-12 text-lg font-semibold" />
             {errors.monthlyFeeZar && <p className="text-sm text-destructive">{errors.monthlyFeeZar.message}</p>}
           </div>
 
@@ -1126,12 +1126,12 @@ function ETollForm({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="totalAmountZar">Total Amount (R) <span className="text-destructive">*</span></Label>
-              <Input id="totalAmountZar" {...register('totalAmountZar')} type="number" step="0.01" placeholder="350.00" className="h-12 text-lg font-semibold" />
+              <Input id="totalAmountZar" name="totalAmountZar" {...register('totalAmountZar')} type="number" step="0.01" placeholder="350.00" className="h-12 text-lg font-semibold" />
               {errors.totalAmountZar && <p className="text-sm text-destructive">{errors.totalAmountZar.message}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="vatAmountZar">VAT Amount (R)</Label>
-              <Input id="vatAmountZar" {...register('vatAmountZar')} type="number" step="0.01" placeholder="45.65" className="h-12" />
+              <Input id="vatAmountZar" name="vatAmountZar" {...register('vatAmountZar')} type="number" step="0.01" placeholder="45.65" className="h-12" />
             </div>
           </div>
 
