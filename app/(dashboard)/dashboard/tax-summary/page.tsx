@@ -321,8 +321,8 @@ export default function TaxSummaryPage() {
             {viewMode === 'individual' && (
               <div className="flex-1 w-full">
                 <label htmlFor="vehicle-select" className="text-sm font-medium mb-2 block">Vehicle</label>
-                <Select value={selectedVehicleId} onValueChange={setSelectedVehicleId}>
-                  <SelectTrigger id="vehicle-select" name="vehicle">
+                <Select value={selectedVehicleId} onValueChange={setSelectedVehicleId} name="vehicle">
+                  <SelectTrigger id="vehicle-select">
                     <SelectValue placeholder="Select a vehicle" />
                   </SelectTrigger>
                   <SelectContent>
@@ -337,8 +337,8 @@ export default function TaxSummaryPage() {
             )}
             <div className="w-full md:w-48">
               <label htmlFor="tax-year-select" className="text-sm font-medium mb-2 block">Tax Year</label>
-              <Select value={selectedTaxYear.toString()} onValueChange={(v) => setSelectedTaxYear(parseInt(v))}>
-                <SelectTrigger id="tax-year-select" name="tax-year">
+              <Select value={selectedTaxYear.toString()} onValueChange={(v) => setSelectedTaxYear(parseInt(v))} name="tax-year">
+                <SelectTrigger id="tax-year-select">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -595,8 +595,9 @@ export default function TaxSummaryPage() {
                     value={selectedMethod}
                     onValueChange={setSelectedMethod}
                     disabled={exportLoading}
+                    name="calculation-method"
                   >
-                    <SelectTrigger id="calculation-method-select" name="calculation-method">
+                    <SelectTrigger id="calculation-method-select">
                       <SelectValue placeholder="Select a method" />
                     </SelectTrigger>
                     <SelectContent>
