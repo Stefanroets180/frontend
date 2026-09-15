@@ -459,6 +459,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="licenseExpiry">License Expiry</Label>
                 <Input
                   id="licenseExpiry"
+                  name="licenseExpiry"
                   type="text"
                   inputMode="numeric"
                   pattern="\d{4}-\d{2}-\d{2}"
