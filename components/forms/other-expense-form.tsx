@@ -544,6 +544,7 @@ export function OtherExpenseForm({
                 <Label htmlFor="periodStartDate">Period Start</Label>
                 <Input
                   id="periodStartDate"
+                  name="periodStartDate"
                   type="text"
                   inputMode="numeric"
                   pattern="\d{4}-\d{2}-\d{2}"
@@ -596,6 +597,7 @@ export function OtherExpenseForm({
                 <Label htmlFor="periodEndDate">Period End</Label>
                 <Input
                   id="periodEndDate"
+                  name="periodEndDate"
                   type="text"
                   inputMode="numeric"
                   pattern="\d{4}-\d{2}-\d{2}"
