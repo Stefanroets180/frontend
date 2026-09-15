@@ -115,22 +115,6 @@ export default function VehiclesPage() {
     );
   }
 
-  useEffect(() => {
-    if (user) {
-      fetchVehicles();
-      if (isAdminOrManager) {
-        fetchRejectedVehicles();
-      }
-      if (isFleetMode) {
-        fetchActiveHandoffs();
-        // SUPER_ADMIN bypasses permission check for fleet odometer status
-        if (isSuperAdmin || permissions?.['FLEET_STATUS']?.['VIEW_FLEET_STATUS']) {
-          fetchFleetOdometerStatus();
-        }
-      }
-    }
-  }, [user, isAdminOrManager, isFleetMode, fetchVehicles, fetchRejectedVehicles, fetchActiveHandoffs, fetchFleetOdometerStatus]);
-
   // Fetch organization visibility settings
   useEffect(() => {
     if (user) {
@@ -225,6 +209,22 @@ export default function VehiclesPage() {
       setIsLoadingFleetStatus(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchVehicles();
+      if (isAdminOrManager) {
+        fetchRejectedVehicles();
+      }
+      if (isFleetMode) {
+        fetchActiveHandoffs();
+        // SUPER_ADMIN bypasses permission check for fleet odometer status
+        if (isSuperAdmin || permissions?.['FLEET_STATUS']?.['VIEW_FLEET_STATUS']) {
+          fetchFleetOdometerStatus();
+        }
+      }
+    }
+  }, [user, isAdminOrManager, isFleetMode, fetchVehicles, fetchRejectedVehicles, fetchActiveHandoffs, fetchFleetOdometerStatus]);
 
   const handleDeleteVehicle = async (vehicleId: string) => {
     try {
