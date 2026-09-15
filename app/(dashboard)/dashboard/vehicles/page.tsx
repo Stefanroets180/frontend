@@ -83,60 +83,6 @@ export default function VehiclesPage() {
   const [conditionReportEnabled, setConditionReportEnabled] = useState(true);
   const [odometerConfirmationEnabled, setOdometerConfirmationEnabled] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      fetchVehicles();
-      if (isAdminOrManager) {
-        fetchRejectedVehicles();
-      }
-      if (isFleetMode) {
-        fetchActiveHandoffs();
-        // SUPER_ADMIN bypasses permission check for fleet odometer status
-        if (isSuperAdmin) {
-          fetchFleetOdometerStatus();
-        }
-      }
-    }
-  }, [user, isAdminOrManager, isFleetMode, isSuperAdmin, fetchVehicles, fetchRejectedVehicles, fetchActiveHandoffs, fetchFleetOdometerStatus]);
-
-  // Fetch organization visibility settings
-  useEffect(() => {
-    if (user) {
-      api
-        .get("/organization")
-        .then(({ data }) => {
-          if (data) {
-            setConditionReportEnabled(data.conditionReportEnabled ?? true);
-            setOdometerConfirmationEnabled(data.odometerConfirmationEnabled ?? true);
-          }
-        })
-        .catch(() => {
-          // Default to true if fetch fails
-          setConditionReportEnabled(true);
-          setOdometerConfirmationEnabled(true);
-        });
-    }
-  }, [user]);
-
-  // Show locked message if user doesn't have permission
-  if (!canViewVehicles) {
-    return (
-      <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
-        <CardContent className="flex items-center gap-4 p-6">
-          <Lock className="h-6 w-6 text-amber-600 dark:text-amber-400" />
-          <div>
-            <p className="font-semibold text-amber-900 dark:text-amber-100">
-              Permission Required
-            </p>
-            <p className="text-sm text-amber-700 dark:text-amber-300">
-              You don't have permission to view vehicles. Please contact your organization administrator.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   const fetchVehicles = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -212,6 +158,60 @@ export default function VehiclesPage() {
       setIsLoadingFleetStatus(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchVehicles();
+      if (isAdminOrManager) {
+        fetchRejectedVehicles();
+      }
+      if (isFleetMode) {
+        fetchActiveHandoffs();
+        // SUPER_ADMIN bypasses permission check for fleet odometer status
+        if (isSuperAdmin) {
+          fetchFleetOdometerStatus();
+        }
+      }
+    }
+  }, [user, isAdminOrManager, isFleetMode, isSuperAdmin, fetchVehicles, fetchRejectedVehicles, fetchActiveHandoffs, fetchFleetOdometerStatus]);
+
+  // Fetch organization visibility settings
+  useEffect(() => {
+    if (user) {
+      api
+        .get("/organization")
+        .then(({ data }) => {
+          if (data) {
+            setConditionReportEnabled(data.conditionReportEnabled ?? true);
+            setOdometerConfirmationEnabled(data.odometerConfirmationEnabled ?? true);
+          }
+        })
+        .catch(() => {
+          // Default to true if fetch fails
+          setConditionReportEnabled(true);
+          setOdometerConfirmationEnabled(true);
+        });
+    }
+  }, [user]);
+
+  // Show locked message if user doesn't have permission
+  if (!canViewVehicles) {
+    return (
+      <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
+        <CardContent className="flex items-center gap-4 p-6">
+          <Lock className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+          <div>
+            <p className="font-semibold text-amber-900 dark:text-amber-100">
+              Permission Required
+            </p>
+            <p className="text-sm text-amber-700 dark:text-amber-300">
+              You don't have permission to view vehicles. Please contact your organization administrator.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const handleDeleteVehicle = async (vehicleId: string) => {
     try {
