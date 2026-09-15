@@ -66,6 +66,8 @@ async function handleAuthError(res: Response, url: string): Promise<never> {
     // Don't log - this is expected when no tax summary exists yet
   } else if (res.status === 404 && url.includes('/tax-calculations')) {
     // Don't log - this is expected when no tax profile exists yet
+  } else if (res.status === 404 && url.includes('/vehicle-condition-reports')) {
+    // Don't log - this is expected when no condition report exists yet
   } else if (res.status === 404 && url.includes('/api/v1/')) {
     console.warn(
       `[API] 404 for ${url}. Backend endpoint may not exist or backend needs restart.`
@@ -151,8 +153,8 @@ export const api = {
       if (!res.ok) await handleAuthError(res, url);
       return { data: await safeJsonParse(res) };
     } catch (error) {
-      // Suppress error logging for odometer confirmation endpoints
-      if (!url.includes('/odometer-confirmations')) {
+      // Suppress error logging for expected 404 cases
+      if (!url.includes('/odometer-confirmations') && !url.includes('/vehicle-condition-reports')) {
         console.error(`[API] GET ${url} failed:`, error);
       }
       throw error;
