@@ -292,26 +292,28 @@ export default function TaxSummaryPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4 items-end">
-            <div className="flex-1">
+          <div className="flex flex-col md:flex-row gap-4 items-end">
+            <div className="flex-1 w-full">
               <label className="text-sm font-medium mb-2 block">View Mode</label>
               <div className="flex gap-2">
                 <Button
                   variant={viewMode === 'individual' ? 'default' : 'outline'}
                   onClick={() => setViewMode('individual')}
+                  className="flex-1"
                 >
                   Individual Vehicle
                 </Button>
                 <Button
                   variant={viewMode === 'combined' ? 'default' : 'outline'}
                   onClick={() => setViewMode('combined')}
+                  className="flex-1"
                 >
                   Combined Total
                 </Button>
               </div>
             </div>
             {viewMode === 'individual' && (
-              <div className="flex-1">
+              <div className="flex-1 w-full">
                 <label htmlFor="vehicle-select" className="text-sm font-medium mb-2 block">Vehicle</label>
                 <Select value={selectedVehicleId} onValueChange={setSelectedVehicleId}>
                   <SelectTrigger id="vehicle-select" name="vehicle">
@@ -327,7 +329,7 @@ export default function TaxSummaryPage() {
               </Select>
             </div>
             )}
-            <div className="w-48">
+            <div className="w-full md:w-48">
               <label htmlFor="tax-year-select" className="text-sm font-medium mb-2 block">Tax Year</label>
               <Select value={selectedTaxYear.toString()} onValueChange={(v) => setSelectedTaxYear(parseInt(v))}>
                 <SelectTrigger id="tax-year-select" name="tax-year">
