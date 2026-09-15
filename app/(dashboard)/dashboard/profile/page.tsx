@@ -63,13 +63,6 @@ export default function ProfilePage() {
   const [isLoadingCredentials, setIsLoadingCredentials] = useState(false)
   const [isEditingCredentials, setIsEditingCredentials] = useState(false)
 
-  // Load fleet credentials on mount
-  useEffect(() => {
-    if (isFleetMode) {
-      loadFleetCredentials()
-    }
-  }, [isFleetMode])
-
   const loadFleetCredentials = async () => {
     setIsLoadingCredentials(true)
     try {
@@ -85,6 +78,13 @@ export default function ProfilePage() {
       setIsLoadingCredentials(false)
     }
   }
+
+  // Load fleet credentials on mount
+  useEffect(() => {
+    if (isFleetMode) {
+      loadFleetCredentials()
+    }
+  }, [isFleetMode])
 
   const {
     register,
