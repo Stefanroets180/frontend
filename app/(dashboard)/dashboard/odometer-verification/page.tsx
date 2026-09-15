@@ -20,6 +20,9 @@ function OdometerVerificationContent() {
   const readingType =
     typeParam === 'CLOSING' ? OdometerReadingType.CLOSING : OdometerReadingType.OPENING
 
+  const [vehicle, setVehicle] = useState<{ reg: string; lastOdometer: number } | null>(null)
+  const [loading, setLoading] = useState(true)
+
   // Prevent RENTAL_CUSTOMER from accessing odometer verification
   useEffect(() => {
     if (user?.role === UserRole.RENTAL_CUSTOMER) {
@@ -27,9 +30,6 @@ function OdometerVerificationContent() {
       return
     }
   }, [user, router])
-
-  const [vehicle, setVehicle] = useState<{ reg: string; lastOdometer: number } | null>(null)
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!vehicleId) {

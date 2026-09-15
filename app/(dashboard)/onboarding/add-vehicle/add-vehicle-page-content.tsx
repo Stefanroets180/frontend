@@ -11,13 +11,6 @@ export function AddVehiclePageContent() {
   const router = useRouter();
   const { user, isLoading } = useAuth();
 
-  useEffect(() => {
-    // Prevent RENTAL_CUSTOMER from accessing add vehicle page
-    if (!isLoading && user?.role === UserRole.RENTAL_CUSTOMER) {
-      router.replace("/dashboard");
-    }
-  }, [user, router, isLoading]);
-
   // Show loading while checking auth
   if (isLoading) {
     return (
@@ -31,6 +24,13 @@ export function AddVehiclePageContent() {
   if (user?.role === UserRole.RENTAL_CUSTOMER) {
     return null;
   }
+
+  useEffect(() => {
+    // Prevent RENTAL_CUSTOMER from accessing add vehicle page
+    if (!isLoading && user?.role === UserRole.RENTAL_CUSTOMER) {
+      router.replace("/dashboard");
+    }
+  }, [user, router, isLoading]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 pb-24">
