@@ -11,6 +11,7 @@ import {
   Settings,
   Plus,
   Building2,
+  Calculator,
 } from 'lucide-react'
 import { cn, getSarsTaxYear } from '@/lib/utils'
 import { useAuth } from '@/lib/contexts/auth-context'
@@ -31,11 +32,12 @@ function getNavItems(role: UserRole): NavItem[] {
     { href: '/dashboard/expenses', label: isDriver || isAssistant ? 'My Expenses' : 'Expenses', icon: Receipt },
     { href: '/dashboard/vehicles', label: isDriver || isAssistant ? 'My Vehicle' : 'Vehicles', icon: Car },
     { href: '/dashboard/logbook', label: isDriver || isAssistant ? 'My Logbook' : 'Logbook', icon: BookOpen },
+    { href: '/dashboard/tax-summary', label: 'Tax', icon: Calculator },
     { href: '/dashboard/settings', label: 'Settings', icon: Settings },
   ]
 
   if (!isDriver && !isAssistant) {
-    items.splice(4, 0, { href: '/dashboard/organization', label: 'Org', icon: Building2 })
+    items.splice(5, 0, { href: '/dashboard/organization', label: 'Org', icon: Building2 })
   }
 
   return items
