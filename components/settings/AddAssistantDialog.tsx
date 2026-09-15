@@ -131,6 +131,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
               <Label htmlFor="firstName">First Name (Optional)</Label>
               <Input
                 id="firstName"
+                name="firstName"
                 placeholder="John"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
@@ -141,6 +142,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
               <Label htmlFor="lastName">Last Name (Optional)</Label>
               <Input
                 id="lastName"
+                name="lastName"
                 placeholder="Doe"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
