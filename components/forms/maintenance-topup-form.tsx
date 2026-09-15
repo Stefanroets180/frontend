@@ -314,7 +314,6 @@ export function MaintenanceTopupForm({ vehicles, onSubmit, initialData, mode = '
             <Label htmlFor="priceZar">Price (R)</Label>
             <Input
               id="priceZar"
-              name="priceZar"
               {...register('priceZar')}
               type="number"
               inputMode="decimal"
@@ -343,7 +342,6 @@ export function MaintenanceTopupForm({ vehicles, onSubmit, initialData, mode = '
               <Label htmlFor="itemBrand">Brand (Optional)</Label>
               <Input
                 id="itemBrand"
-                name="itemBrand"
                 {...register('itemBrand')}
                 placeholder="e.g., Castrol"
                 className="h-12 touch-target"
@@ -353,7 +351,6 @@ export function MaintenanceTopupForm({ vehicles, onSubmit, initialData, mode = '
               <Label htmlFor="itemQuantity">Qty</Label>
               <Input
                 id="itemQuantity"
-                name="itemQuantity"
                 {...register('itemQuantity')}
                 type="number"
                 inputMode="numeric"
@@ -368,7 +365,6 @@ export function MaintenanceTopupForm({ vehicles, onSubmit, initialData, mode = '
             <Label htmlFor="shopName">Shop Name (Optional)</Label>
             <Input
               id="shopName"
-              name="shopName"
               {...register('shopName')}
               placeholder="e.g., AutoZone, Midas"
               className="h-12 touch-target"

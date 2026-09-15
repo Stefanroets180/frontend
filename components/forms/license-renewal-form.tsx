@@ -346,7 +346,6 @@ export function LicenseRenewalForm({
             <Label htmlFor="licenseNumber">License Number (Optional)</Label>
             <Input
               id="licenseNumber"
-              name="licenseNumber"
               placeholder="License disc number"
               {...register("licenseNumber")}
             />
@@ -359,7 +358,6 @@ export function LicenseRenewalForm({
             </Label>
             <Input
               id="registrationAuthority"
-              name="registrationAuthority"
               placeholder="e.g., Gauteng Provincial"
               {...register("registrationAuthority")}
             />
@@ -373,7 +371,6 @@ export function LicenseRenewalForm({
               </Label>
               <Input
                 id="previousExpiryDate"
-                name="previousExpiryDate"
                 type="text"
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
@@ -426,7 +423,6 @@ export function LicenseRenewalForm({
               <Label htmlFor="newExpiryDate">New Expiry *</Label>
               <Input
                 id="newExpiryDate"
-                name="newExpiryDate"
                 type="text"
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
@@ -509,7 +505,6 @@ export function LicenseRenewalForm({
             <Label htmlFor="renewalFeeZar">Renewal Fee (ZAR)</Label>
             <Input
               id="renewalFeeZar"
-              name="renewalFeeZar"
               type="number"
               step="0.01"
               placeholder="0.00"
@@ -529,7 +524,6 @@ export function LicenseRenewalForm({
               <Label htmlFor="penaltiesZar">Penalties (ZAR) - Optional</Label>
               <Input
                 id="penaltiesZar"
-                name="penaltiesZar"
                 type="number"
                 step="0.01"
                 placeholder="0.00"
@@ -540,7 +534,6 @@ export function LicenseRenewalForm({
               <Label htmlFor="arrearsZar">Arrears (ZAR) - Optional</Label>
               <Input
                 id="arrearsZar"
-                name="arrearsZar"
                 type="number"
                 step="0.01"
                 placeholder="0.00"
@@ -557,7 +550,6 @@ export function LicenseRenewalForm({
               </Label>
               <Input
                 id="transactionNumber"
-                name="transactionNumber"
                 placeholder="Receipt number"
                 {...register("transactionNumber")}
               />
@@ -566,7 +558,6 @@ export function LicenseRenewalForm({
               <Label htmlFor="processingDays">Processing Days (Optional)</Label>
               <Input
                 id="processingDays"
-                name="processingDays"
                 type="number"
                 placeholder="0"
                 {...register("processingDays")}
@@ -579,7 +570,6 @@ export function LicenseRenewalForm({
             <Label htmlFor="odometerReading">Odometer Reading (km) *</Label>
             <Input
               id="odometerReading"
-              name="odometerReading"
               type="number"
               placeholder="0"
               {...register("odometerReading")}

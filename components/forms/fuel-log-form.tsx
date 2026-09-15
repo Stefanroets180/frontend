@@ -479,7 +479,6 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
               <Label htmlFor="liters">Liters</Label>
               <Input
                 id="liters"
-                name="liters"
                 {...register('liters')}
                 type="number"
                 inputMode="decimal"
@@ -495,7 +494,6 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
               <Label htmlFor="pricePerLiter">Price/L (R)</Label>
               <Input
                 id="pricePerLiter"
-                name="pricePerLiter"
                 {...register('pricePerLiter')}
                 type="number"
                 inputMode="decimal"
@@ -524,7 +522,6 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
             <Label htmlFor="odometerReading">Odometer (km)</Label>
             <Input
               id="odometerReading"
-              name="odometerReading"
               {...register('odometerReading', { valueAsNumber: true })}
               type="number"
               inputMode="numeric"
@@ -572,7 +569,6 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
             <Label htmlFor="stationName">Station Name</Label>
             <Input
               id="stationName"
-              name="stationName"
               {...register('stationName')}
               placeholder="e.g., Shell, Engen, Sasol"
               className="h-12 touch-target"
@@ -582,7 +578,6 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
             <Label htmlFor="stationLocation">Location</Label>
             <Input
               id="stationLocation"
-              name="stationLocation"
               {...register('stationLocation')}
               placeholder="e.g., N1 Highway, Johannesburg"
               className="h-12 touch-target"

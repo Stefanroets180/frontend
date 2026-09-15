@@ -353,7 +353,6 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
             <Label htmlFor="workshopName">Workshop Name</Label>
             <Input
               id="workshopName"
-              name="workshopName"
               {...register('workshopName')}
               placeholder="e.g., ABC Auto Services"
               className="h-12 touch-target text-lg"
@@ -368,7 +367,6 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
             <Label htmlFor="odometerReading">Odometer (km)</Label>
             <Input
               id="odometerReading"
-              name="odometerReading"
               {...register('odometerReading')}
               type="number"
               inputMode="numeric"
@@ -390,7 +388,6 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
             <Label htmlFor="totalCostZar">Total Cost (R)</Label>
             <Input
               id="totalCostZar"
-              name="totalCostZar"
               {...register('totalCostZar')}
               type="number"
               inputMode="decimal"
@@ -419,7 +416,6 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
               <Label htmlFor="laborCostZar">Labour (R) - Optional</Label>
               <Input
                 id="laborCostZar"
-                name="laborCostZar"
                 {...register('laborCostZar')}
                 type="number"
                 inputMode="decimal"
@@ -434,7 +430,6 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
               <Label htmlFor="partsCostZar">Parts (R) - Optional</Label>
               <Input
                 id="partsCostZar"
-                name="partsCostZar"
                 {...register('partsCostZar')}
                 type="number"
                 inputMode="decimal"
@@ -463,7 +458,6 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
             <Label htmlFor="invoiceNumber">Invoice Number (Optional)</Label>
             <Input
               id="invoiceNumber"
-              name="invoiceNumber"
               {...register('invoiceNumber')}
               placeholder="INV-12345"
               className="h-12 touch-target"
@@ -478,7 +472,6 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
                 <Label htmlFor="glassProvider">Glass Provider</Label>
                 <Input
                   id="glassProvider"
-                  name="glassProvider"
                   {...register('glassProvider')}
                   placeholder="e.g., PG Glass, Autoglass"
                   className="h-12 touch-target"
@@ -488,7 +481,6 @@ export function MechanicServiceForm({ vehicles, onSubmit, initialData, mode = 'c
                 <Label htmlFor="excessAmountZar">Insurance Excess (R)</Label>
                 <Input
                   id="excessAmountZar"
-                  name="excessAmountZar"
                   {...register('excessAmountZar')}
                   type="number"
                   inputMode="decimal"

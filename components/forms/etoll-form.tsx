@@ -334,7 +334,6 @@ export function ETollForm({
               <Label htmlFor="accountNumber">Account Number (Optional)</Label>
               <Input
                 id="accountNumber"
-                name="accountNumber"
                 placeholder="SANRAL account"
                 {...register("accountNumber")}
               />
@@ -343,7 +342,6 @@ export function ETollForm({
               <Label htmlFor="tagSerialNumber">Tag Serial (Optional)</Label>
               <Input
                 id="tagSerialNumber"
-                name="tagSerialNumber"
                 placeholder="e-Tag serial"
                 {...register("tagSerialNumber")}
               />
@@ -355,7 +353,6 @@ export function ETollForm({
             <Label htmlFor="vehicleRegistration">Vehicle Registration</Label>
             <Input
               id="vehicleRegistration"
-              name="vehicleRegistration"
               placeholder="e.g., ABC123GP"
               defaultValue={selectedVehicle?.registrationNumber || ""}
               {...register("vehicleRegistration")}
@@ -484,7 +481,6 @@ export function ETollForm({
               <Label htmlFor="totalGantries">Total Gantries (Optional)</Label>
               <Input
                 id="totalGantries"
-                name="totalGantries"
                 type="number"
                 placeholder="0"
                 {...register("totalGantries")}
@@ -496,7 +492,6 @@ export function ETollForm({
               </Label>
               <Input
                 id="referenceNumber"
-                name="referenceNumber"
                 placeholder="Payment reference"
                 {...register("referenceNumber")}
               />
@@ -508,7 +503,6 @@ export function ETollForm({
             <Label htmlFor="tollRoutes">Toll Routes (Optional)</Label>
             <Input
               id="tollRoutes"
-              name="tollRoutes"
               placeholder="e.g., N1, N3, N12"
               {...register("tollRoutes")}
             />
