@@ -328,6 +328,7 @@ export function InsuranceForm({
             <Label htmlFor="date">Date</Label>
             <Input
               id="date"
+              name="date"
               type="text"
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
@@ -386,6 +387,7 @@ export function InsuranceForm({
             <Label htmlFor="insurerName">Insurer Name</Label>
             <Input
               id="insurerName"
+              name="insurerName"
               placeholder="e.g., Discovery, Outsurance"
               {...register("insurerName")}
               className={errors.insurerName ? "border-red-500" : ""}
@@ -402,6 +404,7 @@ export function InsuranceForm({
             <Label htmlFor="policyNumber">Policy Number</Label>
             <Input
               id="policyNumber"
+              name="policyNumber"
               placeholder="Policy number"
               {...register("policyNumber")}
               className={errors.policyNumber ? "border-red-500" : ""}
@@ -442,6 +445,7 @@ export function InsuranceForm({
               <Label htmlFor="coverageStartDate">Coverage Start</Label>
               <Input
                 id="coverageStartDate"
+                name="coverageStartDate"
                 type="text"
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
@@ -498,6 +502,7 @@ export function InsuranceForm({
               <Label htmlFor="coverageEndDate">Coverage End</Label>
               <Input
                 id="coverageEndDate"
+                name="coverageEndDate"
                 type="text"
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
@@ -557,6 +562,7 @@ export function InsuranceForm({
             <Label htmlFor="monthlyPremiumZar">Monthly Premium (ZAR)</Label>
             <Input
               id="monthlyPremiumZar"
+              name="monthlyPremiumZar"
               type="number"
               step="0.01"
               placeholder="0.00"
@@ -577,6 +583,7 @@ export function InsuranceForm({
             </Label>
             <Input
               id="excessAmountZar"
+              name="excessAmountZar"
               type="number"
               step="0.01"
               placeholder="0.00"
@@ -589,6 +596,7 @@ export function InsuranceForm({
             <Label htmlFor="odometerReading">Odometer Reading (km) *</Label>
             <Input
               id="odometerReading"
+              name="odometerReading"
               type="number"
               placeholder="0"
               {...register("odometerReading")}
@@ -675,6 +683,7 @@ export function InsuranceForm({
               <Label htmlFor="brokerName">Broker Name (Optional)</Label>
               <Input
                 id="brokerName"
+                name="brokerName"
                 placeholder="Broker name"
                 {...register("brokerName")}
               />
@@ -683,6 +692,7 @@ export function InsuranceForm({
               <Label htmlFor="brokerPhone">Broker Phone (Optional)</Label>
               <Input
                 id="brokerPhone"
+                name="brokerPhone"
                 placeholder="Phone number"
                 {...register("brokerPhone")}
               />
