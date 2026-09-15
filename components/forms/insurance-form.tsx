@@ -559,7 +559,6 @@ export function InsuranceForm({
             <Label htmlFor="monthlyPremiumZar">Monthly Premium (ZAR)</Label>
             <Input
               id="monthlyPremiumZar"
-              name="monthlyPremiumZar"
               type="number"
               step="0.01"
               placeholder="0.00"
@@ -580,7 +579,6 @@ export function InsuranceForm({
             </Label>
             <Input
               id="excessAmountZar"
-              name="excessAmountZar"
               type="number"
               step="0.01"
               placeholder="0.00"
@@ -593,7 +591,6 @@ export function InsuranceForm({
             <Label htmlFor="odometerReading">Odometer Reading (km) *</Label>
             <Input
               id="odometerReading"
-              name="odometerReading"
               type="number"
               placeholder="0"
               {...register("odometerReading")}

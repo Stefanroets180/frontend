@@ -481,7 +481,6 @@ export function ETollForm({
               <Label htmlFor="totalGantries">Total Gantries (Optional)</Label>
               <Input
                 id="totalGantries"
-                name="totalGantries"
                 type="number"
                 placeholder="0"
                 {...register("totalGantries")}
@@ -515,7 +514,6 @@ export function ETollForm({
               <Label htmlFor="totalAmountZar">Total Amount (ZAR)</Label>
               <Input
                 id="totalAmountZar"
-                name="totalAmountZar"
                 type="number"
                 step="0.01"
                 placeholder="0.00"
@@ -532,7 +530,6 @@ export function ETollForm({
               <Label htmlFor="vatAmountZar">VAT Amount (ZAR) - Optional</Label>
               <Input
                 id="vatAmountZar"
-                name="vatAmountZar"
                 type="number"
                 step="0.01"
                 placeholder="0.00"

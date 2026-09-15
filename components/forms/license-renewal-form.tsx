@@ -507,7 +507,6 @@ export function LicenseRenewalForm({
             <Label htmlFor="renewalFeeZar">Renewal Fee (ZAR)</Label>
             <Input
               id="renewalFeeZar"
-              name="renewalFeeZar"
               type="number"
               step="0.01"
               placeholder="0.00"
@@ -527,7 +526,6 @@ export function LicenseRenewalForm({
               <Label htmlFor="penaltiesZar">Penalties (ZAR) - Optional</Label>
               <Input
                 id="penaltiesZar"
-                name="penaltiesZar"
                 type="number"
                 step="0.01"
                 placeholder="0.00"
@@ -538,7 +536,6 @@ export function LicenseRenewalForm({
               <Label htmlFor="arrearsZar">Arrears (ZAR) - Optional</Label>
               <Input
                 id="arrearsZar"
-                name="arrearsZar"
                 type="number"
                 step="0.01"
                 placeholder="0.00"
@@ -563,7 +560,6 @@ export function LicenseRenewalForm({
               <Label htmlFor="processingDays">Processing Days (Optional)</Label>
               <Input
                 id="processingDays"
-                name="processingDays"
                 type="number"
                 placeholder="0"
                 {...register("processingDays")}
@@ -576,7 +572,6 @@ export function LicenseRenewalForm({
             <Label htmlFor="odometerReading">Odometer Reading (km) *</Label>
             <Input
               id="odometerReading"
-              name="odometerReading"
               type="number"
               placeholder="0"
               {...register("odometerReading")}

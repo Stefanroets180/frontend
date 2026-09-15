@@ -219,7 +219,6 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
               <Input
                 {...register('reading', { valueAsNumber: true })}
                 id="reading"
-                name="reading"
                 type="number"
                 placeholder="e.g., 50000"
                 className="h-12 text-lg font-semibold"
