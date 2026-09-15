@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { api } from '@/lib/api/client';
 
 export interface Permission {
@@ -10,7 +11,7 @@ export interface Permission {
 }
 
 export function usePermissions(orgId: string) {
-  return useQuery({
+  const query = useQuery({
     queryKey: ['permissions', orgId],
     queryFn: async () => {
       const { data } = await api.get('/permissions');
@@ -18,6 +19,14 @@ export function usePermissions(orgId: string) {
     },
     enabled: !!orgId,
   });
+
+  // Return a stable reference to the data to prevent infinite re-renders
+  const data = useMemo(() => query.data, [query.data]);
+
+  return {
+    ...query,
+    data,
+  };
 }
 
 export function useUpdatePermission() {
