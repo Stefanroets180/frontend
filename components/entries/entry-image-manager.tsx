@@ -407,6 +407,7 @@ export function EntryImageManager({
                 <Label htmlFor="imageDescription">Description (optional)</Label>
                 <Input
                   id="imageDescription"
+                  name="imageDescription"
                   placeholder="e.g., Receipt, Odometer photo, Damage evidence"
                   value={uploadDescription}
                   onChange={(e) => setUploadDescription(e.target.value)}
@@ -490,6 +491,7 @@ export function EntryImageManager({
               </Label>
               <Input
                 id="imageLockReason"
+                name="imageLockReason"
                 placeholder="e.g., Tax audit evidence, Confirmed receipt"
                 value={lockReason}
                 onChange={(e) => setLockReason(e.target.value)}

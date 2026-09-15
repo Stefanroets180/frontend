@@ -368,6 +368,7 @@ export function EntryActions({
                 <Label htmlFor="lockReason">Confirmation note (optional)</Label>
                 <Input
                   id="lockReason"
+                  name="lockReason"
                   placeholder="e.g., Tax audit period, Reviewed and confirmed"
                   value={lockReason}
                   onChange={(e) => setLockReason(e.target.value)}

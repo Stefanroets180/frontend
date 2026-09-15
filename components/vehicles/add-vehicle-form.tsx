@@ -228,6 +228,7 @@ export function AddVehicleForm() {
             <Label htmlFor="nickname">Nickname <span className="text-muted-foreground">(optional)</span></Label>
             <Input
               id="nickname"
+              name="nickname"
               placeholder='e.g. "My Daily Driver"'
               value={form.nickname}
               onChange={e => set("nickname", e.target.value)}
@@ -240,6 +241,7 @@ export function AddVehicleForm() {
             <Label htmlFor="registrationNumber">Registration Number <span className="text-destructive">*</span></Label>
             <Input
               id="registrationNumber"
+              name="registrationNumber"
               placeholder="e.g. CA 123-456"
               value={form.registrationNumber}
               onChange={e => set("registrationNumber", e.target.value.toUpperCase())}
@@ -255,6 +257,7 @@ export function AddVehicleForm() {
               <div className="relative">
                 <Input
                   id="make"
+                  name="make"
                   placeholder="Toyota"
                   value={form.make}
                   onChange={e => set("make", e.target.value)}
@@ -272,6 +275,7 @@ export function AddVehicleForm() {
               <Label htmlFor="model">Model <span className="text-destructive">*</span></Label>
               <Input
                 id="model"
+                name="model"
                 placeholder="Hilux"
                 value={form.model}
                 onChange={e => set("model", e.target.value)}
@@ -287,6 +291,7 @@ export function AddVehicleForm() {
               <Label htmlFor="year">Year <span className="text-destructive">*</span></Label>
               <Input
                 id="year"
+                name="year"
                 type="text"
                 inputMode="numeric"
                 pattern="\d{4}"
@@ -307,6 +312,7 @@ export function AddVehicleForm() {
               <Label htmlFor="color">Colour <span className="text-muted-foreground">(optional)</span></Label>
               <Input
                 id="color"
+                name="color"
                 placeholder="White"
                 value={form.color}
                 onChange={e => set("color", e.target.value)}
@@ -351,6 +357,7 @@ export function AddVehicleForm() {
               <Label htmlFor="vin">VIN <span className="text-muted-foreground">(optional)</span></Label>
               <Input
                 id="vin"
+                name="vin"
                 placeholder="Vehicle Identification Number"
                 value={form.vin}
                 onChange={e => set("vin", e.target.value)}
@@ -363,6 +370,7 @@ export function AddVehicleForm() {
               <Label htmlFor="tankCapacityLiters">Tank Capacity (Liters) <span className="text-muted-foreground">(optional)</span></Label>
               <Input
                 id="tankCapacityLiters"
+                name="tankCapacityLiters"
                 type="number"
                 step="0.1"
                 placeholder="e.g., 80"
@@ -377,6 +385,7 @@ export function AddVehicleForm() {
               <Label htmlFor="licenseExpiry">License Expiry Date <span className="text-muted-foreground">(optional)</span></Label>
               <Input
                 id="licenseExpiry"
+                name="licenseExpiry"
                 type="date"
                 value={form.licenseExpiry}
                 onChange={e => set("licenseExpiry", e.target.value)}
@@ -393,6 +402,7 @@ export function AddVehicleForm() {
               <Label htmlFor="insurancePolicyNumber">Insurance Policy Number <span className="text-muted-foreground">(optional)</span></Label>
               <Input
                 id="insurancePolicyNumber"
+                name="insurancePolicyNumber"
                 placeholder="Insurance policy reference"
                 value={form.insurancePolicyNumber}
                 onChange={e => set("insurancePolicyNumber", e.target.value)}
@@ -405,6 +415,7 @@ export function AddVehicleForm() {
               <Label htmlFor="trackerSerial">Tracker Serial <span className="text-muted-foreground">(optional)</span></Label>
               <Input
                 id="trackerSerial"
+                name="trackerSerial"
                 placeholder="GPS tracker serial number"
                 value={form.trackerSerial}
                 onChange={e => set("trackerSerial", e.target.value)}
@@ -417,6 +428,7 @@ export function AddVehicleForm() {
               <Label htmlFor="notes">Notes <span className="text-muted-foreground">(optional)</span></Label>
               <Input
                 id="notes"
+                name="notes"
                 placeholder="Additional notes about the vehicle"
                 value={form.notes}
                 onChange={e => set("notes", e.target.value)}
@@ -433,6 +445,7 @@ export function AddVehicleForm() {
                   <Label htmlFor="minorServiceIntervalKm">Minor Service (km)</Label>
                   <Input
                     id="minorServiceIntervalKm"
+                    name="minorServiceIntervalKm"
                     type="number"
                     placeholder="e.g., 15000"
                     value={form.minorServiceIntervalKm}
@@ -444,6 +457,7 @@ export function AddVehicleForm() {
                   <Label htmlFor="majorServiceIntervalKm">Major Service (km)</Label>
                   <Input
                     id="majorServiceIntervalKm"
+                    name="majorServiceIntervalKm"
                     type="number"
                     placeholder="e.g., 60000"
                     value={form.majorServiceIntervalKm}
@@ -455,6 +469,7 @@ export function AddVehicleForm() {
                   <Label htmlFor="brakeOverhaulIntervalKm">Brake Overhaul (km)</Label>
                   <Input
                     id="brakeOverhaulIntervalKm"
+                    name="brakeOverhaulIntervalKm"
                     type="number"
                     placeholder="e.g., 120000"
                     value={form.brakeOverhaulIntervalKm}
@@ -469,6 +484,7 @@ export function AddVehicleForm() {
                   <Label htmlFor="minorServiceIntervalMonths">Minor (months)</Label>
                   <Input
                     id="minorServiceIntervalMonths"
+                    name="minorServiceIntervalMonths"
                     type="number"
                     placeholder="e.g., 12"
                     value={form.minorServiceIntervalMonths}
@@ -480,6 +496,7 @@ export function AddVehicleForm() {
                   <Label htmlFor="majorServiceIntervalMonths">Major (months)</Label>
                   <Input
                     id="majorServiceIntervalMonths"
+                    name="majorServiceIntervalMonths"
                     type="number"
                     placeholder="e.g., 48"
                     value={form.majorServiceIntervalMonths}
@@ -491,6 +508,7 @@ export function AddVehicleForm() {
                   <Label htmlFor="brakeOverhaulIntervalMonths">Brake (months)</Label>
                   <Input
                     id="brakeOverhaulIntervalMonths"
+                    name="brakeOverhaulIntervalMonths"
                     type="number"
                     placeholder="e.g., 60"
                     value={form.brakeOverhaulIntervalMonths}
