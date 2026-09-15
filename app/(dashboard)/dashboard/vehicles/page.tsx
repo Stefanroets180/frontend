@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Plus, Car, AlertCircle, Lock, Image as ImageIcon, Clock, Trash2, Check, X, MessageSquare, Eye, Edit } from "lucide-react";
@@ -40,19 +40,15 @@ export default function VehiclesPage() {
   const isRentalCustomer = currentUserRole === UserRole.RENTAL_CUSTOMER;
   const isAdminOrManager = isSuperAdmin || isAdmin || isManager;
 
-  // Check if user has permission to view vehicles
-  const canViewVehicles = permissions?.["VEHICLE_ASSIGNMENT"]?.["VIEW_VEHICLES"] ||
-                         permissions?.["VEHICLE_ASSIGNMENT"]?.["ASSIGN_VEHICLES"] ||
-                         permissions?.["VEHICLE_ASSIGNMENT"]?.["UNASSIGN_VEHICLES"] ||
-                         user?.role === "SUPER_ADMIN" ||
+  // Check if user has permission to view vehicles - SUPER_ADMIN always has access
+  const canViewVehicles = user?.role === "SUPER_ADMIN" ||
                          user?.role === "ADMIN" ||
                          user?.role === "MANAGER" ||
                          (user?.role === "ASSISTANT" && user?.assistantRole === "ASSISTANT_HIGH") ||
                          (user?.role === "DRIVER");
 
   // Check if user has permission to add vehicles
-  const canAddVehicle = permissions?.["VEHICLE_ASSIGNMENT"]?.["ADD_VEHICLE"] ||
-                       user?.role === "SUPER_ADMIN" ||
+  const canAddVehicle = user?.role === "SUPER_ADMIN" ||
                        user?.role === "ADMIN" ||
                        user?.role === "MANAGER" ||
                        (user?.role === "ASSISTANT" && user?.assistantRole === "ASSISTANT_HIGH");
@@ -96,12 +92,12 @@ export default function VehiclesPage() {
       if (isFleetMode) {
         fetchActiveHandoffs();
         // SUPER_ADMIN bypasses permission check for fleet odometer status
-        if (isSuperAdmin || permissions?.['FLEET_STATUS']?.['VIEW_FLEET_STATUS']) {
+        if (isSuperAdmin) {
           fetchFleetOdometerStatus();
         }
       }
     }
-  }, [user, isAdminOrManager, isFleetMode, permissions]);
+  }, [user, isAdminOrManager, isFleetMode, isSuperAdmin, fetchVehicles, fetchRejectedVehicles, fetchActiveHandoffs, fetchFleetOdometerStatus]);
 
   // Fetch organization visibility settings
   useEffect(() => {
@@ -122,15 +118,6 @@ export default function VehiclesPage() {
     }
   }, [user]);
 
-  // Show loading state while checking permissions
-  if (isLoadingPermissions) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-muted-foreground">Loading permissions...</div>
-      </div>
-    );
-  }
-
   // Show locked message if user doesn't have permission
   if (!canViewVehicles) {
     return (
@@ -150,7 +137,7 @@ export default function VehiclesPage() {
     );
   }
 
-  const fetchVehicles = async () => {
+  const fetchVehicles = useCallback(async () => {
     try {
       setIsLoading(true);
       const data = await api.get("/vehicles");
@@ -180,9 +167,9 @@ export default function VehiclesPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isDriver, isRentalCustomer, user?.id]);
 
-  const fetchRejectedVehicles = async () => {
+  const fetchRejectedVehicles = useCallback(async () => {
     try {
       const data = await api.get("/vehicles/rejected");
       const responseData = (data as any).data || data;
@@ -196,9 +183,9 @@ export default function VehiclesPage() {
     } catch (err) {
       console.error("Failed to fetch rejected vehicles:", err);
     }
-  };
+  }, []);
 
-  const fetchActiveHandoffs = async () => {
+  const fetchActiveHandoffs = useCallback(async () => {
     try {
       const handoffs = await handoffApi.list();
       const handoffMap: Record<string, VehicleHandoffDTO> = {};
@@ -211,9 +198,9 @@ export default function VehiclesPage() {
     } catch (err) {
       console.error("Failed to fetch active handoffs:", err);
     }
-  };
+  }, []);
 
-  const fetchFleetOdometerStatus = async () => {
+  const fetchFleetOdometerStatus = useCallback(async () => {
     try {
       setIsLoadingFleetStatus(true);
       const { data } = await api.get('/vehicles/fleet/odometer-status');
@@ -224,7 +211,7 @@ export default function VehiclesPage() {
     } finally {
       setIsLoadingFleetStatus(false);
     }
-  };
+  }, []);
 
   const handleDeleteVehicle = async (vehicleId: string) => {
     try {
