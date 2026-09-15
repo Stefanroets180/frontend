@@ -362,6 +362,7 @@ export function TrackingForm({
             <Label htmlFor="date">Date</Label>
             <Input
               id="date"
+              name="date"
               type="text"
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
@@ -525,6 +526,7 @@ export function TrackingForm({
               <Label htmlFor="subscriptionStartDate">Subscription Start</Label>
               <Input
                 id="subscriptionStartDate"
+                name="subscriptionStartDate"
                 type="text"
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
@@ -580,6 +582,7 @@ export function TrackingForm({
               </Label>
               <Input
                 id="subscriptionEndDate"
+                name="subscriptionEndDate"
                 type="text"
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
@@ -637,6 +640,7 @@ export function TrackingForm({
             </Label>
             <Input
               id="installationDate"
+              name="installationDate"
               type="text"
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
@@ -706,6 +710,7 @@ export function TrackingForm({
             <Label htmlFor="odometerReadingDate">Odometer Reading Date *</Label>
             <Input
               id="odometerReadingDate"
+              name="odometerReadingDate"
               type="text"
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
