@@ -501,6 +501,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="insurancePolicyNumber">Insurance Policy Number</Label>
                 <Input
                   id="insurancePolicyNumber"
+                  name="insurancePolicyNumber"
                   value={formData.insurancePolicyNumber}
                   onChange={(e) => handleInputChange("insurancePolicyNumber", e.target.value)}
                   placeholder="Insurance policy reference"
@@ -511,6 +512,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="trackerSerial">Tracker Serial</Label>
                 <Input
                   id="trackerSerial"
+                  name="trackerSerial"
                   value={formData.trackerSerial}
                   onChange={(e) => handleInputChange("trackerSerial", e.target.value)}
                   placeholder="GPS tracker serial number"
@@ -522,6 +524,7 @@ export default function EditVehiclePage() {
               <Label htmlFor="notes">Notes</Label>
               <Input
                 id="notes"
+                name="notes"
                 value={formData.notes}
                 onChange={(e) => handleInputChange("notes", e.target.value)}
                 placeholder="Additional notes about the vehicle"
@@ -636,6 +639,7 @@ export default function EditVehiclePage() {
                   <Label htmlFor="vehicleCost">Vehicle Cost (R)</Label>
                   <Input
                     id="vehicleCost"
+                    name="vehicleCost"
                     type="number"
                     value={taxProfile?.vehicleCostCents ? (taxProfile.vehicleCostCents / 100).toString() : ""}
                     onChange={(e) =>
@@ -650,6 +654,7 @@ export default function EditVehiclePage() {
                   <Label htmlFor="datePlacedInBusinessUse">Date Placed in Business Use</Label>
                   <Input
                     id="datePlacedInBusinessUse"
+                    name="datePlacedInBusinessUse"
                     type="date"
                     value={taxProfile?.datePlacedInBusinessUse || ""}
                     onChange={(e) =>
@@ -773,6 +778,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="effectiveFrom">Effective From</Label>
                 <Input
                   id="effectiveFrom"
+                  name="effectiveFrom"
                   type="date"
                   value={taxProfile?.effectiveFrom || ""}
                   onChange={(e) =>
