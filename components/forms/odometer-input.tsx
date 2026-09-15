@@ -58,6 +58,7 @@ export function OdometerInput({
             </Label>
             <Input
               id="startOdometer"
+              name="startOdometer"
               type="number"
               inputMode="numeric"
               placeholder={lastOdometer ? String(lastOdometer) : "e.g., 45000"}
@@ -78,6 +79,7 @@ export function OdometerInput({
             </Label>
             <Input
               id="endOdometer"
+              name="endOdometer"
               type="number"
               inputMode="numeric"
               placeholder="e.g., 45150"
