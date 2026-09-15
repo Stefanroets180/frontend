@@ -500,6 +500,7 @@ export function InsuranceForm({
               <Label htmlFor="coverageEndDate">Coverage End</Label>
               <Input
                 id="coverageEndDate"
+                name="coverageEndDate"
                 type="text"
                 inputMode="numeric"
                 pattern="\d{4}-\d{2}-\d{2}"
