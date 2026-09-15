@@ -518,6 +518,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                       <label htmlFor="licenseFront" className="absolute inset-0 cursor-pointer">
                         <input
                           id="licenseFront"
+                          name="licenseFront"
                           type="file"
                           accept="image/*"
                           className="hidden"
@@ -560,6 +561,7 @@ export function UserProfileForm({ existingProfile, onSuccess }: UserProfileFormP
                       <label htmlFor="licenseBack" className="absolute inset-0 cursor-pointer">
                         <input
                           id="licenseBack"
+                          name="licenseBack"
                           type="file"
                           accept="image/*"
                           className="hidden"

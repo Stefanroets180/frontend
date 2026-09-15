@@ -614,6 +614,7 @@ export function InsuranceForm({
                   onChange={handleOdometerImageCapture}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   id="odometer-photo"
+                  name="odometer-photo"
                 />
                 <Button
                   type="button"
@@ -754,6 +755,7 @@ export function InsuranceForm({
                     onChange={handleImageCapture}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     id="receipt-image-input"
+                    name="receipt-image-input"
                   />
                   <Button
                     type="button"

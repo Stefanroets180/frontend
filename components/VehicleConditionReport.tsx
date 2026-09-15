@@ -342,6 +342,7 @@ function SectionCard({
             </label>
             <input
               id={`image-upload-${section.id}`}
+              name={`image-upload-${section.id}`}
               type="file"
               accept="image/*"
               capture="environment"
