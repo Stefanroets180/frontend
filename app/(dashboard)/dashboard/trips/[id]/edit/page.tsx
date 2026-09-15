@@ -253,6 +253,7 @@ export default function EditTripPage() {
                   <Label htmlFor="startOdometer">Start (km)</Label>
                   <Input
                     id="startOdometer"
+                    name="startOdometer"
                     type="number"
                     value={formData.startOdometer}
                     onChange={(e) => handleInputChange("startOdometer", e.target.value)}
@@ -266,6 +267,7 @@ export default function EditTripPage() {
                   <Label htmlFor="endOdometer">End (km)</Label>
                   <Input
                     id="endOdometer"
+                    name="endOdometer"
                     type="number"
                     value={formData.endOdometer}
                     onChange={(e) => handleInputChange("endOdometer", e.target.value)}

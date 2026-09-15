@@ -540,6 +540,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="minorServiceIntervalKm">Minor Service (km)</Label>
                 <Input
                   id="minorServiceIntervalKm"
+                  name="minorServiceIntervalKm"
                   type="number"
                   value={formData.minorServiceIntervalKm}
                   onChange={(e) => handleInputChange("minorServiceIntervalKm", e.target.value)}
@@ -550,6 +551,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="majorServiceIntervalKm">Major Service (km)</Label>
                 <Input
                   id="majorServiceIntervalKm"
+                  name="majorServiceIntervalKm"
                   type="number"
                   value={formData.majorServiceIntervalKm}
                   onChange={(e) => handleInputChange("majorServiceIntervalKm", e.target.value)}
@@ -560,6 +562,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="brakeOverhaulIntervalKm">Brake Overhaul (km)</Label>
                 <Input
                   id="brakeOverhaulIntervalKm"
+                  name="brakeOverhaulIntervalKm"
                   type="number"
                   value={formData.brakeOverhaulIntervalKm}
                   onChange={(e) => handleInputChange("brakeOverhaulIntervalKm", e.target.value)}
@@ -573,6 +576,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="minorServiceIntervalMonths">Minor (months)</Label>
                 <Input
                   id="minorServiceIntervalMonths"
+                  name="minorServiceIntervalMonths"
                   type="number"
                   value={formData.minorServiceIntervalMonths}
                   onChange={(e) => handleInputChange("minorServiceIntervalMonths", e.target.value)}
@@ -583,6 +587,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="majorServiceIntervalMonths">Major (months)</Label>
                 <Input
                   id="majorServiceIntervalMonths"
+                  name="majorServiceIntervalMonths"
                   type="number"
                   value={formData.majorServiceIntervalMonths}
                   onChange={(e) => handleInputChange("majorServiceIntervalMonths", e.target.value)}
@@ -593,6 +598,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="brakeOverhaulIntervalMonths">Brake (months)</Label>
                 <Input
                   id="brakeOverhaulIntervalMonths"
+                  name="brakeOverhaulIntervalMonths"
                   type="number"
                   value={formData.brakeOverhaulIntervalMonths}
                   onChange={(e) => handleInputChange("brakeOverhaulIntervalMonths", e.target.value)}
