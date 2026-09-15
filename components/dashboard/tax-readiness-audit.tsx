@@ -1122,6 +1122,7 @@ function ReadingCard({
               <Label htmlFor="lockReason">Confirmation note (optional)</Label>
               <Input
                 id="lockReason"
+                name="lockReason"
                 placeholder="e.g., Tax year checked, Confirmed for SARS"
                 value={lockReason}
                 onChange={(e) => setLockReason(e.target.value)}
