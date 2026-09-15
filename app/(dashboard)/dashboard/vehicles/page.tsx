@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Plus, Car, AlertCircle, Lock, Image as ImageIcon, Clock, Trash2, Check, X, MessageSquare, Eye, Edit } from "lucide-react";
@@ -134,7 +134,7 @@ export default function VehiclesPage() {
     }
   }, [user]);
 
-  const fetchVehicles = useCallback(async () => {
+  const fetchVehicles = async () => {
     try {
       setIsLoading(true);
       const data = await api.get("/vehicles");
@@ -164,9 +164,9 @@ export default function VehiclesPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [isDriver, isRentalCustomer, user?.id]);
+  };
 
-  const fetchRejectedVehicles = useCallback(async () => {
+  const fetchRejectedVehicles = async () => {
     try {
       const data = await api.get("/vehicles/rejected");
       const responseData = (data as any).data || data;
@@ -180,9 +180,9 @@ export default function VehiclesPage() {
     } catch (err) {
       console.error("Failed to fetch rejected vehicles:", err);
     }
-  }, []);
+  };
 
-  const fetchActiveHandoffs = useCallback(async () => {
+  const fetchActiveHandoffs = async () => {
     try {
       const handoffs = await handoffApi.list();
       const handoffMap: Record<string, VehicleHandoffDTO> = {};
@@ -195,9 +195,9 @@ export default function VehiclesPage() {
     } catch (err) {
       console.error("Failed to fetch active handoffs:", err);
     }
-  }, []);
+  };
 
-  const fetchFleetOdometerStatus = useCallback(async () => {
+  const fetchFleetOdometerStatus = async () => {
     try {
       setIsLoadingFleetStatus(true);
       const { data } = await api.get('/vehicles/fleet/odometer-status');
@@ -208,10 +208,13 @@ export default function VehiclesPage() {
     } finally {
       setIsLoadingFleetStatus(false);
     }
-  }, []);
+  };
+
+  const hasInitialized = useRef(false);
 
   useEffect(() => {
-    if (user) {
+    if (user && !hasInitialized.current) {
+      hasInitialized.current = true;
       fetchVehicles();
       if (isAdminOrManager) {
         fetchRejectedVehicles();
@@ -224,7 +227,7 @@ export default function VehiclesPage() {
         }
       }
     }
-  }, [user, isAdminOrManager, isFleetMode, fetchVehicles, fetchRejectedVehicles, fetchActiveHandoffs, fetchFleetOdometerStatus]);
+  }, [user, isAdminOrManager, isFleetMode, permissions]);
 
   const handleDeleteVehicle = async (vehicleId: string) => {
     try {
