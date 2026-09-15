@@ -606,7 +606,6 @@ export function LicenseRenewalForm({
                     onChange={handleImageCapture}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     id="receipt-image-input"
-                    name="receiptImage"
                   />
                   <Button
                     type="button"

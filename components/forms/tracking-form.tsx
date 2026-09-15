@@ -777,7 +777,6 @@ export function TrackingForm({
                   onChange={handleOdometerImageCapture}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   id="odometer-photo"
-                  name="odometer-photo"
                   aria-label="Odometer photo upload"
                 />
                 <Button
@@ -908,7 +907,6 @@ export function TrackingForm({
                     onChange={handleImageCapture}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     id="receipt-image"
-                    name="receipt-image"
                     aria-label="Receipt image upload"
                   />
                   <Button
