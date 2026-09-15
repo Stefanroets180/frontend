@@ -675,7 +675,6 @@ export function InsuranceForm({
               <Label htmlFor="brokerName">Broker Name (Optional)</Label>
               <Input
                 id="brokerName"
-                name="brokerName"
                 placeholder="Broker name"
                 {...register("brokerName")}
               />
@@ -684,7 +683,6 @@ export function InsuranceForm({
               <Label htmlFor="brokerPhone">Broker Phone (Optional)</Label>
               <Input
                 id="brokerPhone"
-                name="brokerPhone"
                 placeholder="Phone number"
                 {...register("brokerPhone")}
               />
