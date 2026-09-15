@@ -108,9 +108,11 @@ export default function OrganizationPage() {
     return null
   }
   // Allow both fleet roles (SUPER_ADMIN, ADMIN, MANAGER) and individual account owners (solo mode)
-  if (!isSoloMode) {
-    useRequireRole(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.MANAGER)
-  }
+  // Always call useRequireRole to follow Rules of Hooks - in solo mode, pass all roles to effectively bypass
+  const requiredRoles = isSoloMode 
+    ? [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.MANAGER, UserRole.DRIVER]
+    : [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.MANAGER]
+  useRequireRole(...requiredRoles)
 
   useEffect(() => {
     api
