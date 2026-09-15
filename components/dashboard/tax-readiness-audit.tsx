@@ -1235,6 +1235,7 @@ function ReadingCard({
                     <Label htmlFor="edit-captured-at">Captured at</Label>
                     <Input
                       id="edit-captured-at"
+                      name="edit-captured-at"
                       type="datetime-local"
                       value={editCapturedAtLocal}
                       onChange={(e) => setEditCapturedAtLocal(e.target.value)}
