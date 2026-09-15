@@ -571,6 +571,7 @@ export default function OrganizationPage() {
               </button>
               <input
                 id="logo-upload"
+                name="logo-upload"
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
@@ -779,6 +780,7 @@ export default function OrganizationPage() {
                         <Label htmlFor="invite-email">Email Address</Label>
                         <Input
                           id="invite-email"
+                          name="invite-email"
                           type="email"
                           placeholder="colleague@example.co.za"
                           value={inviteEmail}
@@ -794,6 +796,7 @@ export default function OrganizationPage() {
                         <Label htmlFor="invite-password">Temporary Password</Label>
                         <Input
                           id="invite-password"
+                          name="invite-password"
                           type="password"
                           placeholder="Enter a temporary password"
                           value={invitePassword}
@@ -1164,6 +1167,7 @@ export default function OrganizationPage() {
               <Label htmlFor="edit-first-name">First Name</Label>
               <Input
                 id="edit-first-name"
+                name="edit-first-name"
                 value={editFirstName}
                 onChange={(e) => setEditFirstName(e.target.value)}
                 className="h-12"
@@ -1174,6 +1178,7 @@ export default function OrganizationPage() {
               <Label htmlFor="edit-last-name">Last Name</Label>
               <Input
                 id="edit-last-name"
+                name="edit-last-name"
                 value={editLastName}
                 onChange={(e) => setEditLastName(e.target.value)}
                 className="h-12"

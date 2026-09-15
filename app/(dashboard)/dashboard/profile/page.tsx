@@ -249,6 +249,7 @@ export default function ProfilePage() {
                   </button>
                   <input
                     id="photo-upload"
+                    name="photo-upload"
                     type="file"
                     accept="image/*"
                     className="hidden"
@@ -303,6 +304,7 @@ export default function ProfilePage() {
                         <Label htmlFor="editFirstName">First Name</Label>
                         <Input
                           id="editFirstName"
+                          name="editFirstName"
                           value={editFirstName}
                           onChange={(e) => setEditFirstName(e.target.value)}
                           placeholder="First name"
@@ -314,6 +316,7 @@ export default function ProfilePage() {
                         <Label htmlFor="editLastName">Last Name</Label>
                         <Input
                           id="editLastName"
+                          name="editLastName"
                           value={editLastName}
                           onChange={(e) => setEditLastName(e.target.value)}
                           placeholder="Last name"

@@ -113,6 +113,7 @@ function LoginForm() {
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
+                name="email"
                 type="email"
                 placeholder="you@example.co.za"
                 value={formData.email}
@@ -130,6 +131,7 @@ function LoginForm() {
               <div className="relative">
                 <Input
                   id="password"
+                  name="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   value={formData.password}

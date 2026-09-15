@@ -368,6 +368,7 @@ export default function TaxProfilesPage() {
               <Label htmlFor="vehicleValue">Vehicle Value (ZAR)</Label>
               <Input
                 id="vehicleValue"
+                name="vehicleValue"
                 type="number"
                 value={formData.vehicleValueCents / 100}
                 onChange={(e) => setFormData({ ...formData, vehicleValueCents: parseFloat(e.target.value) * 100 })}
@@ -431,6 +432,7 @@ export default function TaxProfilesPage() {
                   <Label htmlFor="customFixedCost">Fixed Cost (ZAR)</Label>
                   <Input
                     id="customFixedCost"
+                    name="customFixedCost"
                     type="number"
                     value={formData.customFixedCostCents / 100}
                     onChange={(e) => setFormData({ ...formData, customFixedCostCents: parseFloat(e.target.value) * 100 })}
@@ -442,6 +444,7 @@ export default function TaxProfilesPage() {
                   <Label htmlFor="customFuelCost">Fuel Cost (cents/km)</Label>
                   <Input
                     id="customFuelCost"
+                    name="customFuelCost"
                     type="number"
                     value={formData.customFuelCostTenthsCentsPerKm / 10}
                     onChange={(e) => setFormData({ ...formData, customFuelCostTenthsCentsPerKm: parseFloat(e.target.value) * 10 })}
@@ -453,6 +456,7 @@ export default function TaxProfilesPage() {
                   <Label htmlFor="customMaintenanceCost">Maintenance Cost (cents/km)</Label>
                   <Input
                     id="customMaintenanceCost"
+                    name="customMaintenanceCost"
                     type="number"
                     value={formData.customMaintenanceCostTenthsCentsPerKm / 10}
                     onChange={(e) => setFormData({ ...formData, customMaintenanceCostTenthsCentsPerKm: parseFloat(e.target.value) * 10 })}

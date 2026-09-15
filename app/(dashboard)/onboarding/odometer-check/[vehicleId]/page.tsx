@@ -157,6 +157,7 @@ export default function OdometerCheckPage() {
               </Label>
               <Input
                 id="odometer"
+                name="odometer"
                 type="number"
                 min={0}
                 placeholder="e.g. 45230"
@@ -220,6 +221,7 @@ export default function OdometerCheckPage() {
               <input
                 ref={fileInputRef}
                 id="photo"
+                name="photo"
                 type="file"
                 accept="image/*"
                 capture="environment"
