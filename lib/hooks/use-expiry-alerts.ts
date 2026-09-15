@@ -12,16 +12,12 @@ import type {
 function mapApiAlert(row: Record<string, unknown>): ExpiryAlert | null {
   // Validate required fields
   if (!row.itemType || !row.itemId) {
-    console.error('[mapApiAlert] Missing required fields:', { itemType: row.itemType, itemId: row.itemId })
     return null
   }
 
   const expiryDate = row.expiryDate
     ? new Date(String(row.expiryDate))
     : new Date()
-
-  console.log('[mapApiAlert] Raw row:', row);
-  console.log('[mapApiAlert] itemType from row:', row.itemType);
 
   return {
     itemType: row.itemType as ExpiryItemType,
@@ -87,7 +83,6 @@ export function useExpiryAlerts(): UseExpiryAlertsResult {
   const dismissAlert = useCallback(
     async (itemType: ExpiryItemType, itemId: string) => {
       if (!itemType || !itemId) {
-        console.error('[dismissAlert] Missing required parameters:', { itemType, itemId })
         return
       }
       await api.post('/alerts/expiry/dismiss', { itemType, itemId })
@@ -99,7 +94,6 @@ export function useExpiryAlerts(): UseExpiryAlertsResult {
   const undismissAlert = useCallback(
     async (itemType: ExpiryItemType, itemId: string) => {
       if (!itemType || !itemId) {
-        console.error('[undismissAlert] Missing required parameters:', { itemType, itemId })
         return
       }
       await api.post('/alerts/expiry/undismiss', { itemType, itemId })

@@ -14,29 +14,33 @@ export default function ReportExportManager() {
     reportType: ReportExportType.FLEET_SUMMARY,
     format: ExportFormat.EXCEL,
   });
+  const [hasPermission, setHasPermission] = useState(true);
 
   useEffect(() => {
     loadExports();
   }, []);
 
   useEffect(() => {
-    // Poll for updates every 5 seconds if there are pending exports
+    // Poll for updates every 5 seconds if there are pending exports AND user has permission
     const hasPending = exports.some(e => e.status === ReportExportStatus.PENDING);
-    if (!hasPending) return;
+    if (!hasPending || !hasPermission) return;
 
     const interval = setInterval(() => {
       loadExports();
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [exports]);
+  }, [exports, hasPermission]);
 
   const loadExports = async () => {
     try {
       const data = await reportExportService.getExports();
       setExports(data);
+      setHasPermission(true);
     } catch (error) {
-      console.error('Failed to load exports:', error);
+      // Silently fail - this feature may not be available for all users
+      setExports([]);
+      setHasPermission(false);
     } finally {
       setLoading(false);
     }

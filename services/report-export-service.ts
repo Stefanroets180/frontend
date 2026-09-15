@@ -30,7 +30,8 @@ export const reportExportService = {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch exports');
+      // Return empty array for permission errors (403) or not found (404)
+      return [];
     }
 
     return response.json();
