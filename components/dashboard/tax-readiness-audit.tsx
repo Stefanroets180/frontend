@@ -1225,6 +1225,7 @@ function ReadingCard({
                     <Label htmlFor="edit-odometer">Odometer (km)</Label>
                     <Input
                       id="edit-odometer"
+                      name="edit-odometer"
                       type="number"
                       inputMode="decimal"
                       value={editOdometerValue}
