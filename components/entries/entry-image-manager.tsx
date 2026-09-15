@@ -222,6 +222,7 @@ export function EntryImageManager({
       <input
         ref={fileInputRef}
         id="entryImageUpload"
+        name="entryImageUpload"
         type="file"
         accept={acceptedTypes}
         capture="environment"
@@ -234,6 +235,7 @@ export function EntryImageManager({
       <input
         ref={reuploadInputRef}
         id="entryImageReupload"
+        name="entryImageReupload"
         type="file"
         accept={acceptedTypes}
         onChange={handleReuploadSelect}

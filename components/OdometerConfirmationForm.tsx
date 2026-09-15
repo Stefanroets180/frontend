@@ -284,6 +284,7 @@ export function OdometerConfirmationForm({ assignmentId, vehicleName, onComplete
                   )}
                   <input
                     id="odometer-photo-upload"
+                    name="odometer-photo-upload"
                     type="file"
                     accept="image/*"
                     className="hidden"
