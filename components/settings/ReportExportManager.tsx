@@ -155,6 +155,8 @@ export default function ReportExportManager() {
                 <label className="block text-sm font-medium mb-1">Date From</label>
                 <input
                   type="date"
+                  id="dateFrom"
+                  name="dateFrom"
                   value={request.dateFrom || ''}
                   onChange={(e) => setRequest({ ...request, dateFrom: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg"
@@ -165,6 +167,8 @@ export default function ReportExportManager() {
                 <label className="block text-sm font-medium mb-1">Date To</label>
                 <input
                   type="date"
+                  id="dateTo"
+                  name="dateTo"
                   value={request.dateTo || ''}
                   onChange={(e) => setRequest({ ...request, dateTo: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg"
