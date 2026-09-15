@@ -476,6 +476,7 @@ export default function ExpensesPage() {
           <Select
             value={selectedVehicle}
             onValueChange={setSelectedVehicle}
+            name="vehicle-filter"
           >
             <SelectTrigger id="vehicle-filter" className="h-11 w-full md:w-[220px] min-w-0">
               <span className="flex min-w-0 items-center gap-2 overflow-hidden">
