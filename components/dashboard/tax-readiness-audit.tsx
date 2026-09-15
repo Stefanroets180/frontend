@@ -845,6 +845,7 @@ function ReadingCard({
       <input
         ref={fileInputRef}
         id="tax-audit-file-upload"
+        name="tax-audit-file-upload"
         type="file"
         accept="image/*"
         onChange={handleFileSelect}
