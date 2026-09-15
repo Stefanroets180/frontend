@@ -306,6 +306,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="make">Make *</Label>
                 <Input
                   id="make"
+                  name="make"
                   value={formData.make}
                   onChange={(e) => handleInputChange("make", e.target.value)}
                   required
@@ -317,6 +318,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="model">Model *</Label>
                 <Input
                   id="model"
+                  name="model"
                   value={formData.model}
                   onChange={(e) => handleInputChange("model", e.target.value)}
                   required
@@ -328,6 +330,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="year">Year *</Label>
                 <Input
                   id="year"
+                  name="year"
                   type="text"
                   inputMode="numeric"
                   pattern="\d{4}"
@@ -342,6 +345,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="registrationNumber">Registration Number *</Label>
                 <Input
                   id="registrationNumber"
+                  name="registrationNumber"
                   value={formData.registrationNumber}
                   onChange={(e) => handleInputChange("registrationNumber", e.target.value)}
                   required
@@ -353,6 +357,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="vin">VIN</Label>
                 <Input
                   id="vin"
+                  name="vin"
                   value={formData.vin}
                   onChange={(e) => handleInputChange("vin", e.target.value)}
                   placeholder="Vehicle Identification Number"
@@ -363,6 +368,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="nickname">Nickname</Label>
                 <Input
                   id="nickname"
+                  name="nickname"
                   value={formData.nickname}
                   onChange={(e) => handleInputChange("nickname", e.target.value)}
                   placeholder="e.g., Company Truck 1"
@@ -373,6 +379,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="color">Color</Label>
                 <Input
                   id="color"
+                  name="color"
                   value={formData.color}
                   onChange={(e) => handleInputChange("color", e.target.value)}
                   placeholder="e.g., White"
@@ -400,6 +407,7 @@ export default function EditVehiclePage() {
                 <Label htmlFor="tankCapacityLiters">Tank Capacity (Liters)</Label>
                 <Input
                   id="tankCapacityLiters"
+                  name="tankCapacityLiters"
                   type="number"
                   step="0.1"
                   value={formData.tankCapacityLiters}
@@ -413,6 +421,7 @@ export default function EditVehiclePage() {
                 <div className="flex gap-2">
                   <Input
                     id="currentOdometer"
+                    name="currentOdometer"
                     type="number"
                     value={formData.currentOdometer}
                     onChange={(e) => handleInputChange("currentOdometer", e.target.value)}
