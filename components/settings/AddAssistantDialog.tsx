@@ -197,6 +197,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
               <Label htmlFor="dateRangeStart">Date Range Start (Optional)</Label>
               <Input
                 id="dateRangeStart"
+                name="dateRangeStart"
                 type="text"
                 placeholder="YYYY-MM-DD"
                 value={dateRangeStart}
@@ -209,6 +210,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
               <Label htmlFor="dateRangeEnd">Date Range End (Optional)</Label>
               <Input
                 id="dateRangeEnd"
+                name="dateRangeEnd"
                 type="text"
                 placeholder="YYYY-MM-DD"
                 value={dateRangeEnd}
