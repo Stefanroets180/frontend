@@ -438,11 +438,11 @@ export default function ExpenseDetailPage() {
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
                       <Label htmlFor="gps-lat">Latitude</Label>
-                      <Input id="gps-lat" value={manualLat} onChange={(e) => setManualLat(e.target.value)} placeholder="-26.2041" className="h-12" />
+                      <Input id="gps-lat" name="gps-lat" value={manualLat} onChange={(e) => setManualLat(e.target.value)} placeholder="-26.2041" className="h-12" />
                     </div>
                     <div className="space-y-1.5">
                       <Label htmlFor="gps-lng">Longitude</Label>
-                      <Input id="gps-lng" value={manualLng} onChange={(e) => setManualLng(e.target.value)} placeholder="28.0473" className="h-12" />
+                      <Input id="gps-lng" name="gps-lng" value={manualLng} onChange={(e) => setManualLng(e.target.value)} placeholder="28.0473" className="h-12" />
                     </div>
                   </div>
                   <Button variant="outline" onClick={captureGps} disabled={isCapturingGps} className="w-full h-12 touch-target">
