@@ -129,7 +129,7 @@ export default function VehiclesPage() {
         }
       }
     }
-  }, [user, isAdminOrManager, isFleetMode, permissions]);
+  }, [user, isAdminOrManager, isFleetMode]);
 
   // Fetch organization visibility settings
   useEffect(() => {
