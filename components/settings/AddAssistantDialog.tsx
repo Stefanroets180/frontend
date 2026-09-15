@@ -153,6 +153,7 @@ export function AddAssistantDialog({ open, onOpenChange }: AddAssistantDialogPro
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
+              name="password"
               type="password"
               placeholder="Enter a temporary password"
               value={password}
