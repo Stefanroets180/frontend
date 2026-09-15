@@ -636,8 +636,14 @@ export function VehicleConditionReport({ assignmentId, vehicleId, vehicleName, o
     try {
       const response = await getVehicleConditionReportByVehicleId(vehicleId)
       setReport(response.data)
-    } catch (error) {
-      console.error('Failed to load condition report:', error)
+    } catch (error: any) {
+      // 404 is expected when no report exists yet - don't log as error
+      if (error?.message?.includes('404') || error?.response?.status === 404) {
+        // No report exists yet, this is expected
+        setReport(null)
+      } else {
+        console.error('Failed to load condition report:', error)
+      }
     } finally {
       setIsLoading(false)
     }
