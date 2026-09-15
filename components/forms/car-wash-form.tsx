@@ -308,6 +308,7 @@ export function CarWashForm({ vehicles, onSubmit, initialData, mode, existingIma
             <Label htmlFor="costZar">Cost (R)</Label>
             <Input
               id="costZar"
+              name="costZar"
               {...register('costZar')}
               type="number"
               inputMode="decimal"
