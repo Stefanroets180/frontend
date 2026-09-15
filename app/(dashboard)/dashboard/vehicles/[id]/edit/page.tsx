@@ -751,6 +751,7 @@ export default function EditVehiclePage() {
                   <input
                     type="checkbox"
                     id="taxpayerVatRegistered"
+                    name="taxpayerVatRegistered"
                     checked={taxProfile?.taxpayerVatRegistered || false}
                     onChange={(e) =>
                       setTaxProfile((prev) =>
@@ -764,6 +765,7 @@ export default function EditVehiclePage() {
                   <input
                     type="checkbox"
                     id="coveredByMaintenancePlan"
+                    name="coveredByMaintenancePlan"
                     checked={taxProfile?.coveredByMaintenancePlan || false}
                     onChange={(e) =>
                       setTaxProfile((prev) =>
