@@ -294,23 +294,29 @@ export default function TaxSummaryPage() {
         <CardContent>
           <div className="flex flex-col md:flex-row gap-4 items-end">
             <div className="flex-1 w-full">
-              <label className="text-sm font-medium mb-2 block">View Mode</label>
-              <div className="flex gap-2">
-                <Button
-                  variant={viewMode === 'individual' ? 'default' : 'outline'}
-                  onClick={() => setViewMode('individual')}
-                  className="flex-1"
-                >
-                  Individual Vehicle
-                </Button>
-                <Button
-                  variant={viewMode === 'combined' ? 'default' : 'outline'}
-                  onClick={() => setViewMode('combined')}
-                  className="flex-1"
-                >
-                  Combined Total
-                </Button>
-              </div>
+              <fieldset className="space-y-2">
+                <legend className="text-sm font-medium">View Mode</legend>
+                <div className="flex gap-2" role="radiogroup" aria-label="View Mode">
+                  <Button
+                    variant={viewMode === 'individual' ? 'default' : 'outline'}
+                    onClick={() => setViewMode('individual')}
+                    className="flex-1"
+                    role="radio"
+                    aria-checked={viewMode === 'individual'}
+                  >
+                    Individual Vehicle
+                  </Button>
+                  <Button
+                    variant={viewMode === 'combined' ? 'default' : 'outline'}
+                    onClick={() => setViewMode('combined')}
+                    className="flex-1"
+                    role="radio"
+                    aria-checked={viewMode === 'combined'}
+                  >
+                    Combined Total
+                  </Button>
+                </div>
+              </fieldset>
             </div>
             {viewMode === 'individual' && (
               <div className="flex-1 w-full">
