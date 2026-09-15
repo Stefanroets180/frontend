@@ -122,6 +122,8 @@ export default function ReportExportManager() {
           <div>
             <label className="block text-sm font-medium mb-1">Report Type</label>
             <select
+              id="reportType"
+              name="reportType"
               value={request.reportType}
               onChange={(e) => setRequest({ ...request, reportType: e.target.value as ReportExportType })}
               className="w-full px-3 py-2 border rounded-lg"
@@ -137,6 +139,8 @@ export default function ReportExportManager() {
           <div>
             <label className="block text-sm font-medium mb-1">Format</label>
             <select
+              id="format"
+              name="format"
               value={request.format}
               onChange={(e) => setRequest({ ...request, format: e.target.value as ExportFormat })}
               className="w-full px-3 py-2 border rounded-lg"
