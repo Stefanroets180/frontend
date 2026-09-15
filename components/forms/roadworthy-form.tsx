@@ -240,6 +240,7 @@ export function RoadworthyForm({
             <Label htmlFor="date">Entry Date</Label>
             <Input
               id="date"
+              name="date"
               type="text"
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
@@ -298,6 +299,7 @@ export function RoadworthyForm({
             <Label htmlFor="testingStationName">Testing Station Name *</Label>
             <Input
               id="testingStationName"
+              name="testingStationName"
               placeholder="e.g., DEKRA, Technical Bureau"
               {...register("testingStationName")}
               className={errors.testingStationName ? "border-red-500" : ""}
@@ -316,6 +318,7 @@ export function RoadworthyForm({
             </Label>
             <Input
               id="testingStationAddress"
+              name="testingStationAddress"
               placeholder="Testing station address"
               {...register("testingStationAddress")}
             />
@@ -326,6 +329,7 @@ export function RoadworthyForm({
             </Label>
             <Input
               id="testingStationPhone"
+              name="testingStationPhone"
               placeholder="Contact number"
               {...register("testingStationPhone")}
             />
@@ -336,6 +340,7 @@ export function RoadworthyForm({
             <Label htmlFor="testDate">Test Date *</Label>
             <Input
               id="testDate"
+              name="testDate"
               type="text"
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
@@ -419,6 +424,7 @@ export function RoadworthyForm({
             </Label>
             <Input
               id="certificateNumber"
+              name="certificateNumber"
               placeholder="Certificate number"
               {...register("certificateNumber")}
             />
@@ -429,6 +435,7 @@ export function RoadworthyForm({
             <Label htmlFor="expiryDate">Certificate Expiry (Optional)</Label>
             <Input
               id="expiryDate"
+              name="expiryDate"
               type="text"
               inputMode="numeric"
               pattern="\d{4}-\d{2}-\d{2}"
@@ -483,6 +490,7 @@ export function RoadworthyForm({
             <Label htmlFor="testFeeZar">Test Fee (ZAR)</Label>
             <Input
               id="testFeeZar"
+              name="testFeeZar"
               type="number"
               step="0.01"
               placeholder="0.00"
@@ -501,6 +509,7 @@ export function RoadworthyForm({
             <Label htmlFor="retestFeeZar">Retest Fee (ZAR) - Optional</Label>
             <Input
               id="retestFeeZar"
+              name="retestFeeZar"
               type="number"
               step="0.01"
               placeholder="0.00"
@@ -514,6 +523,7 @@ export function RoadworthyForm({
               <Label htmlFor="inspectorName">Inspector Name (Optional)</Label>
               <Input
                 id="inspectorName"
+                name="inspectorName"
                 placeholder="Inspector"
                 {...register("inspectorName")}
               />
@@ -524,6 +534,7 @@ export function RoadworthyForm({
               </Label>
               <Input
                 id="vehicleOdometer"
+                name="vehicleOdometer"
                 type="number"
                 placeholder="km"
                 {...register("vehicleOdometer")}
