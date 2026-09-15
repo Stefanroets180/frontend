@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Plus, Car, AlertCircle, Lock, Image as ImageIcon, Clock, Trash2, Check, X, MessageSquare, Eye, Edit } from "lucide-react";
@@ -39,36 +39,6 @@ export default function VehiclesPage() {
   const isDriver = currentUserRole === UserRole.DRIVER;
   const isRentalCustomer = currentUserRole === UserRole.RENTAL_CUSTOMER;
   const isAdminOrManager = isSuperAdmin || isAdmin || isManager;
-
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [rejectedVehicles, setRejectedVehicles] = useState<Vehicle[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
-  const [rejectingVehicleId, setRejectingVehicleId] = useState<string | null>(null);
-  const [rejectType, setRejectType] = useState<'creation' | 'deletion'>('creation');
-  const [rejectionReason, setRejectionReason] = useState('');
-  const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
-  const [viewingVehicle, setViewingVehicle] = useState<Vehicle | null>(null);
-  
-  // Fleet-specific state
-  const [conditionReportOpen, setConditionReportOpen] = useState(false);
-  const [odometerConfirmationOpen, setOdometerConfirmationOpen] = useState(false);
-  const [selectedVehicleForFleet, setSelectedVehicleForFleet] = useState<Vehicle | null>(null);
-  const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(null);
-  
-  // Handoff state
-  const [handoffDialogOpen, setHandoffDialogOpen] = useState(false);
-  const [selectedVehicleForHandoff, setSelectedVehicleForHandoff] = useState<Vehicle | null>(null);
-  const [activeHandoffs, setActiveHandoffs] = useState<Record<string, VehicleHandoffDTO>>({});
-  
-  // Fleet odometer status state
-  const [fleetOdometerStatus, setFleetOdometerStatus] = useState<any[]>([]);
-  const [isLoadingFleetStatus, setIsLoadingFleetStatus] = useState(false);
-  
-  // Organization visibility settings
-  const [conditionReportEnabled, setConditionReportEnabled] = useState(true);
-  const [odometerConfirmationEnabled, setOdometerConfirmationEnabled] = useState(true);
 
   // Check if user has permission to view vehicles
   const canViewVehicles = permissions?.["VEHICLE_ASSIGNMENT"]?.["VIEW_VEHICLES"] ||
@@ -114,6 +84,51 @@ export default function VehiclesPage() {
       </Card>
     );
   }
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [rejectedVehicles, setRejectedVehicles] = useState<Vehicle[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [rejectingVehicleId, setRejectingVehicleId] = useState<string | null>(null);
+  const [rejectType, setRejectType] = useState<'creation' | 'deletion'>('creation');
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
+  const [viewingVehicle, setViewingVehicle] = useState<Vehicle | null>(null);
+  
+  // Fleet-specific state
+  const [conditionReportOpen, setConditionReportOpen] = useState(false);
+  const [odometerConfirmationOpen, setOdometerConfirmationOpen] = useState(false);
+  const [selectedVehicleForFleet, setSelectedVehicleForFleet] = useState<Vehicle | null>(null);
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(null);
+  
+  // Handoff state
+  const [handoffDialogOpen, setHandoffDialogOpen] = useState(false);
+  const [selectedVehicleForHandoff, setSelectedVehicleForHandoff] = useState<Vehicle | null>(null);
+  const [activeHandoffs, setActiveHandoffs] = useState<Record<string, VehicleHandoffDTO>>({});
+  
+  // Fleet odometer status state
+  const [fleetOdometerStatus, setFleetOdometerStatus] = useState<any[]>([]);
+  const [isLoadingFleetStatus, setIsLoadingFleetStatus] = useState(false);
+  
+  // Organization visibility settings
+  const [conditionReportEnabled, setConditionReportEnabled] = useState(true);
+  const [odometerConfirmationEnabled, setOdometerConfirmationEnabled] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      fetchVehicles();
+      if (isAdminOrManager) {
+        fetchRejectedVehicles();
+      }
+      if (isFleetMode) {
+        fetchActiveHandoffs();
+        // SUPER_ADMIN bypasses permission check for fleet odometer status
+        if (isSuperAdmin || permissions?.['FLEET_STATUS']?.['VIEW_FLEET_STATUS']) {
+          fetchFleetOdometerStatus();
+        }
+      }
+    }
+  }, [user, isAdminOrManager, isFleetMode, permissions]);
 
   // Fetch organization visibility settings
   useEffect(() => {
@@ -209,25 +224,6 @@ export default function VehiclesPage() {
       setIsLoadingFleetStatus(false);
     }
   };
-
-  const hasInitialized = useRef(false);
-
-  useEffect(() => {
-    if (user && !hasInitialized.current) {
-      hasInitialized.current = true;
-      fetchVehicles();
-      if (isAdminOrManager) {
-        fetchRejectedVehicles();
-      }
-      if (isFleetMode) {
-        fetchActiveHandoffs();
-        // SUPER_ADMIN bypasses permission check for fleet odometer status
-        if (isSuperAdmin || permissions?.['FLEET_STATUS']?.['VIEW_FLEET_STATUS']) {
-          fetchFleetOdometerStatus();
-        }
-      }
-    }
-  }, [user, isAdminOrManager, isFleetMode, permissions]);
 
   const handleDeleteVehicle = async (vehicleId: string) => {
     try {
