@@ -312,9 +312,9 @@ export default function TaxSummaryPage() {
             </div>
             {viewMode === 'individual' && (
               <div className="flex-1">
-                <label className="text-sm font-medium mb-2 block">Vehicle</label>
+                <label htmlFor="vehicle-select" className="text-sm font-medium mb-2 block">Vehicle</label>
                 <Select value={selectedVehicleId} onValueChange={setSelectedVehicleId}>
-                  <SelectTrigger>
+                  <SelectTrigger id="vehicle-select" name="vehicle">
                     <SelectValue placeholder="Select a vehicle" />
                   </SelectTrigger>
                   <SelectContent>
@@ -328,9 +328,9 @@ export default function TaxSummaryPage() {
             </div>
             )}
             <div className="w-48">
-              <label className="text-sm font-medium mb-2 block">Tax Year</label>
+              <label htmlFor="tax-year-select" className="text-sm font-medium mb-2 block">Tax Year</label>
               <Select value={selectedTaxYear.toString()} onValueChange={(v) => setSelectedTaxYear(parseInt(v))}>
-                <SelectTrigger>
+                <SelectTrigger id="tax-year-select" name="tax-year">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -582,13 +582,13 @@ export default function TaxSummaryPage() {
             <CardContent>
               <div className="flex gap-4 items-end">
                 <div className="flex-1">
-                  <label className="text-sm font-medium mb-2 block">Calculation Method</label>
+                  <label htmlFor="calculation-method-select" className="text-sm font-medium mb-2 block">Calculation Method</label>
                   <Select
                     value={selectedMethod}
                     onValueChange={setSelectedMethod}
                     disabled={exportLoading}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="calculation-method-select" name="calculation-method">
                       <SelectValue placeholder="Select a method" />
                     </SelectTrigger>
                     <SelectContent>
