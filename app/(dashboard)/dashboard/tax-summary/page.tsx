@@ -106,6 +106,7 @@ export default function TaxSummaryPage() {
   const isFetchingRef = useRef(false);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const lastTaxYearRef = useRef<number | null>(null);
+  const notFoundCacheRef = useRef<Set<string>>(new Set()); // Cache 404s to prevent repeated requests
 
   // Phase 8: Multi-tenant view switching based on organization mode
   const isFleetMode = user?.organizationMode === OrganizationMode.BUSINESS_FLEET || user?.organizationMode === OrganizationMode.COMPANY;
@@ -265,6 +266,15 @@ export default function TaxSummaryPage() {
   const fetchTaxSummary = async (signal?: AbortSignal) => {
     if (!selectedVehicleId || !selectedTaxYear) return;
 
+    const cacheKey = `${selectedVehicleId}-${selectedTaxYear}`;
+    
+    // Check if we already know this doesn't exist
+    if (notFoundCacheRef.current.has(cacheKey)) {
+      setTaxSummary(null);
+      setError(null);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
@@ -272,10 +282,14 @@ export default function TaxSummaryPage() {
       if (response.ok) {
         const data = await response.json();
         setTaxSummary(data);
+        // Remove from cache if it was previously there
+        notFoundCacheRef.current.delete(cacheKey);
       } else if (response.status === 404) {
         // No tax summary exists for this vehicle and tax year
         setTaxSummary(null);
         setError(null); // Clear error, this is expected
+        // Add to cache to prevent repeated requests
+        notFoundCacheRef.current.add(cacheKey);
       } else {
         setError("Failed to fetch tax summary");
       }
