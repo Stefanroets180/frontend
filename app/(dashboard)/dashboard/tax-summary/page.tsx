@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -101,6 +101,9 @@ export default function TaxSummaryPage() {
   const [vehicleCostInput, setVehicleCostInput] = useState<string>('');
   const [savingProfile, setSavingProfile] = useState(false);
 
+  // Refs for request cancellation
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   // Phase 8: Multi-tenant view switching based on organization mode
   const isFleetMode = user?.organizationMode === OrganizationMode.BUSINESS_FLEET || user?.organizationMode === OrganizationMode.COMPANY;
   const isSoloMode = user?.organizationMode === OrganizationMode.SOLO;
@@ -112,12 +115,31 @@ export default function TaxSummaryPage() {
   }, []);
 
   useEffect(() => {
-    if (viewMode === 'combined') {
-      fetchAllTaxSummaries();
-    } else if (selectedVehicleId) {
-      fetchTaxSummary();
-      fetchVehicleTaxProfile();
+    // Cancel previous requests
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
+
+    abortControllerRef.current = new AbortController();
+
+    const fetchData = async () => {
+      if (viewMode === 'combined') {
+        await fetchAllTaxSummaries();
+      } else if (selectedVehicleId) {
+        await Promise.all([
+          fetchTaxSummary(abortControllerRef.current.signal),
+          fetchVehicleTaxProfile(abortControllerRef.current.signal)
+        ]);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
   }, [selectedVehicleId, selectedTaxYear, viewMode]);
 
   const fetchVehicles = async () => {
@@ -125,10 +147,8 @@ export default function TaxSummaryPage() {
     setError(null);
     try {
       const response = await apiFetch("/vehicles");
-      console.log("Tax Summary - Vehicles response:", response);
       if (response.ok) {
         const data = await response.json();
-        console.log("Tax Summary - Vehicles data:", data);
 
         // Phase 8: Sort vehicles for fleet mode
         let sortedVehicles = data;
@@ -211,13 +231,13 @@ export default function TaxSummaryPage() {
     }
   };
 
-  const fetchTaxSummary = async () => {
+  const fetchTaxSummary = async (signal?: AbortSignal) => {
     if (!selectedVehicleId || !selectedTaxYear) return;
 
     setLoading(true);
     setError(null);
     try {
-      const response = await apiFetch(`/tax-year-summaries/vehicle/${selectedVehicleId}/tax-year/${selectedTaxYear}`);
+      const response = await apiFetch(`/tax-year-summaries/vehicle/${selectedVehicleId}/tax-year/${selectedTaxYear}`, { signal });
       if (response.ok) {
         const data = await response.json();
         setTaxSummary(data);
@@ -235,11 +255,11 @@ export default function TaxSummaryPage() {
     }
   };
 
-  const fetchVehicleTaxProfile = async () => {
+  const fetchVehicleTaxProfile = async (signal?: AbortSignal) => {
     if (!selectedVehicleId) return;
 
     try {
-      const response = await apiFetch(`/vehicles/${selectedVehicleId}/tax-profiles/active`);
+      const response = await apiFetch(`/vehicles/${selectedVehicleId}/tax-profiles/active`, { signal });
       if (response.ok) {
         const data = await response.json();
         setVehicleTaxProfile(data);
@@ -341,13 +361,13 @@ export default function TaxSummaryPage() {
     }
   };
 
-  const fetchComparisonResults = async () => {
+  const fetchComparisonResults = async (signal?: AbortSignal) => {
     if (!selectedVehicleId || !selectedTaxYear) return;
 
     setComparisonLoading(true);
     setError(null);
     try {
-      const response = await apiFetch(`/vehicles/${selectedVehicleId}/tax-profiles/tax-calculations?taxYear=${selectedTaxYear}`);
+      const response = await apiFetch(`/vehicles/${selectedVehicleId}/tax-profiles/tax-calculations?taxYear=${selectedTaxYear}`, { signal });
       if (response.ok) {
         const data: TaxComparisonResponse = await response.json();
         const results = Object.entries(data.results || {}).map(([key, result]) => ({
