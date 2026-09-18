@@ -105,6 +105,7 @@ export default function TaxSummaryPage() {
   const abortControllerRef = useRef<AbortController | null>(null);
   const isFetchingRef = useRef(false);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const lastTaxYearRef = useRef<number | null>(null);
 
   // Phase 8: Multi-tenant view switching based on organization mode
   const isFleetMode = user?.organizationMode === OrganizationMode.BUSINESS_FLEET || user?.organizationMode === OrganizationMode.COMPANY;
@@ -117,6 +118,12 @@ export default function TaxSummaryPage() {
   }, []);
 
   useEffect(() => {
+    // Skip if tax year hasn't changed (prevents duplicate requests)
+    if (lastTaxYearRef.current === selectedTaxYear && lastTaxYearRef.current !== null) {
+      return;
+    }
+    lastTaxYearRef.current = selectedTaxYear;
+
     // Clear any existing debounce timer
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
