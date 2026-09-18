@@ -905,7 +905,7 @@ export default function TaxSummaryPage() {
             <div className="flex gap-2">
               {viewMode === 'individual' && (
                 <Button
-                  onClick={fetchComparisonResults}
+                  onClick={() => fetchComparisonResults()}
                   disabled={comparisonLoading}
                   className="flex items-center gap-2"
                 >
