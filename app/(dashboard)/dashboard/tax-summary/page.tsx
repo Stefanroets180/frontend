@@ -416,6 +416,15 @@ export default function TaxSummaryPage() {
   const fetchComparisonResults = async (signal?: AbortSignal) => {
     if (!selectedVehicleId || !selectedTaxYear) return;
 
+    const cacheKey = `${selectedVehicleId}-${selectedTaxYear}-calculations`;
+    
+    // Check if we already know this doesn't exist
+    if (notFoundCacheRef.current.has(cacheKey)) {
+      setComparisonResults([]);
+      setError("A tax profile is required to compare tax calculation methods. Please set up a tax profile for this vehicle first.");
+      return;
+    }
+
     setComparisonLoading(true);
     setError(null);
     try {
@@ -432,9 +441,13 @@ export default function TaxSummaryPage() {
         if (firstEligible) {
           setSelectedMethod(firstEligible.method);
         }
+        // Remove from cache if it was previously there
+        notFoundCacheRef.current.delete(cacheKey);
       } else if (response.status === 404) {
         // No tax profile exists for this vehicle
         setError("A tax profile is required to compare tax calculation methods. Please set up a tax profile for this vehicle first.");
+        // Add to cache to prevent repeated requests
+        notFoundCacheRef.current.add(cacheKey);
       } else {
         setError("Failed to fetch tax comparison results");
       }
