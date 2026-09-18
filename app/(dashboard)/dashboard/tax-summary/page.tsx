@@ -101,8 +101,10 @@ export default function TaxSummaryPage() {
   const [vehicleCostInput, setVehicleCostInput] = useState<string>('');
   const [savingProfile, setSavingProfile] = useState(false);
 
-  // Refs for request cancellation
+  // Refs for request cancellation and debouncing
   const abortControllerRef = useRef<AbortController | null>(null);
+  const isFetchingRef = useRef(false);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Phase 8: Multi-tenant view switching based on organization mode
   const isFleetMode = user?.organizationMode === OrganizationMode.BUSINESS_FLEET || user?.organizationMode === OrganizationMode.COMPANY;
@@ -115,30 +117,52 @@ export default function TaxSummaryPage() {
   }, []);
 
   useEffect(() => {
+    // Clear any existing debounce timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
     // Cancel previous requests
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
 
-    abortControllerRef.current = new AbortController();
-
-    const fetchData = async () => {
-      if (viewMode === 'combined') {
-        await fetchAllTaxSummaries();
-      } else if (selectedVehicleId) {
-        await Promise.all([
-          fetchTaxSummary(abortControllerRef.current?.signal),
-          fetchVehicleTaxProfile(abortControllerRef.current?.signal)
-        ]);
+    // Debounce the request to prevent rapid successive calls
+    debounceTimerRef.current = setTimeout(() => {
+      // Prevent rapid successive requests
+      if (isFetchingRef.current) {
+        return;
       }
-    };
 
-    fetchData();
+      abortControllerRef.current = new AbortController();
+      isFetchingRef.current = true;
+
+      const fetchData = async () => {
+        try {
+          if (viewMode === 'combined') {
+            await fetchAllTaxSummaries();
+          } else if (selectedVehicleId) {
+            await Promise.all([
+              fetchTaxSummary(abortControllerRef.current?.signal),
+              fetchVehicleTaxProfile(abortControllerRef.current?.signal)
+            ]);
+          }
+        } finally {
+          isFetchingRef.current = false;
+        }
+      };
+
+      fetchData();
+    }, 300); // 300ms debounce delay
 
     return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
+      isFetchingRef.current = false;
     };
   }, [selectedVehicleId, selectedTaxYear, viewMode]);
 
