@@ -127,8 +127,8 @@ export default function TaxSummaryPage() {
         await fetchAllTaxSummaries();
       } else if (selectedVehicleId) {
         await Promise.all([
-          fetchTaxSummary(abortControllerRef.current.signal),
-          fetchVehicleTaxProfile(abortControllerRef.current.signal)
+          fetchTaxSummary(abortControllerRef.current?.signal),
+          fetchVehicleTaxProfile(abortControllerRef.current?.signal)
         ]);
       }
     };
