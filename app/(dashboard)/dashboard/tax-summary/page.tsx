@@ -82,7 +82,7 @@ export default function TaxSummaryPage() {
   const { user } = useAuth();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string>("");
-  const [selectedTaxYear, setSelectedTaxYear] = useState<number>(2026);
+  const [selectedTaxYear, setSelectedTaxYear] = useState<number>(2027);
   const [taxSummary, setTaxSummary] = useState<TaxYearSummary | null>(null);
   const [allTaxSummaries, setAllTaxSummaries] = useState<TaxYearSummary[]>([]);
   const [viewMode, setViewMode] = useState<'individual' | 'combined'>('individual');
@@ -248,7 +248,11 @@ export default function TaxSummaryPage() {
       } else {
         setError("Failed to fetch tax summary");
       }
-    } catch (err) {
+    } catch (err: any) {
+      // Ignore abort errors from request cancellation
+      if (err?.name === 'AbortError') {
+        return;
+      }
       setError("Failed to fetch tax summary");
     } finally {
       setLoading(false);
@@ -271,10 +275,13 @@ export default function TaxSummaryPage() {
         setEditingProfile({});
         setVehicleCostInput('');
       }
-    } catch (err) {
+    } catch (err: any) {
+      // Ignore abort errors from request cancellation
+      if (err?.name === 'AbortError') {
+        return;
+      }
       // 404 is expected when no tax profile exists - don't log
-      const error = err as any;
-      if (!error?.message?.includes('404')) {
+      if (!err?.message?.includes('404')) {
         console.error("Failed to fetch vehicle tax profile:", err);
       }
     }
@@ -386,7 +393,11 @@ export default function TaxSummaryPage() {
       } else {
         setError("Failed to fetch tax comparison results");
       }
-    } catch (err) {
+    } catch (err: any) {
+      // Ignore abort errors from request cancellation
+      if (err?.name === 'AbortError') {
+        return;
+      }
       setError("Failed to fetch tax comparison results");
     } finally {
       setComparisonLoading(false);
