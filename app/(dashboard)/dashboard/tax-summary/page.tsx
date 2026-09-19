@@ -974,12 +974,12 @@ export default function TaxSummaryPage() {
             <div className="flex gap-2">
               {viewMode === 'individual' && (
                 <Button
-                  onClick={() => fetchComparisonResults()}
-                  disabled={comparisonLoading}
+                  onClick={handleCalculate}
+                  disabled={calculateLoading}
                   className="flex items-center gap-2"
                 >
                   <Calculator className="h-4 w-4" />
-                  {comparisonLoading ? "Calculating..." : "Compare Methods"}
+                  {calculateLoading ? "Recalculating..." : "Recalculate"}
                 </Button>
               )}
               {viewMode === 'individual' && (
