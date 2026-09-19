@@ -333,6 +333,7 @@ export default function TaxSummaryPage() {
   };
 
   const saveTaxProfile = async () => {
+    console.log("saveTaxProfile called", { selectedVehicleId, vehicleTaxProfile, editingProfile });
     if (!selectedVehicleId) return;
 
     // Validate required fields
@@ -358,6 +359,7 @@ export default function TaxSummaryPage() {
     }
 
     if (validationErrors.length > 0) {
+      console.error("Validation errors:", validationErrors);
       setError(validationErrors.join('; '));
       return;
     }
@@ -381,32 +383,40 @@ export default function TaxSummaryPage() {
         isCompanyProvidedVehicle: editingProfile.isCompanyProvidedVehicle || false,
       };
 
+      console.log("Profile data to save:", profileData);
+
       let response;
       if (vehicleTaxProfile?.id) {
         // Update existing profile
+        console.log("Updating existing profile:", vehicleTaxProfile.id);
         response = await apiFetch(`/vehicles/${selectedVehicleId}/tax-profiles/${vehicleTaxProfile.id}`, {
           method: 'PUT',
           body: JSON.stringify(profileData),
         });
       } else {
         // Create new profile
+        console.log("Creating new profile");
         response = await apiFetch(`/vehicles/${selectedVehicleId}/tax-profiles`, {
           method: 'POST',
           body: JSON.stringify(profileData),
         });
       }
 
+      console.log("Save profile response status:", response.status);
       if (response.ok) {
         const data = await response.json();
+        console.log("Profile saved successfully:", data);
         setVehicleTaxProfile(data);
         setEditingProfile(data);
         // Refetch tax summary to recalculate with new profile
         await handleCalculate();
       } else {
         const errorData = await response.json();
+        console.error("Save profile error:", errorData);
         setError(errorData.error || 'Failed to save tax profile');
       }
     } catch (err) {
+      console.error("Save profile exception:", err);
       setError('Failed to save tax profile');
     } finally {
       setSavingProfile(false);
