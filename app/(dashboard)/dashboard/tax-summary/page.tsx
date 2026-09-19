@@ -463,7 +463,10 @@ export default function TaxSummaryPage() {
   };
 
   const handleCalculate = async () => {
-    if (!selectedVehicleId || !selectedTaxYear) return;
+    if (!selectedVehicleId || !selectedTaxYear) {
+      setError("Please select a vehicle and tax year");
+      return;
+    }
 
     setCalculateLoading(true);
     setError(null);
@@ -477,11 +480,16 @@ export default function TaxSummaryPage() {
       if (response.ok) {
         const data = await response.json();
         setTaxSummary(data);
+        // Clear the 404 cache since we just calculated successfully
+        const cacheKey = `${selectedVehicleId}-${selectedTaxYear}`;
+        notFoundCacheRef.current.delete(cacheKey);
       } else {
-        setError("Failed to calculate tax summary");
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        setError(errorData.error || `Failed to calculate tax summary (${response.status})`);
       }
-    } catch (err) {
-      setError("Failed to calculate tax summary");
+    } catch (err: any) {
+      console.error("Calculate error:", err);
+      setError(err?.message || "Failed to calculate tax summary");
     } finally {
       setCalculateLoading(false);
     }
