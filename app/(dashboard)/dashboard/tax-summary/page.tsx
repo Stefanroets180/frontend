@@ -812,10 +812,14 @@ export default function TaxSummaryPage() {
                     className="h-4 w-4"
                   />
                   <span className="text-sm">
-                    {editingProfile.isCompanyProvidedVehicle ? 'Yes (Fringe Benefit)' : 'No (Personal Vehicle)'}
+                    {editingProfile.isCompanyProvidedVehicle ? 'Yes - Company car (fringe benefit)' : 'No - Personal vehicle'}
                   </span>
                 </div>
-                <p className="text-xs text-gray-500">Company car (fringe benefit) changes how private use is displayed for tax purposes.</p>
+                <p className="text-xs text-gray-500">
+                  {editingProfile.isCompanyProvidedVehicle 
+                    ? "Company cars are treated as fringe benefits. Private use is calculated differently for tax purposes."
+                    : "Personal vehicle owned by you. Business use is calculated based on actual business kilometers."}
+                </p>
               </div>
             </div>
             <div className="mt-4 flex gap-2">
