@@ -482,7 +482,9 @@ export default function TaxSummaryPage() {
       if (response.ok) {
         const data = await response.json();
         console.log("Calculate response data:", data);
+        console.log("Setting taxSummary state with data:", data);
         setTaxSummary(data);
+        console.log("TaxSummary state set");
         // Clear the 404 cache since we just calculated successfully
         const cacheKey = `${selectedVehicleId}-${selectedTaxYear}`;
         notFoundCacheRef.current.delete(cacheKey);
