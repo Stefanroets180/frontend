@@ -350,6 +350,7 @@ export function DashboardHeader({
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"expired" | "warning" | "receipts" | "odometer">("expired");
+  const [isCheckingOdometer, setIsCheckingOdometer] = useState(false);
 
   // Real user data — use auth context user as source of truth
   const profile: StoredProfile = user ? {
@@ -868,18 +869,22 @@ export function DashboardHeader({
                         variant="ghost"
                         size="sm"
                         className="h-7 text-xs"
+                        disabled={isCheckingOdometer}
                         onClick={async () => {
+                          setIsCheckingOdometer(true);
                           try {
                             const alertsCreated = await checkAllOdometerDrift();
-                            // Optionally show a toast or notification
                             console.log(`Checked all vehicles, created ${alertsCreated} alerts`);
                           } catch (err) {
                             console.error('Failed to check vehicles:', err);
+                            alert('Failed to check vehicles. Please try again.');
+                          } finally {
+                            setIsCheckingOdometer(false);
                           }
                         }}
                       >
-                        <RefreshCw className="h-3 w-3 mr-1" />
-                        Check All
+                        <RefreshCw className={`h-3 w-3 mr-1 ${isCheckingOdometer ? 'animate-spin' : ''}`} />
+                        {isCheckingOdometer ? 'Checking...' : 'Check All'}
                       </Button>
                     </div>
                     <div className="flex-1 max-h-[400px] overflow-y-auto p-2">

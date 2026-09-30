@@ -71,9 +71,13 @@ export function useOdometerDriftAlerts(): UseOdometerDriftAlertsResult {
   }, [loadAlerts])
 
   const checkAllVehicles = useCallback(async () => {
+    console.log('[useOdometerDriftAlerts] Starting checkAllVehicles')
     try {
+      console.log('[useOdometerDriftAlerts] Calling POST /alerts/odometer-drift/check-all')
       const { data } = await api.post('/alerts/odometer-drift/check-all', {})
+      console.log('[useOdometerDriftAlerts] Response data:', data)
       await loadAlerts()
+      console.log('[useOdometerDriftAlerts] Alerts refreshed')
       return data.alertsCreated || 0
     } catch (err) {
       console.error('[useOdometerDriftAlerts] Failed to check all vehicles:', err)

@@ -26,6 +26,7 @@ type AuthUser = NormalizedAuthUser & {
   passwordChanged?: boolean;
   profilePhotoUrl?: string;
   assistantRole?: string;
+  defaultTaxCalculationMethod?: 'ACTUAL_COSTS' | 'SARS_COST_SCALE' | 'SIMPLIFIED_REIMBURSIVE';
 };
 
 function mapMeToAuthUser(
@@ -61,6 +62,7 @@ function mapMeToAuthUser(
     passwordChanged: me.passwordChanged !== undefined ? Boolean(me.passwordChanged) : true,
     profilePhotoUrl: absoluteProfilePhotoUrl,
     assistantRole: me.assistantRole ? String(me.assistantRole) : undefined,
+    defaultTaxCalculationMethod: me.defaultTaxCalculationMethod ? String(me.defaultTaxCalculationMethod) as 'ACTUAL_COSTS' | 'SARS_COST_SCALE' | 'SIMPLIFIED_REIMBURSIVE' : undefined,
   };
 }
 

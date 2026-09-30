@@ -165,7 +165,7 @@ export default function TaxSummaryPage() {
             Compare tax deduction methods and manage vehicle tax profiles
           </p>
         </div>
-        <Button onClick={() => router.push("/dashboard/tax/profiles")}>
+        <Button onClick={() => router.push("/dashboard/tax-summary")}>
           <FileText className="mr-2 h-4 w-4" />
           Manage Tax Profiles
         </Button>
@@ -283,7 +283,7 @@ export default function TaxSummaryPage() {
                   Create a tax profile to enable tax calculations and exports
                 </p>
               </div>
-              <Button onClick={() => router.push("/dashboard/tax/profiles")}>
+              <Button onClick={() => router.push("/dashboard/tax-summary")}>
                 Create Tax Profile
               </Button>
             </div>

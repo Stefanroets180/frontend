@@ -1,6 +1,5 @@
 "use client";
 
-// Tax Summary: Fringe Benefit toggle and per-vehicle selectors implemented
 import React, { useState, useEffect } from "react";
 import { api, getLatestBusinessTripOdometer } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";

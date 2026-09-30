@@ -1,6 +1,6 @@
 import { clearAuthCookies } from '@/lib/auth/normalize-auth-response'
 
-const DEFAULT_BACKEND = 'https://localhost:8080';
+const DEFAULT_BACKEND = 'https://localhost:8081';
 
 /** Resolve API base URL — always absolute in the browser when possible. */
 function resolveApiBaseUrl(): string {
@@ -11,8 +11,8 @@ function resolveApiBaseUrl(): string {
     // When no env var is set, dynamically use current origin with backend port
     if (typeof window !== 'undefined') {
       const origin = window.location.origin;
-      // Replace frontend port (3000) with backend port (8080)
-      const apiOrigin = origin.replace(/:\d+$/, ':8080');
+      // Replace frontend port (3000) with backend port (8081)
+      const apiOrigin = origin.replace(/:\d+$/, ':8081');
       return `${apiOrigin}/api/v1`;
     }
     return fallback;
@@ -22,7 +22,7 @@ function resolveApiBaseUrl(): string {
     // If it's localhost, dynamically replace with current origin when in browser
     if (raw.includes('localhost') && typeof window !== 'undefined') {
       const origin = window.location.origin;
-      const apiOrigin = origin.replace(/:\d+$/, ':8080');
+      const apiOrigin = origin.replace(/:\d+$/, ':8081');
       return `${apiOrigin}/api/v1`;
     }
     return raw.replace(/\/$/, '');

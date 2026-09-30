@@ -23,12 +23,13 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FuelType, FUEL_TYPE_LABELS, formatZAR } from '@/lib/types/database'
 import { saveFuelLogOdometer } from '@/lib/hooks/use-tyre-rotation-warnings'
-import { api } from '@/lib/api/client'
+import { api, getLastOdometerReading } from '@/lib/api/client'
 import { ReceiptSupportProps } from './form-types'
 import { EntryImageManager } from '@/components/entries/entry-image-manager'
 import { API_URL } from '@/lib/api/client'
 import { ImageCropModal } from '@/components/ui/image-crop-modal'
 import { VehicleLogo } from '@/components/vehicles/vehicle-logo'
+import { useOdometerMemory } from '@/lib/hooks/useOdometerMemory'
 
 const fuelLogSchema = z.object({
   vehicleId: z.string().optional(),
@@ -122,6 +123,10 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
     },
   })
 
+  // Use odometer memory hook for consistent odometer readings
+  const selectedVehicleId = watch('vehicleId')
+  const { lastOdometer, currentOdometer, vehicleName: odometerVehicleName, loading: loadingOdometer } = useOdometerMemory(selectedVehicleId || null)
+
   // Initialize date input from watched value when in edit mode
   useEffect(() => {
     if (mode === 'edit' && watch('date')) {
@@ -174,7 +179,6 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
     }
   }, [mode, initialData, entryId, gpsManuallyCleared])
 
-  const selectedVehicleId = watch('vehicleId')
   const liters = watch('liters')
   const pricePerLiter = watch('pricePerLiter')
 
@@ -184,50 +188,16 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
     : Object.values(FuelType)
   const totalAmount = liters && pricePerLiter ? liters * pricePerLiter : 0
 
-  // Fetch last odometer reading for each vehicle on mount (only for create mode)
-  useEffect(() => {
-    if (mode === 'edit') return; // Don't fetch last odometer in edit mode
-    
-    const fetchLastOdometerReadings = async () => {
-      const readings: Record<string, number> = {}
-      for (const vehicle of vehicles) {
-        try {
-          // Fetch all expenses for this vehicle, then filter to fuel logs client-side
-          const response = await api.get(`/expenses?vehicleId=${vehicle.id}`)
-          const expenses = (response.data || []).filter((e: any) => e.category === 'FUEL_LOG')
-          if (expenses.length > 0) {
-            // Find the expense with the highest odometer reading
-            const lastExpense = expenses.reduce((prev: any, current: any) => {
-              return (current.odometerReading || 0) > (prev.odometerReading || 0) ? current : prev
-            })
-            readings[vehicle.id] = lastExpense.odometerReading || vehicle.currentOdometer || 0
-          } else {
-            readings[vehicle.id] = vehicle.currentOdometer || 0
-          }
-        } catch (error) {
-          console.error(`Failed to fetch last odometer for vehicle ${vehicle.id}:`, error)
-          readings[vehicle.id] = vehicle.currentOdometer || 0
-        }
-      }
-      setLastOdometerReadings(readings)
-    }
-
-    if (vehicles.length > 0) {
-      fetchLastOdometerReadings()
-    }
-  }, [vehicles, mode])
-
-  // Update odometer when vehicle changes to use vehicle's current odometer (only in create mode)
+  // Auto-fill odometer when lastOdometer or currentOdometer changes (only in create mode)
   useEffect(() => {
     if (mode === 'edit') return; // Don't change odometer in edit mode
     
-    if (selectedVehicleId) {
-      const vehicle = vehicles.find(v => v.id === selectedVehicleId)
-      if (vehicle) {
-        setValue('odometerReading', vehicle.currentOdometer || 0)
-      }
+    if (lastOdometer !== null) {
+      setValue('odometerReading', lastOdometer)
+    } else if (currentOdometer !== null) {
+      setValue('odometerReading', currentOdometer)
     }
-  }, [selectedVehicleId, vehicles, setValue, mode])
+  }, [lastOdometer, currentOdometer, setValue, mode])
 
   // Update fuel type when vehicle changes
   const handleVehicleChange = (vehicleId: string) => {

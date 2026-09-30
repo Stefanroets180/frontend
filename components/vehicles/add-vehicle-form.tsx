@@ -38,6 +38,7 @@ export function AddVehicleForm() {
     fuelCategory: "",
     color: "",
     vin: "",
+    operationalBaselineOdometer: "",
     tankCapacityLiters: "",
     licenseExpiry: "",
     insurancePolicyNumber: "",
@@ -90,6 +91,7 @@ export function AddVehicleForm() {
         fuelCategory: fuelCategory,
         color: data.color || "",
         vin: data.vin || "",
+        operationalBaselineOdometer: "", // Not editable in edit mode, set to empty
         tankCapacityLiters: data.tankCapacityLiters?.toString() || "",
         licenseExpiry: data.licenseExpiry || "",
         insurancePolicyNumber: data.insurancePolicyNumber || "",
@@ -122,40 +124,64 @@ export function AddVehicleForm() {
       const selectedCategory = VEHICLE_FUEL_CATEGORIES.find(c => c.value === form.fuelCategory)
       const fuelType = selectedCategory?.defaultType || "PETROL_UNLEADED_95"
 
-      const requestBody = {
-        nickname: form.nickname || null,
-        registrationNumber: form.registrationNumber,
-        make: form.make,
-        model: form.model,
-        year: parseInt(form.year),
-        fuelType: fuelType,
-        color: form.color || null,
-        vin: form.vin || null,
-        tankCapacityLiters: form.tankCapacityLiters ? parseFloat(form.tankCapacityLiters) : null,
-        licenseExpiry: form.licenseExpiry || null,
-        insurancePolicyNumber: form.insurancePolicyNumber || null,
-        trackerSerial: form.trackerSerial || null,
-        notes: form.notes || null,
-        minorServiceIntervalKm: form.minorServiceIntervalKm ? parseInt(form.minorServiceIntervalKm) : null,
-        majorServiceIntervalKm: form.majorServiceIntervalKm ? parseInt(form.majorServiceIntervalKm) : null,
-        brakeOverhaulIntervalKm: form.brakeOverhaulIntervalKm ? parseInt(form.brakeOverhaulIntervalKm) : null,
-        minorServiceIntervalMonths: form.minorServiceIntervalMonths ? parseInt(form.minorServiceIntervalMonths) : null,
-        majorServiceIntervalMonths: form.majorServiceIntervalMonths ? parseInt(form.majorServiceIntervalMonths) : null,
-        brakeOverhaulIntervalMonths: form.brakeOverhaulIntervalMonths ? parseInt(form.brakeOverhaulIntervalMonths) : null,
-      }
-
       let response
       if (isEditMode) {
+        // Phase 1: EDIT payload - do NOT include operationalBaselineOdometer
+        // Baseline correction must use explicit correction workflow/endpoint
+        const editRequestBody = {
+          nickname: form.nickname || null,
+          registrationNumber: form.registrationNumber,
+          make: form.make,
+          model: form.model,
+          year: parseInt(form.year),
+          fuelType: fuelType,
+          color: form.color || null,
+          vin: form.vin || null,
+          tankCapacityLiters: form.tankCapacityLiters ? parseFloat(form.tankCapacityLiters) : null,
+          licenseExpiry: form.licenseExpiry || null,
+          insurancePolicyNumber: form.insurancePolicyNumber || null,
+          trackerSerial: form.trackerSerial || null,
+          notes: form.notes || null,
+          minorServiceIntervalKm: form.minorServiceIntervalKm ? parseInt(form.minorServiceIntervalKm) : null,
+          majorServiceIntervalKm: form.majorServiceIntervalKm ? parseInt(form.majorServiceIntervalKm) : null,
+          brakeOverhaulIntervalKm: form.brakeOverhaulIntervalKm ? parseInt(form.brakeOverhaulIntervalKm) : null,
+          minorServiceIntervalMonths: form.minorServiceIntervalMonths ? parseInt(form.minorServiceIntervalMonths) : null,
+          majorServiceIntervalMonths: form.majorServiceIntervalMonths ? parseInt(form.majorServiceIntervalMonths) : null,
+          brakeOverhaulIntervalMonths: form.brakeOverhaulIntervalMonths ? parseInt(form.brakeOverhaulIntervalMonths) : null,
+        }
         // Update existing vehicle
         response = await apiFetch(`/vehicles/${editVehicleId}`, {
           method: "PUT",
-          body: JSON.stringify(requestBody),
+          body: JSON.stringify(editRequestBody),
         })
       } else {
+        // Phase 1: CREATE payload - may include operationalBaselineOdometer
+        const createRequestBody = {
+          nickname: form.nickname || null,
+          registrationNumber: form.registrationNumber,
+          make: form.make,
+          model: form.model,
+          year: parseInt(form.year),
+          fuelType: fuelType,
+          color: form.color || null,
+          vin: form.vin || null,
+          operationalBaselineOdometer: form.operationalBaselineOdometer ? parseInt(form.operationalBaselineOdometer) : null,
+          tankCapacityLiters: form.tankCapacityLiters ? parseFloat(form.tankCapacityLiters) : null,
+          licenseExpiry: form.licenseExpiry || null,
+          insurancePolicyNumber: form.insurancePolicyNumber || null,
+          trackerSerial: form.trackerSerial || null,
+          notes: form.notes || null,
+          minorServiceIntervalKm: form.minorServiceIntervalKm ? parseInt(form.minorServiceIntervalKm) : null,
+          majorServiceIntervalKm: form.majorServiceIntervalKm ? parseInt(form.majorServiceIntervalKm) : null,
+          brakeOverhaulIntervalKm: form.brakeOverhaulIntervalKm ? parseInt(form.brakeOverhaulIntervalKm) : null,
+          minorServiceIntervalMonths: form.minorServiceIntervalMonths ? parseInt(form.minorServiceIntervalMonths) : null,
+          majorServiceIntervalMonths: form.majorServiceIntervalMonths ? parseInt(form.majorServiceIntervalMonths) : null,
+          brakeOverhaulIntervalMonths: form.brakeOverhaulIntervalMonths ? parseInt(form.brakeOverhaulIntervalMonths) : null,
+        }
         // Create new vehicle
         response = await apiFetch("/vehicles", {
           method: "POST",
-          body: JSON.stringify(requestBody),
+          body: JSON.stringify(createRequestBody),
         })
       }
 
@@ -364,6 +390,26 @@ export function AddVehicleForm() {
                 className="h-12"
               />
             </div>
+
+            {/* Starting Operational Odometer - NEW VEHICLE CREATION ONLY */}
+            {!isEditMode && (
+              <div className="space-y-2">
+                <Label htmlFor="operationalBaselineOdometer">Starting Operational Odometer (km) <span className="text-muted-foreground">(optional)</span></Label>
+                <Input
+                  id="operationalBaselineOdometer"
+                  name="operationalBaselineOdometer"
+                  type="number"
+                  min="0"
+                  placeholder="e.g., 50000"
+                  value={form.operationalBaselineOdometer}
+                  onChange={e => set("operationalBaselineOdometer", e.target.value)}
+                  className="h-12"
+                />
+                <p className="text-xs text-muted-foreground">
+                  The vehicle's odometer reading when operational tracking begins in this app. This is separate from tax-year opening odometer.
+                </p>
+              </div>
+            )}
 
             {/* Tank Capacity */}
             <div className="space-y-2">

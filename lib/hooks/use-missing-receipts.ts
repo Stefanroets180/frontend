@@ -43,6 +43,12 @@ export function useMissingReceipts(): UseMissingReceiptsResult {
 
   useEffect(() => {
     loadReceipts()
+
+    const handleReceiptChange = () => {
+      void loadReceipts()
+    }
+    window.addEventListener('fleetexpense:receipt-changed', handleReceiptChange)
+    return () => window.removeEventListener('fleetexpense:receipt-changed', handleReceiptChange)
   }, [loadReceipts])
 
   return {

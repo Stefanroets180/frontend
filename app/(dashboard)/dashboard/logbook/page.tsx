@@ -442,6 +442,14 @@ export default function LogbookPage() {
     (vehicle) => vehicle.id === selectedVehicle,
   );
 
+  // Calculate first business trip date
+  const businessTrips = trips.filter((trip) => trip.purpose === "BUSINESS");
+  const firstBusinessTripDate = businessTrips.length > 0
+    ? businessTrips.reduce((earliest, trip) =>
+        trip.tripDate < earliest.tripDate ? trip : earliest
+      ).tripDate
+    : null;
+
   const logbookSummaryItems = [
     {
       label: `${filteredTrips.length} trip${filteredTrips.length === 1 ? "" : "s"}`,
@@ -459,6 +467,18 @@ export default function LogbookPage() {
       label: `Private ${summary.privateKm.toLocaleString()} km`,
       tone: "warning" as const,
     },
+    ...(firstBusinessTripDate
+      ? [
+          {
+            label: `First business use: ${new Date(firstBusinessTripDate).toLocaleDateString("en-ZA", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })}`,
+            tone: "info" as const,
+          },
+        ]
+      : []),
     {
       label: selectedVehicleOption
         ? vehicleLabel(selectedVehicleOption)
