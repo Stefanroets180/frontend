@@ -15,9 +15,11 @@ interface OdometerInputProps {
   loading?: boolean;
   onStartOdometerChange: (value: string) => void;
   onEndOdometerChange: (value: string) => void;
+  endMin?: number;
+  error?: string;
 }
 
-export function OdometerInput({ 
+export function OdometerInput({
   startOdometer,
   endOdometer,
   lastOdometer,
@@ -26,6 +28,8 @@ export function OdometerInput({
   loading = false,
   onStartOdometerChange,
   onEndOdometerChange,
+  endMin,
+  error,
 }: OdometerInputProps) {
   const distanceTraveled = endOdometer && startOdometer
     ? Number(endOdometer) - Number(startOdometer)
@@ -86,8 +90,12 @@ export function OdometerInput({
               value={endOdometer}
               onChange={(e) => onEndOdometerChange(e.target.value)}
               className="h-14 text-lg font-mono"
+              min={endMin}
               required
             />
+            {error && (
+              <p className="text-xs text-red-600">{error}</p>
+            )}
           </div>
         </div>
 

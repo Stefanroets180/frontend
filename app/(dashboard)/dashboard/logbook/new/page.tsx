@@ -63,6 +63,7 @@ function NewTripContent() {
 
   const [tripPurpose, setTripPurpose] = useState<"BUSINESS" | "PRIVATE">("BUSINESS");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [odometerError, setOdometerError] = useState("");
   
   // Recurring trip data from the toggle component
   const [recurringData, setRecurringData] = useState<{
@@ -107,6 +108,34 @@ function NewTripContent() {
     }
   }, [lastOdometer, currentOdometer]);
 
+  // Validate odometer values
+  useEffect(() => {
+    const start = Number(formData.startOdometer);
+    const end = Number(formData.endOdometer);
+
+    if (formData.startOdometer && formData.endOdometer) {
+      if (end <= start) {
+        setOdometerError("End odometer must be greater than start odometer.");
+      } else {
+        setOdometerError("");
+      }
+    } else {
+      setOdometerError("");
+    }
+  }, [formData.startOdometer, formData.endOdometer]);
+
+  // Synchronous odometer validity for submit button disabled state
+  const hasStartOdometer = formData.startOdometer !== "";
+  const hasEndOdometer = formData.endOdometer !== "";
+  const startOdometerValue = Number(formData.startOdometer);
+  const endOdometerValue = Number(formData.endOdometer);
+  const odometerSubmitInvalid =
+    !hasStartOdometer ||
+    !hasEndOdometer ||
+    !Number.isFinite(startOdometerValue) ||
+    !Number.isFinite(endOdometerValue) ||
+    endOdometerValue <= startOdometerValue;
+
   const handleRecurringChange = (isRecurring: boolean, days: string[], daysOfMonth: number[], startDate?: string, endDate?: string, startTime?: string, endTime?: string) => {
     setRecurringData({ isRecurring, days, daysOfMonth, startDate, endDate, startTime, endTime });
   };
@@ -114,6 +143,24 @@ function NewTripContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.vehicleId || !userId) return;
+
+    // Validate presence and numeric validity of odometer values
+    if (!formData.startOdometer || !formData.endOdometer) {
+      return;
+    }
+
+    const start = Number(formData.startOdometer);
+    const end = Number(formData.endOdometer);
+
+    if (!Number.isFinite(start) || !Number.isFinite(end)) {
+      return;
+    }
+
+    // Explicit odometer validation guard
+    if (end <= start) {
+      setOdometerError("End odometer must be greater than start odometer.");
+      return;
+    }
 
     // Validate recurring trip data
     if (recurringData.isRecurring) {
@@ -292,6 +339,8 @@ function NewTripContent() {
           loading={loadingOdometer}
           onStartOdometerChange={(value) => setFormData({ ...formData, startOdometer: value })}
           onEndOdometerChange={(value) => setFormData({ ...formData, endOdometer: value })}
+          endMin={formData.startOdometer ? Number(formData.startOdometer) + 1 : undefined}
+          error={odometerError}
         />
 
         {/* Locations */}
@@ -497,7 +546,7 @@ function NewTripContent() {
             type="submit"
             id="submit-trip"
             name="submit"
-            disabled={isSubmitting || !formData.vehicleId}
+            disabled={isSubmitting || !formData.vehicleId || odometerSubmitInvalid}
             className="flex-1 h-14 text-base font-semibold"
           >
             {isSubmitting ? "Saving..." : "Log Trip"}
