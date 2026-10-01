@@ -23,6 +23,7 @@ export default function EditTripPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [odometerError, setOdometerError] = useState("");
 
   const [formData, setFormData] = useState({
     vehicleId: "",
@@ -87,6 +88,25 @@ export default function EditTripPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate presence and numeric validity
+    if (!formData.startOdometer || !formData.endOdometer) {
+      return;
+    }
+
+    const start = parseInt(formData.startOdometer);
+    const end = parseInt(formData.endOdometer);
+
+    if (!Number.isFinite(start) || !Number.isFinite(end)) {
+      return;
+    }
+
+    // Explicit odometer validation guard
+    if (end <= start) {
+      setOdometerError("End odometer must be greater than start odometer.");
+      return;
+    }
+
     setSaving(true);
 
     try {
@@ -124,6 +144,22 @@ export default function EditTripPage() {
   const distanceKm = formData.startOdometer && formData.endOdometer
     ? parseInt(formData.endOdometer) - parseInt(formData.startOdometer)
     : 0;
+
+  // Validate odometer values
+  useEffect(() => {
+    const start = parseInt(formData.startOdometer);
+    const end = parseInt(formData.endOdometer);
+
+    if (formData.startOdometer && formData.endOdometer) {
+      if (end <= start) {
+        setOdometerError("End odometer must be greater than start odometer.");
+      } else {
+        setOdometerError("");
+      }
+    } else {
+      setOdometerError("");
+    }
+  }, [formData.startOdometer, formData.endOdometer]);
 
   if (loading) {
     return (
@@ -272,10 +308,14 @@ export default function EditTripPage() {
                     value={formData.endOdometer}
                     onChange={(e) => handleInputChange("endOdometer", e.target.value)}
                     placeholder="100050"
+                    min={formData.startOdometer ? parseInt(formData.startOdometer) + 1 : undefined}
                     required
                     disabled={trip.isLocked}
                     className="h-12"
                   />
+                  {odometerError && (
+                    <p className="text-xs text-red-600">{odometerError}</p>
+                  )}
                 </div>
               </div>
 
@@ -471,7 +511,7 @@ export default function EditTripPage() {
             <Button type="button" variant="outline" onClick={() => router.back()} disabled={saving}>
               Cancel
             </Button>
-            <Button type="submit" disabled={saving || trip.isLocked}>
+            <Button type="submit" disabled={saving || trip.isLocked || !!odometerError || !formData.startOdometer || !formData.endOdometer}>
               {saving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving...</> : <><Save className="mr-2 h-4 w-4" />Save Changes</>}
             </Button>
           </div>

@@ -108,6 +108,8 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
     clientName: "",
   });
 
+  const [odometerError, setOdometerError] = useState("");
+
   // Initialize date input from formData when it changes
   useEffect(() => {
     if (formData.tripDate) {
@@ -170,9 +172,43 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
     ? Number(formData.endOdometer) - Number(formData.startOdometer)
     : 0;
 
+  // Validate odometer values
+  useEffect(() => {
+    const start = Number(formData.startOdometer);
+    const end = Number(formData.endOdometer);
+
+    if (formData.startOdometer && formData.endOdometer) {
+      if (end <= start) {
+        setOdometerError("End odometer must be greater than start odometer.");
+      } else {
+        setOdometerError("");
+      }
+    } else {
+      setOdometerError("");
+    }
+  }, [formData.startOdometer, formData.endOdometer]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!onSubmit) return;
+
+    // Validate presence and numeric validity
+    if (!formData.startOdometer || !formData.endOdometer) {
+      return;
+    }
+
+    const start = Number(formData.startOdometer);
+    const end = Number(formData.endOdometer);
+
+    if (!Number.isFinite(start) || !Number.isFinite(end)) {
+      return;
+    }
+
+    // Explicit odometer validation guard
+    if (end <= start) {
+      setOdometerError("End odometer must be greater than start odometer.");
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -395,8 +431,12 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
                 value={formData.endOdometer}
                 onChange={(e) => setFormData({ ...formData, endOdometer: e.target.value })}
                 className="h-14 text-lg font-mono"
+                min={formData.startOdometer ? Number(formData.startOdometer) + 1 : undefined}
                 required
               />
+              {odometerError && (
+                <p className="text-xs text-red-600">{odometerError}</p>
+              )}
             </div>
           </div>
           
@@ -523,7 +563,7 @@ export function TripLogForm({ vehicleId, onSubmit, onCancel }: TripLogFormProps)
           type="submit"
           id="submit-trip"
           name="submit"
-          disabled={isSubmitting || !formData.vehicleId || !formData.startOdometer || !formData.endOdometer}
+          disabled={isSubmitting || !formData.vehicleId || !formData.startOdometer || !formData.endOdometer || !!odometerError}
           className="flex-1 h-14 text-base font-semibold"
         >
           {isSubmitting ? "Saving..." : "Log Trip"}
