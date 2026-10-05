@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { api, apiForm } from '@/lib/api/client'
-import { ArrowLeft, Building2, Users, User, Mail, Shield, Plus, Crown, UserPlus, Car, Trash2, Edit, MoreVertical, Clock, Check, X, Info, Lock, Camera, Loader2 } from 'lucide-react'
+import { ArrowLeft, Building2, Users, User, Mail, Shield, Plus, Crown, UserPlus, Car, Trash2, Edit, MoreVertical, Clock, Check, X, Info, Lock, Camera, Loader2, FileText } from 'lucide-react'
 import { VehicleLogo } from '@/components/vehicles/vehicle-logo'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -90,11 +90,15 @@ export default function OrganizationPage() {
   const [isAssigning, setIsAssigning] = useState(false)
 
   // Organization logo state
-  const [organization, setOrganization] = useState<{ id: string; name: string; logoUrl?: string } | null>(null)
+  const [organization, setOrganization] = useState<{ id: string; name: string; logoUrl?: string; defaultTaxCalculationMethod?: 'ACTUAL_COSTS' | 'SARS_COST_SCALE' | 'SIMPLIFIED_REIMBURSIVE' } | null>(null)
   const [selectedLogoFile, setSelectedLogoFile] = useState<File | null>(null)
   const [showLogoCropModal, setShowLogoCropModal] = useState(false)
   const [isUploadingLogo, setIsUploadingLogo] = useState(false)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
+
+  // Tax calculation method state
+  const [defaultTaxCalculationMethod, setDefaultTaxCalculationMethod] = useState<'ACTUAL_COSTS' | 'SARS_COST_SCALE' | 'SIMPLIFIED_REIMBURSIVE' | ''>('')
+  const [isSavingTaxMethod, setIsSavingTaxMethod] = useState(false)
 
   // Assistant state (for individual account owners only)
   const { assistants, isLoading: isLoadingAssistants, removeAssistant, reactivateAssistant, isReactivating } = useAssistants({ enabled: isSoloMode })
@@ -166,7 +170,9 @@ export default function OrganizationPage() {
           id: String(data.id),
           name: String(data.name),
           logoUrl: data.logoUrl ? String(data.logoUrl) : undefined,
+          defaultTaxCalculationMethod: data.defaultTaxCalculationMethod as 'ACTUAL_COSTS' | 'SARS_COST_SCALE' | 'SIMPLIFIED_REIMBURSIVE' | undefined,
         })
+        setDefaultTaxCalculationMethod(data.defaultTaxCalculationMethod || '')
       })
       .catch(console.error)
   }, [])
@@ -463,10 +469,28 @@ export default function OrganizationPage() {
   const handleRemoveLogo = async () => {
     try {
       await api.delete('/organization/logo')
-      
+
       setOrganization(prev => prev ? { ...prev, logoUrl: undefined } : null)
     } catch (error) {
       console.error('Failed to remove logo:', error)
+    }
+  }
+
+  const handleSaveTaxMethod = async () => {
+    if (!defaultTaxCalculationMethod) return
+
+    setIsSavingTaxMethod(true)
+    try {
+      await api.put('/organization', {
+        defaultTaxCalculationMethod: defaultTaxCalculationMethod,
+      })
+
+      setOrganization(prev => prev ? { ...prev, defaultTaxCalculationMethod: defaultTaxCalculationMethod as 'ACTUAL_COSTS' | 'SARS_COST_SCALE' | 'SIMPLIFIED_REIMBURSIVE' } : null)
+    } catch (error) {
+      console.error('Failed to save tax calculation method:', error)
+      alert('Failed to save tax calculation method. Please try again.')
+    } finally {
+      setIsSavingTaxMethod(false)
     }
   }
 
@@ -611,6 +635,52 @@ export default function OrganizationPage() {
                     </p>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Tax & Compliance Settings */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
+                  <FileText className="h-5 w-5 text-muted-foreground" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium">Default Tax Calculation Method</p>
+                  <p className="text-xs text-muted-foreground">
+                    Used for tax calculations, reports, and exports
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Select
+                  value={defaultTaxCalculationMethod}
+                  onValueChange={(value) => setDefaultTaxCalculationMethod(value as 'ACTUAL_COSTS' | 'SARS_COST_SCALE' | 'SIMPLIFIED_REIMBURSIVE' | '')}
+                >
+                  <SelectTrigger id="default-tax-calculation-method" name="default-tax-calculation-method">
+                    <SelectValue placeholder="Select a calculation method" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ACTUAL_COSTS">Actual Costs</SelectItem>
+                    <SelectItem value="SARS_COST_SCALE">SARS Cost Scale</SelectItem>
+                    <SelectItem value="SIMPLIFIED_REIMBURSIVE">Simplified Reimbursement</SelectItem>
+                  </SelectContent>
+                </Select>
+                {defaultTaxCalculationMethod && defaultTaxCalculationMethod !== organization?.defaultTaxCalculationMethod && (
+                  <Button
+                    onClick={handleSaveTaxMethod}
+                    disabled={isSavingTaxMethod}
+                    size="sm"
+                    className="w-full"
+                  >
+                    {isSavingTaxMethod ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : null}
+                    Save Tax Calculation Method
+                  </Button>
+                )}
               </div>
             </div>
           </CardContent>
