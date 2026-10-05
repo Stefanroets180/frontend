@@ -215,9 +215,7 @@ export default function ExpenseDetailPage() {
     if (!expense) return;
     setClassificationSaving(true);
     try {
-      await api.put(`/expenses/${expenseId}`, {
-        taxExpenseClassification: newClassification,
-      });
+      await api.patch(`/expenses/${expenseId}/tax-classification`, { taxExpenseClassification: newClassification });
       setExpense((prev) =>
         prev
           ? { ...prev, taxExpenseClassification: newClassification }
