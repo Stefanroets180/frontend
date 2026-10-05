@@ -808,12 +808,13 @@ export interface OdometerVerification {
 }
 
 // Helper to check if we're in Opening/Closing window
+// Uses assessment-year convention (e.g., 2027 for 2026/27 tax year)
 export const getTaxYearReadingWindow = (date: Date = new Date()): {
   isOpeningWindow: boolean
   isClosingWindow: boolean
   currentTaxYear: number
 } => {
-  const month = date.getMonth() // 0-indexed (0=Jan, 2=Mar)
+  const month = date.getMonth() // 0-indexed (0=Jan, 1=Feb, 2=Mar)
   const year = date.getFullYear()
   
   // Opening window: March (month 2)
@@ -821,8 +822,8 @@ export const getTaxYearReadingWindow = (date: Date = new Date()): {
   // Closing window: February (month 1)
   const isClosingWindow = month === 1
   
-  // Current tax year: if before March, it's previous year's tax year
-  const currentTaxYear = month < 2 ? year - 1 : year
+  // Current assessment year: Jan-Feb return current year, Mar-Dec return next year
+  const currentTaxYear = month < 2 ? year : year + 1
   
   return { isOpeningWindow, isClosingWindow, currentTaxYear }
 }
@@ -1022,11 +1023,13 @@ export const getConsumptionRating = (lPer100km: number, fuelType: FuelType): {
 }
 
 // SA Tax Year runs March to February
+// Returns the assessment/end year for the tax year (e.g., 2027 for 2026/27)
 export const getSATaxYear = (date: Date = new Date()): number => {
-  const month = date.getMonth() // 0-indexed
+  const month = date.getMonth() // 0-indexed (0=Jan, 1=Feb, 2=Mar)
   const year = date.getFullYear()
-  // If before March, we're in the previous tax year
-  return month < 2 ? year - 1 : year
+  // Jan-Feb: return current year (assessment year)
+  // Mar-Dec: return next year (assessment year)
+  return month < 2 ? year : year + 1
 }
 
 export const getTaxYearDateRange = (taxYear: number): DateRange => {

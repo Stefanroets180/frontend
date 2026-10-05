@@ -12,6 +12,7 @@ import { AlertCircle, Camera, CheckCircle2, Shield } from "lucide-react"
 import { apiFormFetch } from "@/lib/api/client"
 import { ImageCropModal } from "@/components/ui/image-crop-modal"
 import { processReceiptImage, validateImageFile } from "@/lib/utils/image-converter"
+import { getSATaxYear } from "@/lib/types/database"
 
 export default function OdometerCheckPage() {
   const router = useRouter()
@@ -82,7 +83,7 @@ export default function OdometerCheckPage() {
     setIsLoading(true)
 
     try {
-      const currentTaxYear = new Date().getFullYear()
+      const currentTaxYear = getSATaxYear()
       console.log("[Odometer Submit] Tax year:", currentTaxYear, "Vehicle:", vehicleId)
 
       const formData = new FormData()
