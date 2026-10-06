@@ -84,13 +84,15 @@ export default function OdometerCheckPage() {
 
     try {
       const currentTaxYear = getSATaxYear()
-      console.log("[Odometer Submit] Tax year:", currentTaxYear, "Vehicle:", vehicleId)
+      // Backend expects assessment year (2027 for 2026/27), frontend uses start year (2026)
+      const backendTaxYear = currentTaxYear + 1
+      console.log("[Odometer Submit] Tax year:", backendTaxYear, "Vehicle:", vehicleId)
 
       const formData = new FormData()
       formData.append("vehicleId", vehicleId)
       formData.append("readingType", "OPENING")
       formData.append("odometerValue", odometerValue)
-      formData.append("taxYear", String(currentTaxYear))
+      formData.append("taxYear", String(backendTaxYear))
       if (photo) formData.append("photo", photo)
 
       console.log("[Odometer Submit] Calling apiFormFetch...")
