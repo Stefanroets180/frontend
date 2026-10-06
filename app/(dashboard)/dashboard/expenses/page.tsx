@@ -26,6 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ExpenseCategory,
+  TaxExpenseClassification,
   formatZAR,
   formatConsumption,
   formatConsumptionWithPreference,
@@ -68,6 +69,23 @@ function vehicleLabel(v: Vehicle): string {
   return v.nickname
     ? `${v.nickname} (${v.registrationNumber})`
     : `${v.year} ${v.make} ${v.model} — ${v.registrationNumber}`;
+}
+
+// Helper to get tax status label and color
+function getTaxStatus(classification?: TaxExpenseClassification): { label: string; bg: string; text: string } | null {
+  if (!classification) return null;
+  switch (classification) {
+    case TaxExpenseClassification.QUALIFYING_CURRENT_EXPENSE:
+      return { label: "Qualifying", bg: "bg-emerald-500/10", text: "text-emerald-600" };
+    case TaxExpenseClassification.CAPITAL_OR_ALLOWANCE_REVIEW:
+      return { label: "Allowance review", bg: "bg-amber-500/10", text: "text-amber-600" };
+    case TaxExpenseClassification.PERSONAL_OR_NON_QUALIFYING:
+      return { label: "Non-qualifying", bg: "bg-rose-500/10", text: "text-rose-600" };
+    case TaxExpenseClassification.UNCATEGORIZED:
+      return { label: "Needs review", bg: "bg-slate-500/10", text: "text-slate-600" };
+    default:
+      return null;
+  }
 }
 
 const categoryColors: Record<ExpenseCategory, { bg: string; text: string }> = {
@@ -127,6 +145,7 @@ interface ExpenseItem {
   fuelConsumptionLPer100km?: number;
   odometerReading?: number;
   fuelType?: string;
+  taxExpenseClassification?: TaxExpenseClassification;
 }
 
 export default function ExpensesPage() {
@@ -182,6 +201,7 @@ export default function ExpensesPage() {
                   : undefined,
               odometerReading: expense.odometerReading,
               fuelType: expense.fuelLog?.fuelType,
+              taxExpenseClassification: expense.taxExpenseClassification,
             }),
           );
           // Sort by createdAt descending (newest added first)
@@ -254,9 +274,8 @@ export default function ExpensesPage() {
     if (activeCategory === "ALL") {
       matchesCategory = true;
     } else if (activeCategory === "UNCATEGORIZED") {
-      // Filter by tax expense classification - this would need to be fetched from backend
-      // For now, we'll show all expenses since we don't have the classification data
-      matchesCategory = true;
+      // Filter by tax expense classification - UNCATEGORIZED expenses need review
+      matchesCategory = expense.taxExpenseClassification === TaxExpenseClassification.UNCATEGORIZED;
     } else {
       matchesCategory = expense.category === activeCategory;
     }
@@ -615,6 +634,22 @@ export default function ExpensesPage() {
                     </Badge>
                   </div>
                 )}
+
+                {/* Tax status indicator */}
+                {(() => {
+                  const taxStatus = getTaxStatus(expense.taxExpenseClassification);
+                  if (!taxStatus) return null;
+                  return (
+                    <div className={cn("absolute top-3 right-3 z-10", expense.isLocked && "top-10")}>
+                      <Badge
+                        variant="outline"
+                        className={`${taxStatus.bg} ${taxStatus.text} border-current`}
+                      >
+                        {taxStatus.label}
+                      </Badge>
+                    </div>
+                  );
+                })()}
 
                 <CardContent className="p-4">
                   <div className="flex items-center gap-4 w-full">

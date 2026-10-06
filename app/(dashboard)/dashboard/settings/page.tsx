@@ -19,7 +19,6 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TaxReadinessAudit } from "@/components/dashboard/tax-readiness-audit";
-import { VehicleExportDialog } from "@/components/dashboard/vehicle-export-dialog";
 import ReportExportManager from "@/components/settings/ReportExportManager";
 import {
   AppUsageGuideDialog,
@@ -59,7 +58,6 @@ import {
   Check,
   SlidersHorizontal,
 } from "lucide-react";
-import { VehicleLogo } from "@/components/vehicles/vehicle-logo";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/contexts/auth-context";
 import { useUserPreferences } from "@/lib/hooks/use-user-preferences";
@@ -92,7 +90,6 @@ function SettingsContent() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [vehicles, setVehicles] = useState<VehicleOption[]>([]);
-  const [exportVehicleId, setExportVehicleId] = useState<string>("");
   const [dbStatus, setDbStatus] = useState<"loading" | "up" | "down">(
     "loading",
   );
@@ -293,9 +290,6 @@ function SettingsContent() {
             model: String(v.model ?? ""),
           })),
         );
-        if (list.length > 0) {
-          setExportVehicleId(String(list[0].id));
-        }
       })
       .catch(() => setVehicles([]));
   }, []);
@@ -374,12 +368,6 @@ function SettingsContent() {
       console.error("Failed to reset permissions:", error);
       toast.error("Failed to reset permissions. Please try again.");
     }
-  };
-
-  const exportVehicleLabel = () => {
-    const v = vehicles.find((x) => x.id === exportVehicleId);
-    if (!v) return "Vehicle";
-    return v.nickname ?? `${v.make} ${v.model}`;
   };
 
   const handleResetGuidePopup = () => {
@@ -1090,72 +1078,6 @@ function SettingsContent() {
           </CardContent>
         </Card>
 
-        {/* Tax & export - hide for RENTAL_CUSTOMER */}
-        {!isRentalCustomer && (
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <FileText className="h-5 w-5" />
-                Tax & Compliance
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <SettingsRow
-                icon={<FileText className="h-4 w-4" />}
-                label="Current Tax Year"
-                value={`${taxYear} / ${taxYear + 1}`}
-              />
-
-              {vehicles.length > 0 ? (
-                <div className="space-y-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="exportVehicleId">Export vehicle data</Label>
-                    <Select
-                      value={exportVehicleId}
-                      onValueChange={setExportVehicleId}
-                      name="exportVehicleId"
-                    >
-                      <SelectTrigger id="exportVehicleId" className="h-12">
-                        <SelectValue placeholder="Select vehicle" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {vehicles.map((v) => (
-                          <SelectItem key={v.id} value={v.id}>
-                            <div className="flex items-center gap-2">
-                              <VehicleLogo make={v.make} size="sm"  />
-                              <span>
-                                {v.nickname ??
-                                  `${v.make} ${v.model} — ${v.registrationNumber}`}
-                              </span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  {exportVehicleId && (
-                    <VehicleExportDialog
-                      vehicleId={exportVehicleId}
-                      vehicleLabel={exportVehicleLabel()}
-                      triggerLabel="Export all data"
-                      triggerClassName="w-full gap-2"
-                    />
-                  )}
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  Add a vehicle on the dashboard to export SARS logbook
-                  and expenses.
-                </p>
-              )}
-
-              <Button asChild variant="outline" className="w-full">
-                <Link href="/dashboard/logbook">View SARS Logbook</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
         <Button
           variant="destructive"
           className="h-12 sm:h-14 w-full text-sm sm:text-base"
@@ -1250,26 +1172,6 @@ function StatusRow({
       ) : (
         <XCircle className="h-5 w-5 text-destructive" />
       )}
-    </div>
-  );
-}
-
-function SettingsRow({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex items-center justify-between py-2">
-      <div className="flex items-center gap-3">
-        <span className="text-muted-foreground">{icon}</span>
-        <span className="text-sm">{label}</span>
-      </div>
-      <span className="text-sm text-muted-foreground">{value}</span>
     </div>
   );
 }
