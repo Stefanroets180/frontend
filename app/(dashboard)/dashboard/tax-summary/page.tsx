@@ -80,6 +80,9 @@ interface TaxYearSummary {
   unclassifiedKm: number;
   businessPercentage: number;
   distanceSource: string;
+  openingOdometer?: number;
+  closingOdometer?: number;
+  temporaryClosingOdometer?: number;
   qualifyingCurrentExpenseCents: number;
   capitalOrAllowanceReviewCents: number;
   uncategorizedExpenseCents: number;
@@ -494,6 +497,18 @@ export default function TaxSummaryPage() {
 
   const saveTemporaryOdometer = async () => {
     if (!selectedVehicleId || !selectedTaxYear) return;
+
+    // Validate temporary closing odometer against opening + business KM
+    if (temporaryClosingOdometer !== null && taxSummary && taxSummary.openingOdometer != null) {
+      const openingOdometer = taxSummary.openingOdometer;
+      const businessKm = taxSummary.businessKm || 0;
+      const minimumClosing = openingOdometer + businessKm;
+
+      if (temporaryClosingOdometer < minimumClosing) {
+        setError(`Temporary closing odometer must be at least ${minimumClosing.toLocaleString()} km because the current Business Trip Log contains ${businessKm.toLocaleString()} km since the ${openingOdometer.toLocaleString()} km opening reading.`);
+        return;
+      }
+    }
 
     setSavingTemporaryOdometer(true);
     setError(null);
