@@ -152,9 +152,10 @@ export default function ExpensesPage() {
   const router = useRouter();
   const { preferences } = useUserPreferences();
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState<ExpenseCategory | "ALL" | "UNCATEGORIZED">(
+  const [activeCategory, setActiveCategory] = useState<ExpenseCategory | "ALL">(
     "ALL",
   );
+  const [showNeedsReview, setShowNeedsReview] = useState(false);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<string>("ALL");
   const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
@@ -271,11 +272,11 @@ export default function ExpensesPage() {
       expense.supplierName?.toLowerCase().includes(searchQuery.toLowerCase());
 
     let matchesCategory = true;
-    if (activeCategory === "ALL") {
-      matchesCategory = true;
-    } else if (activeCategory === "UNCATEGORIZED") {
+    if (showNeedsReview) {
       // Filter by tax expense classification - UNCATEGORIZED expenses need review
       matchesCategory = expense.taxExpenseClassification === TaxExpenseClassification.UNCATEGORIZED;
+    } else if (activeCategory === "ALL") {
+      matchesCategory = true;
     } else {
       matchesCategory = expense.category === activeCategory;
     }
@@ -303,11 +304,15 @@ export default function ExpensesPage() {
         : "Selected vehicle";
 
   const selectedCategoryLabel =
-    activeCategory === "ALL"
-      ? "All categories"
-      : activeCategory === "UNCATEGORIZED"
-        ? "Needs Review"
+    showNeedsReview
+      ? "Needs Review"
+      : activeCategory === "ALL"
+        ? "All categories"
         : (EXPENSE_CATEGORY_LABELS[activeCategory] ?? activeCategory);
+
+  const needsReviewCount = expenses.filter(
+    (expense) => expense.taxExpenseClassification === TaxExpenseClassification.UNCATEGORIZED
+  ).length;
 
   const expenseFiltersSummaryItems = [
     {
@@ -461,12 +466,24 @@ export default function ExpensesPage() {
             Track and manage all your vehicle expenses
           </p>
         </div>
-        <Button asChild className="w-full sm:w-auto">
-          <Link href="/dashboard/expenses/new">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Expense
-          </Link>
-        </Button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <Button
+            variant={showNeedsReview ? "default" : "outline"}
+            onClick={() => {
+              setShowNeedsReview(!showNeedsReview);
+              setActiveCategory("ALL");
+            }}
+            className="flex-1 sm:flex-none"
+          >
+            Needs Review ({needsReviewCount})
+          </Button>
+          <Button asChild className="flex-1 sm:flex-none">
+            <Link href="/dashboard/expenses/new">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Expense
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <DashboardCollapsiblePanel
@@ -524,19 +541,15 @@ export default function ExpensesPage() {
         {availableCategories.length > 0 && (
           <>
             <Tabs
-              value={activeCategory === "ALL" ? "all" : activeCategory === "UNCATEGORIZED" ? "uncategorized" : activeCategory}
-              onValueChange={(v) =>
-                setActiveCategory(
-                  v === "all" ? "ALL" : v === "uncategorized" ? "UNCATEGORIZED" : (v as ExpenseCategory),
-                )
-              }
+              value={activeCategory === "ALL" ? "all" : activeCategory}
+              onValueChange={(v) => {
+                setActiveCategory(v === "all" ? "ALL" : (v as ExpenseCategory));
+                setShowNeedsReview(false);
+              }}
             >
               <TabsList className="grid h-auto w-full grid-cols-4 p-1 sm:grid-cols-6 overflow-x-auto">
                 <TabsTrigger value="all" className="text-xs whitespace-nowrap">
                   All
-                </TabsTrigger>
-                <TabsTrigger value="uncategorized" className="text-xs whitespace-nowrap">
-                  Needs Review
                 </TabsTrigger>
                 {availableCategories.slice(0, 4).map((category) => (
                   <TabsTrigger
@@ -554,10 +567,11 @@ export default function ExpensesPage() {
             {/* Second row for remaining categories */}
             {availableCategories.length > 4 && (
               <Tabs
-                value={activeCategory === "ALL" ? "" : activeCategory === "UNCATEGORIZED" ? "" : activeCategory}
-                onValueChange={(v) =>
-                  setActiveCategory(v as ExpenseCategory)
-                }
+                value={activeCategory === "ALL" ? "" : activeCategory}
+                onValueChange={(v) => {
+                  setActiveCategory(v as ExpenseCategory);
+                  setShowNeedsReview(false);
+                }}
               >
                 <TabsList className="grid h-auto w-full grid-cols-3 p-1 sm:grid-cols-6 overflow-x-auto">
                   {availableCategories.slice(4).map((category) => (
