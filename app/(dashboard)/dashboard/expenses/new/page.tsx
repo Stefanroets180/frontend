@@ -785,6 +785,7 @@ function NewExpenseContent() {
         description: expenseData.expenseDescription as string,
         vehicleReg: vehicleReg,
         supplierName: expenseData.providerName,
+        otherExpenseType: expenseData.otherExpenseType,
         categoryLabel: expenseData.categoryLabel,
         providerName: expenseData.providerName,
         referenceNumber: expenseData.referenceNumber,

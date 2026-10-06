@@ -610,6 +610,7 @@ export interface OtherFixedExpense {
   id: string
   expenseId: string
   expenseDescription: string
+  otherExpenseType?: string
   categoryLabel?: string
   providerName?: string
   referenceNumber?: string

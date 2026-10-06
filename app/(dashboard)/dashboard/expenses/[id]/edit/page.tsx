@@ -474,6 +474,7 @@ export default function EditExpensePage({
                 data.otherFixedExpense?.expenseDescription ||
                 data.description ||
                 "",
+              otherExpenseType: data.otherFixedExpense?.otherExpenseType || undefined,
               categoryLabel: data.otherFixedExpense?.categoryLabel || undefined,
               providerName: data.otherFixedExpense?.providerName || data.supplierName,
               referenceNumber: data.otherFixedExpense?.referenceNumber,
@@ -1166,6 +1167,7 @@ export default function EditExpensePage({
                 description: expenseData.expenseDescription as string,
                 vehicleReg,
                 supplierName: expenseData.providerName,
+                otherExpenseType: expenseData.otherExpenseType,
                 categoryLabel: expenseData.categoryLabel,
                 providerName: expenseData.providerName,
                 referenceNumber: expenseData.referenceNumber,

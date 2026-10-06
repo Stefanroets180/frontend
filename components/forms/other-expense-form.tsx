@@ -44,6 +44,7 @@ const otherExpenseSchema = z.object({
   vehicleId: z.string().optional(),
   date: z.date({ required_error: "Select a date" }),
   expenseDescription: z.string().min(1, "Enter expense description"),
+  otherExpenseType: z.enum(["FINE", "PARKING", "TOLL", "OTHER"]).optional(),
   categoryLabel: z.string().optional(),
   providerName: z.string().optional(),
   referenceNumber: z.string().optional(),
@@ -121,6 +122,7 @@ export function OtherExpenseForm({
       date: initialData?.date || new Date(),
       isRecurring: initialData?.isRecurring ?? false,
       recurrenceFrequency: initialData?.recurrenceFrequency || "ONCE_OFF",
+      otherExpenseType: initialData?.otherExpenseType || undefined,
       ...initialData,
     },
   });
@@ -377,6 +379,34 @@ export function OtherExpenseForm({
             {errors.expenseDescription && (
               <p className="text-sm text-red-500">
                 {errors.expenseDescription.message}
+              </p>
+            )}
+          </div>
+
+          {/* Expense Type */}
+          <div className="space-y-2">
+            <Label htmlFor="otherExpenseType">Expense Type *</Label>
+            <Select
+              value={watch("otherExpenseType")}
+              onValueChange={(val) => setValue("otherExpenseType", val as any)}
+              name="otherExpenseType"
+            >
+              <SelectTrigger
+                id="otherExpenseType"
+                className={errors.otherExpenseType ? "border-red-500" : ""}
+              >
+                <SelectValue placeholder="Select expense type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="FINE">Fine</SelectItem>
+                <SelectItem value="PARKING">Parking</SelectItem>
+                <SelectItem value="TOLL">Toll</SelectItem>
+                <SelectItem value="OTHER">Other</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.otherExpenseType && (
+              <p className="text-sm text-red-500">
+                {errors.otherExpenseType.message}
               </p>
             )}
           </div>
