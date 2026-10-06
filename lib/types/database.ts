@@ -1022,7 +1022,6 @@ export const getConsumptionRating = (lPer100km: number, fuelType: FuelType): {
 }
 
 // SA Tax Year runs March to February
-// Returns the start year for the tax year (e.g., 2026 for 2026/27)
 export const getSATaxYear = (date: Date = new Date()): number => {
   const month = date.getMonth() // 0-indexed
   const year = date.getFullYear()

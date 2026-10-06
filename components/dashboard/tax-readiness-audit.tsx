@@ -272,9 +272,8 @@ export function TaxReadinessAudit({ className }: TaxReadinessAuditProps) {
       );
 
       // Fetch verifications
-      // Backend expects assessment year (2027 for 2026/27), frontend uses start year (2026)
       const { data } = await api.get(
-        `/compliance/odometer?taxYear=${selectedYear + 1}`,
+        `/compliance/odometer?taxYear=${selectedYear}`,
       );
       const rows = Array.isArray(data) ? data : [];
 

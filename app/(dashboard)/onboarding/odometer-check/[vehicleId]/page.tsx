@@ -12,7 +12,6 @@ import { AlertCircle, Camera, CheckCircle2, Shield } from "lucide-react"
 import { apiFormFetch } from "@/lib/api/client"
 import { ImageCropModal } from "@/components/ui/image-crop-modal"
 import { processReceiptImage, validateImageFile } from "@/lib/utils/image-converter"
-import { getSATaxYear } from "@/lib/types/database"
 
 export default function OdometerCheckPage() {
   const router = useRouter()
@@ -83,16 +82,14 @@ export default function OdometerCheckPage() {
     setIsLoading(true)
 
     try {
-      const currentTaxYear = getSATaxYear()
-      // Backend expects assessment year (2027 for 2026/27), frontend uses start year (2026)
-      const backendTaxYear = currentTaxYear + 1
-      console.log("[Odometer Submit] Tax year:", backendTaxYear, "Vehicle:", vehicleId)
+      const currentTaxYear = new Date().getFullYear()
+      console.log("[Odometer Submit] Tax year:", currentTaxYear, "Vehicle:", vehicleId)
 
       const formData = new FormData()
       formData.append("vehicleId", vehicleId)
       formData.append("readingType", "OPENING")
       formData.append("odometerValue", odometerValue)
-      formData.append("taxYear", String(backendTaxYear))
+      formData.append("taxYear", String(currentTaxYear))
       if (photo) formData.append("photo", photo)
 
       console.log("[Odometer Submit] Calling apiFormFetch...")
