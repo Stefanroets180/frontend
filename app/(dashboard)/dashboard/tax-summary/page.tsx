@@ -443,9 +443,9 @@ export default function TaxSummaryPage() {
     setSavingProfile(true);
     setError(null);
     try {
-      // For SOLE_PROPRIETOR, enforce ACTUAL_COSTS and set compensationType to null (not applicable)
+      // For SOLE_PROPRIETOR, enforce ACTUAL_COSTS, SELF borne-by, and set compensationType to null (not applicable)
       const isSoleProprietor = editingProfile.taxpayerType === 'SOLE_PROPRIETOR';
-      
+
       const profileData = {
         vehicleId: selectedVehicleId,
         vehicleCostCents: editingProfile.vehicleCostCents,
@@ -453,13 +453,13 @@ export default function TaxSummaryPage() {
         taxpayerVatRegistered: editingProfile.taxpayerVatRegistered || false,
         taxpayerType: editingProfile.taxpayerType,
         compensationType: isSoleProprietor ? null : editingProfile.compensationType,
-        fuelBorneBy: editingProfile.fuelBorneBy,
-        maintenanceBorneBy: editingProfile.maintenanceBorneBy,
+        fuelBorneBy: isSoleProprietor ? 'SELF' : editingProfile.fuelBorneBy,
+        maintenanceBorneBy: isSoleProprietor ? 'SELF' : editingProfile.maintenanceBorneBy,
         coveredByMaintenancePlan: editingProfile.coveredByMaintenancePlan || false,
         effectiveFrom: editingProfile.effectiveFrom || new Date().toISOString().split('T')[0],
         effectiveTo: editingProfile.effectiveTo || null,
         defaultCalculationMethod: isSoleProprietor ? 'ACTUAL_COSTS' : (editingProfile.defaultCalculationMethod || 'ACTUAL_COSTS'),
-        isCompanyProvidedVehicle: editingProfile.isCompanyProvidedVehicle || false,
+        isCompanyProvidedVehicle: isSoleProprietor ? false : (editingProfile.isCompanyProvidedVehicle || false),
         recipientUserId: editingProfile.recipientUserId,
       };
 
@@ -1013,7 +1013,18 @@ export default function TaxSummaryPage() {
                 <label htmlFor="taxpayer-type" className="text-sm font-medium dark:text-gray-300">Taxpayer Type *</label>
                 <Select
                   value={editingProfile.taxpayerType || 'EMPLOYEE'}
-                  onValueChange={(value) => setEditingProfile({ ...editingProfile, taxpayerType: value as any })}
+                  onValueChange={(value) => {
+                    const newProfile = { ...editingProfile, taxpayerType: value as any };
+                    // Normalize to valid Sole Proprietor values when switching to SOLE_PROPRIETOR
+                    if (value === 'SOLE_PROPRIETOR') {
+                      newProfile.fuelBorneBy = 'SELF';
+                      newProfile.maintenanceBorneBy = 'SELF';
+                      newProfile.defaultCalculationMethod = 'ACTUAL_COSTS';
+                      newProfile.compensationType = undefined;
+                      newProfile.isCompanyProvidedVehicle = false;
+                    }
+                    setEditingProfile(newProfile);
+                  }}
                 >
                   <SelectTrigger id="taxpayer-type" name="taxpayer-type" className="dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
                     <SelectValue />
@@ -1068,66 +1079,81 @@ export default function TaxSummaryPage() {
               )}
               {editingProfile.taxpayerType !== 'TRACKING_ONLY' && (
                 <>
-                  <div className="space-y-2">
-                    <label htmlFor="fuel-borne-by" className="text-sm font-medium dark:text-gray-300">Fuel Borne By *</label>
-                    <Select
-                      value={editingProfile.fuelBorneBy || 'EMPLOYEE'}
-                      onValueChange={(value) => setEditingProfile({ ...editingProfile, fuelBorneBy: value as any })}
-                    >
-                      <SelectTrigger id="fuel-borne-by" name="fuel-borne-by" className="dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="EMPLOYEE">Employee</SelectItem>
-                        <SelectItem value="EMPLOYER">Employer</SelectItem>
-                        <SelectItem value="SELF">Self (Sole Proprietor)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="maintenance-borne-by" className="text-sm font-medium dark:text-gray-300">Maintenance Borne By *</label>
-                    <Select
-                      value={editingProfile.maintenanceBorneBy || 'EMPLOYEE'}
-                      onValueChange={(value) => setEditingProfile({ ...editingProfile, maintenanceBorneBy: value as any })}
-                    >
-                      <SelectTrigger id="maintenance-borne-by" name="maintenance-borne-by" className="dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="EMPLOYEE">Employee</SelectItem>
-                        <SelectItem value="EMPLOYER">Employer</SelectItem>
-                        <SelectItem value="SELF">Self (Sole Proprietor)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {editingProfile.taxpayerType === 'SOLE_PROPRIETOR' ? (
+                    <>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium dark:text-gray-300">Fuel Borne By *</label>
+                        <div className="text-sm dark:text-gray-300 py-2">Self (Sole Proprietor)</div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium dark:text-gray-300">Maintenance Borne By *</label>
+                        <div className="text-sm dark:text-gray-300 py-2">Self (Sole Proprietor)</div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="space-y-2">
+                        <label htmlFor="fuel-borne-by" className="text-sm font-medium dark:text-gray-300">Fuel Borne By *</label>
+                        <Select
+                          value={editingProfile.fuelBorneBy || 'EMPLOYEE'}
+                          onValueChange={(value) => setEditingProfile({ ...editingProfile, fuelBorneBy: value as any })}
+                        >
+                          <SelectTrigger id="fuel-borne-by" name="fuel-borne-by" className="dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="EMPLOYEE">Employee</SelectItem>
+                            <SelectItem value="EMPLOYER">Employer</SelectItem>
+                            <SelectItem value="SELF">Self (Sole Proprietor)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <label htmlFor="maintenance-borne-by" className="text-sm font-medium dark:text-gray-300">Maintenance Borne By *</label>
+                        <Select
+                          value={editingProfile.maintenanceBorneBy || 'EMPLOYEE'}
+                          onValueChange={(value) => setEditingProfile({ ...editingProfile, maintenanceBorneBy: value as any })}
+                        >
+                          <SelectTrigger id="maintenance-borne-by" name="maintenance-borne-by" className="dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="EMPLOYEE">Employee</SelectItem>
+                            <SelectItem value="EMPLOYER">Employer</SelectItem>
+                            <SelectItem value="SELF">Self (Sole Proprietor)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </>
+                  )}
                 </>
               )}
               {editingProfile.taxpayerType !== 'TRACKING_ONLY' && (
                 <div className="space-y-2">
-                  <label htmlFor="default-calculation-method" className="text-sm font-medium dark:text-gray-300">Default Calculation Method *</label>
-                  <Select
-                    value={editingProfile.defaultCalculationMethod || 'ACTUAL_COSTS'}
-                    onValueChange={(value) => setEditingProfile({ ...editingProfile, defaultCalculationMethod: value as any })}
-                  >
-                    <SelectTrigger id="default-calculation-method" name="default-calculation-method" className="dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ACTUAL_COSTS">Actual Costs</SelectItem>
-                      {editingProfile.taxpayerType !== 'SOLE_PROPRIETOR' && (
-                        <>
-                          <SelectItem value="SARS_COST_SCALE">SARS Cost Scale</SelectItem>
-                          <SelectItem value="SIMPLIFIED_REIMBURSIVE">Simplified Reimbursive (SARS Prescribed Rate)</SelectItem>
-                        </>
-                      )}
-                    </SelectContent>
-                  </Select>
+                  <label className="text-sm font-medium dark:text-gray-300">Default Calculation Method *</label>
+                  {editingProfile.taxpayerType === 'SOLE_PROPRIETOR' ? (
+                    <div className="text-sm dark:text-gray-300 py-2">Actual Costs</div>
+                  ) : (
+                    <Select
+                      value={editingProfile.defaultCalculationMethod || 'ACTUAL_COSTS'}
+                      onValueChange={(value) => setEditingProfile({ ...editingProfile, defaultCalculationMethod: value as any })}
+                    >
+                      <SelectTrigger id="default-calculation-method" name="default-calculation-method" className="dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ACTUAL_COSTS">Actual Costs</SelectItem>
+                        <SelectItem value="SARS_COST_SCALE">SARS Cost Scale</SelectItem>
+                        <SelectItem value="SIMPLIFIED_REIMBURSIVE">Simplified Reimbursive (SARS Prescribed Rate)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
                   {editingProfile.taxpayerType === 'SOLE_PROPRIETOR' && (
                     <p className="text-xs text-gray-500 dark:text-gray-400">Sole proprietors must use the actual-cost business expenditure path.</p>
                   )}
                 </div>
               )}
-              {editingProfile.taxpayerType !== 'TRACKING_ONLY' && (
+              {editingProfile.taxpayerType !== 'TRACKING_ONLY' && editingProfile.taxpayerType !== 'SOLE_PROPRIETOR' && (
                 <div className="space-y-2">
                   <label htmlFor="company-provided-vehicle" className="text-sm font-medium dark:text-gray-300">Company Provided Vehicle</label>
                   <div className="flex items-center gap-2">
@@ -1204,7 +1230,11 @@ export default function TaxSummaryPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="OWNED">Owned</SelectItem>
-                    <SelectItem value="LEASED">Leased</SelectItem>
+                    {editingProfile.taxpayerType === 'SOLE_PROPRIETOR' ? (
+                      <SelectItem value="LEASED" disabled>Leased (Not yet supported)</SelectItem>
+                    ) : (
+                      <SelectItem value="LEASED">Leased</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -1298,7 +1328,11 @@ export default function TaxSummaryPage() {
                 >
                   <option value="">Not confirmed</option>
                   <option value="NEW">New</option>
-                  <option value="USED">Used / second-hand</option>
+                  {editingProfile.taxpayerType === 'SOLE_PROPRIETOR' ? (
+                    <option value="USED" disabled>Used / second-hand (Not yet supported)</option>
+                  ) : (
+                    <option value="USED">Used / second-hand</option>
+                  )}
                 </select>
                 <p className="text-xs text-gray-500 dark:text-gray-400">Condition of the vehicle when you acquired it. Leave blank if unknown.</p>
               </div>
@@ -1320,7 +1354,11 @@ export default function TaxSummaryPage() {
                   className="w-full px-3 py-2 border rounded-md dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
                 >
                   <option value="">Not confirmed</option>
-                  <option value="true">Yes - used for private/non-trade purposes before business</option>
+                  {editingProfile.taxpayerType === 'SOLE_PROPRIETOR' ? (
+                    <option value="true" disabled>Yes - used for private/non-trade purposes before business (Not yet supported)</option>
+                  ) : (
+                    <option value="true">Yes - used for private/non-trade purposes before business</option>
+                  )}
                   <option value="false">No — no private/non-trade use before business use</option>
                 </select>
                 <p className="text-xs text-gray-500 dark:text-gray-400">Did you use this vehicle for private or other non-trade purposes before first using it for your business?</p>
