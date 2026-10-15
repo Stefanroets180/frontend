@@ -142,6 +142,7 @@ export default function TaxSummaryPage() {
   const [confirmExistingAcquisitionCost, setConfirmExistingAcquisitionCost] = useState(false);
   const [vehicleConditionInput, setVehicleConditionInput] = useState<'NEW' | 'USED' | null>(null);
   const [hadNonTradeUseInput, setHadNonTradeUseInput] = useState<boolean | null>(null);
+  const [expectedRemainingUsefulLifeYearsInput, setExpectedRemainingUsefulLifeYearsInput] = useState<string>('');
   const [temporaryClosingOdometer, setTemporaryClosingOdometer] = useState<number | null>(null);
   const [savingTemporaryOdometer, setSavingTemporaryOdometer] = useState(false);
 
@@ -252,6 +253,7 @@ export default function TaxSummaryPage() {
         }
         setVehicleConditionInput(data.vehicleConditionAtAcquisition || null);
         setHadNonTradeUseInput(data.hadNonTradeUseBeforeTrade ?? null);
+        setExpectedRemainingUsefulLifeYearsInput(data.expectedRemainingUsefulLifeYears?.toString() || '');
       }
     } catch (err) {
       console.error("Failed to fetch acquisition facts:", err);
@@ -570,6 +572,18 @@ export default function TaxSummaryPage() {
         }
       }
 
+      // Validate expected remaining useful life for USED vehicles
+      if (vehicleConditionInput === 'USED') {
+        if (!expectedRemainingUsefulLifeYearsInput) {
+          validationErrors.push('Expected remaining useful life years is required for USED vehicles');
+        } else {
+          const years = parseInt(expectedRemainingUsefulLifeYearsInput);
+          if (isNaN(years) || years <= 0) {
+            validationErrors.push('Expected remaining useful life years must be a positive whole number');
+          }
+        }
+      }
+
       if (validationErrors.length > 0) {
         setError(validationErrors.join('; '));
         return;
@@ -584,6 +598,7 @@ export default function TaxSummaryPage() {
         vehicleArrangementType: editingAcquisitionFacts.vehicleArrangementType,
         vehicleConditionAtAcquisition: vehicleConditionInput,
         hadNonTradeUseBeforeTrade: hadNonTradeUseInput,
+        expectedRemainingUsefulLifeYears: expectedRemainingUsefulLifeYearsInput ? parseInt(expectedRemainingUsefulLifeYearsInput) : null,
       };
 
       // Handle section 11(e) base confirmation
@@ -1328,11 +1343,7 @@ export default function TaxSummaryPage() {
                 >
                   <option value="">Not confirmed</option>
                   <option value="NEW">New</option>
-                  {editingProfile.taxpayerType === 'SOLE_PROPRIETOR' ? (
-                    <option value="USED" disabled>Used / second-hand (Not yet supported)</option>
-                  ) : (
-                    <option value="USED">Used / second-hand</option>
-                  )}
+                  <option value="USED">Used / second-hand</option>
                 </select>
                 <p className="text-xs text-gray-500 dark:text-gray-400">Condition of the vehicle when you acquired it. Leave blank if unknown.</p>
               </div>
@@ -1363,6 +1374,24 @@ export default function TaxSummaryPage() {
                 </select>
                 <p className="text-xs text-gray-500 dark:text-gray-400">Did you use this vehicle for private or other non-trade purposes before first using it for your business?</p>
               </div>
+
+              {editingAcquisitionFacts.vehicleArrangementType === 'OWNED' && vehicleConditionInput === 'USED' && (
+                <div className="space-y-2">
+                  <label htmlFor="expected-useful-life" className="text-sm font-medium dark:text-gray-300">Expected Remaining Useful Life (Years) *</label>
+                  <input
+                    id="expected-useful-life"
+                    name="expected-useful-life"
+                    type="number"
+                    step="1"
+                    min="1"
+                    value={expectedRemainingUsefulLifeYearsInput}
+                    onChange={(e) => setExpectedRemainingUsefulLifeYearsInput(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-md dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                    placeholder="e.g., 3"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Estimated remaining useful life of the second-hand vehicle when acquired for business use.</p>
+                </div>
+              )}
 
               {editingAcquisitionFacts.vehicleArrangementType === 'OWNED' && (
                 <div className="mt-4 p-4 bg-blue-50 dark:bg-gray-800 rounded-md border border-blue-200 dark:border-gray-700">
