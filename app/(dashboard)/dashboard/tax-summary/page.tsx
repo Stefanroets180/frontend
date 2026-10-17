@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -76,11 +76,11 @@ interface VehicleTaxProfile {
 interface TaxYearSummary {
   vehicleId: string;
   taxYear: number;
-  totalKm: number;
+  totalKm: number | null;
   businessKm: number;
   privateKm: number;
   unclassifiedKm: number;
-  businessPercentage: number;
+  businessPercentage: number | null;
   distanceSource: string;
   openingOdometer?: number;
   closingOdometer?: number;
@@ -135,8 +135,38 @@ export default function TaxSummaryPage() {
   const [vehicleCostInput, setVehicleCostInput] = useState<string>('');
   const [savingProfile, setSavingProfile] = useState(false);
   const [organizationUsers, setOrganizationUsers] = useState<OrganizationUser[]>([]);
+
+  // Request sequence ref to invalidate pending Acquisition Facts requests on vehicle change
+  const acquisitionFactsRequestSeqRef = useRef(0);
+
+  // Canonical no-row draft helper - ensures vehicleArrangementType is always OWNED when no persisted row exists
+  const createDefaultAcquisitionFactsDraft = (): Partial<VehicleTaxAcquisitionFacts> => ({
+    vehicleArrangementType: 'OWNED',
+  });
+
+  // Reset helper - clears all Acquisition Facts state to canonical no-row default
+  const resetAcquisitionFactsDraft = () => {
+    setAcquisitionFacts(null);
+    setEditingAcquisitionFacts(createDefaultAcquisitionFactsDraft());
+    setAcquisitionCostInput('');
+    setPurchaseDebtInput('');
+    setSection11eBaseInput('');
+    setConfirmExistingAcquisitionCost(false);
+    setVehicleConditionInput(null);
+    setHadNonTradeUseInput(null);
+    setExpectedRemainingUsefulLifeYearsInput('');
+    setMarketValueAtTradeUseInput('');
+  };
+
+  // Vehicle change handler - invalidates pending requests and resets Acquisition Facts before changing vehicle
+  const handleVehicleChange = (vehicleId: string) => {
+    acquisitionFactsRequestSeqRef.current++;
+    resetAcquisitionFactsDraft();
+    setSelectedVehicleId(vehicleId);
+  };
+
   const [acquisitionFacts, setAcquisitionFacts] = useState<VehicleTaxAcquisitionFacts | null>(null);
-  const [editingAcquisitionFacts, setEditingAcquisitionFacts] = useState<Partial<VehicleTaxAcquisitionFacts>>({});
+  const [editingAcquisitionFacts, setEditingAcquisitionFacts] = useState<Partial<VehicleTaxAcquisitionFacts>>(createDefaultAcquisitionFactsDraft());
   const [savingAcquisitionFacts, setSavingAcquisitionFacts] = useState(false);
   const [acquisitionCostInput, setAcquisitionCostInput] = useState<string>('');
   const [purchaseDebtInput, setPurchaseDebtInput] = useState<string>('');
@@ -204,7 +234,7 @@ export default function TaxSummaryPage() {
 
         setVehicles(sortedVehicles);
         if (sortedVehicles.length > 0) {
-          setSelectedVehicleId(sortedVehicles[0].id);
+          handleVehicleChange(sortedVehicles[0].id);
         } else {
           setError("No vehicles found. Please add a vehicle first.");
         }
@@ -234,9 +264,14 @@ export default function TaxSummaryPage() {
   const fetchAcquisitionFacts = async () => {
     if (!selectedVehicleId || !vehicleTaxProfile?.recipientUserId) return;
 
+    const requestSeq = ++acquisitionFactsRequestSeqRef.current;
+
     try {
       const url = `/vehicles/${selectedVehicleId}/acquisition-facts?recipientUserId=${vehicleTaxProfile.recipientUserId}`;
       const response = await apiFetch(url);
+      // Guard against out-of-order responses: only apply if this is still the latest request
+      if (requestSeq !== acquisitionFactsRequestSeqRef.current) return;
+
       if (response.ok) {
         const data = await response.json();
         setAcquisitionFacts(data);
@@ -258,6 +293,9 @@ export default function TaxSummaryPage() {
         setHadNonTradeUseInput(data.hadNonTradeUseBeforeTrade ?? null);
         setExpectedRemainingUsefulLifeYearsInput(data.expectedRemainingUsefulLifeYears?.toString() || '');
         setMarketValueAtTradeUseInput(data.marketValueAtTradeUseCents ? (data.marketValueAtTradeUseCents / 100).toFixed(2) : '');
+      } else if (response.status === 404) {
+        // No persisted row exists - use canonical no-row draft
+        resetAcquisitionFactsDraft();
       }
     } catch (err) {
       console.error("Failed to fetch acquisition facts:", err);
@@ -903,7 +941,7 @@ export default function TaxSummaryPage() {
             {viewMode === 'individual' && (
               <div className="flex-1 w-full">
                 <label htmlFor="vehicle-select" className="text-sm font-medium mb-2 block">Vehicle</label>
-                <Select value={selectedVehicleId} onValueChange={setSelectedVehicleId} name="vehicle">
+                <Select value={selectedVehicleId} onValueChange={handleVehicleChange} name="vehicle">
                   <SelectTrigger id="vehicle-select" name="vehicle-select">
                     <SelectValue placeholder="Select a vehicle" />
                   </SelectTrigger>
@@ -1749,7 +1787,7 @@ export default function TaxSummaryPage() {
                   <div className="text-2xl font-bold">{(viewMode === 'individual' ? taxSummary : combinedSummary)?.businessKm?.toLocaleString() ?? 'N/A'}</div>
                   <p className="text-xs text-muted-foreground mt-1">
                     {(viewMode === 'individual' ? taxSummary : combinedSummary)?.businessPercentage != null
-                      ? `${(viewMode === 'individual' ? taxSummary : combinedSummary)?.businessPercentage.toFixed(1)}% of total`
+                      ? `${(viewMode === 'individual' ? taxSummary : combinedSummary)!.businessPercentage!.toFixed(1)}% of total`
                       : 'N/A'}
                   </p>
                 </CardContent>
@@ -1839,7 +1877,7 @@ export default function TaxSummaryPage() {
               <CardContent>
                 <div className="text-2xl font-bold">
                   {(viewMode === 'individual' ? taxSummary : combinedSummary)?.businessPercentage != null
-                    ? `${(viewMode === 'individual' ? taxSummary : combinedSummary)?.businessPercentage.toFixed(1)}%`
+                    ? `${(viewMode === 'individual' ? taxSummary : combinedSummary)!.businessPercentage!.toFixed(1)}%`
                     : 'N/A'}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
