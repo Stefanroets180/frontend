@@ -47,6 +47,8 @@ interface VehicleTaxAcquisitionFacts {
   section11eBaseConfirmedAt?: string | null;
   vehicleConditionAtAcquisition?: 'NEW' | 'USED' | null;
   hadNonTradeUseBeforeTrade?: boolean | null;
+  expectedRemainingUsefulLifeYears?: number | null;
+  marketValueAtTradeUseCents?: number | null;
 }
 
 interface VehicleTaxProfile {
@@ -143,6 +145,7 @@ export default function TaxSummaryPage() {
   const [vehicleConditionInput, setVehicleConditionInput] = useState<'NEW' | 'USED' | null>(null);
   const [hadNonTradeUseInput, setHadNonTradeUseInput] = useState<boolean | null>(null);
   const [expectedRemainingUsefulLifeYearsInput, setExpectedRemainingUsefulLifeYearsInput] = useState<string>('');
+  const [marketValueAtTradeUseInput, setMarketValueAtTradeUseInput] = useState<string>('');
   const [temporaryClosingOdometer, setTemporaryClosingOdometer] = useState<number | null>(null);
   const [savingTemporaryOdometer, setSavingTemporaryOdometer] = useState(false);
 
@@ -254,6 +257,7 @@ export default function TaxSummaryPage() {
         setVehicleConditionInput(data.vehicleConditionAtAcquisition || null);
         setHadNonTradeUseInput(data.hadNonTradeUseBeforeTrade ?? null);
         setExpectedRemainingUsefulLifeYearsInput(data.expectedRemainingUsefulLifeYears?.toString() || '');
+        setMarketValueAtTradeUseInput(data.marketValueAtTradeUseCents ? (data.marketValueAtTradeUseCents / 100).toFixed(2) : '');
       }
     } catch (err) {
       console.error("Failed to fetch acquisition facts:", err);
@@ -599,6 +603,7 @@ export default function TaxSummaryPage() {
         vehicleConditionAtAcquisition: vehicleConditionInput,
         hadNonTradeUseBeforeTrade: hadNonTradeUseInput,
         expectedRemainingUsefulLifeYears: expectedRemainingUsefulLifeYearsInput ? parseInt(expectedRemainingUsefulLifeYearsInput) : null,
+        marketValueAtTradeUseCents: marketValueAtTradeUseInput ? Math.round(parseFloat(marketValueAtTradeUseInput) * 100) : null,
       };
 
       // Handle section 11(e) base confirmation
@@ -1365,17 +1370,13 @@ export default function TaxSummaryPage() {
                   className="w-full px-3 py-2 border rounded-md dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
                 >
                   <option value="">Not confirmed</option>
-                  {editingProfile.taxpayerType === 'SOLE_PROPRIETOR' ? (
-                    <option value="true" disabled>Yes - used for private/non-trade purposes before business (Not yet supported)</option>
-                  ) : (
-                    <option value="true">Yes - used for private/non-trade purposes before business</option>
-                  )}
+                  <option value="true">Yes — used for private/non-trade purposes before business</option>
                   <option value="false">No — no private/non-trade use before business use</option>
                 </select>
                 <p className="text-xs text-gray-500 dark:text-gray-400">Did you use this vehicle for private or other non-trade purposes before first using it for your business?</p>
               </div>
 
-              {editingAcquisitionFacts.vehicleArrangementType === 'OWNED' && vehicleConditionInput === 'USED' && (
+              {editingAcquisitionFacts.vehicleArrangementType === 'OWNED' && (vehicleConditionInput === 'USED' || hadNonTradeUseInput === true) && (
                 <div className="space-y-2">
                   <label htmlFor="expected-useful-life" className="text-sm font-medium dark:text-gray-300">Expected Remaining Useful Life (Years) *</label>
                   <input
@@ -1389,7 +1390,29 @@ export default function TaxSummaryPage() {
                     className="w-full px-3 py-2 border rounded-md dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
                     placeholder="e.g., 3"
                   />
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Estimated remaining useful life of the second-hand vehicle when acquired for business use.</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {hadNonTradeUseInput === true
+                      ? "Estimated remaining useful life when the vehicle first entered business use."
+                      : "Estimated remaining useful life of the second-hand vehicle when acquired for business use."}
+                  </p>
+                </div>
+              )}
+
+              {editingAcquisitionFacts.vehicleArrangementType === 'OWNED' && hadNonTradeUseInput === true && (
+                <div className="space-y-2">
+                  <label htmlFor="market-value-at-trade-use" className="text-sm font-medium dark:text-gray-300">Market Value When First Entered Business Use (R) *</label>
+                  <input
+                    id="market-value-at-trade-use"
+                    name="market-value-at-trade-use"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    value={marketValueAtTradeUseInput}
+                    onChange={(e) => setMarketValueAtTradeUseInput(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-md dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                    placeholder="e.g., 150000.00"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Market value of the vehicle at the date it first entered business use. The Section 11(e) base will be the lower of this value and the original acquisition cost.</p>
                 </div>
               )}
 
