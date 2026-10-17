@@ -23,13 +23,12 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FuelType, FUEL_TYPE_LABELS, formatZAR } from '@/lib/types/database'
 import { saveFuelLogOdometer } from '@/lib/hooks/use-tyre-rotation-warnings'
-import { api, getLastOdometerReading } from '@/lib/api/client'
+import { api } from '@/lib/api/client'
 import { ReceiptSupportProps } from './form-types'
 import { EntryImageManager } from '@/components/entries/entry-image-manager'
 import { API_URL } from '@/lib/api/client'
 import { ImageCropModal } from '@/components/ui/image-crop-modal'
 import { VehicleLogo } from '@/components/vehicles/vehicle-logo'
-import { useOdometerMemory } from '@/lib/hooks/useOdometerMemory'
 
 const fuelLogSchema = z.object({
   vehicleId: z.string().optional(),
@@ -125,7 +124,6 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
 
   // Use odometer memory hook for consistent odometer readings
   const selectedVehicleId = watch('vehicleId')
-  const { lastOdometer, currentOdometer, vehicleName: odometerVehicleName, loading: loadingOdometer } = useOdometerMemory(selectedVehicleId || null)
 
   // Initialize date input from watched value when in edit mode
   useEffect(() => {
@@ -187,17 +185,6 @@ export function FuelLogForm({ vehicles, onSubmit, initialData, mode = 'create', 
     ? getAvailableFuelTypes(selectedVehicle.fuelType)
     : Object.values(FuelType)
   const totalAmount = liters && pricePerLiter ? liters * pricePerLiter : 0
-
-  // Auto-fill odometer when lastOdometer or currentOdometer changes (only in create mode)
-  useEffect(() => {
-    if (mode === 'edit') return; // Don't change odometer in edit mode
-    
-    if (lastOdometer !== null) {
-      setValue('odometerReading', lastOdometer)
-    } else if (currentOdometer !== null) {
-      setValue('odometerReading', currentOdometer)
-    }
-  }, [lastOdometer, currentOdometer, setValue, mode])
 
   // Update fuel type when vehicle changes
   const handleVehicleChange = (vehicleId: string) => {
