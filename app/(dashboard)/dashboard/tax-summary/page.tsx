@@ -128,6 +128,7 @@ export default function TaxSummaryPage() {
   const [exportLoading, setExportLoading] = useState(false);
   const [calculateLoading, setCalculateLoading] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<string>("");
+  const [selectedExportFormat, setSelectedExportFormat] = useState<string>("EXCEL");
   const [error, setError] = useState<string | null>(null);
   const [vehicleTaxProfile, setVehicleTaxProfile] = useState<VehicleTaxProfile | null>(null);
   const [showTaxProfileConfig, setShowTaxProfileConfig] = useState(false);
@@ -805,7 +806,7 @@ export default function TaxSummaryPage() {
           vehicleId: selectedVehicleId,
           taxYear: backendTaxYear,
           calculationMethod: methodToUse,
-          format: "EXCEL",
+          format: selectedExportFormat,
         }),
       });
       if (response.ok) {
@@ -813,7 +814,13 @@ export default function TaxSummaryPage() {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `tax-export-${selectedVehicleId}-${selectedTaxYear}${overrideMethod ? `-${overrideMethod}` : ''}.xlsx`;
+        const extensionMap: Record<string, string> = {
+          EXCEL: "xlsx",
+          PDF: "pdf",
+          CSV: "csv",
+        };
+        const extension = extensionMap[selectedExportFormat] || selectedExportFormat.toLowerCase();
+        a.download = `tax-export-${selectedVehicleId}-${selectedTaxYear}${overrideMethod ? `-${overrideMethod}` : ''}.${extension}`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
@@ -2052,6 +2059,24 @@ export default function TaxSummaryPage() {
                             {result.method.replace(/_/g, " ")} - {formatZAR(result.totalDeductionCents / 100)}
                           </SelectItem>
                         ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="w-32">
+                  <label htmlFor="export-format-select" className="text-sm font-medium mb-2 block">Format</label>
+                  <Select
+                    value={selectedExportFormat}
+                    onValueChange={setSelectedExportFormat}
+                    disabled={exportLoading}
+                    name="export-format"
+                  >
+                    <SelectTrigger id="export-format-select" name="export-format-select">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="EXCEL">Excel (.xlsx)</SelectItem>
+                      <SelectItem value="PDF">PDF (.pdf)</SelectItem>
+                      <SelectItem value="CSV">CSV (.csv)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
