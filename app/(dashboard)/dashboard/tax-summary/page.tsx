@@ -818,6 +818,7 @@ export default function TaxSummaryPage() {
           EXCEL: "xlsx",
           PDF: "pdf",
           CSV: "csv",
+          HTML: "html",
         };
         const extension = extensionMap[selectedExportFormat] || selectedExportFormat.toLowerCase();
         a.download = `tax-export-${selectedVehicleId}-${selectedTaxYear}${overrideMethod ? `-${overrideMethod}` : ''}.${extension}`;
@@ -2077,6 +2078,7 @@ export default function TaxSummaryPage() {
                       <SelectItem value="EXCEL">Excel (.xlsx)</SelectItem>
                       <SelectItem value="PDF">PDF (.pdf)</SelectItem>
                       <SelectItem value="CSV">CSV (.csv)</SelectItem>
+                      <SelectItem value="HTML">HTML (.html)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
