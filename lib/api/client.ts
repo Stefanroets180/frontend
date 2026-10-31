@@ -529,17 +529,6 @@ export const createVehicleAssignment = async (data: {
   return api.post('/vehicle-assignments', data);
 };
 
-export const updateVehicleAssignment = async (assignmentId: string, data: {
-  endDate?: string;
-  status?: 'ACTIVE' | 'INACTIVE';
-  notes?: string;
-}) => {
-  return api.put(`/vehicle-assignments/${assignmentId}`, data);
-};
-
-export const getVehicleAssignmentByAssignmentId = async (assignmentId: string) => {
-  return api.get(`/vehicle-assignments/${assignmentId}`);
-};
 
 // Vehicle Condition Report
 export const createVehicleConditionReport = async (assignmentId: string) => {
