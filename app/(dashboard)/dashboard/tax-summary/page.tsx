@@ -211,9 +211,15 @@ export default function TaxSummaryPage() {
     } else if (selectedVehicleId) {
       fetchTaxSummary();
       fetchVehicleTaxProfile();
-      fetchAcquisitionFacts();
     }
   }, [selectedVehicleId, selectedTaxYear, viewMode, authLoading]);
+
+  // Fetch Acquisition Facts after vehicleTaxProfile has loaded and recipientUserId is available
+  useEffect(() => {
+    if (selectedVehicleId && vehicleTaxProfile?.recipientUserId) {
+      fetchAcquisitionFacts();
+    }
+  }, [selectedVehicleId, vehicleTaxProfile?.recipientUserId]);
 
   const fetchVehicles = async () => {
     setLoading(true);
