@@ -643,6 +643,7 @@ export default function TaxSummaryPage() {
       }
 
       // Build facts data - read directly from input states to capture values even if onBlur hasn't fired
+      // Preserve existing values when inputs are empty/untouched to avoid accidental erasure
       const factsData: any = {
         recipientUserId: vehicleTaxProfile.recipientUserId,
         recipientAcquisitionDate: editingAcquisitionFacts.recipientAcquisitionDate,
@@ -653,18 +654,26 @@ export default function TaxSummaryPage() {
           return numValue > 0 ? Math.round(numValue * 100) : undefined;
         })() : editingAcquisitionFacts.recipientAcquisitionCostCents,
         // Read purchase debt directly from input state with same conversion as onBlur
+        // Preserve existing value if input is empty
         originalPurchaseDebtCents: purchaseDebtInput ? (() => {
           const numValue = parseFloat(purchaseDebtInput);
           return Math.round(numValue * 100);
-        })() : null,
+        })() : editingAcquisitionFacts.originalPurchaseDebtCents,
         vehicleArrangementType: editingAcquisitionFacts.vehicleArrangementType,
-        vehicleConditionAtAcquisition: vehicleConditionInput,
-        hadNonTradeUseBeforeTrade: hadNonTradeUseInput,
+        // Preserve existing vehicle condition if not changed
+        vehicleConditionAtAcquisition: vehicleConditionInput != null 
+          ? vehicleConditionInput 
+          : editingAcquisitionFacts.vehicleConditionAtAcquisition,
+        // Preserve existing prior non-trade use value (including FALSE) if not changed
+        hadNonTradeUseBeforeTrade: hadNonTradeUseInput !== undefined 
+          ? hadNonTradeUseInput 
+          : editingAcquisitionFacts.hadNonTradeUseBeforeTrade,
         expectedRemainingUsefulLifeYears: expectedRemainingUsefulLifeYearsInput ? parseInt(expectedRemainingUsefulLifeYearsInput) : null,
         marketValueAtTradeUseCents: marketValueAtTradeUseInput ? Math.round(parseFloat(marketValueAtTradeUseInput) * 100) : null,
       };
 
       // Handle section 11(e) base confirmation - read directly from input state
+      // Preserve existing values unless user explicitly changes or clears them
       const acquisitionCostCents = acquisitionCostInput ? (() => {
         const numValue = parseFloat(acquisitionCostInput);
         return numValue > 0 ? Math.round(numValue * 100) : undefined;
@@ -679,9 +688,9 @@ export default function TaxSummaryPage() {
         factsData.section11eBaseValueCents = Math.round(parseFloat(section11eBaseInput) * 100);
         factsData.section11eBaseBasis = 'DIRECT_ACQUISITION_COST';
       } else {
-        // No section 11(e) base confirmation
-        factsData.section11eBaseValueCents = null;
-        factsData.section11eBaseBasis = null;
+        // Preserve existing section 11(e) values if no user action
+        factsData.section11eBaseValueCents = editingAcquisitionFacts.section11eBaseValueCents;
+        factsData.section11eBaseBasis = editingAcquisitionFacts.section11eBaseBasis;
       }
 
       const response = await apiFetch(`/vehicles/${selectedVehicleId}/acquisition-facts`, {
