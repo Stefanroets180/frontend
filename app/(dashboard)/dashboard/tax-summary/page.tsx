@@ -304,16 +304,6 @@ export default function TaxSummaryPage() {
         setHadNonTradeUseInput(data.hadNonTradeUseBeforeTrade ?? null);
         setExpectedRemainingUsefulLifeYearsInput(data.expectedRemainingUsefulLifeYears?.toString() || '');
         setMarketValueAtTradeUseInput(data.marketValueAtTradeUseCents ? (data.marketValueAtTradeUseCents / 100).toFixed(2) : '');
-        // Explicitly set acquisition date and cost from loaded data to ensure persistence
-        if (data.recipientAcquisitionDate) {
-          setEditingAcquisitionFacts(prev => ({ ...prev, recipientAcquisitionDate: data.recipientAcquisitionDate }));
-        }
-        if (data.recipientAcquisitionCostCents) {
-          setEditingAcquisitionFacts(prev => ({ ...prev, recipientAcquisitionCostCents: data.recipientAcquisitionCostCents }));
-        }
-        if (data.originalPurchaseDebtCents !== undefined && data.originalPurchaseDebtCents !== null) {
-          setEditingAcquisitionFacts(prev => ({ ...prev, originalPurchaseDebtCents: data.originalPurchaseDebtCents }));
-        }
       } else if (response.status === 404) {
         // No persisted row exists - use canonical no-row draft
         resetAcquisitionFactsDraft();
@@ -652,12 +642,21 @@ export default function TaxSummaryPage() {
         return;
       }
 
-      // Build facts data
+      // Build facts data - read directly from input states to capture values even if onBlur hasn't fired
       const factsData: any = {
         recipientUserId: vehicleTaxProfile.recipientUserId,
         recipientAcquisitionDate: editingAcquisitionFacts.recipientAcquisitionDate,
-        recipientAcquisitionCostCents: editingAcquisitionFacts.recipientAcquisitionCostCents,
-        originalPurchaseDebtCents: editingAcquisitionFacts.originalPurchaseDebtCents,
+        // Read acquisition cost directly from input state with same conversion as onBlur
+        // Preserve existing value if input is empty to avoid accidental erasure during updates
+        recipientAcquisitionCostCents: acquisitionCostInput ? (() => {
+          const numValue = parseFloat(acquisitionCostInput);
+          return numValue > 0 ? Math.round(numValue * 100) : undefined;
+        })() : editingAcquisitionFacts.recipientAcquisitionCostCents,
+        // Read purchase debt directly from input state with same conversion as onBlur
+        originalPurchaseDebtCents: purchaseDebtInput ? (() => {
+          const numValue = parseFloat(purchaseDebtInput);
+          return Math.round(numValue * 100);
+        })() : null,
         vehicleArrangementType: editingAcquisitionFacts.vehicleArrangementType,
         vehicleConditionAtAcquisition: vehicleConditionInput,
         hadNonTradeUseBeforeTrade: hadNonTradeUseInput,
@@ -665,10 +664,15 @@ export default function TaxSummaryPage() {
         marketValueAtTradeUseCents: marketValueAtTradeUseInput ? Math.round(parseFloat(marketValueAtTradeUseInput) * 100) : null,
       };
 
-      // Handle section 11(e) base confirmation
-      if (confirmExistingAcquisitionCost && editingAcquisitionFacts.recipientAcquisitionCostCents) {
+      // Handle section 11(e) base confirmation - read directly from input state
+      const acquisitionCostCents = acquisitionCostInput ? (() => {
+        const numValue = parseFloat(acquisitionCostInput);
+        return numValue > 0 ? Math.round(numValue * 100) : undefined;
+      })() : undefined;
+
+      if (confirmExistingAcquisitionCost && acquisitionCostCents) {
         // User confirms existing acquisition cost as the section 11(e) base
-        factsData.section11eBaseValueCents = editingAcquisitionFacts.recipientAcquisitionCostCents;
+        factsData.section11eBaseValueCents = acquisitionCostCents;
         factsData.section11eBaseBasis = 'DIRECT_ACQUISITION_COST';
       } else if (section11eBaseInput && !confirmExistingAcquisitionCost) {
         // User enters a different corrected section 11(e) base
