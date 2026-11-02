@@ -300,6 +300,16 @@ export default function TaxSummaryPage() {
         setHadNonTradeUseInput(data.hadNonTradeUseBeforeTrade ?? null);
         setExpectedRemainingUsefulLifeYearsInput(data.expectedRemainingUsefulLifeYears?.toString() || '');
         setMarketValueAtTradeUseInput(data.marketValueAtTradeUseCents ? (data.marketValueAtTradeUseCents / 100).toFixed(2) : '');
+        // Explicitly set acquisition date and cost from loaded data to ensure persistence
+        if (data.recipientAcquisitionDate) {
+          setEditingAcquisitionFacts(prev => ({ ...prev, recipientAcquisitionDate: data.recipientAcquisitionDate }));
+        }
+        if (data.recipientAcquisitionCostCents) {
+          setEditingAcquisitionFacts(prev => ({ ...prev, recipientAcquisitionCostCents: data.recipientAcquisitionCostCents }));
+        }
+        if (data.originalPurchaseDebtCents !== undefined && data.originalPurchaseDebtCents !== null) {
+          setEditingAcquisitionFacts(prev => ({ ...prev, originalPurchaseDebtCents: data.originalPurchaseDebtCents }));
+        }
       } else if (response.status === 404) {
         // No persisted row exists - use canonical no-row draft
         resetAcquisitionFactsDraft();
