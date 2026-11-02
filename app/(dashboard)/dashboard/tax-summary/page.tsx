@@ -637,60 +637,95 @@ export default function TaxSummaryPage() {
         }
       }
 
+      // Normalize and validate currency inputs before constructing payload
+      const acquisitionCostTrimmed = acquisitionCostInput.trim();
+      const purchaseDebtTrimmed = purchaseDebtInput.trim();
+      const marketValueTrimmed = marketValueAtTradeUseInput.trim();
+      const section11eBaseTrimmed = section11eBaseInput.trim();
+
+      // Helper to validate that entire string is a valid currency number (rejects "120000abc", supports decimals)
+      const isValidNumber = (str: string): boolean => {
+        const num = parseFloat(str);
+        if (!Number.isFinite(num)) return false;
+        // Regex: optional minus, digits, optional decimal with 1-2 digits
+        const currencyRegex = /^-?\d+(\.\d{1,2})?$/;
+        return currencyRegex.test(str);
+      };
+
+      // Validate acquisition cost if non-empty after trim
+      const acquisitionCostNum = acquisitionCostTrimmed !== '' ? parseFloat(acquisitionCostTrimmed) : null;
+      if (acquisitionCostTrimmed !== '' && !isValidNumber(acquisitionCostTrimmed)) {
+        validationErrors.push('Acquisition cost must be a valid number');
+      }
+
+      // Validate purchase debt if non-empty after trim
+      const purchaseDebtNum = purchaseDebtTrimmed !== '' ? parseFloat(purchaseDebtTrimmed) : null;
+      if (purchaseDebtTrimmed !== '' && !isValidNumber(purchaseDebtTrimmed)) {
+        validationErrors.push('Original purchase debt must be a valid number');
+      }
+
+      // Validate market value if non-empty after trim
+      const marketValueNum = marketValueTrimmed !== '' ? parseFloat(marketValueTrimmed) : null;
+      if (marketValueTrimmed !== '' && !isValidNumber(marketValueTrimmed)) {
+        validationErrors.push('Market value at trade use must be a valid number');
+      }
+
+      // Validate section 11(e) base if non-empty after trim and not confirming existing
+      const section11eBaseNum = (section11eBaseTrimmed !== '' && !confirmExistingAcquisitionCost) ? parseFloat(section11eBaseTrimmed) : null;
+      if (section11eBaseTrimmed !== '' && !confirmExistingAcquisitionCost && !isValidNumber(section11eBaseTrimmed)) {
+        validationErrors.push('Section 11(e) base value must be a valid number');
+      }
+
       if (validationErrors.length > 0) {
         setError(validationErrors.join('; '));
         return;
       }
 
-      // Build facts data - read directly from input states to capture values even if onBlur hasn't fired
-      // Preserve existing values when inputs are empty/untouched to avoid accidental erasure
+      // Build facts data - use validated normalized values
       const factsData: any = {
         recipientUserId: vehicleTaxProfile.recipientUserId,
         recipientAcquisitionDate: editingAcquisitionFacts.recipientAcquisitionDate,
-        // Read acquisition cost directly from input state with same conversion as onBlur
-        // Preserve existing value if input is empty to avoid accidental erasure during updates
-        recipientAcquisitionCostCents: acquisitionCostInput ? (() => {
-          const numValue = parseFloat(acquisitionCostInput);
-          return numValue > 0 ? Math.round(numValue * 100) : undefined;
-        })() : editingAcquisitionFacts.recipientAcquisitionCostCents,
-        // Read purchase debt directly from input state with same conversion as onBlur
-        // Preserve existing value if input is empty
-        originalPurchaseDebtCents: purchaseDebtInput ? (() => {
-          const numValue = parseFloat(purchaseDebtInput);
-          return Math.round(numValue * 100);
-        })() : editingAcquisitionFacts.originalPurchaseDebtCents,
+        // Use validated acquisition cost value, preserve existing if empty
+        recipientAcquisitionCostCents: acquisitionCostNum !== null
+          ? (acquisitionCostNum > 0 ? Math.round(acquisitionCostNum * 100) : undefined)
+          : editingAcquisitionFacts.recipientAcquisitionCostCents,
+        // Use validated purchase debt value, preserve existing if empty, null if never had a value
+        originalPurchaseDebtCents: purchaseDebtNum !== null
+          ? Math.round(purchaseDebtNum * 100)
+          : (editingAcquisitionFacts.originalPurchaseDebtCents ?? null),
         vehicleArrangementType: editingAcquisitionFacts.vehicleArrangementType,
-        // Preserve existing vehicle condition if not changed
-        vehicleConditionAtAcquisition: vehicleConditionInput != null 
-          ? vehicleConditionInput 
-          : editingAcquisitionFacts.vehicleConditionAtAcquisition,
-        // Preserve existing prior non-trade use value (including FALSE) if not changed
-        hadNonTradeUseBeforeTrade: hadNonTradeUseInput !== undefined 
-          ? hadNonTradeUseInput 
-          : editingAcquisitionFacts.hadNonTradeUseBeforeTrade,
+        // Send selected value, preserve existing if empty, null if never had a value
+        vehicleConditionAtAcquisition: vehicleConditionInput != null
+          ? vehicleConditionInput
+          : (editingAcquisitionFacts.vehicleConditionAtAcquisition ?? null),
+        // Send TRUE/FALSE, preserve existing if empty, null if never had a value
+        hadNonTradeUseBeforeTrade: hadNonTradeUseInput !== undefined
+          ? hadNonTradeUseInput
+          : (editingAcquisitionFacts.hadNonTradeUseBeforeTrade ?? null),
         expectedRemainingUsefulLifeYears: expectedRemainingUsefulLifeYearsInput ? parseInt(expectedRemainingUsefulLifeYearsInput) : null,
-        marketValueAtTradeUseCents: marketValueAtTradeUseInput ? Math.round(parseFloat(marketValueAtTradeUseInput) * 100) : null,
+        // Use validated market value, null if empty
+        marketValueAtTradeUseCents: marketValueNum !== null
+          ? Math.round(marketValueNum * 100)
+          : null,
       };
 
-      // Handle section 11(e) base confirmation - read directly from input state
-      // Preserve existing values unless user explicitly changes or clears them
-      const acquisitionCostCents = acquisitionCostInput ? (() => {
-        const numValue = parseFloat(acquisitionCostInput);
-        return numValue > 0 ? Math.round(numValue * 100) : undefined;
-      })() : undefined;
+      // Handle section 11(e) base confirmation - use validated values
+      const acquisitionCostCents = acquisitionCostNum !== null
+        ? (acquisitionCostNum > 0 ? Math.round(acquisitionCostNum * 100) : undefined)
+        : undefined;
 
       if (confirmExistingAcquisitionCost && acquisitionCostCents) {
         // User confirms existing acquisition cost as the section 11(e) base
         factsData.section11eBaseValueCents = acquisitionCostCents;
         factsData.section11eBaseBasis = 'DIRECT_ACQUISITION_COST';
-      } else if (section11eBaseInput && !confirmExistingAcquisitionCost) {
+      } else if (section11eBaseNum !== null) {
         // User enters a different corrected section 11(e) base
-        factsData.section11eBaseValueCents = Math.round(parseFloat(section11eBaseInput) * 100);
+        factsData.section11eBaseValueCents = Math.round(section11eBaseNum * 100);
         factsData.section11eBaseBasis = 'DIRECT_ACQUISITION_COST';
       } else {
-        // Preserve existing section 11(e) values if no user action
-        factsData.section11eBaseValueCents = editingAcquisitionFacts.section11eBaseValueCents;
-        factsData.section11eBaseBasis = editingAcquisitionFacts.section11eBaseBasis;
+        // Preserve existing section 11(e) values if no user action, or null if never set
+        factsData.section11eBaseValueCents = editingAcquisitionFacts.section11eBaseValueCents ?? null;
+        factsData.section11eBaseBasis = editingAcquisitionFacts.section11eBaseBasis ?? null;
       }
 
       const response = await apiFetch(`/vehicles/${selectedVehicleId}/acquisition-facts`, {
