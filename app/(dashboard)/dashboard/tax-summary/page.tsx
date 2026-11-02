@@ -161,8 +161,12 @@ export default function TaxSummaryPage() {
 
   // Vehicle change handler - invalidates pending requests and resets Acquisition Facts before changing vehicle
   const handleVehicleChange = (vehicleId: string) => {
-    acquisitionFactsRequestSeqRef.current++;
-    resetAcquisitionFactsDraft();
+    // Increment request sequence only when switching vehicles (not on initial selection)
+    // This invalidates any pending request for the previous vehicle
+    if (selectedVehicleId && selectedVehicleId !== vehicleId) {
+      acquisitionFactsRequestSeqRef.current++;
+      resetAcquisitionFactsDraft();
+    }
     setSelectedVehicleId(vehicleId);
   };
 
