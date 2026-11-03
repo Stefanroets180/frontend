@@ -1668,6 +1668,12 @@ export default function TaxSummaryPage() {
                       setEditingAcquisitionFacts(acquisitionFacts);
                       setAcquisitionCostInput(acquisitionFacts.recipientAcquisitionCostCents ? (acquisitionFacts.recipientAcquisitionCostCents / 100).toFixed(2) : '');
                       setPurchaseDebtInput(acquisitionFacts.originalPurchaseDebtCents ? (acquisitionFacts.originalPurchaseDebtCents / 100).toFixed(2) : '');
+                      setSection11eBaseInput(acquisitionFacts.section11eBaseValueCents ? (acquisitionFacts.section11eBaseValueCents / 100).toFixed(2) : '');
+                      setConfirmExistingAcquisitionCost(false);
+                      setVehicleConditionInput(acquisitionFacts.vehicleConditionAtAcquisition || null);
+                      setHadNonTradeUseInput(acquisitionFacts.hadNonTradeUseBeforeTrade ?? null);
+                      setExpectedRemainingUsefulLifeYearsInput(acquisitionFacts.expectedRemainingUsefulLifeYears?.toString() || '');
+                      setMarketValueAtTradeUseInput(acquisitionFacts.marketValueAtTradeUseCents ? (acquisitionFacts.marketValueAtTradeUseCents / 100).toFixed(2) : '');
                     }}
                     disabled={savingAcquisitionFacts}
                   >
