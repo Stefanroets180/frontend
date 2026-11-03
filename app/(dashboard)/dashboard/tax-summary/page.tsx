@@ -1546,6 +1546,9 @@ export default function TaxSummaryPage() {
                       <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
                         When prior non-trade use is confirmed, the Section 11(e) base is calculated by the server as the lower of the authoritative Tax Profile vehicle cost and market value at trade use.
                       </p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+                        <strong>Note:</strong> The original acquisition cost is taken from your Tax Profile. If you change the market value at trade use and save, the server will automatically recalculate the base value. The verification cannot be removed while prior non-trade use is confirmed.
+                      </p>
                       {acquisitionFacts?.section11eBaseValueCents ? (
                         <div className="space-y-2">
                           <p className="text-sm dark:text-gray-300">
@@ -1553,6 +1556,9 @@ export default function TaxSummaryPage() {
                           </p>
                           <p className="text-xs text-gray-500 dark:text-gray-400">
                             Calculated on {acquisitionFacts.section11eBaseConfirmedAt ? new Date(acquisitionFacts.section11eBaseConfirmedAt).toLocaleDateString() : 'unknown'} as {acquisitionFacts.section11eBaseBasis?.replace('_', ' ')}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+                            This value is automatically calculated by the server and cannot be manually removed while prior non-trade use is confirmed.
                           </p>
                         </div>
                       ) : (
@@ -1564,7 +1570,10 @@ export default function TaxSummaryPage() {
                   ) : (
                     <>
                       <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
-                        Verify the section 11(e) wear-and-tear base. Finance charges must be excluded and VAT treatment must already be correct. The verified value is saved for the section 11(e) calculation.
+                        Verify the section 11(e) wear-and-tear base. Finance charges must be excluded and VAT treatment must already be correct. The verified value is saved for the section 11(e) calculation using straight-line depreciation.
+                      </p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+                        <strong>Note:</strong> Section 11(e) uses straight-line depreciation over the asset's useful life. For new passenger vehicles, this is 5 years per SARS Binding General Ruling 7. For used vehicles or prior non-trade use, the remaining useful life is used.
                       </p>
 
                       {!acquisitionFacts?.section11eBaseValueCents ? (
@@ -1620,13 +1629,13 @@ export default function TaxSummaryPage() {
                       ) : (
                         <div className="space-y-2">
                           <p className="text-sm dark:text-gray-300">
-                            <span className="font-semibold">Verified base value:</span> R{(acquisitionFacts.section11eBaseValueCents / 100).toFixed(2)}
+                            <span className="font-semibold">User-confirmed base value:</span> R{(acquisitionFacts.section11eBaseValueCents / 100).toFixed(2)}
                           </p>
                           <p className="text-xs text-gray-500 dark:text-gray-400">
                             Confirmed on {acquisitionFacts.section11eBaseConfirmedAt ? new Date(acquisitionFacts.section11eBaseConfirmedAt).toLocaleDateString() : 'unknown'} as {acquisitionFacts.section11eBaseBasis?.replace('_', ' ')}
                           </p>
                           <Button
-                            variant="outline"
+                            variant="secondary"
                             size="sm"
                             onClick={() => {
                               setSection11eBaseInput('');
