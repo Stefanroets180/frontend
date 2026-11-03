@@ -714,19 +714,26 @@ export default function TaxSummaryPage() {
         ? (acquisitionCostNum > 0 ? Math.round(acquisitionCostNum * 100) : undefined)
         : undefined;
 
-      if (confirmExistingAcquisitionCost && acquisitionCostCents) {
-        // User confirms existing acquisition cost as the section 11(e) base
-        factsData.section11eBaseValueCents = acquisitionCostCents;
-        factsData.section11eBaseBasis = 'DIRECT_ACQUISITION_COST';
-      } else if (section11eBaseNum !== null) {
-        // User enters a different corrected section 11(e) base
-        factsData.section11eBaseValueCents = Math.round(section11eBaseNum * 100);
-        factsData.section11eBaseBasis = 'DIRECT_ACQUISITION_COST';
-      } else {
-        // Preserve existing section 11(e) values if no user action, or null if never set
-        factsData.section11eBaseValueCents = editingAcquisitionFacts.section11eBaseValueCents ?? null;
-        factsData.section11eBaseBasis = editingAcquisitionFacts.section11eBaseBasis ?? null;
+      // When prior non-trade use is TRUE, backend derives Section 11(e) base server-side
+      // Do NOT send section11eBaseValueCents or section11eBaseBasis - omit entirely
+      const isPriorNonTradeUse = factsData.hadNonTradeUseBeforeTrade === true;
+
+      if (!isPriorNonTradeUse) {
+        if (confirmExistingAcquisitionCost && acquisitionCostCents) {
+          // User confirms existing acquisition cost as the section 11(e) base
+          factsData.section11eBaseValueCents = acquisitionCostCents;
+          factsData.section11eBaseBasis = 'DIRECT_ACQUISITION_COST';
+        } else if (section11eBaseNum !== null) {
+          // User enters a different corrected section 11(e) base
+          factsData.section11eBaseValueCents = Math.round(section11eBaseNum * 100);
+          factsData.section11eBaseBasis = 'DIRECT_ACQUISITION_COST';
+        } else {
+          // Preserve existing section 11(e) values if no user action, or null if never set
+          factsData.section11eBaseValueCents = editingAcquisitionFacts.section11eBaseValueCents ?? null;
+          factsData.section11eBaseBasis = editingAcquisitionFacts.section11eBaseBasis ?? null;
+        }
       }
+      // else: omit section11eBaseValueCents and section11eBaseBasis entirely for prior non-trade use
 
       const response = await apiFetch(`/vehicles/${selectedVehicleId}/acquisition-facts`, {
         method: 'PUT',
@@ -1533,81 +1540,106 @@ export default function TaxSummaryPage() {
               {editingAcquisitionFacts.vehicleArrangementType === 'OWNED' && (
                 <div className="mt-4 p-4 bg-blue-50 dark:bg-gray-800 rounded-md border border-blue-200 dark:border-gray-700">
                   <h4 className="text-sm font-semibold dark:text-gray-200 mb-3">Section 11(e) Wear-and-Tear Base Value</h4>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
-                    Verify the section 11(e) wear-and-tear base. Finance charges must be excluded and VAT treatment must already be correct. The verified value is saved for the section 11(e) calculation.
-                  </p>
 
-                  {!acquisitionFacts?.section11eBaseValueCents ? (
+                  {hadNonTradeUseInput === true ? (
                     <>
-                      <div className="space-y-2 mb-3">
-                        <label className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={confirmExistingAcquisitionCost}
-                            onChange={(e) => {
-                              setConfirmExistingAcquisitionCost(e.target.checked);
-                              if (e.target.checked) {
-                                setSection11eBaseInput(acquisitionCostInput);
-                              } else {
-                                setSection11eBaseInput('');
-                              }
-                            }}
-                            className="rounded"
-                          />
-                          <span className="text-sm dark:text-gray-300">
-                            Confirm existing acquisition cost ({acquisitionCostInput || 'not set'}) as the section 11(e) base
-                          </span>
-                        </label>
-                      </div>
-
-                      {!confirmExistingAcquisitionCost && (
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+                        When prior non-trade use is confirmed, the Section 11(e) base is calculated by the server as the lower of the authoritative Tax Profile vehicle cost and market value at trade use.
+                      </p>
+                      {acquisitionFacts?.section11eBaseValueCents ? (
                         <div className="space-y-2">
-                          <label htmlFor="section11e-base" className="text-sm font-medium dark:text-gray-300">
-                            Or enter a corrected section 11(e) base value (R)
-                          </label>
-                          <input
-                            id="section11e-base"
-                            name="section11e-base"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value={section11eBaseInput}
-                            onChange={(e) => setSection11eBaseInput(e.target.value)}
-                            onBlur={(e) => {
-                              if (e.target.value) {
-                                const numValue = parseFloat(e.target.value);
-                                if (numValue > 0) {
-                                  setSection11eBaseInput(numValue.toFixed(2));
-                                }
-                              }
-                            }}
-                            className="w-full px-3 py-2 border rounded-md dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
-                            placeholder="e.g., 250000.00"
-                          />
+                          <p className="text-sm dark:text-gray-300">
+                            <span className="font-semibold">Server-calculated base value:</span> R{(acquisitionFacts.section11eBaseValueCents / 100).toFixed(2)}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Calculated on {acquisitionFacts.section11eBaseConfirmedAt ? new Date(acquisitionFacts.section11eBaseConfirmedAt).toLocaleDateString() : 'unknown'} as {acquisitionFacts.section11eBaseBasis?.replace('_', ' ')}
+                          </p>
                         </div>
+                      ) : (
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          The base value will be calculated automatically when you save with prior non-trade use confirmed and market value provided.
+                        </p>
                       )}
                     </>
                   ) : (
-                    <div className="space-y-2">
-                      <p className="text-sm dark:text-gray-300">
-                        <span className="font-semibold">Verified base value:</span> R{(acquisitionFacts.section11eBaseValueCents / 100).toFixed(2)}
+                    <>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+                        Verify the section 11(e) wear-and-tear base. Finance charges must be excluded and VAT treatment must already be correct. The verified value is saved for the section 11(e) calculation.
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Confirmed on {acquisitionFacts.section11eBaseConfirmedAt ? new Date(acquisitionFacts.section11eBaseConfirmedAt).toLocaleDateString() : 'unknown'} as {acquisitionFacts.section11eBaseBasis?.replace('_', ' ')}
-                      </p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setSection11eBaseInput('');
-                          setConfirmExistingAcquisitionCost(false);
-                          setEditingAcquisitionFacts({ ...editingAcquisitionFacts, section11eBaseValueCents: null, section11eBaseBasis: null, section11eBaseConfirmedAt: null });
-                        }}
-                        className="mt-2"
-                      >
-                        Remove Verification
-                      </Button>
-                    </div>
+
+                      {!acquisitionFacts?.section11eBaseValueCents ? (
+                        <>
+                          <div className="space-y-2 mb-3">
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={confirmExistingAcquisitionCost}
+                                onChange={(e) => {
+                                  setConfirmExistingAcquisitionCost(e.target.checked);
+                                  if (e.target.checked) {
+                                    setSection11eBaseInput(acquisitionCostInput);
+                                  } else {
+                                    setSection11eBaseInput('');
+                                  }
+                                }}
+                                className="rounded"
+                              />
+                              <span className="text-sm dark:text-gray-300">
+                                Confirm existing acquisition cost ({acquisitionCostInput || 'not set'}) as the section 11(e) base
+                              </span>
+                            </label>
+                          </div>
+
+                          {!confirmExistingAcquisitionCost && (
+                            <div className="space-y-2">
+                              <label htmlFor="section11e-base" className="text-sm font-medium dark:text-gray-300">
+                                Or enter a corrected section 11(e) base value (R)
+                              </label>
+                              <input
+                                id="section11e-base"
+                                name="section11e-base"
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                value={section11eBaseInput}
+                                onChange={(e) => setSection11eBaseInput(e.target.value)}
+                                onBlur={(e) => {
+                                  if (e.target.value) {
+                                    const numValue = parseFloat(e.target.value);
+                                    if (numValue > 0) {
+                                      setSection11eBaseInput(numValue.toFixed(2));
+                                    }
+                                  }
+                                }}
+                                className="w-full px-3 py-2 border rounded-md dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                                placeholder="e.g., 250000.00"
+                              />
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="space-y-2">
+                          <p className="text-sm dark:text-gray-300">
+                            <span className="font-semibold">Verified base value:</span> R{(acquisitionFacts.section11eBaseValueCents / 100).toFixed(2)}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Confirmed on {acquisitionFacts.section11eBaseConfirmedAt ? new Date(acquisitionFacts.section11eBaseConfirmedAt).toLocaleDateString() : 'unknown'} as {acquisitionFacts.section11eBaseBasis?.replace('_', ' ')}
+                          </p>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSection11eBaseInput('');
+                              setConfirmExistingAcquisitionCost(false);
+                              setEditingAcquisitionFacts({ ...editingAcquisitionFacts, section11eBaseValueCents: null, section11eBaseBasis: null, section11eBaseConfirmedAt: null });
+                            }}
+                            className="mt-2"
+                          >
+                            Remove Verification
+                          </Button>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               )}
