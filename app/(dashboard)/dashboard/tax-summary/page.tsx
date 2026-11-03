@@ -1666,17 +1666,7 @@ export default function TaxSummaryPage() {
                     variant="outline"
                     type="button"
                     onClick={() => {
-                      console.log('Reset button clicked', acquisitionFacts);
-                      setEditingAcquisitionFacts(acquisitionFacts);
-                      setAcquisitionCostInput(acquisitionFacts.recipientAcquisitionCostCents ? (acquisitionFacts.recipientAcquisitionCostCents / 100).toFixed(2) : '');
-                      setPurchaseDebtInput(acquisitionFacts.originalPurchaseDebtCents ? (acquisitionFacts.originalPurchaseDebtCents / 100).toFixed(2) : '');
-                      setSection11eBaseInput(acquisitionFacts.section11eBaseValueCents ? (acquisitionFacts.section11eBaseValueCents / 100).toFixed(2) : '');
-                      setConfirmExistingAcquisitionCost(false);
-                      setVehicleConditionInput(acquisitionFacts.vehicleConditionAtAcquisition || null);
-                      setHadNonTradeUseInput(acquisitionFacts.hadNonTradeUseBeforeTrade ?? null);
-                      setExpectedRemainingUsefulLifeYearsInput(acquisitionFacts.expectedRemainingUsefulLifeYears?.toString() || '');
-                      setMarketValueAtTradeUseInput(acquisitionFacts.marketValueAtTradeUseCents ? (acquisitionFacts.marketValueAtTradeUseCents / 100).toFixed(2) : '');
-                      console.log('Reset state setters called');
+                      resetAcquisitionFactsDraft();
                     }}
                     disabled={savingAcquisitionFacts}
                   >
