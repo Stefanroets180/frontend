@@ -2148,8 +2148,8 @@ export default function TaxSummaryPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex gap-4 items-end">
-                <div className="flex-1">
+              <div className="flex flex-col sm:flex-row gap-4 items-end">
+                <div className="flex-1 w-full sm:w-auto">
                   <label htmlFor="calculation-method-select" className="text-sm font-medium mb-2 block">Calculation Method</label>
                   <Select
                     value={selectedMethod}
@@ -2171,7 +2171,7 @@ export default function TaxSummaryPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="w-32">
+                <div className="w-full sm:w-32">
                   <label htmlFor="export-format-select" className="text-sm font-medium mb-2 block">Format</label>
                   <Select
                     value={selectedExportFormat}
@@ -2193,7 +2193,7 @@ export default function TaxSummaryPage() {
                 <Button
                   onClick={() => handleExport()}
                   disabled={!selectedMethod || exportLoading}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 w-full sm:w-auto"
                 >
                   <Download className="h-4 w-4" />
                   {exportLoading ? "Exporting..." : "Export"}
