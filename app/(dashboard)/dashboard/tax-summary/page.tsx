@@ -1811,13 +1811,13 @@ export default function TaxSummaryPage() {
       {/* Summary Cards */}
       {((viewMode === 'individual' && taxSummary) || (viewMode === 'combined' && combinedSummary)) && (
         <>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <h2 className="text-xl font-semibold">
               {viewMode === 'combined'
                 ? (isFleetMode ? 'Fleet Combined Tax Year Summary' : 'Combined Tax Year Summary (All Vehicles)')
                 : 'Tax Year Summary'}
             </h2>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {viewMode === 'individual' && vehicleTaxProfile?.taxpayerType !== 'TRACKING_ONLY' && (
                 <Button
                   onClick={fetchComparisonResults}
