@@ -64,6 +64,9 @@ async function downloadExport(
 ): Promise<void> {
   // Map frontend format to backend format
   const backendFormat = format === "xls" ? "EXCEL" : format.toUpperCase();
+  // Convert UI tax year (start year) to backend assessment year
+  // UI: 2026 for 2026/27 tax year, Backend expects: 2027
+  const backendTaxYear = taxYear + 1;
 
   const res = await apiFetch("/exports/export", {
     method: "POST",
@@ -71,7 +74,7 @@ async function downloadExport(
     body: JSON.stringify({
       vehicleId,
       format: backendFormat,
-      taxYear,
+      taxYear: backendTaxYear,
       includeTrips: true,
       includeExpenses: true,
       includeFuelLogs: true,
