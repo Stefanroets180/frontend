@@ -219,6 +219,9 @@ export function VehicleExportDialog({
     try {
       // Map frontend format to backend format
       const backendFormat = format === "xls" ? "EXCEL" : format.toUpperCase();
+      // Convert UI tax year (start year) to backend assessment year
+      // UI: 2026 for 2026/27 tax year, Backend expects: 2027
+      const backendTaxYear = Number(taxYear) + 1;
 
       const res = await apiFetch("/exports/sars-logbook/email", {
         method: "POST",
@@ -227,7 +230,7 @@ export function VehicleExportDialog({
           vehicleId,
           format: backendFormat,
           email: recipient,
-          taxYear: Number(taxYear),
+          taxYear: backendTaxYear,
           includeTrips: true,
           includeExpenses: true,
           includeFuelLogs: true,
@@ -268,6 +271,9 @@ export function VehicleExportDialog({
     try {
       // Map frontend format to backend format
       const backendFormat = format === "xls" ? "EXCEL" : format.toUpperCase();
+      // Convert UI tax year (start year) to backend assessment year
+      // UI: 2026 for 2026/27 tax year, Backend expects: 2027
+      const backendTaxYear = Number(taxYear) + 1;
 
       const res = await apiFetch("/exports/export", {
         method: "POST",
@@ -275,7 +281,7 @@ export function VehicleExportDialog({
         body: JSON.stringify({
           vehicleId,
           format: backendFormat,
-          taxYear: Number(taxYear),
+          taxYear: backendTaxYear,
           includeTrips: true,
           includeExpenses: true,
           includeFuelLogs: true,

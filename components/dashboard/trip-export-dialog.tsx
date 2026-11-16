@@ -60,13 +60,17 @@ async function downloadTripExport(
           ? "HTML"
           : "CSV";
 
+  // Convert UI tax year (start year) to backend assessment year
+  // UI: 2026 for 2026/27 tax year, Backend expects: 2027
+  const backendTaxYear = taxYear + 1;
+
   const res = await apiFetch("/exports/trips", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       vehicleId,
       format: backendFormat,
-      taxYear,
+      taxYear: backendTaxYear,
     }),
   });
 
