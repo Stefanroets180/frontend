@@ -262,7 +262,7 @@ export default function TaxSummaryPage() {
 
   const fetchOrganizationUsers = async () => {
     try {
-      const response = await apiFetch("/users/organization");
+      const response = await apiFetch("/organization/users");
       if (response.ok) {
         const data = await response.json();
         setOrganizationUsers(data);
