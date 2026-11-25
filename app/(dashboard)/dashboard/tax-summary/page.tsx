@@ -541,12 +541,8 @@ export default function TaxSummaryPage() {
         setEditingProfile(data);
         // Refetch tax summary to recalculate with new profile
         await handleCalculate();
-        // Refetch comparison results with the new default method from saved data
-        await fetchComparisonResults();
-        // Manually set the selected method to the saved profile's default
-        if (data.defaultCalculationMethod) {
-          setSelectedMethod(data.defaultCalculationMethod);
-        }
+        // Refetch comparison results with the saved profile's default method
+        await fetchComparisonResults(data.defaultCalculationMethod);
       } else {
         const errorData = await response.json();
         setError(errorData.error || 'Failed to save tax profile');
@@ -763,7 +759,7 @@ export default function TaxSummaryPage() {
     }
   };
 
-  const fetchComparisonResults = async () => {
+  const fetchComparisonResults = async (preferredMethod?: string) => {
     if (!selectedVehicleId || !selectedTaxYear) return;
 
     console.log("=== Fetching comparison results for vehicle:", selectedVehicleId, "===");
@@ -782,10 +778,22 @@ export default function TaxSummaryPage() {
           method: key,
         }));
         setComparisonResults(results);
-        // Auto-select: first eligible method (selection is updated after profile save)
-        const firstEligible = results.find((r) => r.eligible);
-        if (firstEligible) {
-          setSelectedMethod(firstEligible.method);
+        // Auto-select: preferred method if provided and eligible, otherwise first eligible
+        if (preferredMethod) {
+          const preferredEligible = results.find((r) => r.method === preferredMethod && r.eligible);
+          if (preferredEligible) {
+            setSelectedMethod(preferredEligible.method);
+          } else {
+            const firstEligible = results.find((r) => r.eligible);
+            if (firstEligible) {
+              setSelectedMethod(firstEligible.method);
+            }
+          }
+        } else {
+          const firstEligible = results.find((r) => r.eligible);
+          if (firstEligible) {
+            setSelectedMethod(firstEligible.method);
+          }
         }
       } else if (response.status === 404) {
         // No tax profile exists for this vehicle
