@@ -1356,7 +1356,43 @@ export default function TaxSummaryPage() {
               {vehicleTaxProfile && (
                 <Button
                   variant="outline"
-                  onClick={() => setEditingProfile(vehicleTaxProfile)}
+                  onClick={async () => {
+                    if (vehicleTaxProfile?.id) {
+                      // Delete the profile from backend
+                      const response = await apiFetch(`/vehicles/${selectedVehicleId}/tax-profiles/${vehicleTaxProfile.id}`, {
+                        method: 'DELETE',
+                      });
+                      if (response.ok) {
+                        // Preserve the current taxpayer type
+                        const currentTaxpayerType = editingProfile.taxpayerType || 'EMPLOYEE';
+                        // Clear to default empty state with preserved taxpayer type
+                        setVehicleTaxProfile(null);
+                        setEditingProfile({
+                          vehicleCostCents: undefined,
+                          datePlacedInBusinessUse: undefined,
+                          taxpayerVatRegistered: false,
+                          taxpayerType: currentTaxpayerType,
+                          compensationType: undefined,
+                          fuelBorneBy: undefined,
+                          maintenanceBorneBy: undefined,
+                          coveredByMaintenancePlan: false,
+                          effectiveFrom: undefined,
+                          effectiveTo: undefined,
+                          defaultCalculationMethod: 'ACTUAL_COSTS',
+                          isCompanyProvidedVehicle: false,
+                          recipientUserId: undefined,
+                        });
+                        // Recalculate tax summary without profile
+                        await handleCalculate();
+                        // Clear comparison results
+                        setComparisonResults([]);
+                        setSelectedMethod("");
+                      } else {
+                        const errorData = await response.json();
+                        setError(errorData.error || 'Failed to delete tax profile');
+                      }
+                    }
+                  }}
                   disabled={savingProfile}
                 >
                   Reset
