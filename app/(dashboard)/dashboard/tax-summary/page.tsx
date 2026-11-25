@@ -782,18 +782,10 @@ export default function TaxSummaryPage() {
           method: key,
         }));
         setComparisonResults(results);
-        // Auto-select: vehicle tax profile default if eligible, otherwise first eligible
-        const vehicleDefaultMethod = vehicleTaxProfile?.defaultCalculationMethod || editingProfile?.defaultCalculationMethod;
-        const vehicleDefaultEligible = vehicleDefaultMethod
-          ? results.find((r) => r.method === vehicleDefaultMethod && r.eligible)
-          : null;
-        if (vehicleDefaultEligible) {
-          setSelectedMethod(vehicleDefaultEligible.method);
-        } else {
-          const firstEligible = results.find((r) => r.eligible);
-          if (firstEligible) {
-            setSelectedMethod(firstEligible.method);
-          }
+        // Auto-select: first eligible method (selection is updated after profile save)
+        const firstEligible = results.find((r) => r.eligible);
+        if (firstEligible) {
+          setSelectedMethod(firstEligible.method);
         }
       } else if (response.status === 404) {
         // No tax profile exists for this vehicle
