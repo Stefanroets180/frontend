@@ -783,7 +783,7 @@ export default function TaxSummaryPage() {
         }));
         setComparisonResults(results);
         // Auto-select: vehicle tax profile default if eligible, otherwise first eligible
-        const vehicleDefaultMethod = editingProfile?.defaultCalculationMethod || vehicleTaxProfile?.defaultCalculationMethod;
+        const vehicleDefaultMethod = vehicleTaxProfile?.defaultCalculationMethod || editingProfile?.defaultCalculationMethod;
         const vehicleDefaultEligible = vehicleDefaultMethod
           ? results.find((r) => r.method === vehicleDefaultMethod && r.eligible)
           : null;
