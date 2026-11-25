@@ -541,8 +541,6 @@ export default function TaxSummaryPage() {
         setEditingProfile(data);
         // Refetch tax summary to recalculate with new profile
         await handleCalculate();
-        // Force state update before fetching comparison results
-        await new Promise(resolve => setTimeout(resolve, 100));
         // Refetch comparison results to update with new default calculation method
         await fetchComparisonResults();
       } else {
@@ -781,7 +779,7 @@ export default function TaxSummaryPage() {
         }));
         setComparisonResults(results);
         // Auto-select: vehicle tax profile default if eligible, otherwise first eligible
-        const vehicleDefaultMethod = vehicleTaxProfile?.defaultCalculationMethod;
+        const vehicleDefaultMethod = editingProfile?.defaultCalculationMethod || vehicleTaxProfile?.defaultCalculationMethod;
         const vehicleDefaultEligible = vehicleDefaultMethod
           ? results.find((r) => r.method === vehicleDefaultMethod && r.eligible)
           : null;
