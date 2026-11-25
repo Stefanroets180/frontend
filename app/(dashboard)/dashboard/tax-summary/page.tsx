@@ -435,6 +435,16 @@ export default function TaxSummaryPage() {
         const data = await response.json();
         console.log("Tax Profile response:", data);
         console.log("Tax Profile vehicleId:", data.vehicleId);
+        // Verify the profile belongs to the current vehicle
+        if (data.vehicleId !== selectedVehicleId) {
+          console.warn("Profile vehicleId mismatch - clearing stale profile");
+          setVehicleTaxProfile(null);
+          setEditingProfile({
+            datePlacedInBusinessUse: firstBusinessDate
+          });
+          setVehicleCostInput('');
+          return;
+        }
         setVehicleTaxProfile(data);
         // Preserve existing stored date, only use business trip suggestion if empty
         const profileWithDate = {

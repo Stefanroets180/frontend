@@ -651,7 +651,11 @@ export default function EditVehiclePage() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="datePlacedInBusinessUse">Date Placed in Business Use</Label>
+                  <Label htmlFor="datePlacedInBusinessUse">
+                    {taxProfile?.taxpayerType === 'EMPLOYEE' && taxProfile?.compensationType === 'TRAVEL_ALLOWANCE'
+                      ? 'Original Vehicle Acquisition Date'
+                      : 'Date Placed in Business Use'}
+                  </Label>
                   <Input
                     id="datePlacedInBusinessUse"
                     name="datePlacedInBusinessUse"
@@ -663,6 +667,11 @@ export default function EditVehiclePage() {
                       )
                     }
                   />
+                  {taxProfile?.taxpayerType === 'EMPLOYEE' && taxProfile?.compensationType === 'TRAVEL_ALLOWANCE' ? (
+                    <p className="text-xs text-gray-500 mt-1">
+                      The date you originally purchased or acquired this vehicle. This is used to calculate the 7-year wear-and-tear period for Section 8(1)(b) travel allowance deductions.
+                    </p>
+                  ) : null}
                 </div>
                 <div>
                   <Label htmlFor="taxpayerType">Taxpayer Type</Label>
