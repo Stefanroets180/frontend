@@ -1260,12 +1260,10 @@ export default function TaxSummaryPage() {
                   {editingProfile.taxpayerType === 'SOLE_PROPRIETOR' ? (
                     <>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium dark:text-gray-300">Fuel Borne By *</label>
-                        <div className="text-sm dark:text-gray-300 py-2">Self (Sole Proprietor)</div>
+                        <span className="text-sm font-medium dark:text-gray-300">Fuel Borne By: Self (Sole Proprietor)</span>
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium dark:text-gray-300">Maintenance Borne By *</label>
-                        <div className="text-sm dark:text-gray-300 py-2">Self (Sole Proprietor)</div>
+                        <span className="text-sm font-medium dark:text-gray-300">Maintenance Borne By: Self (Sole Proprietor)</span>
                       </div>
                     </>
                   ) : (
