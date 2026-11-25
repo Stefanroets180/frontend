@@ -99,6 +99,8 @@ interface TaxCalculationResult {
   fixedCostCents: number;
   fuelCostCents: number;
   maintenanceCostCents: number;
+  wearAndTearCents?: number;
+  financeChargeCents?: number;
   businessShare: number;
   businessUseDays: number | null;
   daysInTaxYear: number | null;
@@ -513,7 +515,7 @@ export default function TaxSummaryPage() {
         coveredByMaintenancePlan: editingProfile.coveredByMaintenancePlan || false,
         effectiveFrom: editingProfile.effectiveFrom || new Date().toISOString().split('T')[0],
         effectiveTo: editingProfile.effectiveTo || null,
-        defaultCalculationMethod: isSoleProprietor ? 'ACTUAL_COSTS' : (editingProfile.defaultCalculationMethod || 'ACTUAL_COSTS'),
+        defaultCalculationMethod: editingProfile.defaultCalculationMethod || 'ACTUAL_COSTS',
         isCompanyProvidedVehicle: isSoleProprietor ? false : (editingProfile.isCompanyProvidedVehicle || false),
         recipientUserId: editingProfile.recipientUserId,
       };
@@ -1135,7 +1137,11 @@ export default function TaxSummaryPage() {
                     <p className="text-xs text-gray-500 dark:text-gray-400">Total vehicle cost including VAT (purchase price + accessories).</p>
                   </div>
                   <div className="space-y-2">
-                    <label htmlFor="datePlacedInBusinessUse" className="text-sm font-medium dark:text-gray-300">Date Placed in Business Use *</label>
+                    <label htmlFor="datePlacedInBusinessUse" className="text-sm font-medium dark:text-gray-300">
+                      {editingProfile.taxpayerType === 'EMPLOYEE' && editingProfile.compensationType === 'TRAVEL_ALLOWANCE'
+                        ? 'Original Vehicle Acquisition Date *'
+                        : 'Date Placed in Business Use *'}
+                    </label>
                     <input
                       type="date"
                       id="datePlacedInBusinessUse"
@@ -1146,7 +1152,13 @@ export default function TaxSummaryPage() {
                       max={new Date().toISOString().split('T')[0]}
                       required
                     />
-                    <p className="text-xs text-gray-500 dark:text-gray-400">When this vehicle was first used for business purposes. Auto-populated from first business trip: {editingProfile.datePlacedInBusinessUse || 'Not set'}</p>
+                    {editingProfile.taxpayerType === 'EMPLOYEE' && editingProfile.compensationType === 'TRAVEL_ALLOWANCE' ? (
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        The date you originally purchased or acquired this vehicle. This is used to calculate the 7-year wear-and-tear period for Section 8(1)(b) travel allowance deductions.
+                      </p>
+                    ) : (
+                      <p className="text-xs text-gray-500 dark:text-gray-400">When this vehicle was first used for business purposes. Auto-populated from first business trip: {editingProfile.datePlacedInBusinessUse || 'Not set'}</p>
+                    )}
                   </div>
                 </>
               )}
@@ -1160,7 +1172,6 @@ export default function TaxSummaryPage() {
                     if (value === 'SOLE_PROPRIETOR') {
                       newProfile.fuelBorneBy = 'SELF';
                       newProfile.maintenanceBorneBy = 'SELF';
-                      newProfile.defaultCalculationMethod = 'ACTUAL_COSTS';
                       newProfile.compensationType = undefined;
                       newProfile.isCompanyProvidedVehicle = false;
                     }
@@ -1272,26 +1283,19 @@ export default function TaxSummaryPage() {
               {editingProfile.taxpayerType !== 'TRACKING_ONLY' && (
                 <div className="space-y-2">
                   <label className="text-sm font-medium dark:text-gray-300">Default Calculation Method *</label>
-                  {editingProfile.taxpayerType === 'SOLE_PROPRIETOR' ? (
-                    <div className="text-sm dark:text-gray-300 py-2">Actual Costs</div>
-                  ) : (
-                    <Select
-                      value={editingProfile.defaultCalculationMethod || 'ACTUAL_COSTS'}
-                      onValueChange={(value) => setEditingProfile({ ...editingProfile, defaultCalculationMethod: value as any })}
-                    >
-                      <SelectTrigger id="default-calculation-method" name="default-calculation-method" className="dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ACTUAL_COSTS">Actual Costs</SelectItem>
-                        <SelectItem value="SARS_COST_SCALE">SARS Cost Scale</SelectItem>
-                        <SelectItem value="SIMPLIFIED_REIMBURSIVE">Simplified Reimbursive (SARS Prescribed Rate)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                  {editingProfile.taxpayerType === 'SOLE_PROPRIETOR' && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Sole proprietors must use the actual-cost business expenditure path.</p>
-                  )}
+                  <Select
+                    value={editingProfile.defaultCalculationMethod || 'ACTUAL_COSTS'}
+                    onValueChange={(value) => setEditingProfile({ ...editingProfile, defaultCalculationMethod: value as any })}
+                  >
+                    <SelectTrigger id="default-calculation-method" name="default-calculation-method" className="dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ACTUAL_COSTS">Actual Costs</SelectItem>
+                      <SelectItem value="SARS_COST_SCALE">SARS Cost Scale</SelectItem>
+                      <SelectItem value="SIMPLIFIED_REIMBURSIVE">Simplified Reimbursive (SARS Prescribed Rate)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
               {editingProfile.taxpayerType !== 'TRACKING_ONLY' && editingProfile.taxpayerType !== 'SOLE_PROPRIETOR' && (
@@ -1337,7 +1341,7 @@ export default function TaxSummaryPage() {
       )}
 
       {/* Acquisition Facts Card */}
-      {vehicleTaxProfile && vehicleTaxProfile.recipientUserId && vehicleTaxProfile.taxpayerType !== 'TRACKING_ONLY' && (
+      {vehicleTaxProfile && vehicleTaxProfile.recipientUserId && vehicleTaxProfile.taxpayerType === 'SOLE_PROPRIETOR' && (
         <Card className="border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950">
           <CardHeader>
             <CardTitle className="text-green-900 dark:text-green-100">Acquisition Facts</CardTitle>
@@ -1731,6 +1735,9 @@ export default function TaxSummaryPage() {
             <p className="text-sm text-blue-700 mt-2">
               Sum of selected calculation methods across {allTaxSummaries.length} vehicle(s)
             </p>
+            <p className="text-xs text-blue-600 mt-1">
+              This is the amount deductible from taxable income, not a cash refund.
+            </p>
             <div className="mt-4 space-y-2">
               {allTaxSummaries.map((summary) => {
                 const vehicle = vehicles.find(v => v.id === summary.vehicleId);
@@ -2024,6 +2031,9 @@ export default function TaxSummaryPage() {
                     <p className="text-sm text-blue-700 mt-2">
                       Based on {comparisonResults.find(r => r.method === selectedMethod)?.method.replace(/_/g, ' ')} method
                     </p>
+                    <p className="text-xs text-blue-600 mt-1">
+                      This is the amount deductible from taxable income, not a cash refund.
+                    </p>
                   </>
                 )}
               </CardContent>
@@ -2076,7 +2086,9 @@ export default function TaxSummaryPage() {
                       )}
                       {result.method === 'ACTUAL_COSTS' ? (
                         (() => {
-                          const runningExpenseDeductionCents = result.totalDeductionCents - result.fixedCostCents;
+                          const wearAndTearCents = result.wearAndTearCents || 0;
+                          const financeChargeCents = result.financeChargeCents || 0;
+                          const runningExpenseDeductionCents = result.totalDeductionCents - wearAndTearCents - financeChargeCents;
                           return (
                             <>
                               {runningExpenseDeductionCents >= 0 ? (
@@ -2090,13 +2102,26 @@ export default function TaxSummaryPage() {
                                   <p className="text-xs text-muted-foreground">Breakdown unavailable</p>
                                 </div>
                               )}
-                              <div>
-                                <p className="text-sm text-muted-foreground">Wear-and-tear</p>
-                                <p className="font-semibold">{formatZAR(result.fixedCostCents / 100)}</p>
-                                {result.breakdown?.wearAndTearStatus && (
-                                  <p className="text-xs text-muted-foreground mt-1">{result.breakdown.wearAndTearStatus}</p>
-                                )}
-                              </div>
+                              {wearAndTearCents > 0 && (
+                                <div>
+                                  <p className="text-sm text-muted-foreground">Physical vehicle cost (wear-and-tear)</p>
+                                  <p className="font-semibold">{formatZAR(wearAndTearCents / 100)}</p>
+                                  {result.breakdown?.wearAndTearMethod && (
+                                    <p className="text-xs text-muted-foreground mt-1">{result.breakdown.wearAndTearMethod}</p>
+                                  )}
+                                </div>
+                              )}
+                              {financeChargeCents > 0 ? (
+                                <div>
+                                  <p className="text-sm text-muted-foreground">Finance charges</p>
+                                  <p className="font-semibold">{formatZAR(financeChargeCents / 100)}</p>
+                                </div>
+                              ) : (
+                                <div>
+                                  <p className="text-sm text-muted-foreground">Finance charges</p>
+                                  <p className="text-xs text-muted-foreground">Not calculated - finance data not tracked</p>
+                                </div>
+                              )}
                             </>
                           );
                         })()
