@@ -1833,7 +1833,7 @@ export default function TaxSummaryPage() {
             <div className="flex flex-wrap gap-2">
               {viewMode === 'individual' && vehicleTaxProfile?.taxpayerType !== 'TRACKING_ONLY' && (
                 <Button
-                  onClick={fetchComparisonResults}
+                  onClick={() => fetchComparisonResults()}
                   disabled={comparisonLoading}
                   className="flex items-center gap-2"
                 >
