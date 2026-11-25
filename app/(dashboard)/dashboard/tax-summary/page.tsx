@@ -541,8 +541,12 @@ export default function TaxSummaryPage() {
         setEditingProfile(data);
         // Refetch tax summary to recalculate with new profile
         await handleCalculate();
-        // Refetch comparison results to update with new default calculation method
+        // Refetch comparison results with the new default method from saved data
         await fetchComparisonResults();
+        // Manually set the selected method to the saved profile's default
+        if (data.defaultCalculationMethod) {
+          setSelectedMethod(data.defaultCalculationMethod);
+        }
       } else {
         const errorData = await response.json();
         setError(errorData.error || 'Failed to save tax profile');
