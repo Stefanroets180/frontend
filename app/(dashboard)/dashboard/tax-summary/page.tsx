@@ -1182,6 +1182,10 @@ export default function TaxSummaryPage() {
                       newProfile.maintenanceBorneBy = 'SELF';
                       newProfile.compensationType = undefined;
                       newProfile.isCompanyProvidedVehicle = false;
+                      // Set default calculation method to ACTUAL_COSTS if current is not eligible for Sole Proprietor
+                      if (newProfile.defaultCalculationMethod === 'SIMPLIFIED_REIMBURSIVE') {
+                        newProfile.defaultCalculationMethod = 'ACTUAL_COSTS';
+                      }
                     }
                     setEditingProfile(newProfile);
                   }}
@@ -1290,7 +1294,7 @@ export default function TaxSummaryPage() {
               )}
               {editingProfile.taxpayerType !== 'TRACKING_ONLY' && (
                 <div className="space-y-2">
-                  <label className="text-sm font-medium dark:text-gray-300">Default Calculation Method *</label>
+                  <label className="text-sm font-medium dark:text-gray-300">Calculation Method *</label>
                   <Select
                     value={editingProfile.defaultCalculationMethod || 'ACTUAL_COSTS'}
                     onValueChange={(value) => setEditingProfile({ ...editingProfile, defaultCalculationMethod: value as any })}
@@ -1299,9 +1303,24 @@ export default function TaxSummaryPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="ACTUAL_COSTS">Actual Costs</SelectItem>
-                      <SelectItem value="SARS_COST_SCALE">SARS Cost Scale</SelectItem>
-                      <SelectItem value="SIMPLIFIED_REIMBURSIVE">Simplified Reimbursive (SARS Prescribed Rate)</SelectItem>
+                      {editingProfile.taxpayerType === 'EMPLOYEE' && editingProfile.compensationType === 'TRAVEL_ALLOWANCE' && (
+                        <>
+                          <SelectItem value="ACTUAL_COSTS">Actual Costs</SelectItem>
+                          <SelectItem value="SARS_COST_SCALE">SARS Cost Scale</SelectItem>
+                        </>
+                      )}
+                      {editingProfile.taxpayerType === 'EMPLOYEE' && editingProfile.compensationType === 'REIMBURSEMENT' && (
+                        <SelectItem value="SIMPLIFIED_REIMBURSIVE">Simplified Reimbursive (SARS Prescribed Rate)</SelectItem>
+                      )}
+                      {editingProfile.taxpayerType === 'SOLE_PROPRIETOR' && (
+                        <>
+                          <SelectItem value="ACTUAL_COSTS">Actual Costs</SelectItem>
+                          <SelectItem value="SARS_COST_SCALE">SARS Cost Scale</SelectItem>
+                        </>
+                      )}
+                      {editingProfile.taxpayerType === 'COMPANY' && (
+                        <SelectItem value="ACTUAL_COSTS">Actual Costs</SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
