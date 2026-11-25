@@ -764,6 +764,8 @@ export default function TaxSummaryPage() {
         setEditingAcquisitionFacts(data);
         // Refresh comparison results after saving acquisition facts
         await fetchComparisonResults();
+        // Recalculate tax summary to update TOTAL TAX DEDUCTIBLE
+        await handleCalculate();
       } else {
         const errorData = await response.json();
         setError(errorData.error || 'Failed to save acquisition facts');
