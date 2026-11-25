@@ -1306,7 +1306,7 @@ export default function TaxSummaryPage() {
               )}
               {editingProfile.taxpayerType !== 'TRACKING_ONLY' && (
                 <div className="space-y-2">
-                  <label className="text-sm font-medium dark:text-gray-300">Calculation Method *</label>
+                  <label htmlFor="default-calculation-method" className="text-sm font-medium dark:text-gray-300">Calculation Method *</label>
                   <Select
                     value={editingProfile.defaultCalculationMethod || 'ACTUAL_COSTS'}
                     onValueChange={(value) => setEditingProfile({ ...editingProfile, defaultCalculationMethod: value as any })}
