@@ -776,13 +776,13 @@ export default function TaxSummaryPage() {
           method: key,
         }));
         setComparisonResults(results);
-        // Auto-select: org default if eligible, otherwise first eligible
-        const orgDefaultMethod = user?.defaultTaxCalculationMethod;
-        const orgDefaultEligible = orgDefaultMethod
-          ? results.find((r) => r.method === orgDefaultMethod && r.eligible)
+        // Auto-select: vehicle tax profile default if eligible, otherwise first eligible
+        const vehicleDefaultMethod = vehicleTaxProfile?.defaultCalculationMethod;
+        const vehicleDefaultEligible = vehicleDefaultMethod
+          ? results.find((r) => r.method === vehicleDefaultMethod && r.eligible)
           : null;
-        if (orgDefaultEligible) {
-          setSelectedMethod(orgDefaultEligible.method);
+        if (vehicleDefaultEligible) {
+          setSelectedMethod(vehicleDefaultEligible.method);
         } else {
           const firstEligible = results.find((r) => r.eligible);
           if (firstEligible) {
