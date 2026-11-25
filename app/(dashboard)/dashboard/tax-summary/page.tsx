@@ -748,6 +748,8 @@ export default function TaxSummaryPage() {
         const data = await response.json();
         setAcquisitionFacts(data);
         setEditingAcquisitionFacts(data);
+        // Refresh comparison results after saving acquisition facts
+        await fetchComparisonResults();
       } else {
         const errorData = await response.json();
         setError(errorData.error || 'Failed to save acquisition facts');
