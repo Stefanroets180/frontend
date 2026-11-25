@@ -340,13 +340,13 @@ export default function TaxSummaryPage() {
             }));
             vehicleResults[summary.vehicleId] = results;
 
-            // Auto-select: org default if eligible, otherwise first eligible for each vehicle
-            const orgDefaultMethod = user?.defaultTaxCalculationMethod;
-            const orgDefaultEligible = orgDefaultMethod
-              ? results.find((r) => r.method === orgDefaultMethod && r.eligible)
+            // Auto-select: vehicle tax profile default if eligible, otherwise first eligible for each vehicle
+            const vehicleDefaultMethod = summary.vehicleTaxProfile?.defaultCalculationMethod;
+            const vehicleDefaultEligible = vehicleDefaultMethod
+              ? results.find((r) => r.method === vehicleDefaultMethod && r.eligible)
               : null;
-            if (orgDefaultEligible) {
-              vehicleMethods[summary.vehicleId] = orgDefaultEligible.method;
+            if (vehicleDefaultEligible) {
+              vehicleMethods[summary.vehicleId] = vehicleDefaultEligible.method;
             } else {
               const firstEligible = results.find((r) => r.eligible);
               if (firstEligible) {
