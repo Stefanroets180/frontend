@@ -485,11 +485,14 @@ export default function TaxSummaryPage() {
       if (!editingProfile.datePlacedInBusinessUse) {
         validationErrors.push('Date Placed in Business Use is required');
       }
-      if (!editingProfile.fuelBorneBy) {
-        validationErrors.push('Fuel Borne By is required');
-      }
-      if (!editingProfile.maintenanceBorneBy) {
-        validationErrors.push('Maintenance Borne By is required');
+      // Fuel and Maintenance Borne By are auto-set to SELF for SOLE_PROPRIETOR
+      if (editingProfile.taxpayerType !== 'SOLE_PROPRIETOR') {
+        if (!editingProfile.fuelBorneBy) {
+          validationErrors.push('Fuel Borne By is required');
+        }
+        if (!editingProfile.maintenanceBorneBy) {
+          validationErrors.push('Maintenance Borne By is required');
+        }
       }
     }
     if (!editingProfile.taxpayerType) {
