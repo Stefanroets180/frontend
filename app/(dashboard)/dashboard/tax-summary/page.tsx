@@ -1189,6 +1189,7 @@ export default function TaxSummaryPage() {
               <div className="space-y-2">
                 <label htmlFor="taxpayer-type" className="text-sm font-medium dark:text-gray-300">Taxpayer Type *</label>
                 <Select
+                  name="taxpayer-type"
                   value={editingProfile.taxpayerType || 'EMPLOYEE'}
                   onValueChange={(value) => {
                     const newProfile = { ...editingProfile, taxpayerType: value as any };
@@ -1221,6 +1222,7 @@ export default function TaxSummaryPage() {
                 <div className="space-y-2">
                   <label htmlFor="recipient-user" className="text-sm font-medium dark:text-gray-300">Taxpayer / SARS Recipient *</label>
                   <Select
+                    name="recipient-user"
                     value={editingProfile.recipientUserId || ''}
                     onValueChange={(value) => setEditingProfile({ ...editingProfile, recipientUserId: value })}
                   >
@@ -1244,6 +1246,7 @@ export default function TaxSummaryPage() {
                 <div className="space-y-2">
                   <label htmlFor="compensation-type" className="text-sm font-medium dark:text-gray-300">Compensation Type *</label>
                   <Select
+                    name="compensation-type"
                     value={editingProfile.compensationType || 'TRAVEL_ALLOWANCE'}
                     onValueChange={(value) => setEditingProfile({ ...editingProfile, compensationType: value as any })}
                   >
@@ -1273,6 +1276,7 @@ export default function TaxSummaryPage() {
                       <div className="space-y-2">
                         <label htmlFor="fuel-borne-by" className="text-sm font-medium dark:text-gray-300">Fuel Borne By *</label>
                         <Select
+                          name="fuel-borne-by"
                           value={editingProfile.fuelBorneBy || 'EMPLOYEE'}
                           onValueChange={(value) => setEditingProfile({ ...editingProfile, fuelBorneBy: value as any })}
                         >
@@ -1289,6 +1293,7 @@ export default function TaxSummaryPage() {
                       <div className="space-y-2">
                         <label htmlFor="maintenance-borne-by" className="text-sm font-medium dark:text-gray-300">Maintenance Borne By *</label>
                         <Select
+                          name="maintenance-borne-by"
                           value={editingProfile.maintenanceBorneBy || 'EMPLOYEE'}
                           onValueChange={(value) => setEditingProfile({ ...editingProfile, maintenanceBorneBy: value as any })}
                         >
@@ -1310,6 +1315,7 @@ export default function TaxSummaryPage() {
                 <div className="space-y-2">
                   <label htmlFor="default-calculation-method" className="text-sm font-medium dark:text-gray-300">Calculation Method *</label>
                   <Select
+                    name="default-calculation-method"
                     value={editingProfile.defaultCalculationMethod || 'ACTUAL_COSTS'}
                     onValueChange={(value) => setEditingProfile({ ...editingProfile, defaultCalculationMethod: value as any })}
                   >
@@ -1428,6 +1434,7 @@ export default function TaxSummaryPage() {
               <div className="space-y-2">
                 <label htmlFor="vehicle-arrangement" className="text-sm font-medium dark:text-gray-300">Vehicle Arrangement *</label>
                 <Select
+                  name="vehicle-arrangement"
                   value={editingAcquisitionFacts.vehicleArrangementType || 'OWNED'}
                   onValueChange={(value) => {
                     const newArrangement = value as any;
