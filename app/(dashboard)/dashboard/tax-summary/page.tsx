@@ -531,14 +531,15 @@ export default function TaxSummaryPage() {
       };
 
       let response;
-      if (vehicleTaxProfile?.id) {
+      // Check if profile ID exists and belongs to current vehicle
+      if (vehicleTaxProfile?.id && vehicleTaxProfile.vehicleId === selectedVehicleId) {
         // Update existing profile
         response = await apiFetch(`/vehicles/${selectedVehicleId}/tax-profiles/${vehicleTaxProfile.id}`, {
           method: 'PUT',
           body: JSON.stringify(profileData),
         });
       } else {
-        // Create new profile
+        // Create new profile (either no profile exists, or profile belongs to different vehicle)
         response = await apiFetch(`/vehicles/${selectedVehicleId}/tax-profiles`, {
           method: 'POST',
           body: JSON.stringify(profileData),
