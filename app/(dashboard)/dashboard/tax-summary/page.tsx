@@ -340,13 +340,13 @@ export default function TaxSummaryPage() {
             }));
             vehicleResults[summary.vehicleId] = results;
 
-            // Auto-select: vehicle tax profile default if eligible, otherwise first eligible for each vehicle
-            const vehicleDefaultMethod = summary.vehicleTaxProfile?.defaultCalculationMethod;
-            const vehicleDefaultEligible = vehicleDefaultMethod
-              ? results.find((r) => r.method === vehicleDefaultMethod && r.eligible)
+            // Auto-select: org default if eligible, otherwise first eligible for each vehicle
+            const orgDefaultMethod = user?.defaultTaxCalculationMethod;
+            const orgDefaultEligible = orgDefaultMethod
+              ? results.find((r) => r.method === orgDefaultMethod && r.eligible)
               : null;
-            if (vehicleDefaultEligible) {
-              vehicleMethods[summary.vehicleId] = vehicleDefaultEligible.method;
+            if (orgDefaultEligible) {
+              vehicleMethods[summary.vehicleId] = orgDefaultEligible.method;
             } else {
               const firstEligible = results.find((r) => r.eligible);
               if (firstEligible) {
@@ -541,6 +541,10 @@ export default function TaxSummaryPage() {
         setEditingProfile(data);
         // Refetch tax summary to recalculate with new profile
         await handleCalculate();
+        // Force state update before fetching comparison results
+        await new Promise(resolve => setTimeout(resolve, 100));
+        // Refetch comparison results to update with new default calculation method
+        await fetchComparisonResults();
       } else {
         const errorData = await response.json();
         setError(errorData.error || 'Failed to save tax profile');
