@@ -791,12 +791,19 @@ export default function TaxSummaryPage() {
       if (response.ok) {
         const data: TaxComparisonResponse = await response.json();
         console.log("Comparison response:", data);
+        // Map camelCase response keys to SCREAMING_SNAKE_CASE enum names
+        const keyToEnum: Record<string, string> = {
+          actualCosts: 'ACTUAL_COSTS',
+          sarsCostScale: 'SARS_COST_SCALE',
+          simplifiedReimbursement: 'SIMPLIFIED_REIMBURSIVE',
+        };
         const results = Object.entries(data.results || {}).map(([key, result]) => ({
           ...result,
-          method: key,
+          method: keyToEnum[key] || key,
         }));
         setComparisonResults(results);
-        // Auto-select: preferred method if provided and eligible, otherwise first eligible
+        // Auto-select method: preferredMethod wins, then current selectedMethod if eligible,
+        // then profile default if eligible, then first eligible
         if (preferredMethod) {
           const preferredEligible = results.find((r) => r.method === preferredMethod && r.eligible);
           if (preferredEligible) {
@@ -808,9 +815,29 @@ export default function TaxSummaryPage() {
             }
           }
         } else {
-          const firstEligible = results.find((r) => r.eligible);
-          if (firstEligible) {
-            setSelectedMethod(firstEligible.method);
+          // Try to keep current selectedMethod if still eligible
+          const currentEligible = results.find((r) => r.method === selectedMethod && r.eligible);
+          if (currentEligible) {
+            setSelectedMethod(currentEligible.method);
+          } else {
+            // Try profile default if eligible
+            const defaultMethod = vehicleTaxProfile?.defaultCalculationMethod;
+            if (defaultMethod) {
+              const defaultEligible = results.find((r) => r.method === defaultMethod && r.eligible);
+              if (defaultEligible) {
+                setSelectedMethod(defaultEligible.method);
+              } else {
+                const firstEligible = results.find((r) => r.eligible);
+                if (firstEligible) {
+                  setSelectedMethod(firstEligible.method);
+                }
+              }
+            } else {
+              const firstEligible = results.find((r) => r.eligible);
+              if (firstEligible) {
+                setSelectedMethod(firstEligible.method);
+              }
+            }
           }
         }
       } else if (response.status === 404) {
