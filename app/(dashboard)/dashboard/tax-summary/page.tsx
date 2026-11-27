@@ -1405,30 +1405,41 @@ export default function TaxSummaryPage() {
                   variant="outline"
                   onClick={async () => {
                     if (vehicleTaxProfile?.id) {
+                      if (!window.confirm("Delete the saved tax profile? This cannot be undone.")) {
+                        return;
+                      }
                       // Delete the profile from backend
                       const response = await apiFetch(`/vehicles/${selectedVehicleId}/tax-profiles/${vehicleTaxProfile.id}`, {
                         method: 'DELETE',
                       });
                       if (response.ok) {
+                        // Fetch first business trip date for auto-population (same as never-saved path)
+                        let firstBusinessDate = "";
+                        try {
+                          const tripsRes = await apiFetch(`/trips/vehicle/${selectedVehicleId}`);
+                          if (tripsRes.ok) {
+                            const trips = await tripsRes.json();
+                            const businessTrips = Array.isArray(trips) ? trips.filter((t: any) => t.purpose === "BUSINESS") : [];
+                            if (businessTrips.length > 0) {
+                              const firstBusinessTrip = businessTrips.reduce((earliest: any, trip: any) =>
+                                new Date(trip.tripDate) < new Date(earliest.tripDate) ? trip : earliest
+                              );
+                              firstBusinessDate = new Date(firstBusinessTrip.tripDate).toISOString().split('T')[0];
+                            }
+                          }
+                        } catch (tripsError) {
+                          console.error("Error fetching trips for auto-population:", tripsError);
+                        }
                         // Preserve the current taxpayer type
                         const currentTaxpayerType = editingProfile.taxpayerType || 'EMPLOYEE';
-                        // Clear to default empty state with preserved taxpayer type
+                        // Clear to default empty state with preserved taxpayer type (same as never-saved path)
                         setVehicleTaxProfile(null);
                         setEditingProfile({
-                          vehicleCostCents: undefined,
-                          datePlacedInBusinessUse: undefined,
-                          taxpayerVatRegistered: false,
+                          datePlacedInBusinessUse: firstBusinessDate,
                           taxpayerType: currentTaxpayerType,
-                          compensationType: undefined,
-                          fuelBorneBy: undefined,
-                          maintenanceBorneBy: undefined,
-                          coveredByMaintenancePlan: false,
-                          effectiveFrom: undefined,
-                          effectiveTo: undefined,
-                          defaultCalculationMethod: 'ACTUAL_COSTS',
-                          isCompanyProvidedVehicle: false,
                           recipientUserId: undefined,
                         });
+                        setVehicleCostInput('');
                         // Recalculate tax summary without profile
                         await handleCalculate();
                         // Clear comparison results
