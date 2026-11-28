@@ -598,6 +598,10 @@ export default function TaxSummaryPage() {
       if (response.ok) {
         const data = await response.json();
         setTaxSummary(data);
+        // Refresh comparison results if vehicle has a tax profile (silent, no error banner)
+        if (vehicleTaxProfile) {
+          await fetchComparisonResults(undefined, true);
+        }
       } else {
         const errorData = await response.json();
         setError(errorData.error || 'Failed to save temporary closing odometer');
@@ -777,13 +781,13 @@ export default function TaxSummaryPage() {
     }
   };
 
-  const fetchComparisonResults = async (preferredMethod?: string) => {
+  const fetchComparisonResults = async (preferredMethod?: string, silent?: boolean) => {
     if (!selectedVehicleId || !selectedTaxYear) return;
 
     console.log("=== Fetching comparison results for vehicle:", selectedVehicleId, "===");
 
     setComparisonLoading(true);
-    setError(null);
+    if (!silent) setError(null);
     try {
       const url = `/vehicles/${selectedVehicleId}/tax-profiles/tax-calculations?taxYear=${backendTaxYear}`;
       console.log("Comparison request URL:", url);
@@ -842,12 +846,12 @@ export default function TaxSummaryPage() {
         }
       } else if (response.status === 404) {
         // No tax profile exists for this vehicle
-        setError("A tax profile is required to compare tax calculation methods. Please set up a tax profile for this vehicle first.");
+        if (!silent) setError("A tax profile is required to compare tax calculation methods. Please set up a tax profile for this vehicle first.");
       } else {
-        setError("Failed to fetch tax comparison results");
+        if (!silent) setError("Failed to fetch tax comparison results");
       }
     } catch (err) {
-      setError("Failed to fetch tax comparison results");
+      if (!silent) setError("Failed to fetch tax comparison results");
     } finally {
       setComparisonLoading(false);
     }
@@ -1107,21 +1111,21 @@ export default function TaxSummaryPage() {
               </Select>
             </div>
             {viewMode === 'individual' && (
-              <div className="w-full md:w-48">
+              <div className="w-full md:w-64">
                 <label htmlFor="temporary-closing-odometer" className="text-sm font-medium mb-2 block">Temporary Closing Odometer</label>
-                <div className="relative">
+                <div className="flex gap-2">
                   <input
                     id="temporary-closing-odometer"
                     type="number"
                     value={temporaryClosingOdometer || ''}
                     onChange={(e) => setTemporaryClosingOdometer(e.target.value ? parseInt(e.target.value) : null)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                    className="flex-1 min-w-0 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]"
                     placeholder="Enter odometer"
                   />
                   <Button
                     onClick={saveTemporaryOdometer}
                     disabled={savingTemporaryOdometer}
-                    className="absolute right-1 top-1 h-6 px-2 text-xs"
+                    className="min-w-[60px] px-3 text-xs"
                     size="sm"
                   >
                     {savingTemporaryOdometer ? 'Saving...' : 'Save'}
